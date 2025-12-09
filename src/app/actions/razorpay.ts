@@ -2,7 +2,7 @@
 
 import Razorpay from "razorpay";
 
-// 👇 Now accepts 'amount' (in Rupees)
+// 👇 Notice we now accept 'amount' as an argument
 export async function createRazorpayOrder(amount: number) {
   try {
     const razorpay = new Razorpay({
@@ -10,8 +10,11 @@ export async function createRazorpayOrder(amount: number) {
       key_secret: process.env.RAZORPAY_KEY_SECRET!,
     });
 
+    // Validations
+    if (!amount) throw new Error("Amount is required");
+
     const options = {
-      amount: amount * 100, // Convert to paise
+      amount: amount * 100, // Convert ₹49 to 4900 paise
       currency: "INR",
       receipt: "order_rcptid_" + Date.now(),
     };
