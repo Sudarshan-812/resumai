@@ -8,6 +8,8 @@ import {
   Play, Sparkles, Menu, X 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+// 👇 Correct Import for the Footer we just built
+import Footer from "@/app/components/landing/Footer";
 
 // --- COMPONENT: SPOTLIGHT HERO BACKGROUND ---
 function Spotlight({ className, fill = "white" }: { className?: string; fill?: string }) {
@@ -209,8 +211,10 @@ export default function LandingPage() {
             className="mt-16 md:mt-20 relative mx-auto max-w-5xl rounded-xl border border-white/10 bg-zinc-900/50 p-2 backdrop-blur-sm shadow-2xl lg:rounded-3xl"
           >
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-transparent to-transparent z-20" />
+            
+            {/* 👇 UPDATED to use local file, change back to external URL if preferred */}
             <img 
-              src="https://cdn.dribbble.com/userupload/12586829/file/original-a800d3df60a63901b632906b32524d77.png?resize=1504x1128" 
+              src="/dashboard-preview.png" 
               alt="Dashboard Preview" 
               className="rounded-lg lg:rounded-2xl w-full h-auto object-cover opacity-90"
             />
@@ -292,20 +296,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
-      <footer className="border-t border-white/10 bg-black py-12">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
-          <div className="flex items-center gap-2 font-bold text-lg justify-center md:justify-start">
-            <div className="w-6 h-6 rounded bg-zinc-800 flex items-center justify-center">
-              <Sparkles className="w-3 h-3 text-white" />
-            </div>
-            ResumAI
-          </div>
-          <div className="text-zinc-500 text-sm">
-            © 2025 ResumAI Inc.
-          </div>
-        </div>
-      </footer>
+      {/* --- FOOTER (Replaced hardcoded version with Component) --- */}
+      <Footer />
     </div>
   );
 }
