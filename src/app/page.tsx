@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { 
   ArrowRight, Zap, Shield, BarChart3, 
-  Play, Sparkles, Menu, X 
+  Play, Sparkles, Menu, X, Check 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 // 👇 Correct Import for the Footer we just built
@@ -292,6 +292,65 @@ export default function LandingPage() {
                </div>
             </GlowingCard>
 
+          </div>
+        </div>
+      </section>
+
+      {/* --- PRICING SECTION --- */}
+      <section id="pricing" className="py-24 border-t border-zinc-800 bg-black/50">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">Simple Pricing</h2>
+            <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
+              Pay once, use forever. No monthly subscriptions.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Starter Plan */}
+            <div className="p-8 rounded-3xl border border-zinc-800 bg-zinc-900/20 hover:border-zinc-700 transition-colors">
+              <h3 className="text-xl font-bold mb-2 text-white">Starter</h3>
+              <div className="text-4xl font-bold mb-6 text-white">₹49</div>
+              <ul className="space-y-4 mb-8 text-zinc-400">
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> 5 AI Resume Scans</li>
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Basic ATS Score</li>
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Email Support</li>
+              </ul>
+              <Link href="/login" className="block w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-center font-bold transition-all">
+                Get Started
+              </Link>
+            </div>
+
+            {/* Pro Plan (Highlighted) */}
+            <div className="relative p-8 rounded-3xl border-2 border-indigo-600 bg-zinc-900/50 transform md:-translate-y-4 shadow-2xl shadow-indigo-900/20">
+              <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                Most Popular
+              </div>
+              <h3 className="text-xl font-bold mb-2 text-indigo-400">Pro Bundle</h3>
+              <div className="text-4xl font-bold mb-6 text-white">₹99</div>
+              <ul className="space-y-4 mb-8 text-zinc-300">
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> 12 AI Resume Scans</li>
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Detailed Feedback</li>
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Cover Letter Generator</li>
+              </ul>
+              <Link href="/login" className="block w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-center font-bold shadow-lg shadow-indigo-500/25 transition-all">
+                Get Started
+              </Link>
+            </div>
+
+            {/* Power Plan */}
+            <div className="p-8 rounded-3xl border border-zinc-800 bg-zinc-900/20 hover:border-zinc-700 transition-colors">
+              <h3 className="text-xl font-bold mb-2 text-white">Power User</h3>
+              <div className="text-4xl font-bold mb-6 text-white">₹199</div>
+              <ul className="space-y-4 mb-8 text-zinc-400">
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> 30 AI Resume Scans</li>
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Interview Prep AI</li>
+                <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Priority Support</li>
+              </ul>
+              <Link href="/login" className="block w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-center font-bold transition-all">
+                Get Started
+              </Link>
+            </div>
           </div>
         </div>
       </section>
