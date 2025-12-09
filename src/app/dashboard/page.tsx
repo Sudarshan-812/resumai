@@ -38,7 +38,17 @@ export default async function Dashboard() {
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
-  // 2. Process Data
+  // 2. 👇 FETCH REAL CREDITS FROM PROFILES
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("credits")
+    .eq("id", user.id)
+    .single();
+
+  // If no profile exists yet (rare), default to 0
+  const credits = profile?.credits ?? 0;
+
+  // 3. Process Data
   const resumes = getUniqueResumes(rawResumes || []);
   const totalScans = resumes.length;
   
@@ -143,11 +153,14 @@ export default async function Dashboard() {
               <CreditCard className="w-4 h-4" />
               <span className="text-xs font-medium uppercase tracking-wider">Credits</span>
             </div>
-            <div className="text-3xl font-mono font-medium text-gray-900 dark:text-white">3</div>
+            {/* 👇 DYNAMIC CREDITS HERE */}
+            <div className="text-3xl font-mono font-medium text-gray-900 dark:text-white">
+              {credits}
+            </div>
           </div>
         </div>
 
-        {/* Recent Activity List (FIXED FOR MOBILE) */}
+        {/* Recent Activity List */}
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-gray-500 dark:text-zinc-400 uppercase tracking-wider ml-1">Recent Activity</h3>
           
@@ -161,14 +174,11 @@ export default async function Dashboard() {
                 <Link href={`/dashboard/${resume.id}`} key={resume.id} className="block group">
                   <div className="flex items-center justify-between p-4 transition-colors hover:bg-gray-50 dark:hover:bg-zinc-800/50">
                     
-                    {/* Left Side: Icon + Name (Flexible Width) */}
+                    {/* Left Side: Icon + Truncated Name */}
                     <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1 mr-4">
-                      {/* Icon */}
                       <div className="h-10 w-10 shrink-0 rounded bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-500 dark:text-zinc-400 group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-colors">
                         <FileText className="h-5 w-5" />
                       </div>
-                      
-                      {/* Text Container with Truncation */}
                       <div className="min-w-0 flex-1">
                         <div className="font-medium text-gray-900 dark:text-zinc-200 group-hover:text-black dark:group-hover:text-white transition-colors truncate">
                           {resume.file_name || "Untitled Resume"}
@@ -179,7 +189,7 @@ export default async function Dashboard() {
                       </div>
                     </div>
                     
-                    {/* Right Side: Score + Arrow (Fixed Width) */}
+                    {/* Right Side: Score + Arrow */}
                     <div className="flex items-center gap-3 sm:gap-6 shrink-0">
                       <div className="text-right">
                         <div className={cn("text-sm font-bold font-mono", 
