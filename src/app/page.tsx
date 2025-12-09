@@ -8,8 +8,10 @@ import {
   Play, Sparkles, Menu, X, Check 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-// 👇 Correct Import for the Footer we just built
+
+// 👇 YOUR CUSTOM COMPONENTS
 import Footer from "@/app/components/landing/Footer";
+import Testimonials from "@/app/components/Testimonials"; // Make sure Testimonials.tsx is in src/components/
 
 // --- COMPONENT: SPOTLIGHT HERO BACKGROUND ---
 function Spotlight({ className, fill = "white" }: { className?: string; fill?: string }) {
@@ -143,7 +145,6 @@ function Navbar() {
 
 export default function LandingPage() {
   return (
-    // overflow-x-hidden is CRITICAL for mobile responsiveness
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30 overflow-x-hidden">
       <Navbar />
 
@@ -189,14 +190,15 @@ export default function LandingPage() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
           >
             <Link href="/login" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto group relative px-8 py-4 bg-white text-black rounded-full font-bold text-lg hover:bg-zinc-100 transition-all flex items-center justify-center gap-2">
+              {/* 👇 UPDATED BUTTON: Added 'h-14' and 'md:text-lg' for better mobile touch area */}
+              <button className="w-full sm:w-auto group relative px-8 h-14 bg-white text-black rounded-full font-bold text-base md:text-lg hover:bg-zinc-100 transition-all flex items-center justify-center gap-2">
                 Analyze My Resume
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 <div className="absolute inset-0 rounded-full ring-2 ring-white/50 animate-ping opacity-20" />
               </button>
             </Link>
             <Link href="#features" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto px-8 py-4 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-lg hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
+              <button className="w-full sm:w-auto px-8 h-14 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-base md:text-lg hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
                 <Play className="w-4 h-4 fill-current" />
                 Watch Demo
               </button>
@@ -212,7 +214,6 @@ export default function LandingPage() {
           >
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black via-transparent to-transparent z-20" />
             
-            {/* 👇 UPDATED to use local file, change back to external URL if preferred */}
             <img 
               src="/dashboard-preview.png" 
               alt="Dashboard Preview" 
@@ -225,6 +226,9 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
       </section>
+
+      {/* --- TESTIMONIALS SECTION --- */}
+      <Testimonials />
 
       {/* --- FEATURES (BENTO GRID) --- */}
       <section id="features" className="py-20 md:py-32 relative">
@@ -355,7 +359,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* --- FOOTER (Replaced hardcoded version with Component) --- */}
+      {/* --- FOOTER --- */}
       <Footer />
     </div>
   );
