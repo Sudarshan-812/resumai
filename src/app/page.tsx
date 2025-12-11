@@ -2,16 +2,61 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue, AnimatePresence } from "framer-motion";
 import { 
   ArrowRight, Zap, Shield, BarChart3, 
-  Play, Sparkles, Menu, X, Check 
+  FileText, Sparkles, Menu, X, Check 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// 👇 YOUR CUSTOM COMPONENTS
+// 👇 IMPORT THE HOOK
+import { useFreeTier } from "@/hooks/useFreeTier";
+
 import Footer from "@/app/components/landing/Footer";
-import Testimonials from "@/app/components/Testimonials"; // Make sure Testimonials.tsx is in src/components/
+import Testimonials from "@/app/components/Testimonials"; 
+
+// --- COMPONENT: TERMINAL PREVIEW (Fixes "Stuck" Loader) ---
+function TerminalPreview() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate AI generation time (2.5s) then show result
+    const timer = setTimeout(() => setLoading(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 font-mono text-xs text-zinc-500 h-[180px] flex flex-col justify-center relative overflow-hidden">
+      {/* Scanline Effect */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent h-full w-full animate-scan pointer-events-none" />
+
+      {loading ? (
+        // 👇 SKELETON LOADER (Pulse Effect)
+        <div className="space-y-3 animate-pulse">
+           <div className="flex items-center gap-2 mb-4">
+              <span className="text-purple-400">{">"}</span>
+              <div className="h-3 bg-zinc-800 rounded w-1/3"></div>
+           </div>
+           <div className="h-2 bg-zinc-800/80 rounded w-full"></div>
+           <div className="h-2 bg-zinc-800/80 rounded w-5/6"></div>
+           <div className="h-2 bg-zinc-800/80 rounded w-4/5"></div>
+           <div className="h-2 bg-zinc-800/50 rounded w-2/3"></div>
+        </div>
+      ) : (
+        // 👇 FINAL CONTENT (Fade In)
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+           <p className="text-emerald-400 mb-2 font-bold">{">"} Analysis_Complete_100%</p>
+           <p className="mb-2 text-zinc-300">Dear Hiring Manager,</p>
+           <p className="mb-2 text-zinc-400">I am writing to express my strong interest in the Senior React Developer role...</p>
+           <div className="flex items-center gap-2 mt-4">
+              <span className="px-2 py-1 bg-zinc-800 rounded text-zinc-400">Keywords: Match</span>
+              <span className="inline-block w-2 h-4 bg-emerald-500 animate-pulse" />
+           </div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
 
 // --- COMPONENT: SPOTLIGHT HERO BACKGROUND ---
 function Spotlight({ className, fill = "white" }: { className?: string; fill?: string }) {
@@ -116,9 +161,13 @@ function Navbar() {
         <div className="hidden md:flex items-center gap-6">
           <Link href="/login" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Sign In</Link>
           <Link href="/login">
-            <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-zinc-200 transition-colors">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-zinc-200 transition-colors"
+            >
               Get Started
-            </button>
+            </motion.button>
           </Link>
         </div>
 
@@ -129,21 +178,36 @@ function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-black border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl">
-          <Link href="/login" className="text-lg font-medium text-zinc-400 hover:text-white">Sign In</Link>
-          <Link href="/login" className="w-full">
-            <button className="w-full bg-white text-black px-5 py-3 rounded-xl text-lg font-bold hover:bg-zinc-200">
-              Get Started
-            </button>
-          </Link>
-        </div>
-      )}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden absolute top-full left-0 right-0 bg-black border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl"
+          >
+            <Link href="/login" className="text-lg font-medium text-zinc-400 hover:text-white">Sign In</Link>
+            <Link href="/login" className="w-full">
+              <motion.button 
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-white text-black px-5 py-3 rounded-xl text-lg font-bold hover:bg-zinc-200"
+              >
+                Get Started
+              </motion.button>
+            </Link>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
 
 export default function LandingPage() {
+  const { remaining, isLimitReached, mounted } = useFreeTier();
+
+  const ctaLink = mounted && !isLimitReached ? "/upload" : "/login";
+  const ctaText = mounted && !isLimitReached ? "Analyze My Resume (Free)" : "Analyze My Resume";
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30 overflow-x-hidden">
       <Navbar />
@@ -153,21 +217,28 @@ export default function LandingPage() {
         <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-6 text-center">
+          
+          {/* Badge */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-[10px] md:text-xs font-medium text-zinc-300 mb-6 md:mb-8"
           >
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            v2.0 live with Gemini 1.5
+            <span className={`flex h-2 w-2 rounded-full ${!isLimitReached ? 'bg-emerald-500' : 'bg-red-500'} animate-pulse`}></span>
+            {mounted && !isLimitReached ? (
+               <span>🎁 You have <b>{remaining} Free Scans</b> available</span>
+            ) : (
+               <span>v2.0 live with Gemini 1.5</span>
+            )}
           </motion.div>
 
+          {/* 👇 HERO TEXT (UPDATED FOR MOBILE: text-6xl) */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 pb-6"
+            className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 pb-6 leading-tight"
           >
             Craft the Perfect <br />
             Resume with AI.
@@ -177,7 +248,7 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-base md:text-xl text-zinc-400 max-w-xl md:max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed px-4"
+            className="text-lg md:text-xl text-zinc-400 max-w-xl md:max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed px-4"
           >
             Stop guessing what recruiters want. Our AI analyzes your resume against job descriptions to give you a 
             <span className="text-white font-semibold"> top 1% ATS score</span>.
@@ -187,21 +258,30 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 w-full"
           >
-            <Link href="/login" className="w-full sm:w-auto">
-              {/* 👇 UPDATED BUTTON: Added 'h-14' and 'md:text-lg' for better mobile touch area */}
-              <button className="w-full sm:w-auto group relative px-8 h-14 bg-white text-black rounded-full font-bold text-base md:text-lg hover:bg-zinc-100 transition-all flex items-center justify-center gap-2">
-                Analyze My Resume
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                <div className="absolute inset-0 rounded-full ring-2 ring-white/50 animate-ping opacity-20" />
-              </button>
+            {/* Primary Button */}
+            <Link href={ctaLink} className="w-full sm:w-auto">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto px-8 h-14 bg-white text-black rounded-full font-bold text-lg flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_35px_rgba(255,255,255,0.5)] transition-shadow duration-300"
+              >
+                {ctaText}
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
             </Link>
+
+            {/* Secondary Button */}
             <Link href="#features" className="w-full sm:w-auto">
-              <button className="w-full sm:w-auto px-8 h-14 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-base md:text-lg hover:bg-zinc-800 transition-all flex items-center justify-center gap-2">
-                <Play className="w-4 h-4 fill-current" />
-                Watch Demo
-              </button>
+              <motion.button 
+                whileHover={{ scale: 1.05, backgroundColor: "#27272a" }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full sm:w-auto px-8 h-14 bg-zinc-900 text-white border border-zinc-800 rounded-full font-bold text-lg flex items-center justify-center gap-2"
+              >
+                <FileText className="w-4 h-4 text-zinc-400" />
+                View Sample Report
+              </motion.button>
             </Link>
           </motion.div>
           
@@ -274,7 +354,7 @@ export default function LandingPage() {
               </div>
             </GlowingCard>
 
-            {/* Feature 3: Wide */}
+            {/* Feature 3: Wide (WITH TERMINAL PREVIEW FIX) */}
             <GlowingCard className="md:col-span-3 p-6 md:p-12 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                <div>
                   <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mb-6">
@@ -288,12 +368,10 @@ export default function LandingPage() {
                     Try Copilot <ArrowRight className="w-4 h-4" />
                   </Link>
                </div>
-               <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 font-mono text-xs text-zinc-500">
-                  <p className="text-purple-400 mb-2">{">"} Generating Cover Letter...</p>
-                  <p className="mb-2">Dear Hiring Manager,</p>
-                  <p className="mb-2">I am writing to express my strong interest...</p>
-                  <span className="inline-block w-2 h-4 bg-zinc-500 animate-pulse" />
-               </div>
+               
+               {/* 👇 INSERTED THE NEW TERMINAL COMPONENT HERE */}
+               <TerminalPreview />
+               
             </GlowingCard>
 
           </div>
@@ -320,12 +398,18 @@ export default function LandingPage() {
                 <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Basic ATS Score</li>
                 <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Email Support</li>
               </ul>
-              <Link href="/login" className="block w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-center font-bold transition-all">
-                Get Started
+              <Link href="/login" className="block w-full">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-center font-bold transition-all"
+                >
+                  Get Started
+                </motion.button>
               </Link>
             </div>
 
-            {/* Pro Plan (Highlighted) */}
+            {/* Pro Plan */}
             <div className="relative p-8 rounded-3xl border-2 border-indigo-600 bg-zinc-900/50 transform md:-translate-y-4 shadow-2xl shadow-indigo-900/20">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
                 Most Popular
@@ -337,8 +421,14 @@ export default function LandingPage() {
                 <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Detailed Feedback</li>
                 <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Cover Letter Generator</li>
               </ul>
-              <Link href="/login" className="block w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-center font-bold shadow-lg shadow-indigo-500/25 transition-all">
-                Get Started
+              <Link href="/login" className="block w-full">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-center font-bold shadow-lg shadow-indigo-500/25 transition-all"
+                >
+                  Get Started
+                </motion.button>
               </Link>
             </div>
 
@@ -351,8 +441,14 @@ export default function LandingPage() {
                 <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Interview Prep AI</li>
                 <li className="flex gap-3"><Check className="text-indigo-500 w-5 h-5 shrink-0" /> Priority Support</li>
               </ul>
-              <Link href="/login" className="block w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-center font-bold transition-all">
-                Get Started
+              <Link href="/login" className="block w-full">
+                 <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-3 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-center font-bold transition-all"
+                >
+                  Get Started
+                </motion.button>
               </Link>
             </div>
           </div>
