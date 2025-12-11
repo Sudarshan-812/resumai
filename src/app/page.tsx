@@ -2,20 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, useMotionTemplate, useMotionValue, AnimatePresence } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { 
   ArrowRight, Zap, Shield, BarChart3, 
-  FileText, Sparkles, Menu, X, Check 
+  FileText, Sparkles, Check 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-// 👇 IMPORT THE HOOK
+// 👇 Tracks the 3 free tries
 import { useFreeTier } from "@/hooks/useFreeTier";
 
 import Footer from "@/app/components/landing/Footer";
 import Testimonials from "@/app/components/Testimonials"; 
 
-// --- COMPONENT: TERMINAL PREVIEW (Fixes "Stuck" Loader) ---
+// --- COMPONENT: TERMINAL PREVIEW ---
 function TerminalPreview() {
   const [loading, setLoading] = useState(true);
 
@@ -31,7 +31,7 @@ function TerminalPreview() {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent h-full w-full animate-scan pointer-events-none" />
 
       {loading ? (
-        // 👇 SKELETON LOADER (Pulse Effect)
+        // Skeleton Loader
         <div className="space-y-3 animate-pulse">
            <div className="flex items-center gap-2 mb-4">
               <span className="text-purple-400">{">"}</span>
@@ -43,7 +43,7 @@ function TerminalPreview() {
            <div className="h-2 bg-zinc-800/50 rounded w-2/3"></div>
         </div>
       ) : (
-        // 👇 FINAL CONTENT (Fade In)
+        // Final Content
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
            <p className="text-emerald-400 mb-2 font-bold">{">"} Analysis_Complete_100%</p>
            <p className="mb-2 text-zinc-300">Dear Hiring Manager,</p>
@@ -133,84 +133,18 @@ function GlowingCard({ children, className }: { children: React.ReactNode, class
   );
 }
 
-// --- COMPONENT: NAVBAR ---
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <nav className={cn(
-      "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b",
-      scrolled || mobileMenuOpen ? "bg-black/90 backdrop-blur-md border-white/10 py-4" : "bg-transparent border-transparent py-6"
-    )}>
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2 font-bold text-xl tracking-tighter text-white">
-          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-black fill-black" />
-          </div>
-          ResumAI
-        </div>
-        
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link href="/login" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Sign In</Link>
-          <Link href="/login">
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-zinc-200 transition-colors"
-            >
-              Get Started
-            </motion.button>
-          </Link>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-          {mobileMenuOpen ? <X /> : <Menu />}
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-black border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl"
-          >
-            <Link href="/login" className="text-lg font-medium text-zinc-400 hover:text-white">Sign In</Link>
-            <Link href="/login" className="w-full">
-              <motion.button 
-                whileTap={{ scale: 0.95 }}
-                className="w-full bg-white text-black px-5 py-3 rounded-xl text-lg font-bold hover:bg-zinc-200"
-              >
-                Get Started
-              </motion.button>
-            </Link>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
-  );
-}
-
+// --- MAIN LANDING PAGE ---
 export default function LandingPage() {
   const { remaining, isLimitReached, mounted } = useFreeTier();
 
+  // 👇 DYNAMIC ROUTING: Points to /upload if free, /login if paid
   const ctaLink = mounted && !isLimitReached ? "/upload" : "/login";
   const ctaText = mounted && !isLimitReached ? "Analyze My Resume (Free)" : "Analyze My Resume";
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-indigo-500/30 overflow-x-hidden">
-      <Navbar />
+      
+      {/* Note: Navbar is now in layout.tsx, so we don't render it here */}
 
       {/* --- HERO SECTION --- */}
       <section className="relative pt-32 pb-12 md:pt-48 md:pb-32 overflow-hidden">
@@ -233,7 +167,7 @@ export default function LandingPage() {
             )}
           </motion.div>
 
-          {/* 👇 HERO TEXT (UPDATED FOR MOBILE: text-6xl) */}
+          {/* Hero Text */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -254,6 +188,7 @@ export default function LandingPage() {
             <span className="text-white font-semibold"> top 1% ATS score</span>.
           </motion.p>
 
+          {/* Buttons */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -354,7 +289,7 @@ export default function LandingPage() {
               </div>
             </GlowingCard>
 
-            {/* Feature 3: Wide (WITH TERMINAL PREVIEW FIX) */}
+            {/* Feature 3: Wide (WITH TERMINAL PREVIEW) */}
             <GlowingCard className="md:col-span-3 p-6 md:p-12 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                <div>
                   <div className="w-12 h-12 rounded-lg bg-amber-500/10 flex items-center justify-center mb-6">
@@ -369,7 +304,7 @@ export default function LandingPage() {
                   </Link>
                </div>
                
-               {/* 👇 INSERTED THE NEW TERMINAL COMPONENT HERE */}
+               {/* Terminal Preview */}
                <TerminalPreview />
                
             </GlowingCard>
