@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation"; // 👈 Added usePathname
+import { useRouter, usePathname } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Menu, X, Settings, LogOut, User } from "lucide-react";
@@ -15,41 +15,51 @@ const supabase = createClient(
 
 export default function Navbar() {
   const router = useRouter();
-  const pathname = usePathname(); // 👈 Get current URL path
+  const pathname = usePathname();
   
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<any>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // 👈 Added loading state
 
-  // Check if we are on the landing page
   const isLandingPage = pathname === "/";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
 
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+    // 👇 FIX: Use getSession() instead of getUser() for instant load
+    const initSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setUser(session?.user ?? null);
+      } catch (error) {
+        console.error("Session check failed", error);
+      } finally {
+        setLoading(false);
+      }
     };
-    checkUser();
+    initSession();
 
+    // Listen for Auth Changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
        setUser(session?.user ?? null);
+       if (event === 'SIGNED_OUT') {
+         setUser(null);
+         router.push("/"); // Redirect home on logout
+       }
     });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    setUserMenuOpen(false);
-    window.location.href = "/"; 
+    // State update handled by authListener above
   };
 
   const handleProfileClick = () => {
@@ -67,7 +77,7 @@ export default function Navbar() {
     )}>
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         
-        {/* LOGO SECTION - Only Visible on Landing Page */}
+        {/* LOGO - Only on Landing Page */}
         {isLandingPage ? (
           <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tighter text-white z-[101]">
             <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
@@ -76,15 +86,14 @@ export default function Navbar() {
             ResumAI
           </Link>
         ) : (
-          // Empty div keeps the flex spacing correct so Profile stays on the right
           <div className="w-8 h-8" />
         )}
         
         {/* RIGHT SIDE MENU */}
         <div className="flex items-center gap-6">
           
-          {/* "Get Started" Button - Only show if Guest */}
-          {!user && (
+          {/* Get Started Button (Hidden if logged in OR loading) */}
+          {!user && !loading && (
             <div className="hidden md:block">
               <Link href="/login">
                 <motion.button 
@@ -98,25 +107,28 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* PROFILE ICON (Always Visible) */}
+          {/* PROFILE ICON */}
           <div className="relative z-[101]">
             <button 
               onClick={handleProfileClick}
               className={cn(
                 "w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all shadow-lg",
                 user 
-                  ? "bg-gradient-to-tr from-indigo-500 to-purple-500 text-white border-transparent hover:border-white"
+                  ? "bg-gradient-to-tr from-indigo-500 to-purple-500 text-white border-transparent hover:border-white" 
                   : "bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-white hover:border-zinc-500"
               )}
             >
-              {user ? (
+              {loading ? (
+                // Small spinner while checking session
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : user ? (
                 user.email?.charAt(0).toUpperCase() 
               ) : (
                 <User size={20} />
               )}
             </button>
 
-            {/* DROPDOWN MENU (Logged In Only) */}
+            {/* DROPDOWN */}
             <AnimatePresence>
               {user && userMenuOpen && (
                 <motion.div 
@@ -129,14 +141,12 @@ export default function Navbar() {
                     {user.email}
                   </div>
                   
-                  {/* Account Settings */}
                   <Link href="/settings">
                     <button onClick={() => setUserMenuOpen(false)} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-900 hover:text-white rounded-lg flex items-center gap-2 transition-colors">
                       <Settings size={16} /> Account Details
                     </button>
                   </Link>
 
-                  {/* Sign Out */}
                   <button 
                     onClick={handleLogout}
                     className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg flex items-center gap-2 transition-colors mt-1"
@@ -148,7 +158,7 @@ export default function Navbar() {
             </AnimatePresence>
           </div>
 
-          {/* Mobile Toggle (Hidden on Desktop) */}
+          {/* Mobile Toggle */}
           <button className="md:hidden text-white z-[101]" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
             {mobileMenuOpen ? <X /> : <Menu />}
           </button>
@@ -156,7 +166,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu (Only shows navigation items, Profile logic is separate above) */}
+      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
