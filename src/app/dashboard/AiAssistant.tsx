@@ -9,7 +9,6 @@ import {
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-
 interface JobAssistantProps {
   resumeId: string;
 }
@@ -54,30 +53,34 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
   };
 
   return (
-    <div className="border border-zinc-800 bg-zinc-950 rounded-2xl overflow-hidden shadow-2xl relative scroll-mt-20" id="ai-assistant">
+    <div className="border border-slate-200 bg-white rounded-2xl overflow-hidden shadow-sm relative scroll-mt-20" id="ai-assistant">
       
       {/* --- HEADER --- */}
-      <div className="px-6 py-4 border-b border-zinc-800 bg-zinc-900/50 flex items-center justify-between">
+      <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-4 w-4 text-purple-400" />
-          <h2 className="text-sm font-bold text-white uppercase tracking-wider">AI Career Assistant</h2>
+          <div className="p-1.5 bg-purple-100 rounded-md">
+            <Sparkles className="h-4 w-4 text-purple-600" />
+          </div>
+          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">AI Career Assistant</h2>
         </div>
-        <div className="flex items-center gap-2 px-2 py-1 bg-purple-500/10 border border-purple-500/20 rounded text-[10px] font-mono text-purple-400 uppercase">
-          Gemini Powered
+        <div className="flex items-center gap-2 px-2.5 py-1 bg-white border border-slate-200 rounded-md shadow-sm">
+          <span className="text-[10px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 uppercase tracking-wider">
+            Gemini Powered
+          </span>
         </div>
       </div>
 
       <div className="p-6">
         
         {/* --- TABS --- */}
-        <div className="flex p-1 bg-zinc-900/50 border border-zinc-800 rounded-xl mb-6">
+        <div className="flex p-1 bg-slate-100 border border-slate-200 rounded-xl mb-6">
           <button
             onClick={() => { setActiveTab('cover_letter'); setResult(null); }}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all",
               activeTab === 'cover_letter' 
-                ? "bg-zinc-800 text-white shadow-sm" 
-                : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                ? "bg-white text-indigo-600 shadow-sm ring-1 ring-black/5" 
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
             )}
           >
             <PenTool className="w-3.5 h-3.5" />
@@ -88,8 +91,8 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all",
               activeTab === 'interview_prep' 
-                ? "bg-zinc-800 text-white shadow-sm" 
-                : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800/50"
+                ? "bg-white text-indigo-600 shadow-sm ring-1 ring-black/5" 
+                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
             )}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -99,15 +102,17 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
 
         {/* --- INPUT AREA --- */}
         <div className="space-y-3">
-          <label className="text-xs font-bold text-zinc-500 uppercase tracking-widest">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">
             Job Description Context
           </label>
-          <textarea 
-            placeholder="Paste the Job Description here (e.g. 'Senior React Developer at Netflix...')"
-            className="w-full h-32 bg-zinc-900/30 border border-zinc-800 rounded-xl p-4 text-sm font-mono text-zinc-300 placeholder:text-zinc-600 focus:border-purple-500/50 focus:bg-zinc-900/50 focus:outline-none transition-all resize-none"
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-          />
+          <div className="relative group">
+            <textarea 
+                placeholder="Paste the Job Description here (e.g. 'Senior React Developer at Netflix...')"
+                className="w-full h-32 bg-white border border-slate-200 rounded-xl p-4 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all resize-none shadow-sm group-hover:border-slate-300"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+            />
+          </div>
         </div>
 
         {/* --- GENERATE BUTTON --- */}
@@ -115,18 +120,18 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
           <button 
             onClick={handleGenerate} 
             disabled={isPending || !jobDescription}
-            className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 group"
+            className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-200 flex items-center justify-center gap-2 group hover:shadow-lg hover:shadow-indigo-500/20"
           >
             {isPending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-white/80" />
                 Processing...
               </>
             ) : (
               <>
                 <Briefcase className="mr-2 h-4 w-4" />
                 Generate {activeTab === 'cover_letter' ? 'Draft' : 'Questions'}
-                <ChevronRight className="w-4 h-4 text-zinc-400 group-hover:translate-x-1 transition-transform" />
+                <ChevronRight className="w-4 h-4 text-indigo-200 group-hover:translate-x-1 transition-transform" />
               </>
             )}
           </button>
@@ -136,13 +141,13 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
         {result && (
           <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-bold text-white flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-emerald-400" />
+            <div className="flex items-center justify-between mb-4 px-1">
+              <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                 Generated Output
               </span>
               <button
-                className="text-xs flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
+                className="text-xs flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 font-medium transition-colors bg-slate-50 px-2 py-1 rounded-md border border-slate-200 hover:border-indigo-200"
                 onClick={() => {
                   const textToCopy = activeTab === 'cover_letter' 
                     ? result 
@@ -150,28 +155,28 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
                   copyToClipboard(textToCopy);
                 }}
               >
-                {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
-                {copied ? "Copied" : "Copy"}
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
+                {copied ? "Copied" : "Copy Text"}
               </button>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 overflow-hidden max-h-[500px] overflow-y-auto p-6 shadow-inner">
+            <div className="rounded-xl border border-slate-200 bg-slate-50/50 overflow-hidden max-h-[500px] overflow-y-auto p-6 shadow-inner">
               {activeTab === 'cover_letter' ? (
-                <div className="whitespace-pre-wrap text-zinc-300 leading-relaxed font-sans text-sm">
+                <div className="whitespace-pre-wrap text-slate-700 leading-relaxed font-sans text-sm">
                   {result}
                 </div>
               ) : (
                 <div className="space-y-4">
                   {result.questions?.map((q: any, i: number) => (
-                    <div key={i} className="bg-black/40 p-5 rounded-lg border border-zinc-800 hover:border-zinc-700 transition-colors">
+                    <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-200 transition-colors">
                       <div className="flex gap-3 mb-2">
-                         <div className="mt-0.5"><HelpCircle className="w-4 h-4 text-purple-400" /></div>
-                         <p className="font-semibold text-white text-sm">Q{i+1}: {q.question}</p>
+                          <div className="mt-0.5 p-1 bg-purple-50 rounded-md"><HelpCircle className="w-4 h-4 text-purple-600" /></div>
+                          <p className="font-bold text-slate-800 text-sm">Q{i+1}: {q.question}</p>
                       </div>
-                      <div className="pl-7 border-l-2 border-zinc-800 ml-2">
-                         <p className="text-zinc-400 text-sm leading-relaxed italic">
-                           " {q.answer} "
-                         </p>
+                      <div className="pl-9">
+                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-slate-600 text-sm leading-relaxed italic">
+                            "{q.answer}"
+                          </div>
                       </div>
                     </div>
                   ))}
