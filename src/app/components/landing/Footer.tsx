@@ -1,73 +1,189 @@
 "use client";
-import Link from "next/link";
-import { Sparkles, Twitter, Linkedin, Instagram, Github } from "lucide-react";
 
-export default function Footer() {
+import Link from "next/link";
+import type { FC, JSX } from "react";
+import {
+  Sparkles,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Github,
+  type LucideIcon,
+} from "lucide-react";
+
+interface SocialLink {
+  name: string;
+  href: string;
+  icon: LucideIcon;
+  ariaLabel: string;
+}
+
+const SOCIAL_LINKS: readonly SocialLink[] = [
+  {
+    name: "Twitter",
+    href: "#",
+    icon: Twitter,
+    ariaLabel: "ResumAI Twitter profile",
+  },
+  {
+    name: "LinkedIn",
+    href: "#",
+    icon: Linkedin,
+    ariaLabel: "ResumAI LinkedIn profile",
+  },
+  {
+    name: "Instagram",
+    href: "#",
+    icon: Instagram,
+    ariaLabel: "ResumAI Instagram profile",
+  },
+  {
+    name: "GitHub",
+    href: "#",
+    icon: Github,
+    ariaLabel: "ResumAI GitHub repository",
+  },
+];
+
+const Footer: FC = (): JSX.Element => {
   return (
-    <footer className="border-t border-gray-100 bg-white pt-20 pb-10">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-          
+    <footer
+      className="border-t border-gray-100 bg-white pt-20 pb-10"
+      aria-labelledby="footer-heading"
+    >
+      <h2 id="footer-heading" className="sr-only">
+        Footer
+      </h2>
+
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4">
+          {/* Brand */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 font-bold text-2xl text-gray-900">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white fill-white" />
+            <div className="flex items-center gap-2 text-2xl font-bold text-gray-900">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600"
+                aria-hidden="true"
+              >
+                <Sparkles className="h-4 w-4 fill-white text-white" />
               </div>
-              ResumAI
+              <span>ResumAI</span>
             </div>
-            <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-              Helping Indian developers land top-tier tech jobs with AI-powered resume optimization.
+
+            <p className="max-w-xs text-sm leading-relaxed text-gray-500">
+              Helping Indian developers land top-tier tech jobs with AI-powered
+              resume optimization.
             </p>
+
             <div className="flex gap-4 pt-4">
-              {[Twitter, Linkedin, Instagram, Github].map((Icon, i) => (
-                <Link key={i} href="#" className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-indigo-50 hover:text-indigo-600 transition-all">
-                  <Icon className="w-5 h-5" />
+              {SOCIAL_LINKS.map(({ name, href, icon: Icon, ariaLabel }) => (
+                <Link
+                  key={name}
+                  href={href}
+                  aria-label={ariaLabel}
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-indigo-50 hover:text-indigo-600"
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
                 </Link>
               ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="font-bold text-gray-900 mb-6">Product</h3>
+          {/* Product */}
+          <nav aria-label="Product" className="space-y-6">
+            <h3 className="font-bold text-gray-900">Product</h3>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><Link href="#features" className="hover:text-indigo-600 transition-colors">Features</Link></li>
-              <li><Link href="#pricing" className="hover:text-indigo-600 transition-colors">Pricing</Link></li>
-              <li><Link href="/login" className="hover:text-indigo-600 transition-colors">Log In</Link></li>
+              <li>
+                <Link
+                  href="#features"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Features
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#pricing"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Pricing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/login"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Log In
+                </Link>
+              </li>
             </ul>
-          </div>
+          </nav>
 
-          <div>
-            <h3 className="font-bold text-gray-900 mb-6">Legal</h3>
+          {/* Legal */}
+          <nav aria-label="Legal" className="space-y-6">
+            <h3 className="font-bold text-gray-900">Legal</h3>
             <ul className="space-y-4 text-sm text-gray-500">
-              <li><Link href="#" className="hover:text-indigo-600 transition-colors">Privacy Policy</Link></li>
-              <li><Link href="#" className="hover:text-indigo-600 transition-colors">Terms of Service</Link></li>
-              <li><Link href="#" className="hover:text-indigo-600 transition-colors">Cookie Policy</Link></li>
+              <li>
+                <Link
+                  href="#"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="#"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Cookie Policy
+                </Link>
+              </li>
             </ul>
-          </div>
+          </nav>
 
-          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-            <h3 className="font-bold text-gray-900 mb-2">System Status</h3>
-            <div className="flex items-center gap-2 text-sm text-emerald-600 mb-4 font-medium">
+          {/* Status */}
+          <div className="rounded-2xl border border-gray-100 bg-gray-50 p-6">
+            <h3 className="mb-2 font-bold text-gray-900">System Status</h3>
+
+            <div
+              className="mb-4 flex items-center gap-2 text-sm font-medium text-emerald-600"
+              role="status"
+              aria-live="polite"
+            >
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
               </span>
               All Systems Operational
             </div>
-            <p className="text-xs text-gray-400">
-              Powered by Gemini 2.0 Flash
-            </p>
+
+            <p className="text-xs text-gray-400">Powered by Gemini 2.0 Flash</p>
           </div>
         </div>
 
-        <div className="border-t border-gray-100 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm">© 2025 ResumAI Inc. Built in India 🇮🇳</p>
-          <div className="flex gap-6 text-xs text-gray-400 font-medium">
-             <span>v2.1.0</span>
-             <span>Server: Mumbai (AWS)</span>
+        {/* Bottom Bar */}
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 pt-8 md:flex-row">
+          <p className="text-sm text-gray-500">
+            © 2025 ResumAI Inc. Built in India 🇮🇳
+          </p>
+
+          <div className="flex gap-6 text-xs font-medium text-gray-400">
+            <span aria-label="Application version">v2.1.0</span>
+            <span aria-label="Server region">Server: Mumbai (AWS)</span>
           </div>
         </div>
       </div>
     </footer>
   );
-}
+};
+
+export default Footer;

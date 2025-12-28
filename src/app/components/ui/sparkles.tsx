@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import type { Container, Engine } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
-import { cn } from "@/lib/utils"; // Ensure you have your utils file
+import { cn } from "@/lib/utils"; 
 
 export const SparklesCore = (props: {
   id?: string;

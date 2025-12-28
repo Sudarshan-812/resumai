@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google'; // Importing the new font
+import { Outfit } from 'next/font/google'; 
 import './globals.css';
 
-// Initialize the font
+
 const outfit = Outfit({ 
   subsets: ['latin'], 
   variable: '--font-outfit',

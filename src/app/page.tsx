@@ -8,7 +8,7 @@ import FeatureGrid from '@/app/components/landing//FeatureGrid';
 import HowItWorks from '@/app/components/landing//HowItWorks';
 import Testimonials from '@/app/components/landing//Testimonials';
 
-import CTASection from '@/app/components/CTASection'; // New
+import CTASection from '@/app/components/CTASection';
 
 
 export default function Home() {
@@ -19,7 +19,7 @@ export default function Home() {
       <FeatureGrid />
       <HowItWorks />
       <Testimonials />
-      <CTASection /> {/* Added CTA before Footer */}
+      <CTASection />
       <Footer />
     </main>
   );

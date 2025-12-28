@@ -1,47 +1,66 @@
-'use client';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+"use client";
 
-export default function CTASection() {
+import type { FC, JSX } from "react";
+import Link from "next/link";
+import { motion, type Variants } from "framer-motion";
+import { Button } from "@/components/ui/button";
+
+// Simple scale + fade animation for the CTA container
+// Using viewport.once so it animates only the first time it appears
+const containerAnimation: Variants = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1 },
+};
+
+const CTASection: FC = (): JSX.Element => {
   return (
-    <section className="py-24 px-6 bg-white">
-      <div className="max-w-5xl mx-auto">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
+    <section className="bg-white px-6 py-24">
+      <div className="mx-auto max-w-5xl">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          className="relative rounded-[3rem] overflow-hidden bg-indigo-900 px-6 py-20 text-center md:px-20"
+          variants={containerAnimation}
+          className="relative overflow-hidden rounded-[3rem] bg-indigo-900 px-6 py-20 text-center md:px-20"
         >
-          {/* Background Gradients */}
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-[-50%] left-[-20%] w-[500px] h-[500px] bg-purple-500/30 rounded-full blur-[100px]" />
-            <div className="absolute bottom-[-50%] right-[-20%] w-[500px] h-[500px] bg-indigo-500/30 rounded-full blur-[100px]" />
+          {/* Decorative gradient blobs (purely visual, no interaction) */}
+          <div aria-hidden="true" className="absolute inset-0">
+            <div className="absolute left-[-20%] top-[-50%] h-[500px] w-[500px] rounded-full bg-purple-500/30 blur-[100px]" />
+            <div className="absolute bottom-[-50%] right-[-20%] h-[500px] w-[500px] rounded-full bg-indigo-500/30 blur-[100px]" />
           </div>
 
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
-              Ready to land your <br/> dream job?
+            <h2 className="mb-6 text-4xl font-bold tracking-tight text-white md:text-6xl">
+              Ready to land your <br /> dream job?
             </h2>
-            <p className="text-indigo-200 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-              Join 10,000+ developers who are getting more interviews with ResumAI. It takes less than 2 minutes to get your score.
+
+            <p className="mx-auto mb-10 max-w-2xl text-lg text-indigo-200 md:text-xl">
+              Join 10,000+ developers who are getting more interviews with
+              ResumAI. It takes less than 2 minutes to get your score.
             </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {/* 👇 CHANGED: /signup -> /login */}
-              <Link href="/login">
-                <Button size="lg" className="w-full sm:w-auto bg-white text-indigo-900 hover:bg-gray-100 text-lg px-8 py-6 rounded-full font-bold transition-transform hover:scale-105">
+
+            <div className="flex flex-col justify-center gap-4 sm:flex-row">
+              <Link href="/login" aria-label="Get started with ResumAI">
+                <Button
+                  size="lg"
+                  className="w-full rounded-full bg-white px-8 py-6 text-lg font-bold text-indigo-900 transition-transform hover:scale-105 hover:bg-gray-100 sm:w-auto"
+                >
                   Get Started for Free
                 </Button>
               </Link>
-              <Link href="/login">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-indigo-400/30 text-black hover:bg-gray-200 hover:text-black text-lg px-8 py-6 rounded-full font-semibold">
+
+              <Link href="/login" aria-label="Sign in to ResumAI">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full rounded-full border-indigo-400/30 px-8 py-6 text-lg font-semibold text-black hover:bg-gray-200 sm:w-auto"
+                >
                   Sign In
                 </Button>
               </Link>
             </div>
-            
-            <p className="mt-8 text-sm text-indigo-300 font-medium">
+
+            <p className="mt-8 text-sm font-medium text-indigo-300">
               No credit card required · Cancel anytime
             </p>
           </div>
@@ -49,4 +68,6 @@ export default function CTASection() {
       </div>
     </section>
   );
-}
+};
+
+export default CTASection;

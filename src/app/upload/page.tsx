@@ -1,66 +1,99 @@
 "use client";
 
-import { useState } from "react";
+import type { FC, JSX } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, FileText, Loader2, ArrowLeft, AlertCircle, X, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  UploadCloud,
+  FileText,
+  Loader2,
+  ArrowLeft,
+  AlertCircle,
+  X,
+  Sparkles,
+} from "lucide-react";
+
 import { processResume } from "@/app/actions/upload-resume";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/app/components/theme-toggle";
-// 👇 Import Framer Motion for animations
-import { motion, AnimatePresence } from "framer-motion";
 
-export default function UploadPage() {
+const UploadPage: FC = (): JSX.Element => {
   const router = useRouter();
-  const [isDragging, setIsDragging] = useState(false);
+
+  // Drag & drop + file state
+  const [isDragging, setIsDragging] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+
+  // Upload / error state
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // --- HELPER: FORMAT FILE SIZE (KB/MB) ---
-  const formatFileSize = (bytes: number) => {
+  // Converts raw bytes into a readable format (KB / MB)
+  const formatFileSize = useCallback((bytes: number): string => {
     if (bytes === 0) return "0 Bytes";
-    const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  };
 
-  const handleDrag = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setIsDragging(true);
-    } else if (e.type === "dragleave") {
-      setIsDragging(false);
-    }
-  };
+    const kiloByte = 1024;
+    const units = ["Bytes", "KB", "MB", "GB"];
+    const unitIndex = Math.floor(Math.log(bytes) / Math.log(kiloByte));
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    setErrorMsg(null);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      const droppedFile = e.dataTransfer.files[0];
-      if (droppedFile.type === "application/pdf") {
-        setFile(droppedFile);
-      } else {
-        setErrorMsg("Only PDF files are supported.");
+    return `${(bytes / kiloByte ** unitIndex).toFixed(2)} ${
+      units[unitIndex]
+    }`;
+  }, []);
+
+  // Handles drag enter / leave / over events
+  const handleDrag = useCallback(
+    (event: React.DragEvent<HTMLDivElement>): void => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (event.type === "dragenter" || event.type === "dragover") {
+        setIsDragging(true);
+      } else if (event.type === "dragleave") {
+        setIsDragging(false);
       }
-    }
-  };
+    },
+    []
+  );
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setErrorMsg(null);
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
+  // Handles file drop (PDF only)
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>): void => {
+      event.preventDefault();
+      event.stopPropagation();
 
-  const handleAnalyze = async () => {
+      setIsDragging(false);
+      setErrorMsg(null);
+
+      const droppedFile = event.dataTransfer.files?.[0];
+      if (!droppedFile) return;
+
+      if (droppedFile.type !== "application/pdf") {
+        setErrorMsg("Only PDF files are supported.");
+        return;
+      }
+
+      setFile(droppedFile);
+    },
+    []
+  );
+
+  // Handles manual file selection
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      setErrorMsg(null);
+      const selectedFile = event.target.files?.[0];
+      if (selectedFile) setFile(selectedFile);
+    },
+    []
+  );
+
+  // Sends file to backend for AI analysis
+  const handleAnalyze = useCallback(async (): Promise<void> => {
     if (!file) return;
+
     setIsUploading(true);
     setErrorMsg(null);
 
@@ -70,71 +103,82 @@ export default function UploadPage() {
 
       const result = await processResume(formData);
 
+      // Backend returns a resumeId on success
       if (result.success && result.id) {
         router.push(`/dashboard/${result.id}`);
-      } else {
-        throw new Error(result.message || "Analysis failed");
+        return;
       }
 
-    } catch (error: any) {
-      console.error("Upload error:", error);
-      setErrorMsg(error.message || "Something went wrong. Please try again.");
+      throw new Error(result.message || "Analysis failed");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.";
+
+      setErrorMsg(message);
       setIsUploading(false);
     }
-  };
+  }, [file, router]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#09090b] text-zinc-900 dark:text-white transition-colors duration-300 relative flex flex-col overflow-hidden">
-      
-      {/* Background Grid */}
-      <div className={cn(
-        "absolute inset-0 pointer-events-none z-0",
-        "[background-size:40px_40px]",
-        "[background-image:linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)]",
-        "dark:[background-image:linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)]"
-      )} />
-      <div className="absolute inset-0 z-0 bg-white/50 dark:bg-black/20 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-gray-50 text-zinc-900 transition-colors duration-300 dark:bg-[#09090b] dark:text-white">
+      {/* Background grid (purely decorative) */}
+      <div
+        aria-hidden="true"
+        className={cn(
+          "pointer-events-none absolute inset-0 z-0",
+          "[background-size:40px_40px]",
+          "[background-image:linear-gradient(to_right,#e5e5e5_1px,transparent_1px),linear-gradient(to_bottom,#e5e5e5_1px,transparent_1px)]",
+          "dark:[background-image:linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)]"
+        )}
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-0 bg-white/50 dark:bg-black/20 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"
+      />
 
-      {/* --- NAVBAR --- */}
-      <div className="relative z-50 flex items-center justify-between px-6 sm:px-8 py-6">
-        <Link 
-          href="/dashboard" 
-          className="text-zinc-500 hover:text-black dark:hover:text-white transition-colors flex items-center gap-2 text-sm font-medium group"
+      {/* Top navigation */}
+      <div className="relative z-50 flex items-center justify-between px-6 py-6 sm:px-8">
+        <Link
+          href="/dashboard"
+          className="group flex items-center gap-2 text-sm font-medium text-zinc-500 transition-colors hover:text-black dark:hover:text-white"
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           Back to Dashboard
         </Link>
         <ThemeToggle />
       </div>
 
-      {/* --- MAIN CONTENT (Animated) --- */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 -mt-20">
-        
-        <motion.div 
+      {/* Main upload section */}
+      <div className="relative z-10 -mt-20 flex flex-1 items-center justify-center p-4">
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="w-full max-w-xl"
         >
-          <div className="text-center mb-10">
-            <motion.div 
+          {/* Header */}
+          <div className="mb-10 text-center">
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider mb-4"
+              className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400"
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="h-3 w-3" />
               AI Powered Analysis
             </motion.div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight text-zinc-900 dark:text-white">
+
+            <h1 className="mb-3 text-3xl font-bold tracking-tight md:text-4xl">
               Upload your Resume
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-lg">
+            <p className="text-lg text-zinc-500 dark:text-zinc-400">
               Get an instant ATS score and detailed feedback in seconds.
             </p>
           </div>
 
-          {/* ANIMATED UPLOAD BOX */}
+          {/* Upload box */}
           <motion.div
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -144,101 +188,108 @@ export default function UploadPage() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1, duration: 0.4 }}
             className={cn(
-              "relative group border-2 border-dashed rounded-3xl p-10 text-center transition-all duration-300 bg-white/50 dark:bg-zinc-900/30 backdrop-blur-sm",
-              isDragging 
-                ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10 scale-[1.02]" 
-                : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xl dark:hover:shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)]"
+              "group relative rounded-3xl border-2 border-dashed p-10 text-center transition-all duration-300 backdrop-blur-sm",
+              "bg-white/50 dark:bg-zinc-900/30",
+              isDragging
+                ? "scale-[1.02] border-indigo-500 bg-indigo-50/50 dark:bg-indigo-500/10"
+                : "border-zinc-200 hover:border-zinc-300 hover:shadow-xl dark:border-zinc-800 dark:hover:border-zinc-700 dark:hover:shadow-[0_0_20px_-5px_rgba(255,255,255,0.1)]"
             )}
           >
             <AnimatePresence mode="wait">
               {!file ? (
-                // STATE 1: NO FILE
-                <motion.div 
-                  key="upload-state"
+                // No file selected state
+                <motion.div
+                  key="empty"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center"
                 >
-                  <div className="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <UploadCloud className="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
+                  <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-zinc-100 transition-transform group-hover:scale-110 dark:bg-zinc-800">
+                    <UploadCloud className="h-10 w-10 text-zinc-400 dark:text-zinc-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2 text-zinc-900 dark:text-white">
+
+                  <h3 className="mb-2 text-xl font-semibold">
                     Drag & Drop your PDF
                   </h3>
-                  <p className="text-zinc-500 mb-8 text-sm">or click to browse from your computer</p>
-                  
+                  <p className="mb-8 text-sm text-zinc-500">
+                    or click to browse from your computer
+                  </p>
+
                   <label className="cursor-pointer">
-                    <motion.span 
+                    <motion.span
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="inline-block bg-zinc-900 dark:bg-white text-white dark:text-black px-8 py-3.5 rounded-xl font-bold hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors shadow-lg hover:shadow-xl"
+                      className="inline-block rounded-xl bg-zinc-900 px-8 py-3.5 font-bold text-white shadow-lg transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                     >
                       Select PDF
                     </motion.span>
-                    <input 
-                      type="file" 
-                      accept="application/pdf" 
-                      className="hidden" 
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      hidden
                       onChange={handleFileSelect}
                     />
                   </label>
                 </motion.div>
               ) : (
-                // STATE 2: FILE SELECTED
-                <motion.div 
-                  key="file-selected"
+                // File selected state
+                <motion.div
+                  key="selected"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ type: "spring", duration: 0.5 }}
                   className="flex flex-col items-center"
                 >
-                  <motion.div 
+                  <motion.div
                     initial={{ rotate: -10, scale: 0 }}
                     animate={{ rotate: 0, scale: 1 }}
-                    className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-4"
+                    className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500"
                   >
-                    <FileText className="w-8 h-8" />
+                    <FileText className="h-8 w-8" />
                   </motion.div>
-                  
-                  <div className="text-center mb-8">
-                    <p className="text-lg font-semibold text-zinc-900 dark:text-white mb-1">
+
+                  <div className="mb-8 text-center">
+                    <p className="mb-1 text-lg font-semibold">
                       {file.name}
                     </p>
-                    <p className="text-xs font-mono text-zinc-500 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded inline-block">
+                    <p className="inline-block rounded bg-zinc-100 px-2 py-1 font-mono text-xs text-zinc-500 dark:bg-zinc-800">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                    <motion.button 
+
+                  <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+                    <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      onClick={() => { setFile(null); setErrorMsg(null); }}
                       disabled={isUploading}
-                      className="px-6 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-sm font-bold text-zinc-600 dark:text-zinc-300 disabled:opacity-50"
+                      onClick={() => {
+                        setFile(null);
+                        setErrorMsg(null);
+                      }}
+                      className="rounded-xl border border-zinc-200 px-6 py-3 text-sm font-bold text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                     >
                       Change File
                     </motion.button>
-                    
-                    <motion.button 
+
+                    <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={handleAnalyze}
                       disabled={isUploading}
-                      className="px-8 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-lg hover:shadow-indigo-500/25 text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleAnalyze}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-indigo-500 hover:shadow-indigo-500/25 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {isUploading ? (
                         <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" />
                           Analyzing...
                         </>
                       ) : (
                         <>
                           Start AI Scan
-                          <Sparkles className="w-4 h-4" />
+                          <Sparkles className="h-4 w-4" />
                         </>
                       )}
                     </motion.button>
@@ -248,19 +299,23 @@ export default function UploadPage() {
             </AnimatePresence>
           </motion.div>
 
-          {/* ERROR MESSAGE */}
+          {/* Error message */}
           <AnimatePresence>
             {errorMsg && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="mt-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center gap-3 text-red-600 dark:text-red-400"
+                className="mt-6 flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-red-600 dark:text-red-400"
               >
-                <AlertCircle className="w-5 h-5 shrink-0" />
+                <AlertCircle className="h-5 w-5 shrink-0" />
                 <p className="text-sm font-medium">{errorMsg}</p>
-                <button onClick={() => setErrorMsg(null)} className="ml-auto hover:text-red-800 dark:hover:text-red-200">
-                  <X className="w-4 h-4" />
+                <button
+                  type="button"
+                  onClick={() => setErrorMsg(null)}
+                  className="ml-auto transition-colors hover:text-red-800 dark:hover:text-red-200"
+                >
+                  <X className="h-4 w-4" />
                 </button>
               </motion.div>
             )}
@@ -269,4 +324,6 @@ export default function UploadPage() {
       </div>
     </div>
   );
-}
+};
+
+export default UploadPage;
