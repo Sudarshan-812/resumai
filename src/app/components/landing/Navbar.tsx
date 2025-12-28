@@ -29,7 +29,6 @@ export default function Navbar() {
         transition={{ duration: 0.8, type: "spring", bounce: 0.3 }}
         className="fixed top-4 inset-x-0 mx-auto max-w-4xl z-50 px-4 md:px-0"
       >
-        {/* 👇 CHANGED: border-indigo-100 -> border-purple-800 (Dark Purple) */}
         <div className="relative flex items-center justify-between bg-white/80 backdrop-blur-xl border border-purple-800 rounded-full px-5 py-3 shadow-2xl shadow-purple-900/10">
           
           {/* Logo */}
@@ -61,7 +60,8 @@ export default function Navbar() {
             >
               Sign In
             </Link>
-            <Link href="/signup">
+            {/* 👇 CHANGED: /signup -> /login */}
+            <Link href="/login">
               <Button className="bg-purple-700 hover:bg-purple-800 text-white rounded-full px-5 h-10 text-sm font-bold shadow-lg shadow-purple-500/30 transition-all hover:scale-105">
                 Get Started
               </Button>
@@ -90,7 +90,6 @@ export default function Navbar() {
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             className="fixed top-20 inset-x-4 mx-auto max-w-sm z-40 md:hidden"
           >
-            {/* 👇 CHANGED: border-indigo-100 -> border-purple-800 */}
             <div className="bg-white/90 backdrop-blur-2xl border border-purple-800 rounded-3xl p-6 shadow-2xl shadow-purple-900/20">
               <div className="flex flex-col gap-2 text-lg font-medium">
                 {navLinks.map((link) => (
@@ -114,7 +113,8 @@ export default function Navbar() {
                       Sign In
                     </Button>
                   </Link>
-                  <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                  {/* 👇 CHANGED: /signup -> /login */}
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full bg-purple-700 hover:bg-purple-800 text-white py-6 rounded-2xl font-bold shadow-lg shadow-purple-500/20">
                       Get Started
                     </Button>

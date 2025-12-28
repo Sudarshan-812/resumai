@@ -1,6 +1,8 @@
 'use client';
 import { motion } from 'framer-motion';
-import { Upload, Wand2, Download } from 'lucide-react';
+import { Upload, Wand2, Download, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 const steps = [
   {
@@ -26,12 +28,10 @@ export default function HowItWorks() {
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">How it works</h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">Three simple steps to your dream job.</p>
+          <p className="text-gray-500 max-w-2xl mx-auto text-lg">Three simple steps to your dream job.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-          
-          {/* Gradient Connector Line (Desktop) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative mb-16">
           <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-transparent via-indigo-200 to-transparent" />
 
           {steps.map((step, i) => (
@@ -43,13 +43,21 @@ export default function HowItWorks() {
               transition={{ delay: i * 0.2 }}
               className="relative flex flex-col items-center text-center z-10"
             >
-              <div className="w-24 h-24 rounded-full bg-white border-4 border-indigo-50 flex items-center justify-center mb-6 shadow-xl shadow-indigo-100">
+              <div className="w-24 h-24 rounded-full bg-white border-4 border-indigo-50 flex items-center justify-center mb-6 shadow-xl shadow-indigo-100 group hover:scale-110 transition-transform duration-300">
                 <step.icon className="w-10 h-10 text-indigo-600" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-900">{step.title}</h3>
-              <p className="text-gray-500 max-w-xs">{step.desc}</p>
+              <p className="text-gray-500 max-w-xs leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
+        </div>
+
+        <div className="flex justify-center">
+            <Link href="/signup">
+                <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 font-bold text-lg">
+                    Start optimizing now <ChevronRight className="ml-1 w-5 h-5" />
+                </Button>
+            </Link>
         </div>
       </div>
     </section>

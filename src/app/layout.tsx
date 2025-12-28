@@ -1,43 +1,29 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Outfit } from 'next/font/google'; // Importing the new font
+import './globals.css';
 
-// 👇 1. Import the Component
-import Navbar from "@/app/components/landing/Navbar";
-import SmoothScroll from "@/app/components/SmoothScroll";
-
-// 👇 Vercel Analytics (Optional)
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-
-const inter = Inter({ subsets: ["latin"] });
+// Initialize the font
+const outfit = Outfit({ 
+  subsets: ['latin'], 
+  variable: '--font-outfit',
+  display: 'swap', 
+});
 
 export const metadata: Metadata = {
-  title: "ResumAI - AI Resume Builder",
-  description: "Craft the perfect resume with AI.",
+  title: 'ResumAI - Craft Perfect Resumes',
+  description: 'AI-powered resume builder for developers.',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-white text-black antialiased selection:bg-black selection:text-white`}>
-        <SmoothScroll>
-          
-          {/* 👇 2. Add JUST the Navbar Component here */}
-          <Navbar />
-          
-          {/* Main Content */}
-          <main className="min-h-screen">
-            {children}
-          </main>
-
-          <Analytics />
-          <SpeedInsights />
-        </SmoothScroll>
+      {/* Add the font variable to the body */}
+      <body className={`${outfit.variable} font-sans antialiased`}>
+        {children}
       </body>
     </html>
   );

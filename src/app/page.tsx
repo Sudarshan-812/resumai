@@ -8,26 +8,19 @@ import FeatureGrid from '@/app/components/landing//FeatureGrid';
 import HowItWorks from '@/app/components/landing//HowItWorks';
 import Testimonials from '@/app/components/landing//Testimonials';
 
+import CTASection from '@/app/components/CTASection'; // New
+
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
-      {/* Assuming components are in app/components/ 
-         Adjust paths if you keep them in a different folder structure (e.g. @/components)
-      */}
-      
+    <main className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
       <Navbar />
-      
       <HeroSection />
-      
       <FeatureGrid />
-      
       <HowItWorks />
-      
       <Testimonials />
-      
+      <CTASection /> {/* Added CTA before Footer */}
       <Footer />
-      
     </main>
   );
 }
