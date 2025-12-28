@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-// 👇 Import Vercel components
+
+// 👇 1. Import the Component
+import Navbar from "@/app/components/landing/Navbar";
+import SmoothScroll from "@/app/components/SmoothScroll";
+
+// 👇 Vercel Analytics (Optional)
 import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,16 +24,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-black text-white`}>
-        {/* Navbar visible on ALL pages */}
-        <Navbar />
-        
-        {/* Main Page Content */}
-        <main>{children}</main>
+      <body className={`${inter.className} bg-white text-black antialiased selection:bg-black selection:text-white`}>
+        <SmoothScroll>
+          
+          {/* 👇 2. Add JUST the Navbar Component here */}
+          <Navbar />
+          
+          {/* Main Content */}
+          <main className="min-h-screen">
+            {children}
+          </main>
 
-        {/* 👇 Vercel Tracking Components */}
-        <Analytics />
-        <SpeedInsights />
+          <Analytics />
+          <SpeedInsights />
+        </SmoothScroll>
       </body>
     </html>
   );
