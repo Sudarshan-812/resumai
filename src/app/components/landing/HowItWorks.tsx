@@ -22,18 +22,17 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    /* 👇 CHANGED: border-gray-100 -> border-black (Top Border) */
-    <section id="how-it-works" className="py-24 bg-white border-t border-black">
+    <section id="how-it-works" className="py-24 bg-white relative">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-gray-900">How it works</h2>
           <p className="text-gray-500 max-w-2xl mx-auto">Three simple steps to your dream job.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
-          {/* Connector Line (Desktop) */}
-          {/* 👇 CHANGED: bg-gray-100 -> bg-black (Solid black line) */}
-          <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-black" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
+          
+          {/* Gradient Connector Line (Desktop) */}
+          <div className="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-transparent via-indigo-200 to-transparent" />
 
           {steps.map((step, i) => (
             <motion.div 
@@ -44,12 +43,11 @@ export default function HowItWorks() {
               transition={{ delay: i * 0.2 }}
               className="relative flex flex-col items-center text-center z-10"
             >
-              {/* 👇 CHANGED: border-gray-100 -> border-black */}
-              <div className="w-24 h-24 rounded-full bg-white border border-black flex items-center justify-center mb-6 shadow-xl shadow-gray-200/50">
+              <div className="w-24 h-24 rounded-full bg-white border-4 border-indigo-50 flex items-center justify-center mb-6 shadow-xl shadow-indigo-100">
                 <step.icon className="w-10 h-10 text-indigo-600" />
               </div>
               <h3 className="text-xl font-bold mb-2 text-gray-900">{step.title}</h3>
-              <p className="text-gray-500">{step.desc}</p>
+              <p className="text-gray-500 max-w-xs">{step.desc}</p>
             </motion.div>
           ))}
         </div>
