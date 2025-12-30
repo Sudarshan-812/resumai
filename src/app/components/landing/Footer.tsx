@@ -88,13 +88,13 @@ const Footer: FC = (): JSX.Element => {
             </div>
           </div>
 
-          {/* Product */}
-          <nav aria-label="Product" className="space-y-6">
-            <h3 className="font-bold text-gray-900">Product</h3>
+          {/* Product & Support */}
+          <nav aria-label="Product and Support" className="space-y-6">
+            <h3 className="font-bold text-gray-900">Product & Support</h3>
             <ul className="space-y-4 text-sm text-gray-500">
               <li>
                 <Link
-                  href="#features"
+                  href="/#features"
                   className="transition-colors hover:text-indigo-600"
                 >
                   Features
@@ -102,10 +102,18 @@ const Footer: FC = (): JSX.Element => {
               </li>
               <li>
                 <Link
-                  href="#pricing"
+                  href="/#pricing"
                   className="transition-colors hover:text-indigo-600"
                 >
                   Pricing
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/contact-us"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Contact Us
                 </Link>
               </li>
               <li>
@@ -125,7 +133,7 @@ const Footer: FC = (): JSX.Element => {
             <ul className="space-y-4 text-sm text-gray-500">
               <li>
                 <Link
-                  href="#"
+                  href="/privacy-policy"
                   className="transition-colors hover:text-indigo-600"
                 >
                   Privacy Policy
@@ -133,18 +141,26 @@ const Footer: FC = (): JSX.Element => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/terms-and-conditions"
                   className="transition-colors hover:text-indigo-600"
                 >
-                  Terms of Service
+                  Terms and Conditions
                 </Link>
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/cancellation-refund"
                   className="transition-colors hover:text-indigo-600"
                 >
-                  Cookie Policy
+                  Cancellation & Refund
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/shipping-address"
+                  className="transition-colors hover:text-indigo-600"
+                >
+                  Shipping Address
                 </Link>
               </li>
             </ul>

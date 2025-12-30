@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google'; 
 import './globals.css';
+import SmoothScroll from './components/SmoothScroll';
 
 
 const outfit = Outfit({ 
@@ -23,6 +24,7 @@ export default function RootLayout({
     <html lang="en">
       {/* Add the font variable to the body */}
       <body className={`${outfit.variable} font-sans antialiased`}>
+        <SmoothScroll />
         {children}
       </body>
     </html>

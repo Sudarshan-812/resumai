@@ -5,8 +5,8 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import {
-  UploadCloud,
   FileText,
   Loader2,
   ArrowLeft,
@@ -197,7 +197,7 @@ const UploadPage: FC = (): JSX.Element => {
           >
             <AnimatePresence mode="wait">
               {!file ? (
-                // No file selected state
+                // --- STATE 1: No file selected ---
                 <motion.div
                   key="empty"
                   initial={{ opacity: 0, y: 10 }}
@@ -206,8 +206,14 @@ const UploadPage: FC = (): JSX.Element => {
                   transition={{ duration: 0.3 }}
                   className="flex flex-col items-center"
                 >
-                  <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-zinc-100 transition-transform group-hover:scale-110 dark:bg-zinc-800">
-                    <UploadCloud className="h-10 w-10 text-zinc-400 dark:text-zinc-500" />
+                  {/* Default Upload Animation */}
+                  <div className="mb-6 h-56 w-56 flex items-center justify-center transition-transform group-hover:scale-110">
+                    <DotLottieReact
+                      src="https://lottie.host/55dd39b0-3065-47e4-bcdd-dc67673b3db5/ZGLhHRNwjr.lottie"
+                      loop
+                      autoplay
+                      className="h-full w-full"
+                    />
                   </div>
 
                   <h3 className="mb-2 text-xl font-semibold">
@@ -234,7 +240,7 @@ const UploadPage: FC = (): JSX.Element => {
                   </label>
                 </motion.div>
               ) : (
-                // File selected state
+                // --- STATE 2: File selected ---
                 <motion.div
                   key="selected"
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -243,17 +249,34 @@ const UploadPage: FC = (): JSX.Element => {
                   transition={{ type: "spring", duration: 0.5 }}
                   className="flex flex-col items-center"
                 >
-                  <motion.div
-                    initial={{ rotate: -10, scale: 0 }}
-                    animate={{ rotate: 0, scale: 1 }}
-                    className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500"
-                  >
-                    <FileText className="h-8 w-8" />
-                  </motion.div>
+                  
+                  {/* --- CONDITIONAL ICON: Static vs Scanning --- */}
+                  {isUploading ? (
+                     // Scanning Animation
+                     // Container size is fixed (h-56 w-56)
+                     // Animation is Scaled up (scale-[1.8]) to look huge
+                     <div className="mb-6 h-56 w-56 flex items-center justify-center">
+                        <DotLottieReact
+                          src="https://lottie.host/95dd5060-456e-45ec-97ab-b025f0b4e953/tPZIqhIzkt.lottie"
+                          loop
+                          autoplay
+                          className="h-full w-full scale-[1.8]" 
+                        />
+                     </div>
+                  ) : (
+                    // Static PDF Icon
+                    <motion.div
+                      initial={{ rotate: -10, scale: 0 }}
+                      animate={{ rotate: 0, scale: 1 }}
+                      className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-500"
+                    >
+                      <FileText className="h-8 w-8" />
+                    </motion.div>
+                  )}
 
                   <div className="mb-8 text-center">
                     <p className="mb-1 text-lg font-semibold">
-                      {file.name}
+                      {isUploading ? "Scanning Document..." : file.name}
                     </p>
                     <p className="inline-block rounded bg-zinc-100 px-2 py-1 font-mono text-xs text-zinc-500 dark:bg-zinc-800">
                       {formatFileSize(file.size)}
@@ -274,12 +297,13 @@ const UploadPage: FC = (): JSX.Element => {
                       Change File
                     </motion.button>
 
+                    {/* BLACK BUTTON */}
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       disabled={isUploading}
                       onClick={handleAnalyze}
-                      className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-8 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-indigo-500 hover:shadow-indigo-500/25 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex items-center justify-center gap-2 rounded-xl bg-black px-8 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-zinc-800 hover:shadow-zinc-500/25 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
                     >
                       {isUploading ? (
                         <>

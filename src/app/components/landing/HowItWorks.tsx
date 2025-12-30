@@ -3,36 +3,34 @@
 import type { FC, JSX } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import {
-  Upload,
-  Wand2,
-  Download,
-  ChevronRight,
-  type LucideIcon,
-} from "lucide-react";
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Step {
   title: string;
   description: string;
-  icon: LucideIcon;
+  lottieSrc: string;
 }
 
 const STEPS: readonly Step[] = [
   {
     title: "Upload Resume",
     description: "Drop your existing PDF. We parse it instantly.",
-    icon: Upload,
+    // Upload Animation
+    lottieSrc: "https://lottie.host/5a0adcbe-b473-47e8-8343-99789e812f19/2KxJuFZpqE.lottie",
   },
   {
     title: "AI Analysis",
     description: "Our engine scores it against your target job.",
-    icon: Wand2,
+    // AI Loading Animation
+    lottieSrc: "https://lottie.host/72fd65eb-1b1f-4609-8f50-0d3f6faa83ce/zZMf82cYVM.lottie",
   },
   {
     title: "Optimize & Export",
     description: "Apply fixes and download the ATS-ready version.",
-    icon: Download,
+    // Download Animation
+    lottieSrc: "https://lottie.host/ba03714c-5ba1-4f80-9c48-00a79e0e4758/Mnxnp9QsFy.lottie",
   },
 ];
 
@@ -66,14 +64,13 @@ const HowItWorks: FC = (): JSX.Element => {
         </div>
 
         <div className="relative mb-16 grid grid-cols-1 gap-12 md:grid-cols-3">
+          {/* Connector Line (visible on desktop) */}
           <div
             aria-hidden="true"
-            className="absolute left-[15%] right-[15%] top-12 hidden h-0.5 bg-gradient-to-r from-transparent via-indigo-200 to-transparent md:block"
+            className="absolute left-[15%] right-[15%] top-20 hidden h-0.5 bg-gradient-to-r from-transparent via-indigo-200 to-transparent md:block"
           />
 
           {STEPS.map((step, index) => {
-            const Icon = step.icon;
-
             return (
               <motion.div
                 key={step.title}
@@ -84,10 +81,14 @@ const HowItWorks: FC = (): JSX.Element => {
                 variants={itemFadeUp}
                 className="relative z-10 flex flex-col items-center text-center"
               >
-                <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full border-4 border-indigo-50 bg-white shadow-xl shadow-indigo-100 transition-transform duration-300 hover:scale-110">
-                  <Icon
-                    className="h-10 w-10 text-indigo-600"
-                    aria-hidden="true"
+                {/* Animation Container */}
+                {/* Added 'overflow-hidden' here to force the circle shape */}
+                <div className="mb-6 flex h-40 w-40 items-center justify-center rounded-full border-4 border-indigo-50 bg-white shadow-xl shadow-indigo-100 transition-transform duration-300 hover:scale-105 overflow-hidden">
+                  <DotLottieReact
+                    src={step.lottieSrc}
+                    loop
+                    autoplay
+                    className="h-full w-full"
                   />
                 </div>
 

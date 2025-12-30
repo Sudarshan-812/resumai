@@ -13,14 +13,12 @@ interface NavLink {
   href: string;
 }
 
-// Centralized nav links so both desktop & mobile stay in sync
 const NAV_LINKS: readonly NavLink[] = [
   { name: "Features", href: "/#features" },
   { name: "How it Works", href: "/#how-it-works" },
   { name: "Pricing", href: "/#pricing" },
 ];
 
-// Entrance animation for navbar (runs once on mount)
 const navAnimation: Variants = {
   hidden: { y: -100, opacity: 0 },
   visible: {
@@ -30,7 +28,6 @@ const navAnimation: Variants = {
   },
 };
 
-// Shared animation for mobile menu enter/exit
 const mobileMenuAnimation: Variants = {
   hidden: { opacity: 0, scale: 0.95, y: -10 },
   visible: { opacity: 1, scale: 1, y: 0 },
@@ -41,7 +38,6 @@ const Navbar: FC = (): JSX.Element | null => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
-  // Hide navbar on auth pages to keep them distraction-free
   if (pathname === "/login" || pathname === "/signup") {
     return null;
   }
@@ -64,6 +60,7 @@ const Navbar: FC = (): JSX.Element | null => {
         aria-label="Primary navigation"
       >
         <div className="relative flex items-center justify-between rounded-full border border-purple-800 bg-white/80 px-5 py-3 shadow-2xl shadow-purple-900/10 backdrop-blur-xl">
+          
           {/* Brand / Logo */}
           <Link
             href="/"
@@ -100,10 +97,20 @@ const Navbar: FC = (): JSX.Element | null => {
               Sign In
             </Link>
 
-            <Link href="/login">
-              <Button className="h-10 rounded-full bg-purple-700 px-5 text-sm font-bold text-white shadow-lg shadow-purple-500/30 transition-all hover:scale-105 hover:bg-purple-800">
+            {/* Custom Animated Button (Desktop) */}
+            <Link 
+              href="/login" 
+              className="relative inline-flex items-center justify-center px-6 py-2 overflow-hidden font-medium text-indigo-600 transition duration-300 ease-out border-2 border-purple-500 rounded-full shadow-md group"
+            >
+              <span className="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-purple-500 group-hover:translate-x-0 ease">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+              </span>
+              <span className="absolute flex items-center justify-center w-full h-full text-purple-500 transition-all duration-300 transform group-hover:translate-x-full ease">
                 Get Started
-              </Button>
+              </span>
+              <span className="relative invisible">Get Started</span>
             </Link>
           </div>
 
@@ -167,10 +174,21 @@ const Navbar: FC = (): JSX.Element | null => {
                     </Button>
                   </Link>
 
-                  <Link href="/login" onClick={closeMobileMenu}>
-                    <Button className="w-full rounded-2xl bg-purple-700 py-6 font-bold text-white shadow-lg shadow-purple-500/20 hover:bg-purple-800">
+                  {/* Custom Animated Button (Mobile) */}
+                  <Link 
+                    href="/login" 
+                    onClick={closeMobileMenu}
+                    className="relative w-full inline-flex items-center justify-center px-6 py-6 overflow-hidden font-medium text-indigo-600 transition duration-300 ease-out border-2 border-purple-500 rounded-2xl shadow-md group"
+                  >
+                     <span className="absolute inset-0 flex items-center justify-center w-full h-full text-white duration-300 -translate-x-full bg-purple-500 group-hover:translate-x-0 ease">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                      </svg>
+                    </span>
+                    <span className="absolute flex items-center justify-center w-full h-full text-purple-500 transition-all duration-300 transform group-hover:translate-x-full ease">
                       Get Started
-                    </Button>
+                    </span>
+                    <span className="relative invisible">Get Started</span>
                   </Link>
                 </div>
               </div>

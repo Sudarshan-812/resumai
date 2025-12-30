@@ -9,6 +9,7 @@ import HowItWorks from '@/app/components/landing//HowItWorks';
 import Testimonials from '@/app/components/landing//Testimonials';
 
 import CTASection from '@/app/components/CTASection';
+import Pricing from "./components/landing/Pricing";
 
 
 export default function Home() {
@@ -19,7 +20,7 @@ export default function Home() {
       <FeatureGrid />
       <HowItWorks />
       <Testimonials />
-      <CTASection />
+      <Pricing/>
       <Footer />
     </main>
   );
