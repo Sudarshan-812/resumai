@@ -9,7 +9,7 @@ const genAi = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function analyzeResume(resumeText: string) {
   const model = genAi.getGenerativeModel({
-    model: "gemini-2.5-flash", // use a current supported model
+    model: "gemini-2.5-flash-lite", // use a current supported model
     generationConfig: { responseMimeType: "application/json" },
   });
 
