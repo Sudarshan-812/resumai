@@ -3,7 +3,7 @@
 import type { FC, JSX } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, Sparkles, FileText, Upload } from "lucide-react";
+import { ArrowRight, Sparkles, FileText, Upload, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const fadeUp: Variants = {
@@ -126,9 +126,20 @@ const HeroSection: FC = (): JSX.Element => {
             </Button>
           </Link>
 
-          <span className="ml-4 text-xs font-semibold text-gray-500">
-            NO CREDIT CARD REQUIRED
-          </span>
+          <Link 
+            href="https://youtu.be/6-LzPphsGh8" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            aria-label="Watch demo video"
+          >
+            <Button
+              size="lg"
+              className="rounded-full border-2 border-indigo-100 bg-white px-10 py-8 text-lg font-bold text-indigo-600 shadow-md transition-all hover:-translate-y-1 hover:bg-indigo-50"
+            >
+              <Play className="mr-2 h-6 w-6 fill-indigo-600" aria-hidden="true" />
+              Watch Demo
+            </Button>
+          </Link>
         </motion.div>
 
         <motion.div
