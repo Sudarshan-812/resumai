@@ -1,4 +1,3 @@
-// app/actions/upload-resume.ts
 'use server'
 
 import pdfParse from "pdf-parse";
@@ -21,46 +20,79 @@ const render_page = (pageData: any) => {
 };
 
 export async function processResume(formData: FormData) {
-  const file = formData.get('file') as File;
+  // 1. Extract and force type cast to handle any weird frontend passing
+  const file = formData.get('file') as File | null;
+  const rawJobDescription = formData.get('jobDescription'); 
+  
+  // Clean the input to prevent "undefined" string ghosts
+  const jobDescription = typeof rawJobDescription === 'string' 
+    ? rawJobDescription.trim() 
+    : "";
+
+  // 🐛 DEBUG LOGS: Check your VS Code terminal when you hit upload to see these!
+  console.log("--- NEW SCAN INITIATED ---");
+  console.log("File Name:", file?.name || "No file");
+  console.log("JD Length:", jobDescription.length);
+  if (jobDescription === "undefined") {
+    console.warn("⚠️ WARNING: Frontend sent the literal word 'undefined' instead of actual JD text!");
+  }
+
   const supabase = await createClient();
 
-  // 1. Must be logged in
+  // 2. Auth Check
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return { success: false, message: "Please log in to analyze resumes" };
   }
 
+  // 3. Strict Validation
   if (!file || file.size === 0) {
     return { success: false, message: "No valid file uploaded" };
   }
+  
+  // Catch empty JDs or the literal string "undefined"
+  if (!jobDescription || jobDescription === "undefined") {
+    return { success: false, message: "Job Description is required for targeted analysis" };
+  }
 
   try {
-    // 2. Extract text from PDF
+    // 4. Extract text from PDF
     const buffer = Buffer.from(await file.arrayBuffer());
     const data = await pdfParse(buffer, { pagerender: render_page, max: 0 });
     const text = data.text.trim();
 
     if (!text || text.length < 50) {
-      return { success: false, message: "No readable text found in PDF", hint: "This is usually a scanned/image resume. Export as text PDF." };
+      return { 
+        success: false, 
+        message: "No readable text found in PDF", 
+        hint: "This is usually a scanned/image resume. Export as text PDF." 
+      };
     }
 
-    // 3. AI Analysis
-    const analysis = await analyzeResume(text);
+    console.log("PDF parsed successfully. Length:", text.length);
 
-    // 4. Save Resume
+    // 5. AI Analysis
+    console.log("Sending to Gemini 2.5 Flash...");
+    const analysis = await analyzeResume(text, jobDescription);
+    console.log("Gemini Analysis complete. ATS Score:", analysis.ats_score);
+
+    // 6. Save Resume Text
     const { data: resume, error: resumeError } = await supabase
       .from('resumes')
       .insert({
         user_id: user.id,
         file_name: file.name,
-        content: text.slice(0, 150_000),
+        content: text.slice(0, 150_000), // Prevent DB overflow
       })
       .select()
       .single();
 
-    if (resumeError) throw resumeError;
+    if (resumeError) {
+      console.error("Supabase Resume Insert Error:", resumeError);
+      throw new Error("Failed to save resume to database.");
+    }
 
-    // 5. Save Analysis
+    // 7. Save Analysis
     const { error: analysisError } = await supabase
       .from('analyses')
       .insert({
@@ -71,15 +103,20 @@ export async function processResume(formData: FormData) {
         skills_found: analysis.skills_found,
         missing_keywords: analysis.missing_keywords,
         formatting_issues: analysis.formatting_issues || [],
+        job_description: jobDescription, 
+        calculated_yoe: analysis.calculated_yoe || 0 
       });
 
-    if (analysisError) throw analysisError;
+    if (analysisError) {
+      console.error("Supabase Analysis Insert Error:", analysisError);
+      throw new Error("Failed to save analysis results to database.");
+    }
 
     revalidatePath('/dashboard');
     return { success: true, data: analysis, id: resume.id };
 
   } catch (error: any) {
-    console.error("Resume processing failed:", error);
-    return { success: false, message: error.message || "Analysis failed" };
+    console.error("Fatal processing error:", error);
+    return { success: false, message: error.message || "Analysis failed due to an unexpected error." };
   }
 }

@@ -1,11 +1,8 @@
 "use client";
 
-import { useState, useTransition } from 'react';
-import { generateCareerDoc } from '@/app/actions/ai-features';
-import { 
-  Loader2, Briefcase, Sparkles, Copy, Check, 
-  PenTool, MessageSquare, ChevronRight, HelpCircle 
-} from 'lucide-react';
+import { useEffect, useRef, FormEvent } from 'react';
+import { useChat } from '@ai-sdk/react';
+import { Bot, Send, Sparkles, User } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -14,178 +11,146 @@ interface JobAssistantProps {
 }
 
 export default function AiAssistant({ resumeId }: JobAssistantProps) {
-  const [jobDescription, setJobDescription] = useState('');
-  const [isPending, startTransition] = useTransition();
-  const [result, setResult] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'cover_letter' | 'interview_prep'>('cover_letter');
-  const [copied, setCopied] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleGenerate = () => {
-    if (!jobDescription) {
-      toast.error("Please paste a Job Description first.");
-      return;
-    }
-    
-    setResult(null); 
-    
-    startTransition(async () => {
-      try {
-        const data = await generateCareerDoc(resumeId, jobDescription, activeTab);
-        
-        if (!data) {
-          throw new Error("No data received from AI.");
-        }
+  const chat: any = useChat({
+    api: '/api/chat',
+    body: { resumeId },
+    onError: (err: any) => toast.error(err.message || "Failed to send message.")
+  } as any);
 
-        setResult(data);
-        toast.success("Content generated successfully!");
-      } catch (error) {
-        console.error(error);
-        toast.error("Failed to generate content. Please try again.");
+  // SAFE DESTRUCTURING: 
+  // We set default values (like = '') to prevent "undefined" runtime errors.
+  const { 
+    messages = [], 
+    input = '', 
+    setInput = () => {}, 
+    isLoading = false 
+  } = chat;
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleSendMessage = async (e?: FormEvent, manualText?: string) => {
+    e?.preventDefault();
+    
+    // Ensure we have a string to work with, even if input is weirdly null
+    const textToSend = manualText || input || '';
+    if (!textToSend.trim() || isLoading) return;
+
+    try {
+      if (typeof chat.append === 'function') {
+        await chat.append({ role: 'user', content: textToSend });
+      } else if (typeof chat.handleSubmit === 'function') {
+        chat.handleSubmit(e);
+      } else {
+        setInput(textToSend);
+        setTimeout(() => chat.handleSubmit?.(), 50);
       }
-    });
+      
+      if (!manualText) setInput('');
+    } catch (err) {
+      console.error("Chat submission error:", err);
+      toast.error("Could not send message.");
+    }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
+  const handleQuickPrompt = (text: string) => {
+    handleSendMessage(undefined, text);
   };
 
   return (
-    <div className="border border-slate-200 bg-white rounded-2xl overflow-hidden shadow-sm relative scroll-mt-20" id="ai-assistant">
+    <div className="flex flex-col h-full bg-white relative">
       
-      {/* --- HEADER --- */}
-      <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-purple-100 rounded-md">
-            <Sparkles className="h-4 w-4 text-purple-600" />
-          </div>
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wider">AI Career Assistant</h2>
-        </div>
-        <div className="flex items-center gap-2 px-2.5 py-1 bg-white border border-slate-200 rounded-md shadow-sm">
-          <span className="text-[10px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 uppercase tracking-wider">
-            Gemini Powered
-          </span>
-        </div>
-      </div>
-
-      <div className="p-6">
-        
-        {/* --- TABS --- */}
-        <div className="flex p-1 bg-slate-100 border border-slate-200 rounded-xl mb-6">
-          <button
-            onClick={() => { setActiveTab('cover_letter'); setResult(null); }}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all",
-              activeTab === 'cover_letter' 
-                ? "bg-white text-indigo-600 shadow-sm ring-1 ring-black/5" 
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
-            )}
-          >
-            <PenTool className="w-3.5 h-3.5" />
-            Cover Letter
-          </button>
-          <button
-            onClick={() => { setActiveTab('interview_prep'); setResult(null); }}
-            className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold uppercase tracking-wide rounded-lg transition-all",
-              activeTab === 'interview_prep' 
-                ? "bg-white text-indigo-600 shadow-sm ring-1 ring-black/5" 
-                : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
-            )}
-          >
-            <MessageSquare className="w-3.5 h-3.5" />
-            Interview Prep
-          </button>
-        </div>
-
-        {/* --- INPUT AREA --- */}
-        <div className="space-y-3">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest ml-1">
-            Job Description Context
-          </label>
-          <div className="relative group">
-            <textarea 
-                placeholder="Paste the Job Description here (e.g. 'Senior React Developer at Netflix...')"
-                className="w-full h-32 bg-white border border-slate-200 rounded-xl p-4 text-sm font-medium text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 focus:outline-none transition-all resize-none shadow-sm group-hover:border-slate-300"
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* --- GENERATE BUTTON --- */}
-        <div className="mt-6">
-          <button 
-            onClick={handleGenerate} 
-            disabled={isPending || !jobDescription}
-            className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-200 flex items-center justify-center gap-2 group hover:shadow-lg hover:shadow-indigo-500/20"
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin text-white/80" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Briefcase className="mr-2 h-4 w-4" />
-                Generate {activeTab === 'cover_letter' ? 'Draft' : 'Questions'}
-                <ChevronRight className="w-4 h-4 text-indigo-200 group-hover:translate-x-1 transition-transform" />
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* --- RESULTS DISPLAY --- */}
-        {result && (
-          <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            
-            <div className="flex items-center justify-between mb-4 px-1">
-              <span className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Generated Output
-              </span>
-              <button
-                className="text-xs flex items-center gap-1.5 text-slate-500 hover:text-indigo-600 font-medium transition-colors bg-slate-50 px-2 py-1 rounded-md border border-slate-200 hover:border-indigo-200"
-                onClick={() => {
-                  const textToCopy = activeTab === 'cover_letter' 
-                    ? result 
-                    : result.questions.map((q: any) => `Q: ${q.question}\nA: ${q.answer}`).join('\n\n');
-                  copyToClipboard(textToCopy);
-                }}
-              >
-                {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                {copied ? "Copied" : "Copy Text"}
-              </button>
+      {/* --- MESSAGES AREA --- */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+        {messages.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-center px-4 animate-in fade-in duration-500">
+            <div className="w-12 h-12 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-center justify-center mb-4 shadow-sm">
+              <Sparkles className="w-6 h-6 text-zinc-400" />
             </div>
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50/50 overflow-hidden max-h-[500px] overflow-y-auto p-6 shadow-inner">
-              {activeTab === 'cover_letter' ? (
-                <div className="whitespace-pre-wrap text-slate-700 leading-relaxed font-sans text-sm">
-                  {result}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {result.questions?.map((q: any, i: number) => (
-                    <div key={i} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-indigo-200 transition-colors">
-                      <div className="flex gap-3 mb-2">
-                          <div className="mt-0.5 p-1 bg-purple-50 rounded-md"><HelpCircle className="w-4 h-4 text-purple-600" /></div>
-                          <p className="font-bold text-slate-800 text-sm">Q{i+1}: {q.question}</p>
-                      </div>
-                      <div className="pl-9">
-                          <div className="p-3 bg-slate-50 rounded-lg border border-slate-100 text-slate-600 text-sm leading-relaxed italic">
-                            "{q.answer}"
-                          </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <h3 className="text-lg font-bold text-zinc-900 mb-2">How can I help?</h3>
+            <p className="text-sm text-zinc-500 max-w-[250px] mb-8 leading-relaxed">
+              I can rewrite your bullet points, analyze missing skills, or help you tailor your experience.
+            </p>
+            
+            <div className="flex flex-col gap-2.5 w-full max-w-[280px]">
+              {["Rewrite my summary to be more punchy", "How do I add the missing keywords?", "Fix my formatting issues"].map((prompt) => (
+                <button 
+                  key={prompt}
+                  onClick={() => handleQuickPrompt(prompt)}
+                  className="text-xs font-semibold text-zinc-600 bg-zinc-50 hover:bg-zinc-100 hover:text-zinc-900 border border-zinc-200 py-3 px-4 rounded-xl transition-colors text-left shadow-sm"
+                >
+                  "{prompt}"
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          messages.map((m: any) => (
+            <div key={m.id} className={cn("flex gap-3", m.role === 'user' ? "flex-row-reverse" : "")}>
+              <div className={cn(
+                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm",
+                m.role === 'user' ? "bg-zinc-900 text-white" : "bg-white border border-zinc-200 text-zinc-600"
+              )}>
+                {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+              </div>
+              
+              <div className={cn(
+                "px-4 py-3 max-w-[80%] text-sm leading-relaxed shadow-sm",
+                m.role === 'user' 
+                  ? "bg-zinc-900 text-white rounded-2xl rounded-tr-sm" 
+                  : "bg-zinc-50 border border-zinc-200 text-zinc-800 rounded-2xl rounded-tl-sm whitespace-pre-wrap"
+              )}>
+                {m.content}
+              </div>
+            </div>
+          ))
+        )}
+        
+        {isLoading && (
+          <div className="flex gap-3 justify-start animate-in fade-in">
+            <div className="w-8 h-8 rounded-full bg-white border border-zinc-200 flex items-center justify-center shrink-0 shadow-sm">
+              <Bot className="w-4 h-4 text-zinc-400" />
+            </div>
+            <div className="bg-zinc-50 border border-zinc-200 rounded-2xl rounded-tl-sm px-4 py-3.5 flex items-center gap-1.5 shadow-sm">
+              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
+      </div>
 
+      {/* --- INPUT AREA --- */}
+      <div className="p-4 bg-white border-t border-zinc-100 shrink-0">
+        <form 
+          onSubmit={handleSendMessage} 
+          className="relative flex items-center bg-zinc-50 border border-zinc-200 rounded-2xl focus-within:border-zinc-400 focus-within:bg-white transition-colors shadow-sm overflow-hidden"
+        >
+          <input
+            value={input || ''} // Safety fallback
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask Copilot..."
+            disabled={isLoading}
+            className="w-full bg-transparent pl-4 pr-12 py-3.5 text-sm font-medium text-zinc-800 placeholder:text-zinc-400 focus:outline-none disabled:opacity-50"
+          />
+          <button 
+            type="submit" 
+            // FIXED: Added optional chaining and empty string check
+            disabled={!(input?.trim()) || isLoading}
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-zinc-900 transition-all shadow-sm"
+          >
+            <Send className="w-3.5 h-3.5 -ml-0.5" />
+          </button>
+        </form>
+        <div className="text-center mt-3">
+          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest leading-none">
+            AI can make mistakes. Review generated text.
+          </p>
+        </div>
       </div>
     </div>
   );

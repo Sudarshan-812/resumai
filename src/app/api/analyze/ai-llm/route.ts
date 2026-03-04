@@ -1,4 +1,3 @@
-// src/app/api/analyze/ai-llm/route.ts
 import { NextResponse } from "next/server";
 
 async function callOpenAI(prompt: string, key: string) {
@@ -25,18 +24,18 @@ async function callOpenAI(prompt: string, key: string) {
 }
 
 async function callGemini(prompt: string, key: string) {
-  // Use Google Generative Language REST endpoint with API key query parameter
-  // NOTE: ensure Generative Language API is enabled and key has billing/permissions
-  const endpoint = `https://generativelanguage.googleapis.com/v1/models/text-bison-001:generate?key=${encodeURIComponent(
-    key
-  )}`;
+  // 💡 SENIOR DEV FIX: Using the modern Gemini 2.0 Flash endpoint
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
 
   const body = {
-    // simple text prompt form — keeps compatibility across clients
-    prompt: {
-      text: prompt,
-    },
-    maxOutputTokens: 300,
+    contents: [
+      {
+        parts: [{ text: prompt }]
+      }
+    ],
+    generationConfig: {
+        maxOutputTokens: 300,
+    }
   };
 
   const res = await fetch(endpoint, {
@@ -48,11 +47,9 @@ async function callGemini(prompt: string, key: string) {
   });
 
   const json = await res.json().catch(() => null);
-  // Gemini/Generative Language returns candidates[0].output or "candidates"
-  const textOutput =
-    json?.candidates?.[0]?.output ||
-    json?.candidates?.[0]?.content?.[0]?.text ||
-    JSON.stringify(json);
+  
+  // Modern Gemini payload extraction
+  const textOutput = json?.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(json);
 
   return { ok: res.ok, status: res.status, provider: "gemini", data: json, text: textOutput };
 }
@@ -63,16 +60,16 @@ export async function GET() {
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
     if (!OPENAI_KEY && !GEMINI_KEY) {
-      return NextResponse.json({ ok: false, error: "Missing OPENAI_API_KEY or GEMINI_API_KEY" }, { status: 500 });
+      return NextResponse.json({ ok: false, error: "Missing OPENAI_API_KEY or GEMINI_API_KEY in .env" }, { status: 500 });
     }
 
-    const prompt = `Server LLM test — say "hello" and include timestamp: ${new Date().toISOString()}`;
+    const prompt = `Server LLM test — say "Hello, Gemini 2.0 is active!" and include timestamp: ${new Date().toISOString()}`;
 
+    // Prefer OpenAI if both exist, otherwise fallback to Gemini
     if (OPENAI_KEY) {
       const result = await callOpenAI(prompt, OPENAI_KEY);
       return NextResponse.json(result, { status: result.status ?? 200 });
     } else {
-      // Use Gemini
       const result = await callGemini(prompt, GEMINI_KEY!);
       return NextResponse.json(result, { status: result.status ?? 200 });
     }
