@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-// 1. IMPORT THIS
+// 1. Existing Imports
 import NextTopLoader from 'nextjs-toploader';
-import { Toaster } from "sonner"; // Assuming you have this
+import { Toaster } from "sonner";
+// 2. IMPORT ANALYTICS HERE
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,25 +23,31 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-         {/* Your Flaticon links or other head tags */}
+          {/* Your Flaticon links or other head tags */}
       </head>
       <body className={inter.className}>
         
-        {/* 2. ADD THIS COMPONENT HERE */}
+        {/* Progress Loader */}
         <NextTopLoader 
-          color="#4f46e5" /* Indigo-600 to match your theme */
+          color="#4f46e5" 
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}
           crawl={true}
-          showSpinner={false} /* False looks cleaner, set True if you want a spinner top-right */
+          showSpinner={false} 
           easing="ease"
           speed={200}
           shadow="0 0 10px #4f46e5,0 0 5px #4f46e5"
         />
 
+        {/* Page Content */}
         {children}
+
+        {/* Global Notifications */}
         <Toaster />
+
+        {/* 3. ADD ANALYTICS COMPONENT HERE */}
+        <Analytics />
       </body>
     </html>
   );
