@@ -1,0 +1,20 @@
+{
+  "node": {
+    "7008d8d2d20765c715e577c7016f01574615d8e21a": {
+      "workers": {
+        "app/dashboard/[id]/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/dashboard/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "generateCareerDoc",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/[id]/page": "action-browser"
+      },
+      "exportedName": "generateCareerDoc",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts"
+    }
+  },
+  "edge": {}
+}

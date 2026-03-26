@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
   FileText, BarChart3, UploadCloud, 
-  ChevronRight, Settings, Plus, X, Crown, CreditCard, Sparkles
+  ChevronRight, Settings, Plus, X, Crown, CreditCard, Sparkles,
+  ArrowUpRight, Activity, Zap, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -28,8 +29,14 @@ interface DashboardClientProps {
 export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [toolModalOpen, setToolModalOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+
+  // Prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const userName = profile?.full_name?.split(' ')[0] || "Developer";
   const credits = profile?.credits ?? 0;
@@ -48,10 +55,22 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
     }
   };
 
+  const formatSystemDate = (dateString: string) => {
+    if (!mounted) return "00_AAA_0000";
+    return new Date(dateString)
+      .toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      })
+      .toUpperCase()
+      .replace(/ /g, '_');
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50/50 font-sans text-slate-900">
+    <div className="min-h-screen bg-background font-sans text-foreground">
       
-      {/* 1. Use the shared Navbar component */}
+      {/* FIXED: Removed onSignOut and isSigningOut props to match refactored Navbar */}
       <DashboardNavbar 
         userProfile={{
           name: userName,
@@ -59,109 +78,185 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           credits: credits,
           initial: userName[0] || "D"
         }}
-        onSignOut={handleSignOut}
-        isSigningOut={isSigningOut}
       />
 
-      {/* 2. Content starts here with pt-28 to clear the fixed navbar */}
-      <main className="mx-auto max-w-7xl px-4 pt-28 pb-8 sm:px-6 lg:px-8 animate-in fade-in duration-700">
+      <main className="mx-auto max-w-6xl px-6 pt-24 pb-12">
         
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* ─── DASHBOARD HEADER ─── */}
+        <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Dashboard</h1>
-            <p className="text-sm text-slate-500">Welcome back, {userName}. You're doing great.</p>
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-primary mb-2">
+               <Activity size={12} />
+               System Dashboard
+            </div>
+            <h1 className="font-serif text-4xl text-foreground tracking-tight">
+              Welcome back, <span className="text-primary italic">{userName}.</span>
+            </h1>
           </div>
+          
           <Link href="/upload">
-            <Button className="shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 rounded-xl">
-              <Plus className="mr-2 h-4 w-4" />
-              New Scan
+            <Button className="h-11 px-6 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]">
+              <Plus className="mr-2 h-4 w-4" strokeWidth={3} />
+              Initiate New Scan
             </Button>
           </Link>
+        </header>
+
+        {/* ─── STATS GRID ─── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-10 shadow-sm">
+          <StatCard 
+            title="Total Analyses" 
+            value={totalScans.toString()} 
+            icon={<FileText className="h-4 w-4" />} 
+          />
+          <StatCard 
+            title="Avg ATS Performance" 
+            value={`${avgScore}`} 
+            suffix="%" 
+            icon={<Zap className="h-4 w-4" />} 
+          />
+          <StatCard 
+            title="Available Credits" 
+            value={credits.toString()} 
+            icon={<CreditCard className="h-4 w-4" />} 
+            action={
+              <Link href="/billing" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline">
+                Refill
+              </Link>
+            } 
+          />
         </div>
 
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-8">
-          <StatCard title="Total Analyses" value={totalScans.toString()} icon={<FileText className="h-5 w-5 text-blue-500" />} />
-          <StatCard title="Avg ATS Score" value={`${avgScore}`} suffix="/100" icon={<BarChart3 className="h-5 w-5 text-emerald-500" />} />
-          <StatCard title="Credits" value={credits.toString()} icon={<CreditCard className="h-5 w-5 text-amber-500" />} action={<Link href="/billing" className="text-xs font-bold text-indigo-600">Buy more</Link>} />
-        </div>
-
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Main Activity Area */}
-          <div className="lg:col-span-2 space-y-8">
-            <div className="group relative overflow-hidden rounded-3xl border border-gray-200 bg-white p-8 shadow-sm transition-all hover:border-indigo-200">
-              <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600">
-                  <UploadCloud className="h-8 w-8" />
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+          <div className="lg:col-span-2 space-y-10">
+            <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-1 shadow-sm transition-all hover:border-primary/30">
+              <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 p-8 bg-card rounded-[14px]">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
+                  <UploadCloud strokeWidth={1.5} className="h-7 w-7" />
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <h3 className="text-lg font-bold text-slate-900">Analyze a new resume</h3>
-                  <p className="text-sm text-slate-500 mt-1">Get instant feedback and AI rewriting for your bullet points.</p>
+                  <h3 className="text-lg font-semibold text-foreground tracking-tight">Deploy a new analysis</h3>
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                    Upload your latest CV to generate a deterministic gap analysis and AI bullet rewrites.
+                  </p>
                 </div>
                 <Link href="/upload">
-                  <Button variant="outline" className="border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl font-bold">
-                    Select File
+                  <Button variant="outline" className="h-10 border-border bg-background text-foreground hover:bg-muted rounded-lg font-bold px-6">
+                    Select PDF
                   </Button>
                 </Link>
               </div>
             </div>
 
-            {/* Recent History */}
             <div>
-              <h3 className="mb-4 text-base font-bold text-slate-900">Recent Activity</h3>
-              <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm divide-y divide-gray-100">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">Recent Pipeline Activity</h3>
+                <Link href="/history" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">View All</Link>
+              </div>
+
+              <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
                 {recentResumes.length === 0 ? (
-                  <div className="py-12 text-center text-sm text-gray-500 italic">No resumes analyzed yet.</div>
+                  <div className="py-16 text-center">
+                     <FileText className="mx-auto h-10 w-10 text-muted/30 mb-4" strokeWidth={1} />
+                     <p className="text-sm text-muted-foreground font-medium">No telemetry data available yet.</p>
+                  </div>
                 ) : (
-                  recentResumes.map((resume) => (
-                    <Link key={resume.id} href={`/dashboard/${resume.id}`} className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors group">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 group-hover:text-indigo-500 group-hover:bg-indigo-50 transition-colors">
-                          <FileText className="h-5 w-5" />
+                  <div className="flex flex-col">
+                    {recentResumes.map((resume) => (
+                      <Link 
+                        key={resume.id} 
+                        href={`/dashboard/${resume.id}`} 
+                        className="flex items-center justify-between p-5 hover:bg-muted/50 border-b last:border-0 border-border transition-colors group"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-all">
+                            <FileText className="h-5 w-5" strokeWidth={1.5} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold text-foreground capitalize tracking-tight">{resume.file_name.replace('.pdf', '')}</p>
+                            <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-tighter">
+                              Processed: {formatSystemDate(resume.created_at)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-slate-900 capitalize">{resume.file_name.replace('.pdf', '')}</p>
-                          <p className="text-xs text-slate-500">{new Date(resume.created_at).toLocaleDateString()}</p>
+                        <div className="flex items-center gap-4">
+                           <div className={cn(
+                             "px-2.5 py-1 rounded-md text-[10px] font-bold font-mono border",
+                             resume.ats_score >= 70 
+                               ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                               : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                           )}>
+                             ATS_{resume.ats_score}
+                           </div>
+                           <ChevronRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
                         </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                         <span className={cn(
-                           "px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                           resume.ats_score >= 70 ? "bg-emerald-50 text-emerald-700" : "bg-rose-50 text-rose-700"
-                         )}>Score: {resume.ats_score}</span>
-                         <ChevronRight className="h-4 w-4 text-gray-300" />
-                      </div>
-                    </Link>
-                  ))
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Right Column: Tools */}
-          <div className="space-y-6">
-             <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h4 className="text-xs font-black uppercase tracking-widest text-gray-400 mb-4">Quick Tools</h4>
+          <aside className="space-y-6">
+             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <div className="flex items-center gap-2 mb-6">
+                   <Sparkles size={14} className="text-primary" />
+                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">Advanced Toolset</h4>
+                </div>
                 <div className="space-y-2">
-                   <QuickAction icon={<FileText className="text-purple-600" />} label="Cover Letter Gen" onClick={() => setToolModalOpen(true)} />
-                   <QuickAction icon={<BarChart3 className="text-blue-600" />} label="Interview Prep" onClick={() => setToolModalOpen(true)} />
-                   <QuickAction icon={<Settings className="text-slate-600" />} label="Profile Settings" onClick={() => setToolModalOpen(true)} />
+                   <QuickAction icon={<FileText size={16} />} label="Cover Letter Gen" onClick={() => setToolModalOpen(true)} />
+                   <QuickAction icon={<BarChart3 size={16} />} label="Interview Simulator" onClick={() => setToolModalOpen(true)} />
+                   <QuickAction icon={<Settings size={16} />} label="Profile Config" onClick={() => setToolModalOpen(true)} />
+                </div>
+                
+                <div className="mt-8 pt-6 border-t border-border">
+                   <div className="bg-muted/50 rounded-xl p-4 border border-border">
+                      <div className="flex items-center gap-2 mb-2">
+                         <Crown size={12} className="text-amber-500" />
+                         <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">Pro Access</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                         Unlock infinite scans and deep reasoning logs with our enterprise tier.
+                      </p>
+                      {/* Added Sign Out here temporarily so you aren't locked in while we build the Config modal */}
+                      <button 
+                        onClick={handleSignOut} 
+                        disabled={isSigningOut}
+                        className="mt-4 flex items-center gap-2 text-[10px] font-bold uppercase text-rose-600 hover:text-rose-700 transition-colors"
+                      >
+                        <LogOut size={12} /> {isSigningOut ? "Terminating..." : "Terminate Session"}
+                      </button>
+                   </div>
                 </div>
              </div>
-          </div>
+          </aside>
         </div>
       </main>
 
-      {/* Coming Soon Modal (Kept from your code) */}
       <AnimatePresence>
         {toolModalOpen && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setToolModalOpen(false)} className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} onClick={(e) => e.stopPropagation()} className="relative w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl text-center">
-              <button onClick={() => setToolModalOpen(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"><X /></button>
-              <div className="mx-auto h-64 w-64"><DotLottieReact src="https://lottie.host/494878ca-55d5-4afd-87d4-ab556d9851f9/8lYbxp0lwv.lottie" loop autoplay /></div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Feature Coming Soon</h3>
-              <p className="text-sm text-slate-500 mb-6">We're tailoring this AI experience for you. Stay tuned!</p>
-              <Button onClick={() => setToolModalOpen(false)} className="w-full bg-indigo-600 text-white font-bold py-4 rounded-xl">Got it</Button>
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+            onClick={() => setToolModalOpen(false)} 
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.98, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.98, opacity: 0, y: 10 }} 
+              onClick={(e) => e.stopPropagation()} 
+              className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-2xl text-center"
+            >
+              <button onClick={() => setToolModalOpen(false)} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground">
+                <X size={20} />
+              </button>
+              <div className="mx-auto h-48 w-48 mb-4">
+                <DotLottieReact src="https://lottie.host/494878ca-55d5-4afd-87d4-ab556d9851f9/8lYbxp0lwv.lottie" loop autoplay />
+              </div>
+              <h3 className="font-serif text-2xl text-foreground mb-2">Refining Engine</h3>
+              <p className="text-sm text-muted-foreground mb-8">We're currently training the Gemini logic for this module. Standby for deployment.</p>
+              <Button onClick={() => setToolModalOpen(false)} className="w-full bg-primary text-primary-foreground font-bold h-11 rounded-xl">
+                Acknowledge
+              </Button>
             </motion.div>
           </motion.div>
         )}
@@ -170,23 +265,37 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
   );
 }
 
-// Subcomponents
 function StatCard({ title, value, icon, suffix, action }: any) {
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-      <div className="mb-4 flex items-center justify-between"><p className="text-xs font-black uppercase tracking-widest text-gray-400">{title}</p>{icon}</div>
-      <div className="flex items-end justify-between">
-        <div className="flex items-baseline gap-1"><span className="text-2xl font-bold text-slate-900">{value}</span>{suffix && <span className="text-xs text-gray-400 font-bold">{suffix}</span>}</div>
-        {action}
+    <div className="bg-card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex items-center gap-3">
+        <div className="h-8 w-8 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground">
+          {icon}
+        </div>
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">{title}</p>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl font-bold tracking-tighter text-foreground font-mono">{value}</span>
+            {suffix && <span className="text-xs text-muted-foreground font-mono">{suffix}</span>}
+          </div>
+        </div>
       </div>
+      {action}
     </div>
   );
 }
 
 function QuickAction({ icon, label, onClick }: any) {
   return (
-    <button onClick={onClick} className="flex w-full items-center gap-3 rounded-xl bg-gray-50 px-4 py-3 text-sm font-bold text-slate-700 hover:bg-gray-100 transition-colors">
-      {icon} {label}
+    <button 
+      onClick={onClick} 
+      className="group flex w-full items-center justify-between rounded-xl bg-muted/30 border border-border/50 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted hover:border-primary/20 transition-all"
+    >
+      <div className="flex items-center gap-3">
+        <span className="text-muted-foreground group-hover:text-primary transition-colors">{icon}</span>
+        {label}
+      </div>
+      <ArrowUpRight size={14} className="text-muted-foreground/30 group-hover:text-primary transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
     </button>
   );
 }

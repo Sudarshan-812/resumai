@@ -1,0 +1,20 @@
+{
+  "node": {
+    "404ebd42923b0813c8cd4e3643f8aa2082e4434587": {
+      "workers": {
+        "app/page": {
+          "moduleId": 56929,
+          "async": false,
+          "exportedName": "processResume",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      },
+      "exportedName": "processResume",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+    }
+  },
+  "edge": {}
+}

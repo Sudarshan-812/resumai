@@ -1,0 +1,20 @@
+{
+  "node": {
+    "4021acecb59964dc51d038ca4a17689f6b2948a317": {
+      "workers": {
+        "app/dashboard/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "processResume",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/page": "action-browser"
+      },
+      "exportedName": "processResume",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+    }
+  },
+  "edge": {}
+}

@@ -1,0 +1,35 @@
+{
+  "node": {
+    "405109ccd3c998ef8e233f446e9cfb983e340c2176": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": 57577,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_0",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+        }
+      },
+      "layer": {
+        "app/login/page": "rsc"
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_0",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+    },
+    "4063100051fddd208e7ab95b436cad139e0bbde00e": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": 57577,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_1",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+        }
+      },
+      "layer": {
+        "app/login/page": "rsc"
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_1",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+    }
+  },
+  "edge": {}
+}

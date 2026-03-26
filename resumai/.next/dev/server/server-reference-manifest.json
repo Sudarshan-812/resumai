@@ -1,0 +1,43 @@
+{
+  "node": {
+    "4021acecb59964dc51d038ca4a17689f6b2948a317": {
+      "workers": {
+        "app/dashboard/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/dashboard/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "processResume",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+        },
+        "app/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "processResume",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/page": "action-browser",
+        "app/page": "action-browser"
+      },
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts",
+      "exportedName": "processResume"
+    },
+    "7008d8d2d20765c715e577c7016f01574615d8e21a": {
+      "workers": {
+        "app/dashboard/[id]/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/dashboard/[id]/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "generateCareerDoc",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/[id]/page": "action-browser"
+      },
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts",
+      "exportedName": "generateCareerDoc"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "3wcrx37aLpXf7J6Tu6/yF9lYOHfWCU3xtNWkUmTVAf4="
+}

@@ -1,0 +1,20 @@
+{
+  "node": {
+    "70fc7a28770f8d7558244ecec89298213bf3827d08": {
+      "workers": {
+        "app/dashboard/[id]/page": {
+          "moduleId": 15688,
+          "async": false,
+          "exportedName": "generateCareerDoc",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/[id]/page": "action-browser"
+      },
+      "exportedName": "generateCareerDoc",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts"
+    }
+  },
+  "edge": {}
+}

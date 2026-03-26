@@ -1,0 +1,3 @@
+module.exports=[52459,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(38051);a.n(d("[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/node_modules/next/dist/client/components/builtin/global-error.js <module evaluation>"))},25253,(a,b,c)=>{let{createClientModuleProxy:d}=a.r(38051);a.n(d("[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/node_modules/next/dist/client/components/builtin/global-error.js"))},79152,a=>{"use strict";a.i(52459);var b=a.i(25253);a.n(b)}];
+
+//# sourceMappingURL=8edd3_next_dist_client_components_builtin_global-error_b6e4c097.js.map

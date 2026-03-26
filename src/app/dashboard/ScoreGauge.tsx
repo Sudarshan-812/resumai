@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Activity } from "lucide-react";
 
 interface ScoreGaugeProps {
   score: number;
@@ -11,76 +12,116 @@ interface ScoreGaugeProps {
 export default function ScoreGauge({ score }: ScoreGaugeProps) {
   const [currentScore, setCurrentScore] = useState(0);
 
-  // Score Color Logic
+  // Score Color Logic mapping to our established technical palette
   const getScoreColor = (s: number) => {
-    if (s >= 80) return "text-emerald-400";
-    if (s >= 60) return "text-amber-400";
-    return "text-rose-400";
+    if (s >= 80) return "stroke-emerald-500 text-emerald-500";
+    if (s >= 60) return "stroke-amber-500 text-amber-500";
+    return "stroke-rose-500 text-rose-500";
   };
 
-  const scoreColor = getScoreColor(score);
+  const colors = getScoreColor(score);
 
-  // Animation Effect
   useEffect(() => {
-    const duration = 1500; // Animation duration in ms
-    const steps = 60; // Updates per second
-    const stepTime = duration / steps;
-    const increment = score / (duration / stepTime);
-
-    let current = 0;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= score) {
-        setCurrentScore(score);
-        clearInterval(timer);
-      } else {
-        setCurrentScore(Math.floor(current));
-      }
-    }, stepTime);
-
-    return () => clearInterval(timer);
+    const timer = setTimeout(() => setCurrentScore(score), 200);
+    return () => clearTimeout(timer);
   }, [score]);
 
-  // Calculate Circle Stroke (Circumference = 2 * pi * r)
-  // r=56 -> Circumference ≈ 352
-  const radius = 56;
+  // SVG Geometry for a 240-degree arc
+  // Radius 40, Viewbox 100x100
+  // Arc length for 240 degrees on radius 40: (240/360) * 2 * PI * 40 ≈ 167.5
+  const radius = 40;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (currentScore / 100) * circumference;
+  const arcLength = (240 / 360) * circumference;
+  const dashOffset = arcLength - (currentScore / 100) * arcLength;
 
   return (
-    <div className="flex flex-col items-center justify-center relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
+    <div className="group relative flex flex-col items-center justify-center p-8 border border-border bg-card rounded-3xl shadow-sm overflow-hidden">
       
-      <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4 z-10">ATS Score</p>
-      
-      <div className="relative w-32 h-32 z-10">
-        <svg className="w-full h-full -rotate-90">
-          {/* Background Ring */}
-          <circle 
-            cx="64" cy="64" r={radius} 
-            stroke="#27272a" strokeWidth="8" fill="none" 
+      {/* Background Technical Header */}
+      <div className="absolute top-0 inset-x-0 h-8 border-b border-border bg-muted/30 flex items-center justify-between px-4">
+        <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
+          Telemetry_04
+        </span>
+        <Activity size={10} className="text-muted-foreground/30" />
+      </div>
+
+      <div className="mt-4 relative w-48 h-48">
+        <svg className="w-full h-full rotate-[150deg]" viewBox="0 0 100 100">
+          {/* 1. Track Background (Dashed/Notched Style) */}
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+            strokeDasharray={`${arcLength} ${circumference}`}
+            strokeLinecap="round"
+            className="text-muted/30"
           />
-          {/* Animated Progress Ring */}
-          <motion.circle 
-            cx="64" cy="64" r={radius} 
-            stroke="currentColor" strokeWidth="8" fill="none"
-            strokeDasharray={circumference} 
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round" 
-            className={cn(scoreColor, "transition-all duration-75 ease-out")}
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: strokeDashoffset }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
+
+          {/* 2. Calibration Ticks (Visual Only) */}
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="6"
+            strokeDasharray="1 7.35" // Creates the little "tick" look
+            strokeDashoffset="0.5"
+            className="text-background"
+          />
+
+          {/* 3. Main Progress Arc */}
+          <motion.circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="4"
+            strokeDasharray={`${arcLength} ${circumference}`}
+            strokeLinecap="round"
+            initial={{ strokeDashoffset: arcLength }}
+            animate={{ strokeDashoffset: dashOffset }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(colors, "drop-shadow-[0_0_8px_rgba(var(--color-primary),0.3)]")}
           />
         </svg>
-        
-        {/* Center Text */}
-        <div className="absolute inset-0 flex items-center justify-center flex-col">
-          <span className={cn("text-5xl font-bold tracking-tighter tabular-nums", scoreColor)}>
+
+        {/* 4. Center Labeling */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center pt-4">
+          <motion.span 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={cn("text-6xl font-bold font-mono tracking-tighter tabular-nums leading-none", colors.split(' ')[1])}
+          >
             {currentScore}
-          </span>
+          </motion.span>
+          <div className="mt-2 flex flex-col items-center">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground">
+              Index_Match
+            </span>
+            <div className="mt-1 h-1 w-8 rounded-full bg-border overflow-hidden">
+               <motion.div 
+                 initial={{ width: 0 }}
+                 animate={{ width: `${currentScore}%` }}
+                 className={cn("h-full", colors.split(' ')[1].replace('text', 'bg'))}
+               />
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Status Footer */}
+      <div className="mt-2 flex items-center gap-2">
+        <div className={cn("h-1.5 w-1.5 rounded-full animate-pulse", colors.split(' ')[1].replace('text', 'bg'))} />
+        <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase">
+          {score >= 80 ? "Optimized_High" : score >= 60 ? "Action_Required" : "Critical_Fail"}
+        </span>
+      </div>
+
     </div>
   );
 }

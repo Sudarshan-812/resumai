@@ -1,132 +1,125 @@
 'use client';
 
-import React, { memo } from 'react';
-import { motion } from 'framer-motion';
+import React from 'react';
 import { 
   FileText, 
   Sparkles, 
   BarChart3, 
-  UploadCloud, 
-  ArrowUpRight,
-  type LucideIcon 
+  UploadCloud 
 } from 'lucide-react';
-
-interface FeatureItem {
-  id: string;
-  title: string;
-  description: string;
-  icon: LucideIcon;
-  gradient: string;
-  delay: number;
-  className: string;
-}
-
-const FEATURES: FeatureItem[] = [
-  {
-    id: 'ats-score',
-    title: "Instant ATS Score",
-    description: "Don't get filtered out. See exactly how applicant tracking systems view your resume.",
-    icon: BarChart3,
-    gradient: "from-blue-500 to-cyan-500",
-    delay: 0.1,
-    className: "md:col-span-2",
-  },
-  {
-    id: 'ai-cover-letters',
-    title: "AI Cover Letters",
-    description: "Tailored to the job description in < 5 seconds.",
-    icon: FileText,
-    gradient: "from-purple-500 to-pink-500",
-    delay: 0.2,
-    className: "md:col-span-1",
-  },
-  {
-    id: 'gemini-logic',
-    title: "Gemini 2.0 Logic",
-    description: "Reasoning capabilities that beat standard GPT-4 wrappers.",
-    icon: Sparkles,
-    gradient: "from-amber-400 to-orange-500",
-    delay: 0.3,
-    className: "md:col-span-1",
-  },
-  {
-    id: 'pdf-parsing',
-    title: "Smart PDF Parsing",
-    description: "We extract text from complex layouts with 99% accuracy.",
-    icon: UploadCloud,
-    gradient: "from-emerald-400 to-teal-500",
-    delay: 0.4,
-    className: "md:col-span-2",
-  },
-];
-
-interface FeatureCardProps {
-  feature: FeatureItem;
-}
-
-const FeatureCard = memo(({ feature }: FeatureCardProps) => {
-  const { title, description, icon: Icon, gradient, delay, className } = feature;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay, ease: "easeOut" }}
-      whileHover={{ y: -5 }}
-      className={`group relative p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-shadow duration-300 ${className}`}
-    >
-      <div
-        className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 bg-gradient-to-br ${gradient} shadow-lg text-white transform group-hover:scale-110 transition-transform duration-300`}
-        aria-hidden="true"
-      >
-        <Icon className="h-7 w-7" />
-      </div>
-
-      <h3 className="text-2xl font-bold mb-3 text-gray-900">
-        {title}
-      </h3>
-      
-      <p className="text-gray-500 leading-relaxed mb-6">
-        {description}
-      </p>
-
-      <div 
-        className="flex items-center text-sm font-bold text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-y-2 group-hover:translate-y-0"
-        aria-hidden="true"
-      >
-        Learn more <ArrowUpRight className="ml-1 w-4 h-4" />
-      </div>
-    </motion.div>
-  );
-});
-
-FeatureCard.displayName = 'FeatureCard';
 
 export default function FeatureGrid() {
   return (
     <section 
       id="features" 
-      aria-labelledby="features-heading"
-      className="py-32 bg-slate-50 relative overflow-hidden"
+      // SEMANTIC UPDATE: Replaced explicit zinc colors with background and border variables
+      className="py-24 md:py-32 bg-background border-y border-border"
     >
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div className="text-center mb-20">
-          <h2 
-            id="features-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 tracking-tight"
-          >
-            Features that get you <span className="text-indigo-600">hired.</span>
+      <div className="max-w-6xl mx-auto px-6">
+        
+        {/* ─── HEADER ─── */}
+        <div className="mb-16">
+          <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-primary mb-3.5 font-mono">
+            Platform Capabilities
+          </div>
+          <h2 className="font-serif text-[clamp(30px,4vw,48px)] text-foreground tracking-[-0.02em] leading-[1.12] max-w-[560px] mb-4">
+            Everything you need to beat the filter and land the interview.
           </h2>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            We've packed everything you need into one simple dashboard.
+          <p className="text-base text-muted-foreground max-w-[480px] leading-[1.65]">
+            Four core tools working in concert — so every application you send is optimized before it reaches a human.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {FEATURES.map((feature) => (
-            <FeatureCard key={feature.id} feature={feature} />
-          ))}
+        {/* ─── THE BENTO GRID ─── 
+            - bg-border creates the 1px border lines between cards
+            - gap-px creates the actual hairline divisions
+        */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border rounded-2xl overflow-hidden shadow-sm">
+          
+          {/* FEATURE 1: ATS SCORE (Top Left) */}
+          <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <BarChart3 strokeWidth={1.75} className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-semibold text-card-foreground mb-2 tracking-[-0.01em]">
+              Instant ATS Score
+            </h3>
+            <p className="text-sm text-muted-foreground leading-[1.6]">
+              See exactly how applicant tracking systems parse and rank your resume before a recruiter ever reads it.
+            </p>
+          </div>
+
+          {/* FEATURE 2: COVER LETTERS (Top Right) */}
+          <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            
+            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+              <FileText strokeWidth={1.75} className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-semibold text-card-foreground mb-2 tracking-[-0.01em]">
+              Contextual Cover Letters
+            </h3>
+            <p className="text-sm text-muted-foreground leading-[1.6]">
+              Generate tailored cover letters mapped directly to any job description. Role-specific, not template-generic.
+            </p>
+          </div>
+
+          {/* FEATURE 3: PDF PARSING (Full Width Bottom) */}
+          <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 md:col-span-2 overflow-hidden flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            
+            <div className="flex-1">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <UploadCloud strokeWidth={1.75} className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-semibold text-card-foreground mb-2 tracking-[-0.01em]">
+                Flawless PDF Parsing
+              </h3>
+              <p className="text-sm text-muted-foreground leading-[1.6] max-w-lg">
+                Stop worrying about complex columns and hidden tables. Our parser extracts text and structure from your PDF exactly how enterprise ATS systems do it.
+              </p>
+            </div>
+            
+            <div className="hidden md:flex flex-1 justify-end opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+               <div className="border border-border rounded-lg p-4 bg-background shadow-sm w-full max-w-xs">
+                 <div className="h-2 w-1/3 bg-muted-foreground/30 rounded mb-3"></div>
+                 <div className="h-2 w-full bg-muted-foreground/30 rounded mb-2"></div>
+                 <div className="h-2 w-5/6 bg-muted-foreground/30 rounded mb-2"></div>
+                 <div className="h-2 w-4/6 bg-muted-foreground/30 rounded"></div>
+               </div>
+            </div>
+          </div>
+
+          {/* FEATURE 4: SMART REWRITES (Full Width Bottom) */}
+          <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 md:col-span-2 overflow-hidden flex flex-col md:flex-row gap-8 items-start md:items-center">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+            
+            <div className="flex-1">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
+                <Sparkles strokeWidth={1.75} className="w-5 h-5" />
+              </div>
+              <h3 className="text-base font-semibold text-card-foreground mb-2 tracking-[-0.01em]">
+                Gemini-Powered Smart Rewrites
+              </h3>
+              <p className="text-sm text-muted-foreground leading-[1.6] max-w-lg">
+                Identify missing skills and let Gemini 2.0 rewrite weak bullet points using action verbs, metrics, and impact language that hiring managers notice.
+              </p>
+            </div>
+
+            <div className="hidden md:flex flex-1 justify-end opacity-50 group-hover:opacity-100 transition-opacity duration-300">
+               <div className="border border-border rounded-lg p-4 bg-background shadow-sm w-full max-w-xs relative overflow-hidden">
+                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+                 <div className="flex items-center gap-2 text-xs font-mono text-primary mb-2">
+                    <Sparkles size={12} /> Refactoring...
+                 </div>
+                 <div className="h-2 w-full bg-primary/20 rounded mb-2"></div>
+                 <div className="h-2 w-5/6 bg-primary/20 rounded"></div>
+               </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>

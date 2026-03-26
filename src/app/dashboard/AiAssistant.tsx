@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, FormEvent } from 'react';
 import { useChat } from '@ai-sdk/react';
-import { Bot, Send, Sparkles, User } from 'lucide-react';
+import { Bot, Send, User, Terminal, ChevronRight, Loader2 } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -16,11 +16,9 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
   const chat: any = useChat({
     api: '/api/chat',
     body: { resumeId },
-    onError: (err: any) => toast.error(err.message || "Failed to send message.")
+    onError: (err: any) => toast.error(err.message || "Failed to execute command.")
   } as any);
 
-  // SAFE DESTRUCTURING: 
-  // We set default values (like = '') to prevent "undefined" runtime errors.
   const { 
     messages = [], 
     input = '', 
@@ -35,7 +33,6 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
   const handleSendMessage = async (e?: FormEvent, manualText?: string) => {
     e?.preventDefault();
     
-    // Ensure we have a string to work with, even if input is weirdly null
     const textToSend = manualText || input || '';
     if (!textToSend.trim() || isLoading) return;
 
@@ -52,7 +49,7 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
       if (!manualText) setInput('');
     } catch (err) {
       console.error("Chat submission error:", err);
-      toast.error("Could not send message.");
+      toast.error("Pipeline communication failure.");
     }
   };
 
@@ -61,28 +58,37 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
+    <div className="flex flex-col h-full bg-background relative">
       
-      {/* --- MESSAGES AREA --- */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
+      {/* ─── MESSAGES AREA ─── */}
+      <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center px-4 animate-in fade-in duration-500">
-            <div className="w-12 h-12 rounded-2xl bg-zinc-50 border border-zinc-200 flex items-center justify-center mb-4 shadow-sm">
-              <Sparkles className="w-6 h-6 text-zinc-400" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 shadow-sm">
+              <Terminal className="w-5 h-5 text-primary" />
             </div>
-            <h3 className="text-lg font-bold text-zinc-900 mb-2">How can I help?</h3>
-            <p className="text-sm text-zinc-500 max-w-[250px] mb-8 leading-relaxed">
-              I can rewrite your bullet points, analyze missing skills, or help you tailor your experience.
+            <h3 className="font-serif text-xl font-bold text-foreground mb-2">Neural Interface Ready</h3>
+            <p className="text-xs text-muted-foreground max-w-[260px] mb-8 leading-relaxed">
+              Execute commands below or type natural language to manipulate your resume data, extract keywords, and rewrite bullets.
             </p>
             
-            <div className="flex flex-col gap-2.5 w-full max-w-[280px]">
-              {["Rewrite my summary to be more punchy", "How do I add the missing keywords?", "Fix my formatting issues"].map((prompt) => (
+            <div className="flex flex-col gap-2 w-full max-w-[300px]">
+              {[
+                { cmd: "/rewrite_summary", desc: "Make it more punchy and metric-driven" },
+                { cmd: "/inject_keywords", desc: "How do I add the missing JD skills?" },
+                { cmd: "/audit_format", desc: "Fix my structural formatting issues" }
+              ].map((prompt) => (
                 <button 
-                  key={prompt}
-                  onClick={() => handleQuickPrompt(prompt)}
-                  className="text-xs font-semibold text-zinc-600 bg-zinc-50 hover:bg-zinc-100 hover:text-zinc-900 border border-zinc-200 py-3 px-4 rounded-xl transition-colors text-left shadow-sm"
+                  key={prompt.cmd}
+                  onClick={() => handleQuickPrompt(prompt.desc)}
+                  className="group flex flex-col items-start gap-1 bg-card hover:bg-muted border border-border py-3 px-4 rounded-xl transition-all text-left shadow-sm hover:border-primary/30"
                 >
-                  "{prompt}"
+                  <span className="text-[10px] font-mono font-bold text-primary flex items-center gap-1.5">
+                     <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform"/> {prompt.cmd}
+                  </span>
+                  <span className="text-xs font-medium text-muted-foreground pl-4.5">
+                    {prompt.desc}
+                  </span>
                 </button>
               ))}
             </div>
@@ -91,17 +97,19 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
           messages.map((m: any) => (
             <div key={m.id} className={cn("flex gap-3", m.role === 'user' ? "flex-row-reverse" : "")}>
               <div className={cn(
-                "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm",
-                m.role === 'user' ? "bg-zinc-900 text-white" : "bg-white border border-zinc-200 text-zinc-600"
+                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm border",
+                m.role === 'user' 
+                  ? "bg-primary border-primary text-primary-foreground" 
+                  : "bg-muted border-border text-foreground"
               )}>
-                {m.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                {m.role === 'user' ? <User className="w-4 h-4" /> : <Terminal className="w-4 h-4" />}
               </div>
               
               <div className={cn(
-                "px-4 py-3 max-w-[80%] text-sm leading-relaxed shadow-sm",
+                "px-4 py-3 max-w-[85%] text-sm leading-relaxed shadow-sm",
                 m.role === 'user' 
-                  ? "bg-zinc-900 text-white rounded-2xl rounded-tr-sm" 
-                  : "bg-zinc-50 border border-zinc-200 text-zinc-800 rounded-2xl rounded-tl-sm whitespace-pre-wrap"
+                  ? "bg-primary text-primary-foreground rounded-xl rounded-tr-sm" 
+                  : "bg-muted/40 border border-border text-foreground rounded-xl rounded-tl-sm whitespace-pre-wrap"
               )}>
                 {m.content}
               </div>
@@ -109,46 +117,48 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
           ))
         )}
         
+        {/* Processing State */}
         {isLoading && (
           <div className="flex gap-3 justify-start animate-in fade-in">
-            <div className="w-8 h-8 rounded-full bg-white border border-zinc-200 flex items-center justify-center shrink-0 shadow-sm">
-              <Bot className="w-4 h-4 text-zinc-400" />
+            <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0 shadow-sm">
+              <Terminal className="w-4 h-4 text-muted-foreground" />
             </div>
-            <div className="bg-zinc-50 border border-zinc-200 rounded-2xl rounded-tl-sm px-4 py-3.5 flex items-center gap-1.5 shadow-sm">
-              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="bg-muted/40 border border-border rounded-xl rounded-tl-sm px-5 py-4 flex items-center gap-3 shadow-sm">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
+              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Processing...</span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* --- INPUT AREA --- */}
-      <div className="p-4 bg-white border-t border-zinc-100 shrink-0">
+      {/* ─── INPUT AREA ─── */}
+      <div className="p-4 bg-background border-t border-border shrink-0">
         <form 
           onSubmit={handleSendMessage} 
-          className="relative flex items-center bg-zinc-50 border border-zinc-200 rounded-2xl focus-within:border-zinc-400 focus-within:bg-white transition-colors shadow-sm overflow-hidden"
+          className="relative flex items-center bg-muted/20 border border-border rounded-xl focus-within:border-primary/50 focus-within:bg-background focus-within:ring-2 focus-within:ring-primary/10 transition-all shadow-sm overflow-hidden"
         >
+          <div className="absolute left-3 text-muted-foreground/50">
+            <ChevronRight className="w-4 h-4" />
+          </div>
           <input
-            value={input || ''} // Safety fallback
+            value={input || ''} 
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Copilot..."
+            placeholder="Enter command or question..."
             disabled={isLoading}
-            className="w-full bg-transparent pl-4 pr-12 py-3.5 text-sm font-medium text-zinc-800 placeholder:text-zinc-400 focus:outline-none disabled:opacity-50"
+            className="w-full bg-transparent pl-9 pr-12 py-3.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
           />
           <button 
             type="submit" 
-            // FIXED: Added optional chaining and empty string check
             disabled={!(input?.trim()) || isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-zinc-900 transition-all shadow-sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-30 transition-all shadow-sm active:scale-[0.95]"
           >
             <Send className="w-3.5 h-3.5 -ml-0.5" />
           </button>
         </form>
         <div className="text-center mt-3">
-          <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest leading-none">
-            AI can make mistakes. Review generated text.
+          <p className="text-[9px] font-mono font-bold text-muted-foreground/60 uppercase tracking-[0.2em] leading-none">
+            Gemini outputs may require human verification.
           </p>
         </div>
       </div>

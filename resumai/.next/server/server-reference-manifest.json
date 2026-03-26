@@ -1,0 +1,73 @@
+{
+  "node": {
+    "404ebd42923b0813c8cd4e3643f8aa2082e4434587": {
+      "workers": {
+        "app/dashboard/page": {
+          "moduleId": 53890,
+          "async": false,
+          "exportedName": "processResume",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+        },
+        "app/page": {
+          "moduleId": 56929,
+          "async": false,
+          "exportedName": "processResume",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/page": "action-browser",
+        "app/page": "action-browser"
+      },
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/upload-resume.ts",
+      "exportedName": "processResume"
+    },
+    "70fc7a28770f8d7558244ecec89298213bf3827d08": {
+      "workers": {
+        "app/dashboard/[id]/page": {
+          "moduleId": 15688,
+          "async": false,
+          "exportedName": "generateCareerDoc",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts"
+        }
+      },
+      "layer": {
+        "app/dashboard/[id]/page": "action-browser"
+      },
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/actions/ai-features.ts",
+      "exportedName": "generateCareerDoc"
+    },
+    "405109ccd3c998ef8e233f446e9cfb983e340c2176": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": 57577,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_0",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+        }
+      },
+      "layer": {
+        "app/login/page": "rsc"
+      },
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx",
+      "exportedName": "$$RSC_SERVER_ACTION_0"
+    },
+    "4063100051fddd208e7ab95b436cad139e0bbde00e": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": 57577,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_1",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+        }
+      },
+      "layer": {
+        "app/login/page": "rsc"
+      },
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx",
+      "exportedName": "$$RSC_SERVER_ACTION_1"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "CB8suQnme+NVnpXGG2FhFeAEm6Obj4JQaleClx+p0JI="
+}

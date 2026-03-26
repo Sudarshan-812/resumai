@@ -1,0 +1,35 @@
+{
+  "node": {
+    "401368fc763fdb382137e69f575a67809a72c5552c": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/login/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_1",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+        }
+      },
+      "layer": {
+        "app/login/page": "rsc"
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_1",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+    },
+    "40ff7d32a973218087f4f8e8b7b402be654e6866c4": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": "[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/.next-internal/server/app/login/page/actions.js { ACTIONS_MODULE0 => \"[project]/OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false,
+          "exportedName": "$$RSC_SERVER_ACTION_0",
+          "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+        }
+      },
+      "layer": {
+        "app/login/page": "rsc"
+      },
+      "exportedName": "$$RSC_SERVER_ACTION_0",
+      "filename": "OneDrive/Desktop/AI RESUME PROJ/resumai/src/app/login/page.tsx"
+    }
+  },
+  "edge": {}
+}
