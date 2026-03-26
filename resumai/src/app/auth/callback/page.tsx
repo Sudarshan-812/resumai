@@ -1,9 +1,9 @@
-// app/auth/callback/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -11,29 +11,53 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     async function finish() {
-      // Pass NEXT_PUBLIC values here — these are embedded at build time and safe for client
       const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ""
       );
 
-      // This parses tokens from the URL hash and sets the browser session
-      const { error } = await supabase.auth.getSessionFromUrl();
+      // 🚨 FIXED: In Supabase v2, getSession() automatically reads the URL hash
+      const { data: { session }, error } = await supabase.auth.getSession();
 
       if (error) {
-        console.error("Error completing sign-in:", error);
+        console.error("Error completing sign-in:", error.message);
         setStatus("error");
         return;
       }
 
-      setStatus("ok");
-      router.replace("/");
+      if (session) {
+        setStatus("ok");
+        router.replace("/dashboard");
+      } else {
+        setStatus("error");
+        setTimeout(() => router.replace("/login?error=auth_failed"), 2000);
+      }
     }
 
     finish();
   }, [router]);
 
-  if (status === "loading") return <p>Completing sign in...</p>;
-  if (status === "error") return <p>Could not complete sign-in.</p>;
+  if (status === "loading" || status === "ok") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground">
+        <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+        <p className="text-sm font-mono uppercase tracking-widest text-muted-foreground animate-pulse">
+          Establishing Secure Session...
+        </p>
+      </div>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground">
+        <AlertCircle className="h-8 w-8 text-rose-500 mb-4" />
+        <p className="text-sm font-mono uppercase tracking-widest text-rose-500">
+          Authentication Pipeline Failed
+        </p>
+      </div>
+    );
+  }
+
   return null;
 }

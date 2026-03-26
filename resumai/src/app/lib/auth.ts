@@ -1,25 +1,52 @@
-// src/app/lib/auth.ts
-import { createBrowserClient, createServerClient } from "@supabase/auth-helpers-nextjs";
+import { createBrowserClient, createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
-// Client-side
+// 1. Client-side Creator (Browser)
+// This remains synchronous as it doesn't need to read server cookies directly
 export const createClient = () =>
   createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-// Server-side (for server components & route handlers)
-export const createServerSupabase = () =>
-  createServerClient(
+// 2. Server-side Creator (Server Components, Actions, & Route Handlers)
+// FIXED: This MUST be async to await the cookies() Promise in Next.js 15+
+export const createServerSupabase = async () => {
+  const cookieStore = await cookies();
+
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    cookies
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // The setAll method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing sessions.
+          }
+        },
+      },
+    }
   );
+};
 
-// Get user (works in both server & client)
+// 3. Get User Helper (Server-side optimized)
 export async function getUser() {
-  const supabase = createClient();
-  const { data } = await supabase.auth.getUser();
-  return data.user;
+  try {
+    const supabase = await createServerSupabase();
+    const { data: { user }, error } = await supabase.auth.getUser();
+    
+    if (error || !user) return null;
+    return user;
+  } catch (err) {
+    console.error("Auth helper error:", err);
+    return null;
+  }
 }

@@ -70,11 +70,14 @@ export async function GET() {
       const result = await callOpenAI(prompt, OPENAI_KEY);
       return NextResponse.json(result, { status: result.status ?? 200 });
     } else {
+      // The non-null assertion (!) is safe here because of the check above
       const result = await callGemini(prompt, GEMINI_KEY!);
       return NextResponse.json(result, { status: result.status ?? 200 });
     }
-  } catch (err: any) {
-    console.error("AI LLM route error:", err);
-    return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
+  } catch (err: unknown) {
+    // FIXED: Safely parsing the error to prevent TypeScript build failures
+    const errorMessage = err instanceof Error ? err.message : String(err);
+    console.error("AI LLM route error:", errorMessage);
+    return NextResponse.json({ ok: false, error: errorMessage }, { status: 500 });
   }
 }

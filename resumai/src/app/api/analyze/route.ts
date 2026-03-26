@@ -7,10 +7,12 @@ import { createClient } from "@/app/lib/supabase/server";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 // Improved text extraction for tricky PDFs
-const render_page = (pageData: any) => {
+// @ts-expect-error - pdf-parse types are incomplete
+const render_page = (pageData) => {
   return pageData
     .getTextContent()
-    .then((textContent: any) => {
+    // @ts-expect-error - pdf-parse types are incomplete
+    .then((textContent) => {
       let lastY: number | null = null;
       let text = "";
       for (const item of textContent.items) {
@@ -28,6 +30,9 @@ export const POST = async (req: Request) => {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    
+    // 🚨 FIX: Extract jobDescription from the incoming form data
+    const jobDescription = (formData.get("jobDescription") as string) || "";
 
     // ——— File Validation ———
     if (!file || !(file instanceof File)) {
@@ -65,10 +70,11 @@ export const POST = async (req: Request) => {
     try {
       const data = await pdfParse(buffer, { pagerender: render_page, max: 0 });
       extractedText = data.text.trim();
-    } catch (pdfError: any) {
+    } catch (error: unknown) {
+      const pdfError = error as Error;
       console.error("PDF parsing failed:", pdfError);
 
-      const msg = pdfError.message.toLowerCase();
+      const msg = pdfError.message?.toLowerCase() || "";
       if (msg.includes("password") || msg.includes("encrypted")) {
         return NextResponse.json(
           { success: false, message: "PDF is password-protected", hint: "Remove password and try again" },
@@ -98,10 +104,13 @@ export const POST = async (req: Request) => {
     }
 
     // ——— AI Analysis ———
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let analysis: any;
     try {
-      analysis = await analyzeResume(extractedText);
-    } catch (aiError: any) {
+      // 🚨 FIX: Pass both the extractedText AND the jobDescription to the AI
+      analysis = await analyzeResume(extractedText, jobDescription);
+    } catch (error: unknown) {
+      const aiError = error as Error;
       console.error("AI analysis failed:", aiError);
       return NextResponse.json(
         { success: false, message: "AI analysis failed", error: aiError.message },
@@ -119,7 +128,7 @@ export const POST = async (req: Request) => {
     // ——— SAVE TO SUPABASE (Now with clear logging) ———
     try {
       const supabase = await createClient();
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
         console.log("Guest upload → skipping DB save (normal)");
@@ -138,8 +147,8 @@ export const POST = async (req: Request) => {
           console.log("Resume saved successfully for user:", user.id, "→", file.name);
         }
       }
-    } catch (dbErr: any) {
-      console.error("Database error:", dbErr);
+    } catch (error: unknown) {
+      console.error("Database error:", error);
     }
 
     // ——— SUCCESS ———
@@ -147,18 +156,12 @@ export const POST = async (req: Request) => {
       { success: true, data: analysis },
       { status: 200 }
     );
-  } catch (err: any) {
+  } catch (error: unknown) {
+    const err = error as Error;
     console.error("Unhandled error in /api/analyze:", err);
     return NextResponse.json(
       { success: false, message: "Server error", error: err.message },
       { status: 500 }
     );
   }
-};
-
-// Required for large file uploads
-export const config = {
-  api: {
-    bodyParser: false,
-  },
 };
