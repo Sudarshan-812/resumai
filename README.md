@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ResumAI 🚀
 
-## Getting Started
+**An AI-Powered Resume Builder SaaS**
 
-First, run the development server:
+ResumAI is a production-grade Software-as-a-Service (SaaS) platform that leverages artificial intelligence to help users generate, format, and optimize professional resumes. Built with a focus on performance, real-time data handling, and seamless user experience.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🔗 **Live Application:** https://resumai-bay.vercel.app/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗 Architecture & Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This application is architected for scalability, utilizing modern server-side rendering and edge computing to handle AI streaming and document generation.
 
-## Learn More
+* **Core Framework:** Next.js (App Router)
+* **Language:** TypeScript
+* **Styling:** Tailwind CSS
+* **Deployment & Infrastructure:** Vercel
 
-To learn more about Next.js, take a look at the following resources:
+## ✨ Core Product Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **AI-Driven Content Generation:** Context-aware bullet point generation and optimization using LLM integration.
+* **Real-Time Preview Engine:** Instant, zero-latency visual updates as the user edits their document data.
+* **High-Fidelity Document Export:** Pixel-perfect PDF rendering ensuring exact matches between the web preview and the final downloaded resume.
+* **Responsive Architecture:** Fully optimized for both desktop web and mobile viewing experiences.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔒 Source Code Notice
 
-## Deploy on Vercel
+**This repository contains the core architecture for a proprietary, closed-source SaaS product.** Unlike open-source projects or boilerplate templates, this codebase is strictly for production deployment and architectural demonstration. As such, local development/cloning instructions have been omitted.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Architected and developed by Sudarshan Kulkarni*
