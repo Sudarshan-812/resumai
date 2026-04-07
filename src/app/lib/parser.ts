@@ -8,19 +8,14 @@ const pdf: (data: Buffer) => Promise<{ text: string }> = (pdfPkg as any)?.defaul
 
 export const parseResume = async (file: File) => {
   try {
-    console.log('parseResume: starting', file?.name, file?.size);
     const arrayBuffer = await file.arrayBuffer();
-    console.log('arrayBuffer.byteLength:', arrayBuffer.byteLength);
-
     const buffer = Buffer.from(arrayBuffer);
-    console.log('Buffer length:', buffer.length);
 
     if (typeof pdf !== 'function') {
-      throw new Error('pdf-parse is not callable. Export shape: ' + JSON.stringify(Object.keys(pdfPkg || {})));
+      throw new Error('pdf-parse is not callable.');
     }
 
     const data = await pdf(buffer);
-    console.log('pdf-parse returned text length:', (data?.text || '').length);
 
     const cleanText = (data.text || '')
       .replace(/[^\x00-\x7F]/g, '')
@@ -29,7 +24,6 @@ export const parseResume = async (file: File) => {
 
     return cleanText;
   } catch (error) {
-    console.error('Error parsing resume:', error);
     throw error;
   }
 };

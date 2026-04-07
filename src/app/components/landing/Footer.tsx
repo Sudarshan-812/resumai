@@ -3,7 +3,6 @@
 import Link from "next/link";
 import type { FC, JSX } from "react";
 import {
-  Sparkles,
   Twitter,
   Linkedin,
   Github,
@@ -55,7 +54,10 @@ const Footer: FC = (): JSX.Element => {
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+                  <rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                  <path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
               </div>
               <span className="text-sm font-bold tracking-tight text-foreground">ResumAI</span>
             </div>

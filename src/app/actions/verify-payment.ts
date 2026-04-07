@@ -8,34 +8,43 @@ export async function verifyPayment(
   orderId: string,
   paymentId: string,
   signature: string,
-  creditsToAdd: number // 👈 New Argument
+  creditsToAdd: number
 ) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!keySecret) {
+      return { success: false, message: "Payment service is misconfigured. Contact support." };
+    }
 
-  if (!user) return { success: false, message: "Unauthorized" };
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
-    .update(orderId + "|" + paymentId)
-    .digest("hex");
+    if (authError || !user) return { success: false, message: "Unauthorized" };
 
-  if (generatedSignature !== signature) {
-    return { success: false, message: "Payment verification failed" };
+    const generatedSignature = crypto
+      .createHmac("sha256", keySecret)
+      .update(orderId + "|" + paymentId)
+      .digest("hex");
+
+    if (generatedSignature !== signature) {
+      return { success: false, message: "Payment verification failed" };
+    }
+
+    const { error } = await supabase.rpc('increment_credits', {
+      user_id: user.id,
+      amount: creditsToAdd
+    });
+
+    if (error) {
+      return { success: false, message: "Payment success but DB update failed." };
+    }
+
+    revalidatePath('/dashboard');
+    revalidatePath('/billing');
+
+    return { success: true };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unexpected error during payment verification.";
+    return { success: false, message };
   }
-
-  // 👇 Use the dynamic 'creditsToAdd' variable
-  const { error } = await supabase.rpc('increment_credits', { 
-    user_id: user.id, 
-    amount: creditsToAdd 
-  });
-
-  if (error) {
-    return { success: false, message: "Payment success but DB update failed." };
-  }
-
-  revalidatePath('/dashboard');
-  revalidatePath('/billing');
-  
-  return { success: true };
 }

@@ -1,89 +1,202 @@
 "use client";
 
 import type { FC, JSX } from "react";
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FileText,
-  Loader2,
-  ArrowLeft,
-  AlertCircle,
-  X,
-  UploadCloud,
-  Briefcase,
-  Sparkles
+  FileText, Loader2, ArrowLeft, AlertCircle, X,
+  UploadCloud, Briefcase, CheckCircle2, ArrowRight, ChevronRight
 } from "lucide-react";
-
 import { processResume } from "@/app/actions/upload-resume";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
+// ─── Isolated JD textarea — keystrokes only re-render this component ───
+const JobDescriptionInput = memo(function JobDescriptionInput({
+  onValueChange,
+}: {
+  onValueChange: (value: string) => void;
+}) {
+  const [value, setValue] = useState("");
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setValue(e.target.value);
+      onValueChange(e.target.value);
+    },
+    [onValueChange]
+  );
+  return (
+    <div className="relative flex flex-col flex-1">
+      <textarea
+        value={value}
+        onChange={handleChange}
+        placeholder="Paste the full job description here — include requirements, responsibilities, and preferred qualifications for the best results..."
+        className="flex-1 w-full bg-transparent border-none p-5 text-sm text-foreground leading-relaxed placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-0"
+        style={{ minHeight: 240 }}
+      />
+      <div className="px-5 pb-3 flex items-center justify-between">
+        <span className="text-[10px] font-mono text-muted-foreground/50">
+          {value.length > 0 ? (
+            <span className="text-emerald-500 flex items-center gap-1"><CheckCircle2 className="w-3 h-3 inline" /> Job description loaded</span>
+          ) : "Paste JD above"}
+        </span>
+        <span className="text-[10px] font-mono text-muted-foreground/40">{value.length} chars</span>
+      </div>
+    </div>
+  );
+});
+
+// ─── Analysis log steps ───
+const LOG_STEPS = [
+  "Parsing PDF structure...",
+  "Extracting text layers...",
+  "Tokenizing job description...",
+  "Running keyword extraction engine...",
+  "Mapping skills to JD requirements...",
+  "Calculating weighted ATS score...",
+  "Detecting formatting issues...",
+  "Generating recruiter feedback...",
+  "Saving to your workspace...",
+];
+
+function AnalysisLoader({ fileName }: { fileName: string }) {
+  const [step, setStep] = useState(0);
+  const [done, setDone] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (step >= LOG_STEPS.length) return;
+    const t = setTimeout(() => {
+      setDone((d) => [...d, step]);
+      setStep((s) => s + 1);
+    }, 700 + Math.random() * 350);
+    return () => clearTimeout(t);
+  }, [step]);
+
+  return (
+    <div className="w-full max-w-xl mx-auto">
+      {/* Pulsing orb */}
+      <div className="flex flex-col items-center mb-10">
+        <div className="relative w-24 h-24 mb-6">
+          <motion.div
+            className="absolute inset-0 rounded-full bg-primary/20"
+            animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute inset-2 rounded-full bg-primary/30"
+            animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+            transition={{ repeat: Infinity, duration: 2, delay: 0.3, ease: "easeInOut" }}
+          />
+          <div className="absolute inset-4 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
+            <svg width="24" height="24" viewBox="0 0 16 16" fill="none" className="text-primary"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
+        </div>
+        <h2 className="text-xl font-bold text-foreground tracking-tight mb-1">Neural Engine Active</h2>
+        <p className="text-sm text-muted-foreground font-mono">Scanning <span className="text-foreground">{fileName}</span></p>
+      </div>
+
+      {/* Terminal log */}
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
+        <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/30">
+          <div className="flex gap-1.5">
+            {["bg-rose-500/40", "bg-amber-500/40", "bg-emerald-500/40"].map((c, i) => (
+              <div key={i} className={`w-2.5 h-2.5 rounded-full ${c}`} />
+            ))}
+          </div>
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-2">
+            gemini_pipeline.log
+          </span>
+          <div className="ml-auto flex items-center gap-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-[9px] font-mono text-emerald-500 uppercase">Active</span>
+          </div>
+        </div>
+        <div className="p-5 space-y-2.5 font-mono text-xs min-h-[280px]">
+          {LOG_STEPS.map((msg, i) => (
+            <AnimatePresence key={i}>
+              {i <= step && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="flex items-center gap-3"
+                >
+                  {done.includes(i) ? (
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+                  ) : (
+                    <div className="w-3.5 h-3.5 rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
+                  )}
+                  <span className={cn(
+                    "transition-colors",
+                    done.includes(i) ? "text-emerald-600 dark:text-emerald-400" : "text-primary"
+                  )}>
+                    {done.includes(i) ? "✓ " : "→ "}{msg}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          ))}
+          {step <= LOG_STEPS.length && (
+            <motion.span
+              className="inline-block w-2 h-4 bg-primary ml-6 align-middle opacity-80"
+              animate={{ opacity: [1, 0, 1] }}
+              transition={{ repeat: Infinity, duration: 0.8 }}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Upload Page ───
 const UploadPage: FC = (): JSX.Element => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [jobDescription, setJobDescription] = useState<string>("");
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [jobDescription, setJobDescription] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 Bytes";
-    const kiloByte = 1024;
-    const units = ["Bytes", "KB", "MB"];
-    const unitIndex = Math.floor(Math.log(bytes) / Math.log(kiloByte));
-    return `${(bytes / kiloByte ** unitIndex).toFixed(1)} ${units[unitIndex]}`;
-  };
+  const handleJobDescriptionChange = useCallback((value: string) => {
+    setJobDescription(value);
+  }, []);
 
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setErrorMsg(null);
-    const selectedFile = event.target.files?.[0];
-    if (selectedFile) {
-      if (selectedFile.type !== "application/pdf") {
-        setErrorMsg("Please upload a valid PDF file.");
-        return;
-      }
-      setFile(selectedFile);
-    }
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.type !== "application/pdf") { setErrorMsg("Please upload a valid PDF file."); return; }
+    if (f.size > 5 * 1024 * 1024) { setErrorMsg("File must be under 5MB."); return; }
+    setFile(f);
   }, []);
 
-  const handleDrag = useCallback((event: React.DragEvent<HTMLDivElement>): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.type === "dragenter" || event.type === "dragover") setIsDragging(true);
-    else if (event.type === "dragleave") setIsDragging(false);
+  const handleDrag = useCallback((e: React.DragEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") setIsDragging(true);
+    else setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>): void => {
-    event.preventDefault();
-    event.stopPropagation();
-    setIsDragging(false);
-    setErrorMsg(null);
-
-    const droppedFile = event.dataTransfer.files?.[0];
-    if (droppedFile?.type === "application/pdf") {
-      setFile(droppedFile);
-    } else {
-      setErrorMsg("Please upload a valid PDF file.");
-    }
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault(); e.stopPropagation();
+    setIsDragging(false); setErrorMsg(null);
+    const f = e.dataTransfer.files?.[0];
+    if (f?.type === "application/pdf") setFile(f);
+    else setErrorMsg("Please upload a valid PDF file.");
   }, []);
 
-  const handleAnalyze = useCallback(async (): Promise<void> => {
+  const handleAnalyze = useCallback(async () => {
     if (!file || !jobDescription.trim()) return;
-
     setIsUploading(true);
     setErrorMsg(null);
-
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("jobDescription", jobDescription);
-
-      const result = await processResume(formData);
-
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("jobDescription", jobDescription);
+      const result = await processResume(fd);
       if (result.success && result.id) {
         router.push(`/dashboard/${result.id}`);
         return;
@@ -95,146 +208,309 @@ const UploadPage: FC = (): JSX.Element => {
     }
   }, [file, jobDescription, router]);
 
+  const canAnalyze = !!file && jobDescription.trim().length > 0;
+
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground transition-colors duration-300">
-      
-      {/* Subtle Background Pattern */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none" 
-        style={{ backgroundImage: 'radial-gradient(var(--color-foreground) 1px, transparent 1px)', backgroundSize: '32px 32px' }} 
+    <div className="relative min-h-screen bg-background text-foreground font-sans overflow-hidden">
+
+      {/* Ambient grid background */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.025]"
+        style={{
+          backgroundImage: "linear-gradient(to right,var(--color-foreground) 1px,transparent 1px),linear-gradient(to bottom,var(--color-foreground) 1px,transparent 1px)",
+          backgroundSize: "4rem 4rem",
+        }}
       />
-      
-      {/* Top Navigation */}
-      <header className="relative z-50 flex items-center justify-between px-6 py-6 border-b border-border bg-background/80 backdrop-blur-md">
+
+      {/* Ambient top glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed top-[-15%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-primary opacity-[0.06] blur-[100px]"
+      />
+
+      {/* Nav */}
+      <header className="relative z-50 flex items-center justify-between px-6 py-5 border-b border-border bg-background/70 backdrop-blur-md">
         <Link href="/dashboard" className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Back to Dashboard
+          Dashboard
         </Link>
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          </div>
+          <span className="font-bold text-sm text-foreground hidden sm:block">New Analysis</span>
+        </div>
+        <div className="w-16" />
       </header>
 
-      <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-4xl">
-          
-          {/* Header Text */}
-          <div className="mb-10 text-center flex flex-col items-center">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
-              <Sparkles className="h-3.5 w-3.5" /> Targeted Match Analysis
-            </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-              New Analysis
-            </h1>
-            <p className="mt-3 text-base text-muted-foreground max-w-lg mx-auto">
-              Upload your resume and the job description to see how well you match and get AI-powered improvement suggestions.
-            </p>
-          </div>
+      <main className="relative z-10 flex flex-col items-center px-4 py-12">
+        <AnimatePresence mode="wait">
 
-          {/* Upload & Input Panels */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
-            
-            {/* ─── LEFT: PDF UPLOAD ─── */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="flex flex-col bg-card border border-border rounded-2xl shadow-sm overflow-hidden h-[380px]"
+          {/* ─── UPLOAD FORM ─── */}
+          {!isUploading && (
+            <motion.div
+              key="form"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -16, scale: 0.98 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full max-w-4xl"
             >
-              <div className="border-b border-border bg-muted/30 px-5 py-4 flex items-center gap-2.5">
-                 <FileText className="w-4 h-4 text-muted-foreground" />
-                 <h3 className="text-sm font-semibold text-foreground">Your Resume</h3>
+              {/* Page header */}
+              <div className="text-center mb-10">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.05 }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary mb-5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                  Gemini 2.5 Flash · Targeted Match Analysis
+                </motion.div>
+                <motion.h1
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3"
+                >
+                  New Analysis
+                </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.15 }}
+                  className="text-muted-foreground text-base max-w-lg mx-auto"
+                >
+                  Upload your resume and paste the job description. Our AI will score, analyze, and give you a recruiter-grade report.
+                </motion.p>
               </div>
-              
-              <div 
-                onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}
-                className={cn(
-                  "flex-1 relative flex flex-col items-center justify-center p-8 transition-all duration-200",
-                  isDragging ? "bg-primary/5 border-2 border-primary border-dashed m-2 rounded-xl" : "bg-transparent border-2 border-transparent m-2"
-                )}
+
+              {/* Step indicators */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="flex items-center justify-center gap-0 mb-8"
               >
-                <AnimatePresence mode="wait">
-                  {!file ? (
-                    <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex flex-col items-center text-center w-full">
-                      <div className="mb-5 h-14 w-14 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                        <UploadCloud strokeWidth={2} className="h-6 w-6" />
+                {[
+                  { n: "01", label: "Resume", done: !!file },
+                  { n: "02", label: "Job Description", done: jobDescription.trim().length > 0 },
+                  { n: "03", label: "Analyze", done: false },
+                ].map((s, i) => (
+                  <div key={s.n} className="flex items-center">
+                    <div className="flex items-center gap-2">
+                      <div className={cn(
+                        "w-7 h-7 rounded-full border-2 flex items-center justify-center text-[10px] font-bold font-mono transition-all",
+                        s.done
+                          ? "border-emerald-500 bg-emerald-500/10 text-emerald-600"
+                          : "border-border bg-muted text-muted-foreground"
+                      )}>
+                        {s.done ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : s.n}
                       </div>
-                      <p className="text-sm font-semibold text-foreground mb-1">Click or drag file to this area</p>
-                      <p className="text-xs text-muted-foreground mb-6">PDF files up to 5MB</p>
-                      
-                      <label className="cursor-pointer">
-                        <div className="px-6 py-2.5 rounded-lg border border-border bg-background text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-all active:scale-[0.98]">
-                            Browse Files
-                        </div>
-                        <input ref={fileInputRef} type="file" accept=".pdf" hidden onChange={handleFileSelect} />
-                      </label>
-                    </motion.div>
-                  ) : (
-                    <motion.div key="file" initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-center w-full">
-                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-sm">
-                        <FileText className="h-6 w-6" />
-                      </div>
-                      <p className="font-semibold text-sm text-foreground mb-1 max-w-full truncate px-4">{file.name}</p>
-                      <p className="text-xs text-muted-foreground mb-6">{formatFileSize(file.size)}</p>
-                      
-                      <button onClick={() => setFile(null)} className="text-xs font-semibold text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-md hover:bg-rose-500/10">
-                        <X size={14} /> Remove File
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </motion.div>
-
-            {/* ─── RIGHT: JD INPUT ─── */}
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-              className="flex flex-col bg-card border border-border rounded-2xl shadow-sm overflow-hidden h-[380px]"
-            >
-              <div className="border-b border-border bg-muted/30 px-5 py-4 flex items-center gap-2.5">
-                 <Briefcase className="w-4 h-4 text-muted-foreground" />
-                 <h3 className="text-sm font-semibold text-foreground">Job Description</h3>
-              </div>
-              <textarea
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the target job description here..."
-                className="flex-1 w-full bg-transparent border-none p-5 text-sm text-foreground leading-relaxed placeholder:text-muted-foreground/60 resize-none focus:outline-none focus:ring-0 custom-scrollbar"
-              />
-            </motion.div>
-          </div>
-
-          {/* ─── ACTION BUTTON ─── */}
-          <div className="mt-10 flex flex-col items-center">
-            <Button
-              disabled={isUploading || !file || !jobDescription.trim()}
-              onClick={handleAnalyze}
-              className="group relative h-12 px-8 rounded-xl bg-primary text-primary-foreground font-semibold shadow-md hover:bg-primary/90 disabled:opacity-50 transition-all active:scale-[0.98]"
-            >
-              {isUploading ? (
-                <div className="flex items-center gap-2">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Analyzing Match...</span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  Analyze Resume
-                  <ArrowLeft className="h-4 w-4 rotate-180 transition-transform group-hover:translate-x-1" />
-                </div>
-              )}
-            </Button>
-
-            {errorMsg && (
-              <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="mt-4 flex items-center gap-2 text-sm font-medium text-rose-500 bg-rose-500/10 border border-rose-500/20 px-4 py-2 rounded-lg">
-                <AlertCircle className="h-4 w-4" /> {errorMsg}
+                      <span className={cn(
+                        "text-xs font-medium hidden sm:block transition-colors",
+                        s.done ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+                      )}>
+                        {s.label}
+                      </span>
+                    </div>
+                    {i < 2 && <div className="w-8 md:w-16 h-px bg-border mx-2 md:mx-3" />}
+                  </div>
+                ))}
               </motion.div>
-            )}
-          </div>
 
-        </div>
+              {/* Input panels */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+
+                {/* PDF Upload panel */}
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className={cn(
+                    "flex flex-col bg-card border rounded-2xl shadow-sm overflow-hidden transition-all duration-300",
+                    file ? "border-emerald-500/30" : "border-border"
+                  )}
+                  style={{ minHeight: 360 }}
+                >
+                  <div className="flex items-center gap-2.5 px-5 py-4 border-b border-border bg-muted/20">
+                    <div className={cn(
+                      "w-6 h-6 rounded-md flex items-center justify-center transition-colors",
+                      file ? "bg-emerald-500/10 text-emerald-500" : "bg-muted text-muted-foreground"
+                    )}>
+                      <FileText className="w-3.5 h-3.5" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-foreground">Your Resume</h3>
+                    <span className="ml-auto text-[10px] font-mono text-muted-foreground/60">PDF · max 5MB</span>
+                  </div>
+
+                  <div
+                    onDragEnter={handleDrag} onDragLeave={handleDrag}
+                    onDragOver={handleDrag} onDrop={handleDrop}
+                    className={cn(
+                      "flex-1 flex flex-col items-center justify-center p-8 transition-all duration-200 m-2 rounded-xl border-2",
+                      isDragging ? "bg-primary/5 border-primary border-dashed" : "border-transparent"
+                    )}
+                  >
+                    <AnimatePresence mode="wait">
+                      {!file ? (
+                        <motion.div
+                          key="empty"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="flex flex-col items-center text-center"
+                        >
+                          <motion.div
+                            className="mb-5 h-16 w-16 rounded-2xl bg-muted border border-border flex items-center justify-center text-muted-foreground"
+                            animate={isDragging ? { scale: 1.1, borderColor: "var(--color-primary)" } : { scale: 1 }}
+                          >
+                            <UploadCloud strokeWidth={1.5} className="h-7 w-7" />
+                          </motion.div>
+                          <p className="text-sm font-semibold text-foreground mb-1">
+                            {isDragging ? "Drop it here" : "Drag & drop your PDF"}
+                          </p>
+                          <p className="text-xs text-muted-foreground mb-6">or click to browse your files</p>
+                          <label className="cursor-pointer">
+                            <span className="px-6 py-2.5 rounded-lg border border-border bg-background text-sm font-medium text-foreground shadow-sm hover:bg-muted transition-all active:scale-[0.98] inline-block">
+                              Browse Files
+                            </span>
+                            <input ref={fileInputRef} type="file" accept=".pdf" hidden onChange={handleFileSelect} />
+                          </label>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="file"
+                          initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          className="flex flex-col items-center text-center w-full"
+                        >
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 shadow-sm"
+                          >
+                            <FileText className="h-7 w-7" />
+                          </motion.div>
+                          <p className="font-semibold text-sm text-foreground mb-1 max-w-[220px] truncate px-2">{file.name}</p>
+                          <div className="flex items-center gap-2 mb-5">
+                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(0)} KB</span>
+                            <span className="text-muted-foreground/30">·</span>
+                            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3" /> Ready
+                            </span>
+                          </div>
+                          <button
+                            onClick={() => setFile(null)}
+                            className="flex items-center gap-1.5 text-xs font-semibold text-rose-500 hover:text-rose-600 px-3 py-1.5 rounded-md hover:bg-rose-500/10 transition-colors"
+                          >
+                            <X size={14} /> Remove File
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+
+                {/* JD panel */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.25, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col bg-card border border-border rounded-2xl shadow-sm overflow-hidden"
+                  style={{ minHeight: 360 }}
+                >
+                  <div className="flex items-center gap-2.5 px-5 py-4 border-b border-border bg-muted/20">
+                    <div className="w-6 h-6 rounded-md bg-muted text-muted-foreground flex items-center justify-center">
+                      <Briefcase className="w-3.5 h-3.5" />
+                    </div>
+                    <h3 className="text-sm font-semibold text-foreground">Job Description</h3>
+                    <span className="ml-auto text-[10px] font-mono text-muted-foreground/60">Paste full JD for best results</span>
+                  </div>
+                  <JobDescriptionInput onValueChange={handleJobDescriptionChange} />
+                </motion.div>
+              </div>
+
+              {/* Error */}
+              <AnimatePresence>
+                {errorMsg && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="flex items-center gap-2 text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 px-4 py-3 rounded-xl mb-5"
+                  >
+                    <AlertCircle className="h-4 w-4 shrink-0" /> {errorMsg}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col items-center"
+              >
+                <motion.button
+                  disabled={!canAnalyze}
+                  onClick={handleAnalyze}
+                  whileHover={canAnalyze ? { scale: 1.02, y: -1 } : {}}
+                  whileTap={canAnalyze ? { scale: 0.98 } : {}}
+                  className={cn(
+                    "relative h-13 px-10 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2.5 overflow-hidden",
+                    canAnalyze
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/25"
+                      : "bg-muted text-muted-foreground cursor-not-allowed"
+                  )}
+                >
+                  {/* Shimmer on active */}
+                  {canAnalyze && (
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
+                      animate={{ x: ["-150%", "150%"] }}
+                      transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
+                    />
+                  )}
+                  
+                  <span className="relative z-10">Run Analysis</span>
+                  <ArrowRight className="w-4 h-4 relative z-10" />
+                </motion.button>
+
+                <p className="mt-4 text-[11px] text-muted-foreground text-center">
+                  Analysis takes ~10 seconds · Results are saved to your dashboard
+                </p>
+
+                {/* What happens next */}
+                <div className="mt-6 flex items-center gap-6 text-[11px] text-muted-foreground">
+                  {["ATS Score", "Keyword Gap", "AI Feedback"].map((item, i) => (
+                    <span key={item} className="flex items-center gap-1.5">
+                      <ChevronRight className="w-3 h-3 text-primary" />
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* ─── ANALYZING STATE ─── */}
+          {isUploading && (
+            <motion.div
+              key="analyzing"
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="w-full max-w-xl flex flex-col items-center py-8"
+            >
+              <AnalysisLoader fileName={file?.name ?? "resume.pdf"} />
+            </motion.div>
+          )}
+
+        </AnimatePresence>
       </main>
-
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
-      `}</style>
     </div>
   );
 };

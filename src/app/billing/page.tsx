@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Check, Loader2, ShieldCheck, HelpCircle, Star } from "lucide-react";
-import { ThemeToggle } from "@/app/components/theme-toggle";
+import { Check, Loader2, ShieldCheck, HelpCircle, Star } from "lucide-react";
+import NavbarWrapper from "@/app/dashboard/NavbarWrapper";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
@@ -124,23 +124,9 @@ export default function BillingPage() {
       {/* Background Decor */}
       <div className="fixed inset-0 -z-10 h-full w-full bg-white dark:bg-[#09090b] [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-20 pointer-events-none" />
 
-      {/* Navbar */}
-      <nav className="border-b border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-black/50 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link 
-            href="/dashboard" 
-            className="group flex items-center gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors"
-          >
-            <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
-              <ArrowLeft className="w-4 h-4" />
-            </div>
-            Back to Dashboard
-          </Link>
-          <ThemeToggle />
-        </div>
-      </nav>
+      <NavbarWrapper />
 
-      <main className="max-w-7xl mx-auto px-6 py-20">
+      <main className="max-w-7xl mx-auto px-6 pt-28 pb-20">
         
         {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-20">

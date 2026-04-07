@@ -3,17 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { 
-  FileText, BarChart3, UploadCloud, 
-  ChevronRight, Settings, Plus, X, Crown, CreditCard, Sparkles,
+import {
+  FileText, BarChart3, UploadCloud,
+  ChevronRight, Settings, Plus, Crown, CreditCard,
   ArrowUpRight, Activity, Zap, LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { motion } from "framer-motion";
 import DashboardNavbar from "./dashboard-navbar";
 
 interface DashboardClientProps {
@@ -28,7 +27,6 @@ interface DashboardClientProps {
 
 export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [toolModalOpen, setToolModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const supabase = createClient();
@@ -71,12 +69,13 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
     <div className="min-h-screen bg-background font-sans text-foreground">
       
       {/* FIXED: Removed onSignOut and isSigningOut props to match refactored Navbar */}
-      <DashboardNavbar 
+      <DashboardNavbar
         userProfile={{
           name: userName,
           email: user.email,
           credits: credits,
-          initial: userName[0] || "D"
+          initial: userName[0] || "D",
+          avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
         }}
       />
 
@@ -201,13 +200,13 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           <aside className="space-y-6">
              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
                 <div className="flex items-center gap-2 mb-6">
-                   <Sparkles size={14} className="text-primary" />
+                   <Zap size={14} className="text-primary" />
                    <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">Advanced Toolset</h4>
                 </div>
                 <div className="space-y-2">
-                   <QuickAction icon={<FileText size={16} />} label="Cover Letter Gen" onClick={() => setToolModalOpen(true)} />
-                   <QuickAction icon={<BarChart3 size={16} />} label="Interview Simulator" onClick={() => setToolModalOpen(true)} />
-                   <QuickAction icon={<Settings size={16} />} label="Profile Config" onClick={() => setToolModalOpen(true)} />
+                   <QuickAction icon={<FileText size={16} />} label="Cover Letter Gen" onClick={() => router.push('/dashboard/cover-letter')} />
+                   <QuickAction icon={<BarChart3 size={16} />} label="Interview Simulator" onClick={() => router.push('/dashboard/interview')} />
+                   <QuickAction icon={<Settings size={16} />} label="Profile Config" onClick={() => router.push('/settings')} />
                 </div>
                 
                 <div className="mt-8 pt-6 border-t border-border">
@@ -234,33 +233,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
         </div>
       </main>
 
-      <AnimatePresence>
-        {toolModalOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
-            onClick={() => setToolModalOpen(false)} 
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
-          >
-            <motion.div 
-              initial={{ scale: 0.98, opacity: 0, y: 10 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.98, opacity: 0, y: 10 }} 
-              onClick={(e) => e.stopPropagation()} 
-              className="relative w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-2xl text-center"
-            >
-              <button onClick={() => setToolModalOpen(false)} className="absolute right-4 top-4 text-muted-foreground hover:text-foreground">
-                <X size={20} />
-              </button>
-              <div className="mx-auto h-48 w-48 mb-4">
-                <DotLottieReact src="https://lottie.host/494878ca-55d5-4afd-87d4-ab556d9851f9/8lYbxp0lwv.lottie" loop autoplay />
-              </div>
-              <h3 className="font-serif text-2xl text-foreground mb-2">Refining Engine</h3>
-              <p className="text-sm text-muted-foreground mb-8">We're currently training the Gemini logic for this module. Standby for deployment.</p>
-              <Button onClick={() => setToolModalOpen(false)} className="w-full bg-primary text-primary-foreground font-bold h-11 rounded-xl">
-                Acknowledge
-              </Button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

@@ -26,9 +26,30 @@ const LoginPage: FC = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSignUp, setIsSignUp] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [forgotSent, setForgotSent] = useState<boolean>(false);
 
   const router = useRouter();
   const supabase = createClient();
+
+  const handleForgotPassword = useCallback(async (): Promise<void> => {
+    if (!email) {
+      toast.error("Enter your email address above first.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/settings`,
+      });
+      if (error) throw error;
+      setForgotSent(true);
+      toast.success("Password reset link sent! Check your inbox.");
+    } catch {
+      toast.error("Failed to send reset email.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [email, supabase]);
 
   const handleGoogleLogin = useCallback(async (): Promise<void> => {
     setIsLoading(true);
@@ -196,7 +217,14 @@ const LoginPage: FC = (): JSX.Element => {
               <div className="flex items-center justify-between ml-1">
                 <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Password</label>
                 {!isSignUp && (
-                  <button type="button" className="text-[11px] font-bold text-primary hover:underline">Forgot?</button>
+                  <button
+                    type="button"
+                    onClick={handleForgotPassword}
+                    disabled={isLoading}
+                    className="text-[11px] font-bold text-primary hover:underline disabled:opacity-50"
+                  >
+                    {forgotSent ? "Email sent ✓" : "Forgot?"}
+                  </button>
                 )}
               </div>
               <div className="relative">

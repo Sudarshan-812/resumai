@@ -24,8 +24,7 @@ async function callOpenAI(prompt: string, key: string) {
 }
 
 async function callGemini(prompt: string, key: string) {
-  // 💡 SENIOR DEV FIX: Using the modern Gemini 2.0 Flash endpoint
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${encodeURIComponent(key)}`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
 
   const body = {
     contents: [
@@ -42,6 +41,7 @@ async function callGemini(prompt: string, key: string) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "x-goog-api-key": key,
     },
     body: JSON.stringify(body),
   });
@@ -80,4 +80,4 @@ export async function GET() {
     console.error("AI LLM route error:", errorMessage);
     return NextResponse.json({ ok: false, error: errorMessage }, { status: 500 });
   }
-}
+} 

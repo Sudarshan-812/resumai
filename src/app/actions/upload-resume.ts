@@ -29,14 +29,6 @@ export async function processResume(formData: FormData) {
     ? rawJobDescription.trim() 
     : "";
 
-  // 🐛 DEBUG LOGS: Check your VS Code terminal when you hit upload to see these!
-  console.log("--- NEW SCAN INITIATED ---");
-  console.log("File Name:", file?.name || "No file");
-  console.log("JD Length:", jobDescription.length);
-  if (jobDescription === "undefined") {
-    console.warn("⚠️ WARNING: Frontend sent the literal word 'undefined' instead of actual JD text!");
-  }
-
   const supabase = await createClient();
 
   // 2. Auth Check
@@ -69,12 +61,8 @@ export async function processResume(formData: FormData) {
       };
     }
 
-    console.log("PDF parsed successfully. Length:", text.length);
-
     // 5. AI Analysis
-    console.log("Sending to Gemini 2.5 Flash...");
     const analysis = await analyzeResume(text, jobDescription);
-    console.log("Gemini Analysis complete. ATS Score:", analysis.ats_score);
 
     // 6. Save Resume Text
     const { data: resume, error: resumeError } = await supabase
@@ -88,7 +76,6 @@ export async function processResume(formData: FormData) {
       .single();
 
     if (resumeError) {
-      console.error("Supabase Resume Insert Error:", resumeError);
       throw new Error("Failed to save resume to database.");
     }
 
@@ -103,12 +90,11 @@ export async function processResume(formData: FormData) {
         skills_found: analysis.skills_found,
         missing_keywords: analysis.missing_keywords,
         formatting_issues: analysis.formatting_issues || [],
-        job_description: jobDescription, 
-        calculated_yoe: analysis.calculated_yoe || 0 
+        job_description: jobDescription,
+        calculated_yoe: analysis.calculated_yoe || 0
       });
 
     if (analysisError) {
-      console.error("Supabase Analysis Insert Error:", analysisError);
       throw new Error("Failed to save analysis results to database.");
     }
 
@@ -116,7 +102,6 @@ export async function processResume(formData: FormData) {
     return { success: true, data: analysis, id: resume.id };
 
   } catch (error: any) {
-    console.error("Fatal processing error:", error);
     return { success: false, message: error.message || "Analysis failed due to an unexpected error." };
   }
 }

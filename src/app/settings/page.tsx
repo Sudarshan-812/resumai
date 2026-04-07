@@ -1,108 +1,160 @@
 "use client";
 
-import type { FC, JSX } from "react";
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, LogOut } from "lucide-react";
-import type { User } from "@supabase/supabase-js";
+import { motion } from "framer-motion";
+import { LogOut, CreditCard, Mail, User, ShieldCheck } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
+import { toast } from "sonner";
+import NavbarWrapper from "@/app/dashboard/NavbarWrapper";
 
-const SettingsPage: FC = (): JSX.Element => {
+export default function SettingsPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  // Logged-in user fetched from Supabase auth
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser]         = useState<any>(null);
+  const [profile, setProfile]   = useState<any>(null);
+  const [loading, setLoading]   = useState(true);
+  const [signingOut, setSigningOut] = useState(false);
 
-  // Used to block UI until auth status is known
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  // Fetch current user on mount
   useEffect(() => {
-    const fetchUser = async (): Promise<void> => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      // Redirect unauthenticated users to login
-      if (!user) {
-        router.push("/login");
-        return;
-      }
-
+    const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/login"); return; }
       setUser(user);
-      setIsLoading(false);
-    };
 
-    fetchUser();
+      const { data } = await supabase.from("profiles").select("credits, full_name").eq("id", user.id).single();
+      setProfile(data);
+      setLoading(false);
+    };
+    load();
   }, [router, supabase]);
 
-  // Sign out and hard-refresh to reset global UI (navbar, caches, etc.)
-  const handleLogout = useCallback(async (): Promise<void> => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+  const handleSignOut = useCallback(async () => {
+    setSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      window.location.href = "/";
+    } catch {
+      toast.error("Failed to sign out.");
+      setSigningOut(false);
+    }
   }, [supabase]);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-black text-white">
-        Loading...
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     );
   }
 
+  const name    = profile?.full_name || user?.email?.split("@")[0] || "User";
+  const initial = name[0]?.toUpperCase() ?? "U";
+  const credits = profile?.credits ?? 0;
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
   return (
-    <div className="min-h-screen bg-black px-6 pt-32 text-white">
-      <div className="mx-auto max-w-2xl">
-        {/* Back navigation */}
-        <Link
-          href="/"
-          className="mb-8 inline-flex items-center gap-2 text-zinc-400 transition-colors hover:text-white"
+    <div className="min-h-screen bg-background text-foreground font-sans">
+      <NavbarWrapper />
+      <main className="max-w-2xl mx-auto px-6 pt-28 pb-12 space-y-4">
+
+        {/* Profile card */}
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-card border border-border rounded-2xl p-6"
         >
-          <ArrowLeft size={20} />
-          Back to Dashboard
-        </Link>
-
-        <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8">
-          {/* User header */}
-          <div className="mb-8 flex items-center gap-6">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-tr from-indigo-500 to-purple-600 text-3xl font-bold">
-              {user?.email?.charAt(0).toUpperCase()}
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full overflow-hidden bg-foreground text-background flex items-center justify-center text-xl font-bold shrink-0">
+              {avatarUrl
+                ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                : initial}
             </div>
-
-            <div>
-              <h1 className="text-2xl font-bold">{user?.email}</h1>
-              <span className="mt-2 inline-block rounded-full border border-indigo-500/20 bg-indigo-500/20 px-3 py-1 text-xs font-bold text-indigo-400">
-                Free Plan
-              </span>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-foreground text-base truncate">{name}</p>
+              <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
             </div>
           </div>
+        </motion.div>
 
-          {/* Account info */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between rounded-xl border border-zinc-800 bg-black p-4">
-              <div className="flex items-center gap-3">
-                <Sparkles size={20} className="text-yellow-500" />
-                <span>Credits Remaining</span>
-              </div>
-              <span className="font-mono font-bold">3 / 3</span>
+        {/* Info rows */}
+        {[
+          {
+            icon: <Mail size={15} />,
+            label: "Email",
+            value: user?.email,
+            delay: 0.05,
+          },
+          {
+            icon: <User size={15} />,
+            label: "Display name",
+            value: name,
+            delay: 0.1,
+          },
+          {
+            icon: <ShieldCheck size={15} />,
+            label: "Account status",
+            value: "Active",
+            valueClass: "text-emerald-600 dark:text-emerald-400",
+            delay: 0.15,
+          },
+        ].map(row => (
+          <motion.div
+            key={row.label}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: row.delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3 text-muted-foreground">
+              {row.icon}
+              <span className="text-sm font-medium text-foreground">{row.label}</span>
             </div>
+            <span className={`text-sm font-medium truncate max-w-[200px] ${row.valueClass ?? "text-muted-foreground"}`}>
+              {row.value}
+            </span>
+          </motion.div>
+        ))}
 
-            {/* Logout */}
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl border border-red-500/20 py-4 font-bold text-red-500 transition-all hover:bg-red-500/10"
-            >
-              <LogOut size={18} />
-              Sign Out
-            </button>
+        {/* Credits */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <CreditCard size={15} />
+            <span className="text-sm font-medium text-foreground">Credits remaining</span>
           </div>
-        </div>
-      </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-bold text-foreground tabular-nums">{credits}</span>
+            <Link href="/billing" className="text-xs font-bold text-primary hover:underline">
+              Buy more
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Sign out */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <button
+            onClick={handleSignOut}
+            disabled={signingOut}
+            className="w-full h-11 rounded-2xl border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm font-semibold hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+          >
+            <LogOut size={15} />
+            {signingOut ? "Signing out..." : "Sign Out"}
+          </button>
+        </motion.div>
+
+      </main>
     </div>
   );
-};
-
-export default SettingsPage;
+}

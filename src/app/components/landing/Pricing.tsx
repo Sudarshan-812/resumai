@@ -2,7 +2,7 @@
 
 import type { FC, JSX } from "react";
 import Link from "next/link";
-import { Check, Sparkles, Star } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -62,7 +62,7 @@ const Pricing: FC = (): JSX.Element => {
         {/* ─── HEADER (Matched to Feature Grid) ─── */}
         <div className="text-center max-w-2xl mx-auto mb-20">
           <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-primary mb-3.5 font-mono inline-flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5" />
+            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
             Simple Pricing
           </div>
           <h2 className="font-serif text-[clamp(32px,4vw,56px)] text-foreground tracking-[-0.02em] leading-[1.1] mb-4">

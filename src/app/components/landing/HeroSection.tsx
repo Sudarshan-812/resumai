@@ -3,7 +3,7 @@
 import type { FC, JSX } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, Sparkles, Play, CheckCircle2, TrendingUp } from "lucide-react";
+import { ArrowRight, Play, CheckCircle2, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const fadeUp: Variants = {
@@ -53,9 +53,9 @@ const HeroSection: FC = (): JSX.Element => {
           className="mx-auto mb-8 w-fit"
         >
           <div className="flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 backdrop-blur-md">
-            <Sparkles className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" aria-hidden="true" />
             <span className="text-xs font-medium text-foreground tracking-wide">
-              Powered by <span className="font-semibold text-primary">Gemini 2.0 Flash</span>
+              Powered by <span className="font-semibold text-primary">Gemini 2.5 Flash</span>
             </span>
           </div>
         </motion.div>
@@ -95,32 +95,47 @@ const HeroSection: FC = (): JSX.Element => {
           transition={{ delay: 0.3 }}
           className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          <Link href="/login" aria-label="Build resume for free">
-            <Button
-              size="lg"
-              className="group h-12 rounded-xl bg-primary px-8 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] shadow-sm hover:shadow-md"
+          {/* Primary: Try Free (no login) */}
+          <Link href="/try" aria-label="Try free without signing up">
+            <motion.div
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              className="group relative h-12 flex items-center gap-2 rounded-xl bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/90 active:scale-[0.98] transition-colors overflow-hidden cursor-pointer"
             >
-              Build My Resume Free
-              <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-            </Button>
+              {/* Shimmer sweep */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12 pointer-events-none"
+                animate={{ x: ["-150%", "150%"] }}
+                transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
+              />
+              <span className="relative z-10">Try Free — No Login</span>
+              <ArrowRight className="h-4 w-4 relative z-10 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </motion.div>
           </Link>
 
-          <Link 
-            href="https://youtu.be/6-LzPphsGh8" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            aria-label="Watch demo video"
-          >
+          {/* Secondary: Sign up */}
+          <Link href="/login" aria-label="Create an account">
             <Button
               size="lg"
               variant="outline"
               className="group h-12 rounded-xl border-border bg-card/50 px-8 text-sm font-medium text-foreground backdrop-blur-sm transition-all hover:bg-muted/50 active:scale-[0.98]"
             >
               <Play className="mr-2 h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" aria-hidden="true" />
-              Watch Demo
+              Sign Up Free
             </Button>
           </Link>
         </motion.div>
+
+        {/* Social proof nudge */}
+        <motion.p
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          transition={{ delay: 0.4 }}
+          className="mt-4 text-xs text-muted-foreground"
+        >
+          3 free scans · No credit card · Results in ~10 seconds
+        </motion.p>
 
         {/* --- The Visual Anchor (Analysis Mockup) --- */}
         <motion.div
@@ -175,9 +190,8 @@ const HeroSection: FC = (): JSX.Element => {
             {/* Right: AI Suggestions Feed */}
             <div className="col-span-1 flex flex-col justify-center rounded-xl border border-border bg-background/50 p-6 md:col-span-2">
               <div className="mb-4 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-                  Gemini Corrections
+                  AI Suggestions
                 </span>
               </div>
               <div className="space-y-3">
@@ -193,7 +207,7 @@ const HeroSection: FC = (): JSX.Element => {
                 {/* Suggestion 2 */}
                 <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3 shadow-sm">
                   <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Sparkles className="h-3.5 w-3.5" />
+                    <CheckCircle2 className="h-3.5 w-3.5" />
                   </div>
                   <div className="text-sm leading-snug text-muted-foreground">
                     <strong className="font-medium text-foreground">Add Keywords</strong> — injected "React Native" and "CI/CD", which appear in 94% of matching job descriptions.
