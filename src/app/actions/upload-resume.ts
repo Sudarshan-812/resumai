@@ -20,57 +20,49 @@ const render_page = (pageData: any) => {
 };
 
 export async function processResume(formData: FormData) {
-  // 1. Extract and force type cast to handle any weird frontend passing
   const file = formData.get('file') as File | null;
-  const rawJobDescription = formData.get('jobDescription'); 
-  
-  // Clean the input to prevent "undefined" string ghosts
-  const jobDescription = typeof rawJobDescription === 'string' 
-    ? rawJobDescription.trim() 
+  const rawJobDescription = formData.get('jobDescription');
+
+  const jobDescription = typeof rawJobDescription === 'string'
+    ? rawJobDescription.trim()
     : "";
 
   const supabase = await createClient();
 
-  // 2. Auth Check
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return { success: false, message: "Please log in to analyze resumes" };
   }
 
-  // 3. Strict Validation
   if (!file || file.size === 0) {
     return { success: false, message: "No valid file uploaded" };
   }
-  
-  // Catch empty JDs or the literal string "undefined"
+
   if (!jobDescription || jobDescription === "undefined") {
     return { success: false, message: "Job Description is required for targeted analysis" };
   }
 
   try {
-    // 4. Extract text from PDF
     const buffer = Buffer.from(await file.arrayBuffer());
     const data = await pdfParse(buffer, { pagerender: render_page, max: 0 });
     const text = data.text.trim();
 
     if (!text || text.length < 50) {
-      return { 
-        success: false, 
-        message: "No readable text found in PDF", 
-        hint: "This is usually a scanned/image resume. Export as text PDF." 
+      return {
+        success: false,
+        message: "No readable text found in PDF",
+        hint: "This is usually a scanned/image resume. Export as text PDF."
       };
     }
 
-    // 5. AI Analysis
     const analysis = await analyzeResume(text, jobDescription);
 
-    // 6. Save Resume Text
     const { data: resume, error: resumeError } = await supabase
       .from('resumes')
       .insert({
         user_id: user.id,
         file_name: file.name,
-        content: text.slice(0, 150_000), // Prevent DB overflow
+        content: text.slice(0, 150_000),
       })
       .select()
       .single();
@@ -79,7 +71,6 @@ export async function processResume(formData: FormData) {
       throw new Error("Failed to save resume to database.");
     }
 
-    // 7. Save Analysis
     const { error: analysisError } = await supabase
       .from('analyses')
       .insert({

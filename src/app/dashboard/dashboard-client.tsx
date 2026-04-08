@@ -31,7 +31,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
   const router = useRouter();
   const supabase = createClient();
 
-  // Prevent hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -68,7 +67,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       
-      {/* FIXED: Removed onSignOut and isSigningOut props to match refactored Navbar */}
       <DashboardNavbar
         userProfile={{
           name: userName,
@@ -81,7 +79,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
 
       <main className="mx-auto max-w-6xl px-6 pt-24 pb-12">
         
-        {/* ─── DASHBOARD HEADER ─── */}
         <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-primary mb-2">
@@ -101,7 +98,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           </Link>
         </header>
 
-        {/* ─── STATS GRID ─── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-10 shadow-sm">
           <StatCard 
             title="Total Analyses" 
@@ -218,8 +214,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                       <p className="text-[11px] text-muted-foreground leading-relaxed">
                          Unlock infinite scans and deep reasoning logs with our enterprise tier.
                       </p>
-                      {/* Added Sign Out here temporarily so you aren't locked in while we build the Config modal */}
-                      <button 
+                      <button
                         onClick={handleSignOut} 
                         disabled={isSigningOut}
                         className="mt-4 flex items-center gap-2 text-[10px] font-bold uppercase text-rose-600 hover:text-rose-700 transition-colors"

@@ -1,9 +1,5 @@
-// src/app/lib/parser.ts
-// server-only
 import pdfPkg from 'pdf-parse';
 
-// pdf-parse v2 may export a default; v1 exports the function directly.
-// Normalize to a callable function:
 const pdf: (data: Buffer) => Promise<{ text: string }> = (pdfPkg as any)?.default ?? (pdfPkg as any);
 
 export const parseResume = async (file: File) => {

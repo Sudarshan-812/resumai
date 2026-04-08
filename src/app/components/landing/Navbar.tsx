@@ -52,7 +52,6 @@ export default function Navbar() {
 
   useEffect(() => {
     if (pathname !== "/") { setActiveId(""); return; }
-    // set initial
     setActiveId(getActiveFromScroll());
     window.addEventListener("scroll", updateActive, { passive: true });
     return () => window.removeEventListener("scroll", updateActive);
@@ -67,7 +66,6 @@ export default function Navbar() {
     setOpen(false);
 
     if (!hash) {
-      // Home — scroll to top and clean URL
       e.preventDefault();
       window.scrollTo({ top: 0, behavior: "smooth" });
       window.history.replaceState(null, "", "/");
@@ -75,21 +73,17 @@ export default function Navbar() {
     }
 
     if (pathname === "/") {
-      // Already on home — scroll without letting the browser add the hash
       e.preventDefault();
       const el = document.getElementById(hash);
       if (el) {
         el.scrollIntoView({ behavior: "smooth" });
-        // Keep URL clean so refresh doesn't re-scroll
         window.history.replaceState(null, "", "/");
       }
     }
-    // If on another page, allow the full navigation to /#hash (browser will scroll on load)
   };
 
   return (
     <>
-      {/* ── Desktop / tablet navbar ── */}
       <motion.header
         initial={{ y: -64, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -109,7 +103,6 @@ export default function Navbar() {
               : "0 2px 12px rgba(0,0,0,0.05)",
           }}
         >
-          {/* Logo */}
           <Link href="/" onClick={(e) => handleNavClick(e, "home", "")} className="flex items-center gap-2.5 ml-2 group" aria-label="Home">
             <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
               <LogoMark />
@@ -119,7 +112,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop tabs */}
           <nav className="hidden md:flex items-center gap-0.5 relative">
             {TABS.map((tab) => {
               const isActive = activeId === tab.id;
@@ -152,7 +144,6 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right actions */}
           <div className="flex items-center gap-2 mr-1">
             {mounted && (
               <button
@@ -203,7 +194,6 @@ export default function Navbar() {
         </div>
       </motion.header>
 
-      {/* ── Mobile overlay ── */}
       <AnimatePresence>
         {open && (
           <motion.div

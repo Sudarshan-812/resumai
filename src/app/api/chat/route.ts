@@ -13,7 +13,6 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Fetch the resume analysis for context
   let context = "";
   if (resumeId) {
     const { data: resume } = await supabase

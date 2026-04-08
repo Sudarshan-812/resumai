@@ -12,7 +12,6 @@ interface ScoreGaugeProps {
 export default function ScoreGauge({ score }: ScoreGaugeProps) {
   const [currentScore, setCurrentScore] = useState(0);
 
-  // Score Color Logic mapping to our established technical palette
   const getScoreColor = (s: number) => {
     if (s >= 80) return "stroke-emerald-500 text-emerald-500";
     if (s >= 60) return "stroke-amber-500 text-amber-500";
@@ -26,9 +25,6 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
     return () => clearTimeout(timer);
   }, [score]);
 
-  // SVG Geometry for a 240-degree arc
-  // Radius 40, Viewbox 100x100
-  // Arc length for 240 degrees on radius 40: (240/360) * 2 * PI * 40 ≈ 167.5
   const radius = 40;
   const circumference = 2 * Math.PI * radius;
   const arcLength = (240 / 360) * circumference;
@@ -36,8 +32,7 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
 
   return (
     <div className="group relative flex flex-col items-center justify-center p-8 border border-border bg-card rounded-3xl shadow-sm overflow-hidden">
-      
-      {/* Background Technical Header */}
+
       <div className="absolute top-0 inset-x-0 h-8 border-b border-border bg-muted/30 flex items-center justify-between px-4">
         <span className="text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground/50">
           Telemetry_04
@@ -47,7 +42,6 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
 
       <div className="mt-4 relative w-48 h-48">
         <svg className="w-full h-full rotate-[150deg]" viewBox="0 0 100 100">
-          {/* 1. Track Background (Dashed/Notched Style) */}
           <circle
             cx="50"
             cy="50"
@@ -60,7 +54,6 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
             className="text-muted/30"
           />
 
-          {/* 2. Calibration Ticks (Visual Only) */}
           <circle
             cx="50"
             cy="50"
@@ -68,12 +61,11 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
             fill="none"
             stroke="currentColor"
             strokeWidth="6"
-            strokeDasharray="1 7.35" // Creates the little "tick" look
+            strokeDasharray="1 7.35"
             strokeDashoffset="0.5"
             className="text-background"
           />
 
-          {/* 3. Main Progress Arc */}
           <motion.circle
             cx="50"
             cy="50"
@@ -90,9 +82,8 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
           />
         </svg>
 
-        {/* 4. Center Labeling */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pt-4">
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn("text-6xl font-bold font-mono tracking-tighter tabular-nums leading-none", colors.split(' ')[1])}
@@ -104,7 +95,7 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
               Index_Match
             </span>
             <div className="mt-1 h-1 w-8 rounded-full bg-border overflow-hidden">
-               <motion.div 
+               <motion.div
                  initial={{ width: 0 }}
                  animate={{ width: `${currentScore}%` }}
                  className={cn("h-full", colors.split(' ')[1].replace('text', 'bg'))}
@@ -114,7 +105,6 @@ export default function ScoreGauge({ score }: ScoreGaugeProps) {
         </div>
       </div>
 
-      {/* Status Footer */}
       <div className="mt-2 flex items-center gap-2">
         <div className={cn("h-1.5 w-1.5 rounded-full animate-pulse", colors.split(' ')[1].replace('text', 'bg'))} />
         <span className="text-[10px] font-mono font-bold text-muted-foreground uppercase">

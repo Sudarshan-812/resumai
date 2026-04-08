@@ -19,11 +19,11 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
     onError: (err: any) => toast.error(err.message || "Failed to execute command.")
   } as any);
 
-  const { 
-    messages = [], 
-    input = '', 
-    setInput = () => {}, 
-    isLoading = false 
+  const {
+    messages = [],
+    input = '',
+    setInput = () => {},
+    isLoading = false
   } = chat;
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
 
   const handleSendMessage = async (e?: FormEvent, manualText?: string) => {
     e?.preventDefault();
-    
+
     const textToSend = manualText || input || '';
     if (!textToSend.trim() || isLoading) return;
 
@@ -45,10 +45,9 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
         setInput(textToSend);
         setTimeout(() => chat.handleSubmit?.(), 50);
       }
-      
+
       if (!manualText) setInput('');
     } catch (err) {
-      console.error("Chat submission error:", err);
       toast.error("Pipeline communication failure.");
     }
   };
@@ -59,8 +58,7 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
 
   return (
     <div className="flex flex-col h-full bg-background relative">
-      
-      {/* ─── MESSAGES AREA ─── */}
+
       <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
         {messages.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center px-4 animate-in fade-in duration-500">
@@ -71,14 +69,14 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
             <p className="text-xs text-muted-foreground max-w-[260px] mb-8 leading-relaxed">
               Execute commands below or type natural language to manipulate your resume data, extract keywords, and rewrite bullets.
             </p>
-            
+
             <div className="flex flex-col gap-2 w-full max-w-[300px]">
               {[
                 { cmd: "/rewrite_summary", desc: "Make it more punchy and metric-driven" },
                 { cmd: "/inject_keywords", desc: "How do I add the missing JD skills?" },
                 { cmd: "/audit_format", desc: "Fix my structural formatting issues" }
               ].map((prompt) => (
-                <button 
+                <button
                   key={prompt.cmd}
                   onClick={() => handleQuickPrompt(prompt.desc)}
                   className="group flex flex-col items-start gap-1 bg-card hover:bg-muted border border-border py-3 px-4 rounded-xl transition-all text-left shadow-sm hover:border-primary/30"
@@ -98,17 +96,17 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
             <div key={m.id} className={cn("flex gap-3", m.role === 'user' ? "flex-row-reverse" : "")}>
               <div className={cn(
                 "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm border",
-                m.role === 'user' 
-                  ? "bg-primary border-primary text-primary-foreground" 
+                m.role === 'user'
+                  ? "bg-primary border-primary text-primary-foreground"
                   : "bg-muted border-border text-foreground"
               )}>
                 {m.role === 'user' ? <User className="w-4 h-4" /> : <Terminal className="w-4 h-4" />}
               </div>
-              
+
               <div className={cn(
                 "px-4 py-3 max-w-[85%] text-sm leading-relaxed shadow-sm",
-                m.role === 'user' 
-                  ? "bg-primary text-primary-foreground rounded-xl rounded-tr-sm" 
+                m.role === 'user'
+                  ? "bg-primary text-primary-foreground rounded-xl rounded-tr-sm"
                   : "bg-muted/40 border border-border text-foreground rounded-xl rounded-tl-sm whitespace-pre-wrap"
               )}>
                 {m.content}
@@ -116,8 +114,7 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
             </div>
           ))
         )}
-        
-        {/* Processing State */}
+
         {isLoading && (
           <div className="flex gap-3 justify-start animate-in fade-in">
             <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0 shadow-sm">
@@ -132,24 +129,23 @@ export default function AiAssistant({ resumeId }: JobAssistantProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* ─── INPUT AREA ─── */}
       <div className="p-4 bg-background border-t border-border shrink-0">
-        <form 
-          onSubmit={handleSendMessage} 
+        <form
+          onSubmit={handleSendMessage}
           className="relative flex items-center bg-muted/20 border border-border rounded-xl focus-within:border-primary/50 focus-within:bg-background focus-within:ring-2 focus-within:ring-primary/10 transition-all shadow-sm overflow-hidden"
         >
           <div className="absolute left-3 text-muted-foreground/50">
             <ChevronRight className="w-4 h-4" />
           </div>
           <input
-            value={input || ''} 
+            value={input || ''}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Enter command or question..."
             disabled={isLoading}
             className="w-full bg-transparent pl-9 pr-12 py-3.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={!(input?.trim()) || isLoading}
             className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-30 transition-all shadow-sm active:scale-[0.95]"
           >

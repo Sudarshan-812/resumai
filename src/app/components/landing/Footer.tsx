@@ -23,7 +23,6 @@ const Footer: FC = (): JSX.Element => {
     <footer className="border-t border-border bg-background" aria-labelledby="footer-heading">
       <h2 id="footer-heading" className="sr-only">Footer</h2>
 
-      {/* ── CTA Band ── */}
       <div className="border-b border-border py-20">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -64,11 +63,9 @@ const Footer: FC = (): JSX.Element => {
         </motion.div>
       </div>
 
-      {/* ── Footer Links ── */}
       <div className="mx-auto max-w-6xl px-6">
         <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4 pt-20">
 
-          {/* Brand */}
           <div className="space-y-6">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
@@ -91,7 +88,6 @@ const Footer: FC = (): JSX.Element => {
             </div>
           </div>
 
-          {/* Product */}
           <nav aria-label="Product" className="space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Product</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
@@ -102,7 +98,6 @@ const Footer: FC = (): JSX.Element => {
             </ul>
           </nav>
 
-          {/* Legal */}
           <nav aria-label="Legal" className="space-y-5">
             <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Legal</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
@@ -113,7 +108,6 @@ const Footer: FC = (): JSX.Element => {
             </ul>
           </nav>
 
-          {/* Status */}
           <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
             <h3 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Global Status</h3>
             <div className="mb-4 flex items-center gap-2.5 text-xs font-medium text-emerald-600 dark:text-emerald-400" role="status" aria-live="polite">
@@ -132,7 +126,6 @@ const Footer: FC = (): JSX.Element => {
 
         </div>
 
-        {/* Bottom bar */}
         <div className="flex flex-col items-center justify-between gap-6 border-t border-border pt-8 pb-10 md:flex-row">
           <p className="text-xs text-muted-foreground font-medium">
             © 2026 ResumAI Inc. Built for developers 🇮🇳

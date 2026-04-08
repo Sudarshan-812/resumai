@@ -48,7 +48,6 @@ export async function analyzeResumeAsGuest(formData: FormData) {
 
     const analysis = await analyzeResume(text, jobDescription);
 
-    // Return data directly — no DB save for guests
     return {
       success: true as const,
       data: {

@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(ls src/app/try/ src/app/history/ src/app/actions/guest-analyze.ts src/app/dashboard/error.tsx src/app/dashboard/[id]/error.tsx)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "WebFetch(domain:ui.watermelon.sh)",
+      "WebFetch(domain:www.landing.love)"
     ]
   }
 }

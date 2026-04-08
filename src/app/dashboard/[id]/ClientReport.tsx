@@ -12,7 +12,6 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
-// ─── Score Ring ───
 function ScoreRing({ score }: { score: number }) {
   const [current, setCurrent] = useState(0);
 
@@ -35,11 +34,9 @@ function ScoreRing({ score }: { score: number }) {
     <div className="flex flex-col items-center gap-2">
       <div className="relative w-36 h-36">
         <svg className="w-full h-full rotate-[130deg]" viewBox="0 0 120 120">
-          {/* Track */}
           <circle cx="60" cy="60" r={r} fill="none" strokeWidth="6"
             strokeDasharray={`${arc} ${circ}`} strokeLinecap="round"
             className="stroke-muted/30" />
-          {/* Fill */}
           <motion.circle cx="60" cy="60" r={r} fill="none" strokeWidth="6"
             strokeDasharray={`${arc} ${circ}`} strokeLinecap="round"
             initial={{ strokeDashoffset: arc }}
@@ -64,7 +61,6 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-// ─── AI Chat Panel ───
 function ChatPanel({ onClose, resumeId }: { onClose: () => void; resumeId: string }) {
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -108,7 +104,6 @@ function ChatPanel({ onClose, resumeId }: { onClose: () => void; resumeId: strin
   );
 }
 
-// ─── Keyword chip ───
 function Chip({ label, variant }: { label: string; variant: "match" | "missing" }) {
   const clean = label.replace(/\[REQUIRED\]\s?|\[PREFERRED\]\s?/g, "");
   const isRequired = label.includes("[REQUIRED]");
@@ -178,7 +173,6 @@ export default function ClientReport({
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-28">
 
-        {/* ── Back ── */}
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-8 group"
@@ -187,7 +181,6 @@ export default function ClientReport({
           All analyses
         </Link>
 
-        {/* ── Hero card ── */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -233,7 +226,6 @@ export default function ClientReport({
           </div>
         </motion.div>
 
-        {/* ── Stats row ── */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
@@ -254,10 +246,8 @@ export default function ClientReport({
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* ── Left: tabs ── */}
           <div className="lg:col-span-2 space-y-4">
 
-            {/* Tab bar */}
             <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border border-border w-fit">
               {TABS.map(t => (
                 <button
@@ -280,7 +270,6 @@ export default function ClientReport({
               ))}
             </div>
 
-            {/* Tab content */}
             <AnimatePresence mode="wait">
 
               {tab === "summary" && (
@@ -301,7 +290,6 @@ export default function ClientReport({
                   transition={{ duration: 0.3 }}
                   className="bg-card border border-border rounded-2xl p-6 space-y-6"
                 >
-                  {/* Matched */}
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
@@ -321,7 +309,6 @@ export default function ClientReport({
 
                   <div className="h-px bg-border" />
 
-                  {/* Missing */}
                   <div>
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-xs font-semibold text-foreground uppercase tracking-wider flex items-center gap-2">
@@ -378,10 +365,8 @@ export default function ClientReport({
             </AnimatePresence>
           </div>
 
-          {/* ── Right: sidebar ── */}
           <div className="space-y-4">
 
-            {/* AI Assistant CTA */}
             <motion.div
               initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
@@ -402,7 +387,6 @@ export default function ClientReport({
               </button>
             </motion.div>
 
-            {/* Score breakdown */}
             <motion.div
               initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
