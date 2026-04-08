@@ -8,6 +8,7 @@ import { LogOut, CreditCard, Mail, User, ShieldCheck, Pencil, Check, X, Loader2 
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
 import NavbarWrapper from "@/app/dashboard/NavbarWrapper";
+import { Skeleton } from "@/app/components/ui/skeleton";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -69,8 +70,37 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="min-h-screen bg-background">
+        <NavbarWrapper />
+        <main className="max-w-2xl mx-auto px-6 pt-28 pb-12 space-y-4">
+          <div className="bg-card border border-border rounded-2xl p-6 flex items-center gap-4">
+            <Skeleton className="h-14 w-14 rounded-full shrink-0" />
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-32 rounded" />
+              <Skeleton className="h-3 w-48 rounded" />
+            </div>
+          </div>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-4 w-24 rounded" />
+              </div>
+              <Skeleton className="h-4 w-36 rounded" />
+            </div>
+          ))}
+          <div className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-4 w-4 rounded" />
+              <Skeleton className="h-4 w-32 rounded" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-4 w-8 rounded" />
+              <Skeleton className="h-4 w-16 rounded" />
+            </div>
+          </div>
+          <Skeleton className="h-11 w-full rounded-2xl" />
+        </main>
       </div>
     );
   }
