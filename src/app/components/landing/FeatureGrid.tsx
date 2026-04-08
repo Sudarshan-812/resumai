@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { 
+import {
   FileText,
   BarChart3,
   UploadCloud,
@@ -10,14 +10,13 @@ import {
 
 export default function FeatureGrid() {
   return (
-    <section 
-      id="features" 
-      // SEMANTIC UPDATE: Replaced explicit zinc colors with background and border variables
+    <section
+      id="features"
       className="py-24 md:py-32 bg-background border-y border-border"
     >
       <div className="max-w-6xl mx-auto px-6">
-        
-        {/* ─── HEADER ─── */}
+
+        {/* HEADER */}
         <div className="mb-16">
           <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-primary mb-3.5 font-mono">
             Platform Capabilities
@@ -30,16 +29,12 @@ export default function FeatureGrid() {
           </p>
         </div>
 
-        {/* ─── THE BENTO GRID ─── 
-            - bg-border creates the 1px border lines between cards
-            - gap-px creates the actual hairline divisions
-        */}
+        {/* BENTO GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border border border-border rounded-2xl overflow-hidden shadow-sm">
-          
-          {/* FEATURE 1: ATS SCORE (Top Left) */}
+
+          {/* FEATURE 1: ATS SCORE */}
           <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            
             <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
               <BarChart3 strokeWidth={1.75} className="w-5 h-5" />
             </div>
@@ -51,10 +46,9 @@ export default function FeatureGrid() {
             </p>
           </div>
 
-          {/* FEATURE 2: COVER LETTERS (Top Right) */}
+          {/* FEATURE 2: COVER LETTERS */}
           <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            
             <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
               <FileText strokeWidth={1.75} className="w-5 h-5" />
             </div>
@@ -66,10 +60,9 @@ export default function FeatureGrid() {
             </p>
           </div>
 
-          {/* FEATURE 3: PDF PARSING (Full Width Bottom) */}
+          {/* FEATURE 3: PDF PARSING (Full Width) */}
           <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 md:col-span-2 overflow-hidden flex flex-col md:flex-row gap-8 items-start md:items-center">
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            
             <div className="flex-1">
               <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
                 <UploadCloud strokeWidth={1.75} className="w-5 h-5" />
@@ -81,21 +74,19 @@ export default function FeatureGrid() {
                 Stop worrying about complex columns and hidden tables. Our parser extracts text and structure from your PDF exactly how enterprise ATS systems do it.
               </p>
             </div>
-            
             <div className="hidden md:flex flex-1 justify-end opacity-50 group-hover:opacity-100 transition-opacity duration-300">
-               <div className="border border-border rounded-lg p-4 bg-background shadow-sm w-full max-w-xs">
-                 <div className="h-2 w-1/3 bg-muted-foreground/30 rounded mb-3"></div>
-                 <div className="h-2 w-full bg-muted-foreground/30 rounded mb-2"></div>
-                 <div className="h-2 w-5/6 bg-muted-foreground/30 rounded mb-2"></div>
-                 <div className="h-2 w-4/6 bg-muted-foreground/30 rounded"></div>
-               </div>
+              <div className="border border-border rounded-lg p-4 bg-background shadow-sm w-full max-w-xs">
+                <div className="h-2 w-1/3 bg-muted-foreground/30 rounded mb-3"></div>
+                <div className="h-2 w-full bg-muted-foreground/30 rounded mb-2"></div>
+                <div className="h-2 w-5/6 bg-muted-foreground/30 rounded mb-2"></div>
+                <div className="h-2 w-4/6 bg-muted-foreground/30 rounded"></div>
+              </div>
             </div>
           </div>
 
-          {/* FEATURE 4: SMART REWRITES (Full Width Bottom) */}
+          {/* FEATURE 4: SMART REWRITES (Full Width) */}
           <div className="group relative bg-card hover:bg-muted/50 transition-colors duration-200 p-10 md:col-span-2 overflow-hidden flex flex-col md:flex-row gap-8 items-start md:items-center">
             <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            
             <div className="flex-1">
               <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-6">
                 <Wand2 strokeWidth={1.75} className="w-5 h-5" />
@@ -104,19 +95,18 @@ export default function FeatureGrid() {
                 Gemini-Powered Smart Rewrites
               </h3>
               <p className="text-sm text-muted-foreground leading-[1.6] max-w-lg">
-                Identify missing skills and let Gemini 2.0 rewrite weak bullet points using action verbs, metrics, and impact language that hiring managers notice.
+                Identify missing skills and let Gemini 2.5 rewrite weak bullet points using action verbs, metrics, and impact language that hiring managers notice.
               </p>
             </div>
-
             <div className="hidden md:flex flex-1 justify-end opacity-50 group-hover:opacity-100 transition-opacity duration-300">
-               <div className="border border-border rounded-lg p-4 bg-background shadow-sm w-full max-w-xs relative overflow-hidden">
-                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
-                 <div className="flex items-center gap-2 text-xs font-mono text-primary mb-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> Refactoring...
-                 </div>
-                 <div className="h-2 w-full bg-primary/20 rounded mb-2"></div>
-                 <div className="h-2 w-5/6 bg-primary/20 rounded"></div>
-               </div>
+              <div className="border border-border rounded-lg p-4 bg-background shadow-sm w-full max-w-xs relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/10 to-transparent translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+                <div className="flex items-center gap-2 text-xs font-mono text-primary mb-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" /> Refactoring...
+                </div>
+                <div className="h-2 w-full bg-primary/20 rounded mb-2"></div>
+                <div className="h-2 w-5/6 bg-primary/20 rounded"></div>
+              </div>
             </div>
           </div>
 

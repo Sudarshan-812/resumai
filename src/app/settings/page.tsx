@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { LogOut, CreditCard, Mail, User, ShieldCheck } from "lucide-react";
+import { LogOut, CreditCard, Mail, User, ShieldCheck, Pencil, Check, X, Loader2 } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
 import NavbarWrapper from "@/app/dashboard/NavbarWrapper";
@@ -13,10 +13,15 @@ export default function SettingsPage() {
   const router = useRouter();
   const supabase = createClient();
 
-  const [user, setUser]         = useState<any>(null);
-  const [profile, setProfile]   = useState<any>(null);
-  const [loading, setLoading]   = useState(true);
+  const [user, setUser]             = useState<any>(null);
+  const [profile, setProfile]       = useState<any>(null);
+  const [loading, setLoading]       = useState(true);
   const [signingOut, setSigningOut] = useState(false);
+
+  // Name editing state
+  const [editingName, setEditingName]   = useState(false);
+  const [nameInput, setNameInput]       = useState("");
+  const [savingName, setSavingName]     = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -30,6 +35,26 @@ export default function SettingsPage() {
     };
     load();
   }, [router, supabase]);
+
+  const handleSaveName = useCallback(async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed || !user) return;
+    setSavingName(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ full_name: trimmed })
+        .eq("id", user.id);
+      if (error) throw error;
+      setProfile((prev: any) => ({ ...prev, full_name: trimmed }));
+      setEditingName(false);
+      toast.success("Display name updated.");
+    } catch {
+      toast.error("Failed to update name.");
+    } finally {
+      setSavingName(false);
+    }
+  }, [nameInput, user, supabase]);
 
   const handleSignOut = useCallback(async () => {
     setSigningOut(true);
@@ -81,43 +106,87 @@ export default function SettingsPage() {
         </motion.div>
 
         {/* Info rows */}
-        {[
-          {
-            icon: <Mail size={15} />,
-            label: "Email",
-            value: user?.email,
-            delay: 0.05,
-          },
-          {
-            icon: <User size={15} />,
-            label: "Display name",
-            value: name,
-            delay: 0.1,
-          },
-          {
-            icon: <ShieldCheck size={15} />,
-            label: "Account status",
-            value: "Active",
-            valueClass: "text-emerald-600 dark:text-emerald-400",
-            delay: 0.15,
-          },
-        ].map(row => (
-          <motion.div
-            key={row.label}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: row.delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between"
-          >
-            <div className="flex items-center gap-3 text-muted-foreground">
-              {row.icon}
-              <span className="text-sm font-medium text-foreground">{row.label}</span>
+        {/* Email row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <Mail size={15} />
+            <span className="text-sm font-medium text-foreground">Email</span>
+          </div>
+          <span className="text-sm font-medium truncate max-w-[200px] text-muted-foreground">
+            {user?.email}
+          </span>
+        </motion.div>
+
+        {/* Display name row — editable */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-3 text-muted-foreground shrink-0">
+            <User size={15} />
+            <span className="text-sm font-medium text-foreground">Display name</span>
+          </div>
+
+          {editingName ? (
+            <div className="flex items-center gap-2 flex-1 justify-end">
+              <input
+                autoFocus
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSaveName();
+                  if (e.key === "Escape") setEditingName(false);
+                }}
+                className="h-8 max-w-[180px] rounded-lg border border-border bg-muted/30 px-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              />
+              <button
+                onClick={handleSaveName}
+                disabled={savingName || !nameInput.trim()}
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground disabled:opacity-50 transition-all"
+              >
+                {savingName ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} />}
+              </button>
+              <button
+                onClick={() => setEditingName(false)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground transition-all"
+              >
+                <X size={13} />
+              </button>
             </div>
-            <span className={`text-sm font-medium truncate max-w-[200px] ${row.valueClass ?? "text-muted-foreground"}`}>
-              {row.value}
-            </span>
-          </motion.div>
-        ))}
+          ) : (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-muted-foreground truncate max-w-[180px]">{name}</span>
+              <button
+                onClick={() => { setNameInput(name); setEditingName(true); }}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                aria-label="Edit display name"
+              >
+                <Pencil size={12} />
+              </button>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Account status row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-3 text-muted-foreground">
+            <ShieldCheck size={15} />
+            <span className="text-sm font-medium text-foreground">Account status</span>
+          </div>
+          <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Active</span>
+        </motion.div>
 
         {/* Credits */}
         <motion.div

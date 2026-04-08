@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] }
   },
@@ -21,31 +21,31 @@ const HeroSection: FC = (): JSX.Element => {
       className="relative flex min-h-[95vh] w-full flex-col items-center justify-center overflow-hidden bg-background pt-32 pb-20"
       aria-labelledby="hero-heading"
     >
-      {/* --- Subtle Hairline Grid Background --- */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.04]" 
-        style={{ 
-          backgroundImage: 'linear-gradient(to right, var(--color-foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--color-foreground) 1px, transparent 1px)', 
-          backgroundSize: '4rem 4rem' 
-        }} 
+      {/* Subtle Hairline Grid Background */}
+      <div
+        className="absolute inset-0 z-0 opacity-[0.04]"
+        style={{
+          backgroundImage: 'linear-gradient(to right, var(--color-foreground) 1px, transparent 1px), linear-gradient(to bottom, var(--color-foreground) 1px, transparent 1px)',
+          backgroundSize: '4rem 4rem'
+        }}
       />
-      
-      {/* --- Spotlight Vignette --- */}
-      <div 
-        aria-hidden="true" 
-        className="pointer-events-none absolute inset-0 z-0" 
+
+      {/* Spotlight Vignette */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0"
         style={{ background: 'radial-gradient(circle at center, transparent 0%, var(--color-background) 100%)' }}
       />
 
-      {/* --- Ambient Primary Glow --- */}
+      {/* Ambient Primary Glow */}
       <div
         aria-hidden="true"
         className="absolute top-[-20%] left-[50%] h-[600px] w-[1000px] -translate-x-1/2 rounded-[100%] bg-primary opacity-10 blur-[120px]"
       />
 
       <div className="relative z-10 w-full max-w-5xl px-4 text-center">
-        
-        {/* --- Badge --- */}
+
+        {/* Badge */}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -60,7 +60,7 @@ const HeroSection: FC = (): JSX.Element => {
           </div>
         </motion.div>
 
-        {/* --- Heading --- */}
+        {/* Heading */}
         <motion.h1
           id="hero-heading"
           initial="hidden"
@@ -75,7 +75,7 @@ const HeroSection: FC = (): JSX.Element => {
           </span>
         </motion.h1>
 
-        {/* --- Description --- */}
+        {/* Description */}
         <motion.p
           initial="hidden"
           animate="visible"
@@ -87,7 +87,7 @@ const HeroSection: FC = (): JSX.Element => {
           resume against job descriptions and boost your interview chances.
         </motion.p>
 
-        {/* --- CTA Buttons --- */}
+        {/* CTA Buttons */}
         <motion.div
           initial="hidden"
           animate="visible"
@@ -95,7 +95,7 @@ const HeroSection: FC = (): JSX.Element => {
           transition={{ delay: 0.3 }}
           className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
-          {/* Primary: Try Free (no login) */}
+          {/* Primary: Try Free */}
           <Link href="/try" aria-label="Try free without signing up">
             <motion.div
               whileHover={{ scale: 1.03, y: -1 }}
@@ -137,7 +137,7 @@ const HeroSection: FC = (): JSX.Element => {
           3 free scans · No credit card · Results in ~10 seconds
         </motion.p>
 
-        {/* --- The Visual Anchor (Analysis Mockup) --- */}
+        {/* Visual Anchor (Analysis Mockup) */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -158,23 +158,21 @@ const HeroSection: FC = (): JSX.Element => {
 
           {/* Mockup Body */}
           <div className="grid grid-cols-1 gap-6 p-6 text-left md:grid-cols-3">
-            
+
             {/* Left: ATS Score Ring */}
             <div className="col-span-1 flex flex-col items-center justify-center rounded-xl border border-border bg-background/50 p-6">
               <div className="mb-4 text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
                 ATS Match Score
               </div>
               <div className="relative flex h-24 w-24 items-center justify-center">
-                {/* SVG Ring Background */}
                 <svg className="h-full w-full -rotate-90 transform">
                   <circle cx="48" cy="48" r="44" className="fill-none stroke-muted stroke-[5]" />
-                  {/* Animated SVG Ring Fill (92%) */}
-                  <motion.circle 
-                    cx="48" cy="48" r="44" 
-                    className="fill-none stroke-emerald-500 stroke-[5] stroke-linecap-round" 
-                    strokeDasharray="276" 
+                  <motion.circle
+                    cx="48" cy="48" r="44"
+                    className="fill-none stroke-emerald-500 stroke-[5] stroke-linecap-round"
+                    strokeDasharray="276"
                     initial={{ strokeDashoffset: 276 }}
-                    animate={{ strokeDashoffset: 22 }} // 92% of 276
+                    animate={{ strokeDashoffset: 22 }}
                     transition={{ duration: 2, delay: 1, ease: "easeOut" }}
                   />
                 </svg>
@@ -195,7 +193,6 @@ const HeroSection: FC = (): JSX.Element => {
                 </span>
               </div>
               <div className="space-y-3">
-                {/* Suggestion 1 */}
                 <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3 shadow-sm">
                   <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-500">
                     <CheckCircle2 className="h-3.5 w-3.5" />
@@ -204,7 +201,6 @@ const HeroSection: FC = (): JSX.Element => {
                     <strong className="font-medium text-foreground">Quantify impact</strong> — changed "managed team" to "led 12-person engineering team, increasing output by 34%"
                   </div>
                 </div>
-                {/* Suggestion 2 */}
                 <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3 shadow-sm">
                   <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
                     <CheckCircle2 className="h-3.5 w-3.5" />

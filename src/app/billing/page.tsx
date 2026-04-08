@@ -63,7 +63,7 @@ const PLANS = [
     badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
     buttonVariant: "outline",
     popular: false,
-    features: ["30 AI Resume Scans", "Full Career Assistant", "Interview Prep AI", "Lifetime Access", "1-on-1 Strategy Call"],
+    features: ["30 AI Resume Scans", "Full Career Assistant", "Interview Prep AI", "Lifetime Access"],
   },
 ];
 

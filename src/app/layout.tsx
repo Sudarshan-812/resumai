@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "ResumAI - AI Resume Optimizer",
-  description: "Optimize your resume with AI",
+  description: "Beat the ATS filter and land more interviews. ResumAI uses Gemini 2.5 Flash to score, rewrite, and optimize your resume against any job description.",
 };
 
 export default function RootLayout({

@@ -44,13 +44,12 @@ const HowItWorks: FC = (): JSX.Element => {
   return (
     <section
       id="how-it-works"
-      // SEMANTIC UPDATE: Background matches global theme
       className="relative bg-background py-24 md:py-32"
       aria-labelledby="how-it-works-heading"
     >
       <div className="mx-auto max-w-5xl px-6">
-        
-        {/* ─── HEADER (Matched to Feature Grid styling) ─── */}
+
+        {/* HEADER */}
         <div className="mb-20 text-center">
           <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-primary mb-3.5 font-mono">
             How It Works
@@ -66,64 +65,56 @@ const HowItWorks: FC = (): JSX.Element => {
           </p>
         </div>
 
-        {/* ─── THE STEPS GRID ─── */}
+        {/* STEPS */}
         <div className="relative mb-20">
-          
-          {/* Crisp 1px Connector Line (visible on md+ screens) */}
+          {/* Connector line */}
           <div
             aria-hidden="true"
             className="absolute left-[15%] right-[15%] top-16 hidden h-px bg-border md:block"
           />
 
           <div className="grid grid-cols-1 gap-12 md:grid-cols-3 relative z-10">
-            {STEPS.map((step, index) => {
-              return (
-                <motion.div
-                  key={step.title}
-                  custom={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-50px" }}
-                  variants={itemFadeUp}
-                  className="flex flex-col items-center text-center group"
-                >
-                  {/* Animation Container: Sleek, square, subtle shadow */}
-                  <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:border-primary/30 overflow-hidden">
-                    
-                    {/* Tiny Technical Step Number */}
-                    <div className="absolute top-2.5 left-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground font-mono">
-                      {index + 1}
-                    </div>
-
-                    <DotLottieReact
-                      src={step.lottieSrc}
-                      loop
-                      autoplay
-                      className="h-20 w-20 opacity-80 transition-opacity duration-300 group-hover:opacity-100"
-                    />
+            {STEPS.map((step, index) => (
+              <motion.div
+                key={step.title}
+                custom={index}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={itemFadeUp}
+                className="flex flex-col items-center text-center group"
+              >
+                <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:border-primary/30 overflow-hidden">
+                  <div className="absolute top-2.5 left-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground font-mono">
+                    {index + 1}
                   </div>
-
-                  <h3 className="mb-2 text-lg font-semibold tracking-tight text-foreground">
-                    {step.title}
-                  </h3>
-                  <p className="max-w-[260px] text-sm leading-relaxed text-muted-foreground">
-                    {step.description}
-                  </p>
-                </motion.div>
-              );
-            })}
+                  <DotLottieReact
+                    src={step.lottieSrc}
+                    loop
+                    autoplay
+                    className="h-20 w-20 opacity-80 transition-opacity duration-300 group-hover:opacity-100"
+                  />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold tracking-tight text-foreground">
+                  {step.title}
+                </h3>
+                <p className="max-w-[260px] text-sm leading-relaxed text-muted-foreground">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
 
-        {/* ─── CTA ─── */}
-        <motion.div 
+        {/* CTA */}
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5 }}
           className="flex justify-center"
         >
-          <Link href="/signup" aria-label="Start optimizing resume">
+          <Link href="/try" aria-label="Start optimizing resume">
             <Button
               variant="ghost"
               className="group text-sm font-medium text-primary hover:bg-primary/10 hover:text-primary transition-colors h-10 px-6 rounded-full"
