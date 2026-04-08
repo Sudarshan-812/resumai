@@ -5,7 +5,17 @@
       "Bash(ls src/app/try/ src/app/history/ src/app/actions/guest-analyze.ts src/app/dashboard/error.tsx src/app/dashboard/[id]/error.tsx)",
       "Bash(sed:*)",
       "WebFetch(domain:ui.watermelon.sh)",
-      "WebFetch(domain:www.landing.love)"
+      "WebFetch(domain:www.landing.love)",
+      "Bash(find src:*)",
+      "Bash(find public:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv public/file.svg _unused/public/)",
+      "Bash(mv public/globe.svg _unused/public/)",
+      "Bash(mv public/next.svg _unused/public/)",
+      "Bash(mv public/vercel.svg _unused/public/)",
+      "Bash(mv public/window.svg _unused/public/)",
+      "Bash(rmdir public/animations)",
+      "Bash(rmdir animations:*)"
     ]
   }
 }

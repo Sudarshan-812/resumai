@@ -18,16 +18,14 @@ declare global {
   }
 }
 
-// Improved Plan Data
 const PLANS = [
   {
     id: "starter",
     name: "Starter Pack",
     price: 49,
     credits: 5,
-    // Silver Filter Applied here
     lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
-    lottieClass: "grayscale brightness-110 contrast-125", 
+    lottieClass: "grayscale brightness-110 contrast-125",
     description: "Perfect for a quick resume polish.",
     color: "text-blue-500",
     badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
@@ -40,9 +38,8 @@ const PLANS = [
     name: "Pro Bundle",
     price: 99,
     credits: 12,
-    // Original Gold
     lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
-    lottieClass: "", 
+    lottieClass: "",
     description: "Our most popular choice for job seekers.",
     color: "text-indigo-500",
     badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
@@ -55,9 +52,8 @@ const PLANS = [
     name: "Power User",
     price: 199,
     credits: 30,
-    // Diamond Animation
     lottieSrc: "https://lottie.host/655b0575-535f-47ed-91e4-8ed938e2158d/eH0Et5paMQ.lottie",
-    lottieClass: "scale-110", 
+    lottieClass: "scale-110",
     description: "For serious career transformation.",
     color: "text-amber-500",
     badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
@@ -120,15 +116,13 @@ export default function BillingPage() {
   return (
     <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-white transition-colors duration-300 selection:bg-indigo-500/30 pb-20">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      
-      {/* Background Decor */}
+
       <div className="fixed inset-0 -z-10 h-full w-full bg-white dark:bg-[#09090b] [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-20 pointer-events-none" />
 
       <NavbarWrapper />
 
       <main className="max-w-7xl mx-auto px-6 pt-28 pb-20">
-        
-        {/* Header Section */}
+
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-400 dark:from-white dark:via-zinc-200 dark:to-zinc-600 bg-clip-text text-transparent">
             Invest in your Career
@@ -138,17 +132,16 @@ export default function BillingPage() {
           </p>
         </div>
 
-        {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative items-stretch">
-          
+
           {PLANS.map((plan) => (
-            <div 
+            <div
               key={plan.id}
               className={cn(
                 "group relative flex flex-col p-8 rounded-3xl transition-all duration-300",
                 "bg-white dark:bg-zinc-900/40 backdrop-blur-xl border",
-                plan.popular 
-                  ? "border-indigo-500 dark:border-indigo-500/50 shadow-2xl shadow-indigo-500/10 z-10 scale-100 md:scale-105" 
+                plan.popular
+                  ? "border-indigo-500 dark:border-indigo-500/50 shadow-2xl shadow-indigo-500/10 z-10 scale-100 md:scale-105"
                   : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xl"
               )}
             >
@@ -159,10 +152,8 @@ export default function BillingPage() {
                 </div>
               )}
 
-              {/* Plan Header */}
               <div className="mb-6">
-                
-                {/* Animation - Centered via mx-auto */}
+
                 <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                    <DotLottieReact
                       src={plan.lottieSrc}
@@ -172,27 +163,22 @@ export default function BillingPage() {
                    />
                 </div>
 
-                {/* Name - Added 'text-center' */}
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2 text-center">
                   {plan.name}
                 </h3>
 
-                {/* Description - Added 'text-center' */}
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 min-h-[40px] text-center">
                   {plan.description}
                 </p>
-                
-                {/* Price - Added 'justify-center' */}
+
                 <div className="flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-bold tracking-tight">₹{plan.price}</span>
                   <span className="text-zinc-400 text-sm font-medium">/ one-time</span>
                 </div>
               </div>
 
-              {/* Divider */}
               <div className="h-px w-full bg-zinc-100 dark:bg-zinc-800 mb-6" />
 
-              {/* Features */}
               <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex items-center gap-3">
                   <div className={cn("px-2.5 py-1 rounded-md text-sm font-bold", plan.badgeColor)}>
@@ -207,15 +193,14 @@ export default function BillingPage() {
                 ))}
               </ul>
 
-              {/* Action Button */}
-              <button 
+              <button
                 onClick={() => handlePurchase(plan)}
                 disabled={!!loadingId}
                 className={cn(
                   "w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 mt-auto",
                   loadingId && loadingId !== plan.id && "opacity-50 cursor-not-allowed",
-                  plan.popular 
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5" 
+                  plan.popular
+                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5"
                     : "bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700"
                 )}
               >
@@ -232,7 +217,6 @@ export default function BillingPage() {
           ))}
         </div>
 
-        {/* Footer Trust Section */}
         <div className="mt-20 pt-10 border-t border-zinc-200 dark:border-zinc-800 text-center">
           <div className="inline-flex flex-col md:flex-row items-center gap-4 md:gap-12 text-zinc-500 dark:text-zinc-400 text-sm font-medium">
             <span className="flex items-center gap-2">

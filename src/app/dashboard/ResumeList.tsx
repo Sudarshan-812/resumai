@@ -24,7 +24,6 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
     setMounted(true);
   }, []);
 
-  // Deterministic Date Logic (Fixes Hydration Error)
   const formatSystemDate = (dateString: string) => {
     if (!mounted) return "00_AAA_0000";
     return new Date(dateString)
@@ -61,7 +60,6 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
               className="group flex items-center justify-between p-5 hover:bg-muted/50 border-b last:border-0 border-border transition-colors"
               prefetch={false}
             >
-              {/* Left Side: Technical Identifier */}
               <div className="flex items-center gap-4">
                 <div className="h-10 w-10 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-all duration-300">
                   <FileText className="h-5 w-5" strokeWidth={1.5} />
@@ -76,13 +74,12 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
                 </div>
               </div>
 
-              {/* Right Side: Score Badge & Action */}
               <div className="flex items-center gap-6">
                 <div className="flex flex-col items-end">
                   <div className={cn(
                     "px-2.5 py-1 rounded-md text-[10px] font-bold font-mono border transition-all",
-                    score >= 70 
-                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                    score >= 70
+                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                       : "bg-rose-500/10 text-rose-600 border-rose-500/20"
                   )}>
                     ATS_{score.toString().padStart(2, '0')}
@@ -91,7 +88,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
                     Metric
                   </span>
                 </div>
-                
+
                 <div className="h-8 w-8 rounded-full flex items-center justify-center border border-transparent group-hover:border-border group-hover:bg-background transition-all">
                     <ChevronRight className="h-4 w-4 text-muted-foreground/30 group-hover:text-foreground transition-colors" />
                 </div>
