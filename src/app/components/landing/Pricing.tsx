@@ -79,7 +79,7 @@ const Pricing: FC = (): JSX.Element => {
               className={cn(
                 "group relative flex flex-col p-8 rounded-3xl transition-all duration-300 backdrop-blur-sm",
                 plan.popular
-                  ? "bg-card border-2 border-primary shadow-lg shadow-primary/5 z-10"
+                  ? "bg-card border-2 border-primary shadow-lg shadow-primary/5 z-10 mt-0 md:-mt-3 md:mb-3"
                   : "bg-card/50 border border-border hover:bg-card hover:border-primary/30 hover:shadow-md"
               )}
             >

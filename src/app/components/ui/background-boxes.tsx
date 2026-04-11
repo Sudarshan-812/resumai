@@ -14,7 +14,7 @@ export const Boxes = ({ className, ...rest }: { className?: string }) => {
     "--red-300",
     "--purple-300",
     "--blue-300",
-    "--indigo-300",
+    "--blue-300",
     "--violet-300",
   ];
   const getRandomColor = () => {

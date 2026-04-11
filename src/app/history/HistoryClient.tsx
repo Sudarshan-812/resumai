@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { FileText, ChevronRight, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import NavbarWrapper from "@/app/dashboard/NavbarWrapper";
+import DashboardShell from "@/app/dashboard/DashboardShell";
 
 interface Resume {
   id: string;
@@ -29,9 +29,8 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
     });
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans">
-      <NavbarWrapper />
-      <main className="max-w-4xl mx-auto px-6 pt-28 pb-12">
+    <DashboardShell>
+      <main className="max-w-4xl mx-auto px-6 py-8">
         {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -39,11 +38,11 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="mb-10"
         >
-          <h1 className="font-serif text-4xl font-bold text-foreground tracking-tight mb-2">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1">
             All Analyses
           </h1>
           <p className="text-muted-foreground text-sm">
-            {resumes.length} scan{resumes.length !== 1 ? "s" : ""} in your pipeline
+            {resumes.length} resume{resumes.length !== 1 ? "s" : ""} analyzed
           </p>
         </motion.div>
 
@@ -94,8 +93,8 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
                       <FileText className="h-5 w-5" strokeWidth={1.5} />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground capitalize tracking-tight">
-                        {resume.file_name.replace(".pdf", "")}
+                      <p className="text-sm font-semibold text-foreground tracking-tight truncate max-w-[240px]" title={resume.file_name.replace(/\.pdf$/i, "")}>
+                        {resume.file_name.replace(/\.pdf$/i, "")}
                       </p>
                       <p className="text-[10px] font-mono text-muted-foreground mt-0.5">
                         {formatDate(resume.created_at)}
@@ -123,6 +122,6 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
           </div>
         )}
       </main>
-    </div>
+    </DashboardShell>
   );
 }

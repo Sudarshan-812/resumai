@@ -19,27 +19,17 @@ export default async function ResumeReportPage({ params }: { params: { id: strin
 
   if (!user) return redirect("/login");
 
-  const [resumeRes, analysisRes, profileRes] = await Promise.all([
+  const [resumeRes, analysisRes] = await Promise.all([
     supabase.from("resumes").select("*").eq("id", id).eq("user_id", user.id).single(),
-    supabase.from("analyses").select("*").eq("resume_id", id).single(),
-    supabase.from("profiles").select("credits, full_name").eq("id", user.id).single(),
+    supabase.from("analyses").select("*").eq("resume_id", id).eq("user_id", user.id).single(),
   ]);
 
   if (!resumeRes.data || !analysisRes.data) return notFound();
-
-  const profile = profileRes.data;
-  const userName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "User";
 
   return (
     <ClientReport
       resume={resumeRes.data}
       analysis={analysisRes.data}
-      userProfile={{
-        name: userName,
-        email: user.email ?? "",
-        credits: profile?.credits ?? 0,
-        initial: userName[0]?.toUpperCase() ?? "U",
-      }}
     />
   );
 }

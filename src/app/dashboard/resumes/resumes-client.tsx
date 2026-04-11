@@ -1,52 +1,38 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { FileText, Clock, Activity } from "lucide-react";
-import DashboardNavbar from "@/app/dashboard/dashboard-navbar";
+import Link from "next/link";
+import { UploadCloud } from "lucide-react";
+import DashboardShell from "@/app/dashboard/DashboardShell";
+import ResumeList from "@/app/dashboard/ResumeList";
+import { Button } from "@/components/ui/button";
 
-export default function ResumesClient({ user, profile }: { user: any, profile: any }) {
-  const userName = profile?.full_name?.split(' ')[0] || "Developer";
-  const userInitial = userName[0] || "D";
-  const credits = profile?.credits ?? 0;
+interface Resume {
+  id: string;
+  file_name: string;
+  created_at: string;
+  analyses?: Array<{ ats_score?: number | null }> | null;
+}
 
+export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      
-      {/* FIXED: Removed the onSignOut and isSigningOut props */}
-      <DashboardNavbar 
-        userProfile={{ 
-          name: userName, 
-          email: user.email, 
-          credits, 
-          initial: userInitial 
-        }}
-      />
-
-      <main className="mx-auto max-w-6xl px-6 pt-32 pb-12">
-        <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-500">
-          
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-muted border border-border shadow-sm">
-            <Clock className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
+    <DashboardShell>
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">My Resumes</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {resumes.length} resume{resumes.length !== 1 ? "s" : ""} analyzed
+            </p>
           </div>
-          
-          <h1 className="text-3xl font-serif font-bold text-foreground tracking-tight mb-4">
-            Pipeline History
-          </h1>
-          
-          <p className="max-w-md text-sm text-muted-foreground leading-relaxed">
-            Our engineering team is finalizing the timeline view. Soon, you will be able to access and manage all your past telemetry and edits here.
-          </p>
-          
-          <div className="mt-8 inline-flex items-center rounded-lg border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-mono font-bold uppercase tracking-widest text-primary shadow-sm">
-            <span className="mr-2 flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-1.5 w-1.5 animate-ping rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary"></span>
-            </span>
-            Deployment Pending
-          </div>
-          
+          <Link href="/upload">
+            <Button className="h-9 px-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm">
+              <UploadCloud size={14} className="mr-1.5" />
+              New Analysis
+            </Button>
+          </Link>
         </div>
-      </main>
-    </div>
+        <ResumeList resumes={resumes} />
+      </div>
+    </DashboardShell>
   );
 }

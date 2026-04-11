@@ -1,158 +1,270 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Moon, Sun, X, AlignJustify } from "lucide-react";
+import {
+  BarChart3, FileText, BrainCircuit, MessageSquare,
+  ChevronDown, Moon, Sun, Menu, X, ArrowRight, LayoutDashboard,
+} from "lucide-react";
 import { useTheme } from "next-themes";
+import { createClient } from "@/app/lib/supabase/client";
 
-const TABS = [
-  { id: "home",         label: "Home",         href: "/",             hash: "" },
-  { id: "features",     label: "Features",     href: "/#features",    hash: "features" },
-  { id: "how-it-works", label: "How it Works", href: "/#how-it-works",hash: "how-it-works" },
-  { id: "pricing",      label: "Pricing",      href: "/#pricing",     hash: "pricing" },
+const FEATURES_MENU = [
+  {
+    icon: BarChart3,
+    title: "ATS Score Analysis",
+    description: "Precise keyword matching against any job description",
+    href: "/#features",
+  },
+  {
+    icon: FileText,
+    title: "Cover Letter Generator",
+    description: "Role-specific letters written in seconds",
+    href: "/#features",
+  },
+  {
+    icon: BrainCircuit,
+    title: "Interview Simulator",
+    description: "AI-generated questions with instant answer feedback",
+    href: "/#features",
+  },
+  {
+    icon: MessageSquare,
+    title: "AI Resume Coach",
+    description: "Chat with an AI that knows your resume inside-out",
+    href: "/#features",
+  },
 ];
+
+const NAV_LINKS = [
+  { label: "How it Works", href: "/#how-it-works", hash: "how-it-works" },
+  { label: "Pricing",      href: "/#pricing",      hash: "pricing"      },
+];
+
+type DropdownKey = "features" | null;
 
 function LogoMark() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-      <path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   );
 }
 
-function getActiveFromScroll(): string {
+function getActiveSection(): string {
   const scrollY = window.scrollY;
-  if (scrollY < 80) return "home";
-
-  const ids = ["pricing", "how-it-works", "features"];
-  for (const id of ids) {
+  if (scrollY < 80) return "";
+  for (const id of ["pricing", "how-it-works", "features"]) {
     const el = document.getElementById(id);
     if (el && scrollY >= el.offsetTop - 160) return id;
   }
-  return "home";
+  return "";
 }
+
+interface NavUser { name: string; email: string; avatarUrl?: string; initial: string; }
 
 export default function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
-  const [open, setOpen]       = useState(false);
+  const [open, setOpen] = useState<DropdownKey>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [activeId, setActiveId] = useState("home");
+  const [activeSection, setActiveSection] = useState("");
+  const [navUser, setNavUser] = useState<NavUser | null>(null);
+
+  const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      const name = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "User";
+      setNavUser({
+        name,
+        email: user.email ?? "",
+        avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+        initial: name[0]?.toUpperCase() ?? "U",
+      });
+    });
+  }, []);
 
-  const updateActive = useCallback(() => {
-    setScrolled(window.scrollY > 15);
-    if (pathname === "/") setActiveId(getActiveFromScroll());
+  const updateScroll = useCallback(() => {
+    setScrolled(window.scrollY > 16);
+    if (pathname === "/") setActiveSection(getActiveSection());
   }, [pathname]);
 
   useEffect(() => {
-    if (pathname !== "/") { setActiveId(""); return; }
-    setActiveId(getActiveFromScroll());
-    window.addEventListener("scroll", updateActive, { passive: true });
-    return () => window.removeEventListener("scroll", updateActive);
-  }, [pathname, updateActive]);
+    window.addEventListener("scroll", updateScroll, { passive: true });
+    updateScroll();
+    return () => window.removeEventListener("scroll", updateScroll);
+  }, [updateScroll]);
 
-  if (pathname === "/login") return null;
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (!navRef.current?.contains(e.target as Node)) setOpen(null);
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setOpen(null); setMobileOpen(false); }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const onResize = () => { if (window.innerWidth >= 768) setMobileOpen(false); };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  if (pathname === "/login" || pathname === "/reset-password") return null;
 
   const isDark = mounted && resolvedTheme === "dark";
 
-  const handleNavClick = (e: React.MouseEvent, id: string, hash: string) => {
-    setActiveId(id);
-    setOpen(false);
-
-    if (!hash) {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      window.history.replaceState(null, "", "/");
-      return;
-    }
-
-    if (pathname === "/") {
+  const handleHashClick = (e: React.MouseEvent, hash: string) => {
+    setMobileOpen(false);
+    setOpen(null);
+    if (pathname === "/" && hash) {
       e.preventDefault();
       const el = document.getElementById(hash);
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        window.history.replaceState(null, "", "/");
-      }
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     }
   };
 
+  const focusRing = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2";
+
   return (
     <>
-      <motion.header
-        initial={{ y: -64, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-[780px] px-4 pointer-events-none"
+      {/* ── Desktop header ── */}
+      <header
+        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? isDark
+              ? "bg-zinc-950/90 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_24px_rgba(0,0,0,0.4)]"
+              : "bg-white/85 backdrop-blur-xl border-b border-zinc-200/60 shadow-[0_1px_20px_rgba(0,0,0,0.06)]"
+            : "bg-transparent"
+        }`}
       >
-        <div
-          className="pointer-events-auto flex items-center justify-between px-2 py-2 rounded-full transition-all duration-300"
-          style={{
-            backdropFilter: "blur(24px) saturate(1.8)",
-            backgroundColor: isDark ? "rgba(10,10,10,0.85)" : "rgba(255,255,255,0.75)",
-            border: isDark ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(0,0,0,0.07)",
-            boxShadow: scrolled
-              ? isDark
-                ? "0 16px 48px -8px rgba(0,0,0,0.6)"
-                : "0 16px 48px -8px rgba(0,0,0,0.10)"
-              : "0 2px 12px rgba(0,0,0,0.05)",
-          }}
-        >
-          <Link href="/" onClick={(e) => handleNavClick(e, "home", "")} className="flex items-center gap-2.5 ml-2 group" aria-label="Home">
-            <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
+        <div className="max-w-[1160px] mx-auto px-6 h-16 flex items-center justify-between gap-6">
+
+          {/* Logo */}
+          <Link
+            href="/"
+            onClick={(e) => handleHashClick(e, "")}
+            className={`flex items-center gap-2.5 flex-shrink-0 rounded-xl ${focusRing}`}
+          >
+            <div className={`w-7 h-7 rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 ${
+              isDark ? "bg-white text-zinc-950" : "bg-zinc-950 text-white"
+            }`}>
               <LogoMark />
             </div>
-            <span className={`text-sm font-semibold tracking-tight hidden sm:block ${isDark ? "text-white" : "text-zinc-900"}`}>
+            <span className={`text-[15px] font-bold tracking-tight ${isDark ? "text-white" : "text-zinc-950"}`}>
               ResumAI
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-0.5 relative">
-            {TABS.map((tab) => {
-              const isActive = activeId === tab.id;
-              return (
-                <Link
-                  key={tab.id}
-                  href={tab.href}
-                  onClick={(e) => handleNavClick(e, tab.id, tab.hash)}
-                  className="relative px-4 py-2 rounded-full text-[11px] font-semibold tracking-wide transition-colors duration-150 outline-none"
-                  style={{
-                    color: isActive
-                      ? isDark ? "#ffffff" : "#18181b"
-                      : isDark ? "#71717a" : "#a1a1aa",
-                  }}
-                >
-                  {isActive && (
-                    <motion.span
-                      layoutId="nav-pill"
-                      className="absolute inset-0 rounded-full"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      style={{
-                        backgroundColor: isDark ? "rgba(255,255,255,0.10)" : "rgba(0,0,0,0.07)",
-                        border: isDark ? "1px solid rgba(255,255,255,0.15)" : "1px solid rgba(0,0,0,0.08)",
-                      }}
-                    />
-                  )}
-                  <span className="relative z-10">{tab.label}</span>
-                </Link>
-              );
-            })}
+          {/* Center nav — desktop */}
+          <nav ref={navRef} className="hidden md:flex items-center gap-0.5 relative">
+
+            {/* Features dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setOpen(open === "features" ? null : "features")}
+                aria-haspopup="true"
+                aria-expanded={open === "features"}
+                className={`flex items-center gap-1.5 px-3.5 py-2 text-[13px] font-medium rounded-xl transition-all ${focusRing} ${
+                  open === "features"
+                    ? isDark ? "text-white bg-white/10" : "text-zinc-950 bg-zinc-100"
+                    : isDark ? "text-zinc-400 hover:text-white hover:bg-white/8" : "text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100"
+                }`}
+              >
+                Features
+                <ChevronDown className={`size-3.5 transition-transform duration-200 ${open === "features" ? "rotate-180" : ""}`} />
+              </button>
+
+              <AnimatePresence>
+                {open === "features" && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -4, scale: 0.97 }}
+                    transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    role="menu"
+                    className={`absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[360px] rounded-2xl border p-2 z-50 ${
+                      isDark
+                        ? "bg-zinc-900/95 backdrop-blur-2xl border-white/10 shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
+                        : "bg-white/95 backdrop-blur-2xl border-zinc-200/60 shadow-[0_24px_60px_rgba(0,0,0,0.10)]"
+                    }`}
+                  >
+                    {FEATURES_MENU.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <Link
+                          key={item.title}
+                          href={item.href}
+                          role="menuitem"
+                          onClick={(e) => { handleHashClick(e, "features"); setOpen(null); }}
+                          className={`flex items-start gap-3 p-3 rounded-xl transition-colors group ${focusRing} ${
+                            isDark ? "hover:bg-white/8" : "hover:bg-zinc-50"
+                          }`}
+                        >
+                          <div className={`size-9 rounded-xl border flex items-center justify-center flex-shrink-0 transition-colors ${
+                            isDark
+                              ? "bg-white/8 border-white/10 group-hover:bg-white/12"
+                              : "bg-zinc-100 border-zinc-200/60 group-hover:bg-zinc-200"
+                          }`}>
+                            <Icon className={`size-4 ${isDark ? "text-zinc-300" : "text-zinc-600"}`} />
+                          </div>
+                          <div className="min-w-0">
+                            <p className={`text-[13px] font-semibold ${isDark ? "text-zinc-100" : "text-zinc-900"}`}>{item.title}</p>
+                            <p className={`text-[11.5px] mt-0.5 leading-snug ${isDark ? "text-zinc-500" : "text-zinc-500"}`}>{item.description}</p>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Static nav links */}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={(e) => handleHashClick(e, link.hash)}
+                className={`relative px-3.5 py-2 text-[13px] font-medium rounded-xl transition-all ${focusRing} ${
+                  activeSection === link.hash
+                    ? isDark ? "text-white bg-white/10" : "text-zinc-950 bg-zinc-100"
+                    : isDark ? "text-zinc-400 hover:text-white hover:bg-white/8" : "text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-2 mr-1">
+          {/* Right side */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+
+            {/* Theme toggle */}
             {mounted && (
               <button
                 onClick={() => setTheme(isDark ? "light" : "dark")}
                 aria-label="Toggle theme"
-                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90 ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${focusRing} ${
                   isDark
-                    ? "bg-white/10 hover:bg-white/15 border border-white/10"
-                    : "bg-black/5 hover:bg-black/10 border border-black/5"
+                    ? "bg-white/8 hover:bg-white/14 border border-white/10"
+                    : "bg-zinc-100 hover:bg-zinc-200 border border-zinc-200"
                 }`}
               >
                 <AnimatePresence mode="wait">
@@ -163,108 +275,158 @@ export default function Navbar() {
                     exit={{ opacity: 0, rotate: 20 }}
                     transition={{ duration: 0.15 }}
                   >
-                    {isDark ? <Sun size={14} className="text-amber-400" /> : <Moon size={14} className="text-zinc-500" />}
+                    {isDark
+                      ? <Sun size={14} className="text-amber-400" />
+                      : <Moon size={14} className="text-zinc-500" />
+                    }
                   </motion.div>
                 </AnimatePresence>
               </button>
             )}
 
-            <Link href="/try" className="hidden sm:block">
-              <motion.span
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className={`inline-flex items-center h-9 px-4 rounded-full text-[11px] font-bold cursor-pointer transition-colors ${
-                  isDark ? "bg-white text-black hover:bg-zinc-100" : "bg-zinc-900 text-white hover:bg-zinc-700"
+            {navUser ? (
+              <Link
+                href="/dashboard"
+                className={`hidden sm:inline-flex items-center gap-2.5 h-9 pl-2 pr-3.5 rounded-full border text-[13px] font-medium transition-all ${focusRing} ${
+                  isDark
+                    ? "border-white/10 bg-white/6 hover:bg-white/12 text-zinc-200"
+                    : "border-zinc-200 bg-zinc-50 hover:bg-zinc-100 text-zinc-800"
                 }`}
               >
-                Try Free
-              </motion.span>
-            </Link>
+                <div className="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center text-[10px] font-bold bg-blue-600 text-white shrink-0">
+                  {navUser.avatarUrl
+                    ? <img src={navUser.avatarUrl} alt={navUser.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    : navUser.initial
+                  }
+                </div>
+                <span>{navUser.name}</span>
+                <LayoutDashboard size={12} className="opacity-50" />
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className={`hidden sm:block px-3.5 py-2 text-[13px] font-medium rounded-xl transition-all ${focusRing} ${
+                    isDark
+                      ? "text-zinc-400 hover:text-white hover:bg-white/8"
+                      : "text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100"
+                  }`}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/try"
+                  className={`hidden sm:inline-flex items-center gap-1.5 h-9 px-4 rounded-full text-[13px] font-semibold transition-all ${focusRing} focus-visible:ring-offset-0 ${
+                    isDark
+                      ? "bg-white text-zinc-950 hover:bg-zinc-100"
+                      : "bg-zinc-950 text-white hover:bg-zinc-800"
+                  }`}
+                >
+                  Try Free
+                  <ArrowRight size={12} />
+                </Link>
+              </>
+            )}
 
+            {/* Mobile hamburger */}
             <button
-              onClick={() => setOpen(true)}
-              aria-label="Open menu"
-              className={`md:hidden w-9 h-9 flex items-center justify-center rounded-full transition-all ${
-                isDark ? "bg-white/10 border border-white/10" : "bg-black/5 border border-black/5"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              className={`md:hidden flex items-center justify-center h-9 w-9 rounded-xl transition-all ${focusRing} ${
+                isDark
+                  ? "bg-white/8 hover:bg-white/14 border border-white/10 text-zinc-300"
+                  : "bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-zinc-700"
               }`}
             >
-              <AlignJustify size={15} className={isDark ? "text-white" : "text-zinc-700"} />
+              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
             </button>
           </div>
         </div>
-      </motion.header>
+      </header>
 
+      {/* ── Mobile menu ── */}
       <AnimatePresence>
-        {open && (
+        {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className={`fixed inset-0 z-[110] flex flex-col p-8 backdrop-blur-2xl ${
-              isDark ? "bg-zinc-950/96" : "bg-white/96"
-            }`}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className={`fixed inset-x-0 top-16 z-40 md:hidden border-b ${
+              isDark
+                ? "bg-zinc-950/98 backdrop-blur-xl border-white/[0.06]"
+                : "bg-white/98 backdrop-blur-xl border-zinc-200/60"
+            } shadow-[0_8px_30px_rgba(0,0,0,0.10)]`}
           >
-            <div className="flex items-center justify-between mb-12">
-              <Link href="/" onClick={(e) => handleNavClick(e, "home", "")} className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center">
-                  <LogoMark />
-                </div>
-                <span className="font-semibold text-sm">ResumAI</span>
-              </Link>
-              <button
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className={`w-10 h-10 rounded-full border flex items-center justify-center ${
-                  isDark ? "border-white/10 text-white" : "border-zinc-200 text-zinc-800"
-                }`}
-              >
-                <X size={18} />
-              </button>
-            </div>
+            <nav className="max-w-[1160px] mx-auto px-6 py-5 flex flex-col gap-1">
 
-            <nav className="flex flex-col gap-1">
-              {TABS.map((tab, i) => (
-                <motion.div
-                  key={tab.id}
-                  initial={{ x: -20, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                >
+              {/* Features section */}
+              <p className={`px-3 pt-1 pb-2 text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-zinc-600" : "text-zinc-400"}`}>
+                Features
+              </p>
+              {FEATURES_MENU.map((item) => {
+                const Icon = item.icon;
+                return (
                   <Link
-                    href={tab.href}
-                    onClick={(e) => handleNavClick(e, tab.id, tab.hash)}
-                    className={`flex items-center justify-between py-4 border-b text-3xl font-black tracking-tight transition-opacity ${
+                    key={item.title}
+                    href={item.href}
+                    onClick={(e) => handleHashClick(e, "features")}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-colors ${
                       isDark
-                        ? "border-white/6 text-white/30 hover:text-white"
-                        : "border-zinc-100 text-zinc-900/25 hover:text-zinc-900"
+                        ? "text-zinc-400 hover:text-white hover:bg-white/8"
+                        : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50"
                     }`}
                   >
-                    {tab.label}
-                    <span className={`text-[10px] font-bold tabular-nums ${isDark ? "text-zinc-600" : "text-zinc-300"}`}>
-                      0{i + 1}
-                    </span>
+                    <Icon size={15} className="flex-shrink-0 text-blue-500" />
+                    {item.title}
                   </Link>
-                </motion.div>
-              ))}
-            </nav>
+                );
+              })}
 
-            <div className="mt-auto flex flex-col gap-3 pt-8">
-              <Link href="/try" onClick={() => setOpen(false)}>
-                <div className={`w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center ${
-                  isDark ? "bg-white text-black" : "bg-zinc-900 text-white"
-                }`}>
+              <div className={`h-px mx-3 my-2 ${isDark ? "bg-white/8" : "bg-zinc-100"}`} />
+
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={(e) => handleHashClick(e, link.hash)}
+                  className={`flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition-colors ${
+                    isDark
+                      ? "text-zinc-400 hover:text-white hover:bg-white/8"
+                      : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-50"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+              <div className={`h-px mx-3 my-2 ${isDark ? "bg-white/8" : "bg-zinc-100"}`} />
+
+              <div className="flex flex-col gap-2 px-1 pt-1 pb-2">
+                <Link
+                  href="/try"
+                  onClick={() => setMobileOpen(false)}
+                  className={`py-3 text-center rounded-xl text-[14px] font-bold transition-colors ${
+                    isDark
+                      ? "bg-white text-zinc-950 hover:bg-zinc-100"
+                      : "bg-zinc-950 text-white hover:bg-zinc-800"
+                  }`}
+                >
                   Try Free — No Login
-                </div>
-              </Link>
-              <Link href="/login" onClick={() => setOpen(false)}>
-                <div className={`w-full h-12 rounded-xl font-medium text-sm flex items-center justify-center border ${
-                  isDark ? "border-white/10 text-zinc-400" : "border-zinc-200 text-zinc-600"
-                }`}>
+                </Link>
+                <Link
+                  href="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className={`py-3 text-center rounded-xl text-[14px] font-medium border transition-colors ${
+                    isDark
+                      ? "border-white/10 text-zinc-400 hover:bg-white/8"
+                      : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                  }`}
+                >
                   Sign In
-                </div>
-              </Link>
-            </div>
+                </Link>
+              </div>
+            </nav>
           </motion.div>
         )}
       </AnimatePresence>

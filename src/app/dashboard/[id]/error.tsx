@@ -11,7 +11,9 @@ export default function ReportError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {}, [error]);
+  useEffect(() => {
+    console.error("[ReportError]", error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">

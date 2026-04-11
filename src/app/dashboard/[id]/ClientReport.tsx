@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AiAssistant from "@/app/dashboard/AiAssistant";
-import DashboardNavbar from "../dashboard-navbar";
+import DashboardShell from "@/app/dashboard/DashboardShell";
 import {
   Download, X, CheckCircle2, Copy,
   FileText, AlertCircle, ArrowLeft,
@@ -125,12 +125,10 @@ function Chip({ label, variant }: { label: string; variant: "match" | "missing" 
   );
 }
 
-interface UserProfile { name: string; email: string; credits: number; initial: string; }
-
 export default function ClientReport({
-  resume, analysis, userProfile,
+  resume, analysis,
 }: {
-  resume: any; analysis: any; userProfile: UserProfile;
+  resume: any; analysis: any;
 }) {
   const [tab, setTab]         = useState<"summary" | "keywords" | "formatting">("summary");
   const [chatOpen, setChatOpen] = useState(false);
@@ -168,10 +166,8 @@ export default function ClientReport({
   ] as const;
 
   return (
-    <div className="min-h-screen bg-background text-foreground font-sans pb-24">
-      <DashboardNavbar userProfile={userProfile} />
-
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 pt-28">
+    <DashboardShell>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 pb-24">
 
         <Link
           href="/dashboard"
@@ -422,11 +418,11 @@ export default function ClientReport({
 
           </div>
         </div>
-      </main>
+      </div>
 
       <AnimatePresence>
         {chatOpen && <ChatPanel onClose={() => setChatOpen(false)} resumeId={resume.id} />}
       </AnimatePresence>
-    </div>
+    </DashboardShell>
   );
 }

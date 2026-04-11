@@ -15,7 +15,8 @@
       "Bash(mv public/vercel.svg _unused/public/)",
       "Bash(mv public/window.svg _unused/public/)",
       "Bash(rmdir public/animations)",
-      "Bash(rmdir animations:*)"
+      "Bash(rmdir animations:*)",
+      "Bash(xargs grep:*)"
     ]
   }
 }

@@ -4,265 +4,302 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  FileText, BarChart3, UploadCloud,
-  ChevronRight, Settings, Plus, Crown, CreditCard,
-  ArrowUpRight, Activity, Zap, LogOut
+  FileText, BarChart3, UploadCloud, ChevronRight,
+  Plus, CreditCard, ArrowUpRight, Zap, PenLine,
+  TrendingUp, Clock, Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import DashboardNavbar from "./dashboard-navbar";
+import DashboardShell from "./DashboardShell";
 
 interface DashboardClientProps {
-  user: any;
-  profile: any;
-  recentResumes: any[];
-  stats: {
-    totalScans: number;
-    avgScore: number;
+  user: {
+    email?: string;
+    user_metadata?: { avatar_url?: string; picture?: string };
   };
+  profile: { full_name?: string | null; credits?: number | null } | null;
+  recentResumes: Array<{
+    id: string;
+    file_name: string;
+    created_at: string;
+    ats_score?: number | null;
+  }>;
+  stats: { totalScans: number; avgScore: number };
 }
 
 export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
-  const [isSigningOut, setIsSigningOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
-  const userName = profile?.full_name?.split(' ')[0] || "Developer";
-  const credits = profile?.credits ?? 0;
+  const userName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
+  const credits   = profile?.credits ?? 0;
   const { totalScans, avgScore } = stats;
 
-  const handleSignOut = async () => {
-    setIsSigningOut(true);
-    try {
-      await supabase.auth.signOut();
-      router.push("/login");
-      router.refresh();
-    } catch (error) {
-      toast.error("Error signing out");
-    } finally {
-      setIsSigningOut(false);
-    }
-  };
-
-  const formatSystemDate = (dateString: string) => {
-    if (!mounted) return "00_AAA_0000";
-    return new Date(dateString)
-      .toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      })
-      .toUpperCase()
-      .replace(/ /g, '_');
+  const formatDate = (ds: string) => {
+    if (!mounted) return "—";
+    return new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans text-foreground">
-      
-      <DashboardNavbar
-        userProfile={{
-          name: userName,
-          email: user.email,
-          credits: credits,
-          initial: userName[0] || "D",
-          avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
-        }}
-      />
+    <DashboardShell>
+      <div className="max-w-5xl mx-auto px-6 py-8">
 
-      <main className="mx-auto max-w-6xl px-6 pt-24 pb-12">
-        
-        <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        {/* Page header */}
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] text-primary mb-2">
-               <Activity size={12} />
-               System Dashboard
-            </div>
-            <h1 className="font-serif text-4xl text-foreground tracking-tight">
-              Welcome back, <span className="text-primary italic">{userName}.</span>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">
+              Welcome back, {userName}
             </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Here&apos;s an overview of your resume activity.
+            </p>
           </div>
-          
           <Link href="/upload">
-            <Button className="h-11 px-6 rounded-xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all active:scale-[0.98]">
-              <Plus className="mr-2 h-4 w-4" strokeWidth={3} />
-              Initiate New Scan
+            <Button className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-sm shadow-blue-500/20 transition-all">
+              <Plus className="mr-1.5 h-4 w-4" strokeWidth={2.5} />
+              New Analysis
             </Button>
           </Link>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-10 shadow-sm">
-          <StatCard 
-            title="Total Analyses" 
-            value={totalScans.toString()} 
-            icon={<FileText className="h-4 w-4" />} 
+        {/* Stats grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <StatCard
+            title="Total Analyses"
+            value={totalScans.toString()}
+            icon={<FileText className="h-4 w-4" />}
+            trend={totalScans > 0 ? `${totalScans} resume${totalScans !== 1 ? "s" : ""} scanned` : "No scans yet"}
           />
-          <StatCard 
-            title="Avg ATS Performance" 
-            value={`${avgScore}`} 
-            suffix="%" 
-            icon={<Zap className="h-4 w-4" />} 
+          <StatCard
+            title="Avg ATS Score"
+            value={avgScore > 0 ? `${avgScore}` : "—"}
+            suffix={avgScore > 0 ? "/ 100" : ""}
+            icon={<TrendingUp className="h-4 w-4" />}
+            trend={avgScore >= 70 ? "Above average" : avgScore > 0 ? "Needs improvement" : "Run a scan to see"}
+            trendColor={avgScore >= 70 ? "text-emerald-600 dark:text-emerald-400" : avgScore > 0 ? "text-amber-600 dark:text-amber-400" : undefined}
           />
-          <StatCard 
-            title="Available Credits" 
-            value={credits.toString()} 
-            icon={<CreditCard className="h-4 w-4" />} 
+          <StatCard
+            title="Credits Available"
+            value={credits.toString()}
+            icon={<CreditCard className="h-4 w-4" />}
+            trend={credits <= 1 ? "Running low — top up" : `${credits} scans remaining`}
+            trendColor={credits <= 1 ? "text-amber-600 dark:text-amber-400" : undefined}
             action={
-              <Link href="/billing" className="text-[10px] font-bold uppercase tracking-widest text-primary hover:underline">
-                Refill
+              <Link href="/billing" className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline shrink-0">
+                Top up
               </Link>
-            } 
+            }
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-10">
-            <div className="group relative overflow-hidden rounded-2xl border border-border bg-card p-1 shadow-sm transition-all hover:border-primary/30">
-              <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6 p-8 bg-card rounded-[14px]">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
-                  <UploadCloud strokeWidth={1.5} className="h-7 w-7" />
-                </div>
-                <div className="flex-1 text-center sm:text-left">
-                  <h3 className="text-lg font-semibold text-foreground tracking-tight">Deploy a new analysis</h3>
-                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                    Upload your latest CV to generate a deterministic gap analysis and AI bullet rewrites.
-                  </p>
-                </div>
-                <Link href="/upload">
-                  <Button variant="outline" className="h-10 border-border bg-background text-foreground hover:bg-muted rounded-lg font-bold px-6">
-                    Select PDF
-                  </Button>
-                </Link>
+        {/* Main content grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Recent analyses */}
+          <div className="lg:col-span-2 space-y-5">
+
+            {/* Upload CTA */}
+            <div className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all p-6 flex items-center gap-5">
+              <div className="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0">
+                <UploadCloud size={20} strokeWidth={1.5} />
               </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground">Analyze a new resume</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Upload your PDF and paste a job description to get your ATS score and AI suggestions.</p>
+              </div>
+              <Link href="/upload">
+                <Button variant="outline" className="h-9 px-4 text-sm font-semibold rounded-xl border-border shrink-0">
+                  Upload PDF
+                </Button>
+              </Link>
             </div>
 
+            {/* Resume list */}
             <div>
-              <div className="flex items-center justify-between mb-4 px-1">
-                <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground">Recent Pipeline Activity</h3>
-                <Link href="/history" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">View All</Link>
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
-                {recentResumes.length === 0 ? (
-                  <div className="py-16 text-center">
-                     <FileText className="mx-auto h-10 w-10 text-muted/30 mb-4" strokeWidth={1} />
-                     <p className="text-sm text-muted-foreground font-medium">No telemetry data available yet.</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col">
-                    {recentResumes.map((resume) => (
-                      <Link 
-                        key={resume.id} 
-                        href={`/dashboard/${resume.id}`} 
-                        className="flex items-center justify-between p-5 hover:bg-muted/50 border-b last:border-0 border-border transition-colors group"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:border-primary/30 transition-all">
-                            <FileText className="h-5 w-5" strokeWidth={1.5} />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold text-foreground capitalize tracking-tight">{resume.file_name.replace('.pdf', '')}</p>
-                            <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-tighter">
-                              Processed: {formatSystemDate(resume.created_at)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                           <div className={cn(
-                             "px-2.5 py-1 rounded-md text-[10px] font-bold font-mono border",
-                             resume.ats_score >= 70 
-                               ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                               : "bg-rose-500/10 text-rose-600 border-rose-500/20"
-                           )}>
-                             ATS_{resume.ats_score}
-                           </div>
-                           <ChevronRight className="h-4 w-4 text-muted-foreground/40 group-hover:text-foreground transition-colors" />
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
+              <div className="flex items-center justify-between mb-3 px-0.5">
+                <h2 className="text-sm font-bold text-foreground">Recent Analyses</h2>
+                {recentResumes.length > 0 && (
+                  <Link href="/history" className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
+                    View all <ChevronRight size={11} />
+                  </Link>
                 )}
               </div>
+
+              {recentResumes.length === 0 ? (
+                <EmptyAnalyses />
+              ) : (
+                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
+                  {recentResumes.map((resume, i) => {
+                    const score = resume.ats_score ?? 0;
+                    const scoreColor =
+                      score >= 75 ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
+                      : score >= 55 ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
+                      : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20";
+
+                    return (
+                      <Link
+                        key={resume.id}
+                        href={`/dashboard/${resume.id}`}
+                        className={cn(
+                          "flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group",
+                          i < recentResumes.length - 1 && "border-b border-border"
+                        )}
+                      >
+                        <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-colors shrink-0">
+                          <FileText size={16} strokeWidth={1.5} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-foreground truncate leading-none mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={resume.file_name}>
+                            {resume.file_name.replace(/\.pdf$/i, "")}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                            <Clock size={10} />
+                            {formatDate(resume.created_at)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold border tabular-nums", scoreColor)}>
+                            {score > 0 ? `${score}/100` : "—"}
+                          </span>
+                          <ChevronRight size={14} className="text-muted-foreground/40 group-hover:text-foreground transition-colors" />
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
-          <aside className="space-y-6">
-             <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-                <div className="flex items-center gap-2 mb-6">
-                   <Zap size={14} className="text-primary" />
-                   <h4 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground">Advanced Toolset</h4>
-                </div>
-                <div className="space-y-2">
-                   <QuickAction icon={<FileText size={16} />} label="Cover Letter Gen" onClick={() => router.push('/dashboard/cover-letter')} />
-                   <QuickAction icon={<BarChart3 size={16} />} label="Interview Simulator" onClick={() => router.push('/dashboard/interview')} />
-                   <QuickAction icon={<Settings size={16} />} label="Profile Config" onClick={() => router.push('/settings')} />
-                </div>
-                
-                <div className="mt-8 pt-6 border-t border-border">
-                   <div className="bg-muted/50 rounded-xl p-4 border border-border">
-                      <div className="flex items-center gap-2 mb-2">
-                         <Crown size={12} className="text-amber-500" />
-                         <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">Pro Access</span>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground leading-relaxed">
-                         Unlock infinite scans and deep reasoning logs with our enterprise tier.
-                      </p>
-                      <button
-                        onClick={handleSignOut} 
-                        disabled={isSigningOut}
-                        className="mt-4 flex items-center gap-2 text-[10px] font-bold uppercase text-rose-600 hover:text-rose-700 transition-colors"
-                      >
-                        <LogOut size={12} /> {isSigningOut ? "Terminating..." : "Terminate Session"}
-                      </button>
-                   </div>
-                </div>
-             </div>
+          {/* Sidebar tools */}
+          <aside className="space-y-4">
+
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles size={14} className="text-blue-500" />
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground">AI Tools</h3>
+              </div>
+              <div className="space-y-1.5">
+                <ToolButton
+                  icon={<PenLine size={15} />}
+                  label="Cover Letter Generator"
+                  sub="Role-specific in seconds"
+                  onClick={() => router.push("/dashboard/cover-letter")}
+                />
+                <ToolButton
+                  icon={<BarChart3 size={15} />}
+                  label="Interview Simulator"
+                  sub="Practice with AI feedback"
+                  onClick={() => router.push("/dashboard/interview")}
+                />
+              </div>
+            </div>
+
+            {/* Quick tips */}
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-4">Pro Tips</h3>
+              <ul className="space-y-3">
+                {[
+                  "Tailor your resume for each role — generic resumes score 20–30 pts lower.",
+                  "Add measurable metrics to every bullet point.",
+                  "Use keywords verbatim from the job description.",
+                ].map((tip, i) => (
+                  <li key={i} className="flex items-start gap-2 text-[12px] text-muted-foreground leading-relaxed">
+                    <span className="w-4 h-4 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {i + 1}
+                    </span>
+                    {tip}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </aside>
         </div>
-      </main>
-
-    </div>
+      </div>
+    </DashboardShell>
   );
 }
 
-function StatCard({ title, value, icon, suffix, action }: any) {
+function StatCard({ title, value, suffix, icon, trend, trendColor, action }: {
+  title: string;
+  value: string;
+  suffix?: string;
+  icon: React.ReactNode;
+  trend?: string;
+  trendColor?: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="bg-card p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div className="flex items-center gap-3">
-        <div className="h-8 w-8 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="bg-card rounded-2xl border border-border p-5 shadow-sm"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground">
           {icon}
         </div>
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-0.5">{title}</p>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold tracking-tighter text-foreground font-mono">{value}</span>
-            {suffix && <span className="text-xs text-muted-foreground font-mono">{suffix}</span>}
-          </div>
-        </div>
+        {action}
       </div>
-      {action}
-    </div>
+      <div className="flex items-baseline gap-1.5 mb-1.5">
+        <span className="text-2xl font-bold tracking-tight text-foreground tabular-nums">{value}</span>
+        {suffix && <span className="text-sm text-muted-foreground">{suffix}</span>}
+      </div>
+      <p className="text-[11px] font-medium text-muted-foreground">{title}</p>
+      {trend && (
+        <p className={cn("text-[10px] mt-1 font-medium", trendColor ?? "text-muted-foreground/60")}>{trend}</p>
+      )}
+    </motion.div>
   );
 }
 
-function QuickAction({ icon, label, onClick }: any) {
+function EmptyAnalyses() {
   return (
-    <button 
-      onClick={onClick} 
-      className="group flex w-full items-center justify-between rounded-xl bg-muted/30 border border-border/50 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted hover:border-primary/20 transition-all"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-col items-center justify-center py-14 rounded-2xl border border-dashed border-border text-center"
     >
-      <div className="flex items-center gap-3">
-        <span className="text-muted-foreground group-hover:text-primary transition-colors">{icon}</span>
-        {label}
+      <div className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4">
+        <FileText size={24} className="text-muted-foreground/50" strokeWidth={1.5} />
       </div>
-      <ArrowUpRight size={14} className="text-muted-foreground/30 group-hover:text-primary transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      <p className="text-sm font-semibold text-foreground mb-1">No analyses yet</p>
+      <p className="text-[12px] text-muted-foreground mb-5 max-w-[220px] leading-relaxed">
+        Upload your first resume to see your ATS score and AI feedback.
+      </p>
+      <Link href="/upload">
+        <Button className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm">
+          <UploadCloud size={14} className="mr-1.5" />
+          Analyze My Resume
+        </Button>
+      </Link>
+    </motion.div>
+  );
+}
+
+function ToolButton({ icon, label, sub, onClick }: {
+  icon: React.ReactNode;
+  label: string;
+  sub: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-muted/60 transition-colors"
+    >
+      <span className="text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        {icon}
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="text-[12.5px] font-semibold text-foreground leading-none mb-0.5">{label}</p>
+        <p className="text-[11px] text-muted-foreground">{sub}</p>
+      </div>
+      <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-blue-500 transition-colors shrink-0" />
     </button>
   );
 }

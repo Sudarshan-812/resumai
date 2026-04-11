@@ -1,10 +1,7 @@
 import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
-
-if (!process.env.GEMINI_API_KEY) {
-  throw new Error("GEMINI_API_KEY is not set in environment variables");
-}
+import "@/env";
 
 export async function analyzeResume(resumeText: string, jobDescription: string) {
   const currentDate = new Date().toISOString().split('T')[0];
@@ -12,7 +9,7 @@ export async function analyzeResume(resumeText: string, jobDescription: string) 
   try {
     const { object: analysis } = await generateObject({
       model: google("gemini-2.5-flash"),
-      maxRetries: 0,
+      maxRetries: 2,
       schema: z.object({
         ats_score: z.number().min(0).max(100),
         calculated_yoe: z.number().describe("Total years of professional experience extracted from work history dates"),

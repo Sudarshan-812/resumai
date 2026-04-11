@@ -92,8 +92,8 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
             <svg width="24" height="24" viewBox="0 0 16 16" fill="none" className="text-primary"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
           </div>
         </div>
-        <h2 className="text-xl font-bold text-foreground tracking-tight mb-1">Neural Engine Active</h2>
-        <p className="text-sm text-muted-foreground font-mono">Scanning <span className="text-foreground">{fileName}</span></p>
+        <h2 className="text-xl font-bold text-foreground tracking-tight mb-1">Analyzing your resume</h2>
+        <p className="text-sm text-muted-foreground">Scanning <span className="font-medium text-foreground">{fileName}</span></p>
       </div>
 
       {/* Terminal log */}
@@ -105,7 +105,7 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
             ))}
           </div>
           <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-2">
-            gemini_pipeline.log
+            analysis.log
           </span>
           <div className="ml-auto flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -211,39 +211,24 @@ const UploadPage: FC = (): JSX.Element => {
   const canAnalyze = !!file && jobDescription.trim().length > 0;
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground font-sans overflow-hidden">
-
-      {/* Ambient grid background */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.025]"
-        style={{
-          backgroundImage: "linear-gradient(to right,var(--color-foreground) 1px,transparent 1px),linear-gradient(to bottom,var(--color-foreground) 1px,transparent 1px)",
-          backgroundSize: "4rem 4rem",
-        }}
-      />
-
-      {/* Ambient top glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed top-[-15%] left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-primary opacity-[0.06] blur-[100px]"
-      />
+    <div className="min-h-screen bg-background text-foreground font-sans">
 
       {/* Nav */}
-      <header className="relative z-50 flex items-center justify-between px-6 py-5 border-b border-border bg-background/70 backdrop-blur-md">
+      <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-background sticky top-0 z-20">
         <Link href="/dashboard" className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Dashboard
+          <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+          Back
         </Link>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+          <div className="w-5 h-5 rounded-md bg-foreground text-background flex items-center justify-center">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
           </div>
-          <span className="font-bold text-sm text-foreground hidden sm:block">New Analysis</span>
+          <span className="font-semibold text-[13px] text-foreground">ResumAI</span>
         </div>
         <div className="w-16" />
       </header>
 
-      <main className="relative z-10 flex flex-col items-center px-4 py-12">
+      <main className="flex flex-col items-center px-4 py-12">
         <AnimatePresence mode="wait">
 
           {/* ─── UPLOAD FORM ─── */}
@@ -258,30 +243,21 @@ const UploadPage: FC = (): JSX.Element => {
             >
               {/* Page header */}
               <div className="text-center mb-10">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.05 }}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary mb-5"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Gemini 2.5 Flash · Targeted Match Analysis
-                </motion.div>
                 <motion.h1
-                  initial={{ opacity: 0, y: 10 }}
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3"
+                  transition={{ delay: 0.05 }}
+                  className="text-3xl md:text-4xl font-bold text-foreground tracking-tight mb-3"
                 >
-                  New Analysis
+                  New Resume Analysis
                 </motion.h1>
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.15 }}
-                  className="text-muted-foreground text-base max-w-lg mx-auto"
+                  transition={{ delay: 0.1 }}
+                  className="text-muted-foreground text-[15px] max-w-md mx-auto"
                 >
-                  Upload your resume and paste the job description. Our AI will score, analyze, and give you a recruiter-grade report.
+                  Upload your PDF and paste the job description to get an ATS score with keyword feedback in ~10 seconds.
                 </motion.p>
               </div>
 
@@ -456,41 +432,22 @@ const UploadPage: FC = (): JSX.Element => {
                 <motion.button
                   disabled={!canAnalyze}
                   onClick={handleAnalyze}
-                  whileHover={canAnalyze ? { scale: 1.02, y: -1 } : {}}
+                  whileHover={canAnalyze ? { y: -1 } : {}}
                   whileTap={canAnalyze ? { scale: 0.98 } : {}}
                   className={cn(
-                    "relative h-13 px-10 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2.5 overflow-hidden",
+                    "h-11 px-10 rounded-xl font-semibold text-sm transition-all flex items-center gap-2",
                     canAnalyze
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/25"
+                      ? "bg-blue-600 hover:bg-blue-700 text-white"
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   )}
                 >
-                  {/* Shimmer on active */}
-                  {canAnalyze && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
-                      animate={{ x: ["-150%", "150%"] }}
-                      transition={{ repeat: Infinity, duration: 2.5, ease: "linear" }}
-                    />
-                  )}
-                  
-                  <span className="relative z-10">Run Analysis</span>
-                  <ArrowRight className="w-4 h-4 relative z-10" />
+                  Analyze Resume
+                  <ArrowRight className="w-4 h-4" />
                 </motion.button>
 
-                <p className="mt-4 text-[11px] text-muted-foreground text-center">
-                  Analysis takes ~10 seconds · Results are saved to your dashboard
+                <p className="mt-3 text-[11px] text-muted-foreground/70 text-center">
+                  Takes ~10 seconds · Saved to your dashboard
                 </p>
-
-                {/* What happens next */}
-                <div className="mt-6 flex items-center gap-6 text-[11px] text-muted-foreground">
-                  {["ATS Score", "Keyword Gap", "AI Feedback"].map((item, i) => (
-                    <span key={item} className="flex items-center gap-1.5">
-                      <ChevronRight className="w-3 h-3 text-primary" />
-                      {item}
-                    </span>
-                  ))}
-                </div>
               </motion.div>
             </motion.div>
           )}

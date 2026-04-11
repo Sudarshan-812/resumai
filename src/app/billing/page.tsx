@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Check, Loader2, ShieldCheck, HelpCircle, Star } from "lucide-react";
-import NavbarWrapper from "@/app/dashboard/NavbarWrapper";
+import DashboardShell from "@/app/dashboard/DashboardShell";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
@@ -41,8 +41,8 @@ const PLANS = [
     lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
     lottieClass: "",
     description: "Our most popular choice for job seekers.",
-    color: "text-indigo-500",
-    badgeColor: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300",
+    color: "text-blue-500",
+    badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
     buttonVariant: "solid",
     popular: true,
     features: ["12 AI Resume Scans", "Detailed Feedback", "Cover Letter Generator", "Priority Support", "LinkedIn Optimization"],
@@ -87,12 +87,11 @@ export default function BillingPage() {
             response.razorpay_order_id,
             response.razorpay_payment_id,
             response.razorpay_signature,
-            plan.credits
           );
 
           if (verification.success) {
             toast.dismiss();
-            toast.success(`Success! ${plan.credits} Credits Added.`);
+            toast.success(`Success! ${verification.creditsAdded} Credits Added.`);
             router.push("/dashboard");
             router.refresh();
           } else {
@@ -114,25 +113,18 @@ export default function BillingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#09090b] text-zinc-900 dark:text-white transition-colors duration-300 selection:bg-indigo-500/30 pb-20">
+    <DashboardShell>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
+      <div className="max-w-5xl mx-auto px-6 py-8">
 
-      <div className="fixed inset-0 -z-10 h-full w-full bg-white dark:bg-[#09090b] [background:radial-gradient(125%_125%_at_50%_10%,#fff_40%,#63e_100%)] dark:[background:radial-gradient(125%_125%_at_50%_10%,#000_40%,#63e_100%)] opacity-20 pointer-events-none" />
-
-      <NavbarWrapper />
-
-      <main className="max-w-7xl mx-auto px-6 pt-28 pb-20">
-
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-400 dark:from-white dark:via-zinc-200 dark:to-zinc-600 bg-clip-text text-transparent">
-            Invest in your Career
-          </h1>
-          <p className="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-xl mx-auto">
-            Pay once, keep your credits forever. No monthly subscriptions, no hidden fees.
+        <div className="mb-10">
+          <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1.5">Credits &amp; Billing</h1>
+          <p className="text-sm text-muted-foreground">
+            Pay once, keep your credits forever. No subscriptions, no hidden fees.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto relative items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative items-start">
 
           {PLANS.map((plan) => (
             <div
@@ -141,12 +133,12 @@ export default function BillingPage() {
                 "group relative flex flex-col p-8 rounded-3xl transition-all duration-300",
                 "bg-white dark:bg-zinc-900/40 backdrop-blur-xl border",
                 plan.popular
-                  ? "border-indigo-500 dark:border-indigo-500/50 shadow-2xl shadow-indigo-500/10 z-10 scale-100 md:scale-105"
+                  ? "border-blue-500 dark:border-blue-500/50 shadow-2xl shadow-blue-500/10 z-10"
                   : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xl"
               )}
             >
               {plan.popular && (
-                <div className="absolute -top-5 left-0 right-0 mx-auto w-fit bg-gradient-to-r from-indigo-600 to-violet-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg shadow-indigo-500/30 flex items-center gap-1.5">
+                <div className="absolute -top-5 left-0 right-0 mx-auto w-fit bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg shadow-blue-500/30 flex items-center gap-1.5">
                   <Star className="w-3 h-3 fill-white" />
                   Most Popular
                 </div>
@@ -200,7 +192,7 @@ export default function BillingPage() {
                   "w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 mt-auto",
                   loadingId && loadingId !== plan.id && "opacity-50 cursor-not-allowed",
                   plan.popular
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:-translate-y-0.5"
+                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20"
                     : "bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700"
                 )}
               >
@@ -230,13 +222,13 @@ export default function BillingPage() {
             </span>
             <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
             <span className="flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-indigo-500" />
+              <HelpCircle className="w-5 h-5 text-blue-500" />
               24/7 Priority Support
             </span>
           </div>
         </div>
 
-      </main>
-    </div>
+      </div>
+    </DashboardShell>
   );
 }

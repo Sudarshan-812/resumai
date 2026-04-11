@@ -1,162 +1,228 @@
 "use client";
 
-import { useEffect, useRef, FormEvent } from 'react';
-import { useChat } from '@ai-sdk/react';
-import { Bot, Send, User, Terminal, ChevronRight, Loader2 } from 'lucide-react';
+import { useEffect, useRef, useState, FormEvent } from "react";
+import { useChat } from "@ai-sdk/react";
+import { Send, Loader2, CornerDownLeft, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { createClient } from "@/app/lib/supabase/client";
 
-interface JobAssistantProps {
-  resumeId: string;
+interface Props { resumeId: string; }
+
+const GREETING_PAIRS = [
+  ["Good to see you", "What would you like to improve today?"],
+  ["Hello there", "Let's make your resume stand out."],
+  ["Welcome back", "Your resume is loaded and ready to analyze."],
+  ["Hi there", "Ask me anything about your resume."],
+];
+
+const SUGGESTIONS = [
+  { label: "Rewrite my summary", prompt: "Rewrite my resume summary to be more impactful, metric-driven, and tailored to the job description." },
+  { label: "Find missing keywords", prompt: "Which keywords from the job description are missing from my resume and where should I add them?" },
+  { label: "Fix weak bullet points", prompt: "Identify the weakest bullet points in my experience section and suggest stronger alternatives using action verbs and metrics." },
+  { label: "ATS compatibility check", prompt: "What formatting or structural changes should I make to improve ATS compatibility?" },
+];
+
+function TypingDots() {
+  return (
+    <div className="flex items-center gap-1 px-1 py-1">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-muted-foreground/50 animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s`, animationDuration: "0.9s" }}
+        />
+      ))}
+    </div>
+  );
 }
 
-export default function AiAssistant({ resumeId }: JobAssistantProps) {
+export default function AiAssistant({ resumeId }: Props) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [userName, setUserName] = useState<string>("");
+  const [greetingIdx] = useState(() => Math.floor(Math.random() * GREETING_PAIRS.length));
 
   const chat: any = useChat({
-    api: '/api/chat',
+    api: "/api/chat",
     body: { resumeId },
-    onError: (err: any) => toast.error(err.message || "Failed to execute command.")
+    onError: (err: any) => toast.error(err.message || "Something went wrong."),
   } as any);
 
-  const {
-    messages = [],
-    input = '',
-    setInput = () => {},
-    isLoading = false
-  } = chat;
+  const { messages = [], input = "", setInput = () => {}, isLoading = false, handleSubmit } = chat;
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      const name = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "";
+      setUserName(name);
+    });
+  }, []);
 
-  const handleSendMessage = async (e?: FormEvent, manualText?: string) => {
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
+
+  const submitMessage = (e?: FormEvent, manual?: string) => {
     e?.preventDefault();
+    const text = manual || input;
+    if (!text.trim() || isLoading) return;
 
-    const textToSend = manualText || input || '';
-    if (!textToSend.trim() || isLoading) return;
-
-    try {
-      if (typeof chat.append === 'function') {
-        await chat.append({ role: 'user', content: textToSend });
-      } else if (typeof chat.handleSubmit === 'function') {
-        chat.handleSubmit(e);
+    if (manual) {
+      setInput(manual);
+      requestAnimationFrame(() => {
+        if (typeof chat.append === "function") {
+          chat.append({ role: "user", content: manual });
+        }
+      });
+    } else {
+      if (typeof chat.append === "function") {
+        chat.append({ role: "user", content: input });
+        setInput("");
       } else {
-        setInput(textToSend);
-        setTimeout(() => chat.handleSubmit?.(), 50);
+        handleSubmit(e);
       }
-
-      if (!manualText) setInput('');
-    } catch (err) {
-      toast.error("Pipeline communication failure.");
     }
   };
 
-  const handleQuickPrompt = (text: string) => {
-    handleSendMessage(undefined, text);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submitMessage();
+    }
   };
 
+  const greeting = GREETING_PAIRS[greetingIdx];
+  const displayGreeting = userName ? `${greeting[0]}, ${userName}` : greeting[0];
+
+  const isEmpty = messages.length === 0;
+
   return (
-    <div className="flex flex-col h-full bg-background relative">
+    <div className="flex flex-col h-full bg-background">
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar">
-        {messages.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center px-4 animate-in fade-in duration-500">
-            <div className="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 shadow-sm">
-              <Terminal className="w-5 h-5 text-primary" />
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto">
+        {isEmpty ? (
+          /* Empty state — Gemini-style greeting */
+          <div className="flex flex-col items-center justify-center h-full px-6 text-center pb-8">
+            <div className="mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-600/20">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-[22px] font-semibold text-foreground tracking-tight leading-tight mb-1">
+                {displayGreeting}
+              </h3>
+              <p className="text-sm text-muted-foreground">{greeting[1]}</p>
             </div>
-            <h3 className="font-serif text-xl font-bold text-foreground mb-2">Neural Interface Ready</h3>
-            <p className="text-xs text-muted-foreground max-w-[260px] mb-8 leading-relaxed">
-              Execute commands below or type natural language to manipulate your resume data, extract keywords, and rewrite bullets.
-            </p>
 
-            <div className="flex flex-col gap-2 w-full max-w-[300px]">
-              {[
-                { cmd: "/rewrite_summary", desc: "Make it more punchy and metric-driven" },
-                { cmd: "/inject_keywords", desc: "How do I add the missing JD skills?" },
-                { cmd: "/audit_format", desc: "Fix my structural formatting issues" }
-              ].map((prompt) => (
+            <div className="w-full max-w-sm grid grid-cols-2 gap-2 mt-2">
+              {SUGGESTIONS.map((s) => (
                 <button
-                  key={prompt.cmd}
-                  onClick={() => handleQuickPrompt(prompt.desc)}
-                  className="group flex flex-col items-start gap-1 bg-card hover:bg-muted border border-border py-3 px-4 rounded-xl transition-all text-left shadow-sm hover:border-primary/30"
+                  key={s.label}
+                  onClick={() => submitMessage(undefined, s.prompt)}
+                  className={cn(
+                    "text-left px-3.5 py-3 rounded-xl border text-[12.5px] font-medium leading-snug transition-all",
+                    "bg-card border-border hover:border-blue-500/40 hover:bg-blue-50/50 dark:hover:bg-blue-500/8 hover:shadow-sm text-foreground"
+                  )}
                 >
-                  <span className="text-[10px] font-mono font-bold text-primary flex items-center gap-1.5">
-                     <ChevronRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform"/> {prompt.cmd}
-                  </span>
-                  <span className="text-xs font-medium text-muted-foreground pl-4.5">
-                    {prompt.desc}
-                  </span>
+                  {s.label}
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          messages.map((m: any) => (
-            <div key={m.id} className={cn("flex gap-3", m.role === 'user' ? "flex-row-reverse" : "")}>
-              <div className={cn(
-                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm border",
-                m.role === 'user'
-                  ? "bg-primary border-primary text-primary-foreground"
-                  : "bg-muted border-border text-foreground"
-              )}>
-                {m.role === 'user' ? <User className="w-4 h-4" /> : <Terminal className="w-4 h-4" />}
-              </div>
+          <div className="px-5 py-6 space-y-6">
+            {messages.map((m: any) => (
+              <div key={m.id} className={cn("flex gap-3", m.role === "user" ? "flex-row-reverse" : "flex-row")}>
+                {/* Avatar */}
+                <div className={cn(
+                  "w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5",
+                  m.role === "user"
+                    ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-200"
+                    : "bg-blue-600 text-white"
+                )}>
+                  {m.role === "user" ? (userName?.[0]?.toUpperCase() ?? "U") : <Sparkles size={12} />}
+                </div>
 
-              <div className={cn(
-                "px-4 py-3 max-w-[85%] text-sm leading-relaxed shadow-sm",
-                m.role === 'user'
-                  ? "bg-primary text-primary-foreground rounded-xl rounded-tr-sm"
-                  : "bg-muted/40 border border-border text-foreground rounded-xl rounded-tl-sm whitespace-pre-wrap"
-              )}>
-                {m.content}
+                {/* Message */}
+                <div className={cn(
+                  "max-w-[82%] text-sm leading-relaxed",
+                  m.role === "user"
+                    ? "bg-muted/60 border border-border rounded-2xl rounded-tr-sm px-4 py-3 text-foreground"
+                    : "text-foreground rounded-2xl rounded-tl-sm"
+                )}>
+                  {m.role === "assistant" ? (
+                    <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5">
+                      {m.content.split("\n").map((line: string, i: number) => (
+                        <p key={i} className={cn(!line.trim() && "h-2")}>{line}</p>
+                      ))}
+                    </div>
+                  ) : (
+                    m.content
+                  )}
+                </div>
               </div>
-            </div>
-          ))
-        )}
+            ))}
 
-        {isLoading && (
-          <div className="flex gap-3 justify-start animate-in fade-in">
-            <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center shrink-0 shadow-sm">
-              <Terminal className="w-4 h-4 text-muted-foreground" />
-            </div>
-            <div className="bg-muted/40 border border-border rounded-xl rounded-tl-sm px-5 py-4 flex items-center gap-3 shadow-sm">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-primary" />
-              <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">Processing...</span>
-            </div>
+            {isLoading && (
+              <div className="flex gap-3">
+                <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                  <Sparkles size={12} className="text-white" />
+                </div>
+                <div className="bg-muted/40 border border-border rounded-2xl rounded-tl-sm px-4 py-3">
+                  <TypingDots />
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
         )}
-        <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 bg-background border-t border-border shrink-0">
-        <form
-          onSubmit={handleSendMessage}
-          className="relative flex items-center bg-muted/20 border border-border rounded-xl focus-within:border-primary/50 focus-within:bg-background focus-within:ring-2 focus-within:ring-primary/10 transition-all shadow-sm overflow-hidden"
-        >
-          <div className="absolute left-3 text-muted-foreground/50">
-            <ChevronRight className="w-4 h-4" />
-          </div>
-          <input
-            value={input || ''}
+      {/* Input */}
+      <div className="px-4 pb-4 pt-3 border-t border-border bg-background shrink-0">
+        <form onSubmit={submitMessage} className="relative">
+          <textarea
+            ref={inputRef}
+            value={input || ""}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter command or question..."
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about your resume…"
             disabled={isLoading}
-            className="w-full bg-transparent pl-9 pr-12 py-3.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none disabled:opacity-50"
+            rows={1}
+            className={cn(
+              "w-full resize-none rounded-2xl border border-border bg-muted/30 px-4 py-3 pr-12 text-sm text-foreground",
+              "placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40",
+              "transition-all disabled:opacity-50 leading-relaxed",
+            )}
+            style={{ minHeight: 48, maxHeight: 160 }}
+            onInput={(e) => {
+              const t = e.target as HTMLTextAreaElement;
+              t.style.height = "auto";
+              t.style.height = Math.min(t.scrollHeight, 160) + "px";
+            }}
           />
           <button
             type="submit"
-            disabled={!(input?.trim()) || isLoading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-30 transition-all shadow-sm active:scale-[0.95]"
+            disabled={!input?.trim() || isLoading}
+            className={cn(
+              "absolute right-3 bottom-3 w-8 h-8 rounded-xl flex items-center justify-center transition-all",
+              input?.trim() && !isLoading
+                ? "bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
+            )}
           >
-            <Send className="w-3.5 h-3.5 -ml-0.5" />
+            {isLoading
+              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              : <Send className="w-3.5 h-3.5" />
+            }
           </button>
         </form>
-        <div className="text-center mt-3">
-          <p className="text-[9px] font-mono font-bold text-muted-foreground/60 uppercase tracking-[0.2em] leading-none">
-            Gemini outputs may require human verification.
-          </p>
-        </div>
+        <p className="text-center text-[10px] text-muted-foreground/40 mt-2">
+          Press <kbd className="font-mono">Enter</kbd> to send · <kbd className="font-mono">Shift+Enter</kbd> for new line
+        </p>
       </div>
     </div>
   );

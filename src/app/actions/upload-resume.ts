@@ -38,6 +38,10 @@ export async function processResume(formData: FormData) {
     return { success: false, message: "No valid file uploaded" };
   }
 
+  if (file.size > 5 * 1024 * 1024) {
+    return { success: false, message: "File size must be under 5MB." };
+  }
+
   if (!jobDescription || jobDescription === "undefined") {
     return { success: false, message: "Job Description is required for targeted analysis" };
   }
@@ -71,22 +75,29 @@ export async function processResume(formData: FormData) {
       throw new Error("Failed to save resume to database.");
     }
 
-    const { error: analysisError } = await supabase
+    const baseAnalysisData = {
+      resume_id: resume.id,
+      user_id: user.id,
+      ats_score: analysis.ats_score,
+      summary_feedback: analysis.summary_feedback,
+      skills_found: analysis.skills_found,
+      missing_keywords: analysis.missing_keywords,
+      formatting_issues: analysis.formatting_issues || [],
+      job_description: jobDescription,
+    };
+
+    // Try with calculated_yoe; fall back without it if the column doesn't exist
+    let { error: analysisError } = await supabase
       .from('analyses')
-      .insert({
-        resume_id: resume.id,
-        user_id: user.id,
-        ats_score: analysis.ats_score,
-        summary_feedback: analysis.summary_feedback,
-        skills_found: analysis.skills_found,
-        missing_keywords: analysis.missing_keywords,
-        formatting_issues: analysis.formatting_issues || [],
-        job_description: jobDescription,
-        calculated_yoe: analysis.calculated_yoe || 0
-      });
+      .insert({ ...baseAnalysisData, calculated_yoe: analysis.calculated_yoe ?? 0 });
 
     if (analysisError) {
-      throw new Error("Failed to save analysis results to database.");
+      const { error: retryError } = await supabase
+        .from('analyses')
+        .insert(baseAnalysisData);
+      if (retryError) {
+        throw new Error(`Failed to save analysis: ${retryError.message}`);
+      }
     }
 
     revalidatePath('/dashboard');

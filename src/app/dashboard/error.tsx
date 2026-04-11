@@ -10,7 +10,9 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {}, [error]);
+  useEffect(() => {
+    console.error("[DashboardError]", error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
