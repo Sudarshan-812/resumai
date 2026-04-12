@@ -12,8 +12,7 @@ interface Testimonial {
   gradient: string;
 }
 
-// Static testimonial data kept outside the component
-// This avoids re-creation on every render and keeps JSX clean
+
 const TESTIMONIALS: readonly Testimonial[] = [
   {
     quote:
