@@ -403,28 +403,57 @@ export default function Navbar() {
               <div className={`h-px mx-3 my-2 ${isDark ? "bg-white/8" : "bg-zinc-100"}`} />
 
               <div className="flex flex-col gap-2 px-1 pt-1 pb-2">
-                <Link
-                  href="/try"
-                  onClick={() => setMobileOpen(false)}
-                  className={`py-3 text-center rounded-xl text-[14px] font-bold transition-colors ${
-                    isDark
-                      ? "bg-white text-zinc-950 hover:bg-zinc-100"
-                      : "bg-zinc-950 text-white hover:bg-zinc-800"
-                  }`}
-                >
-                  Try Free — No Login
-                </Link>
-                <Link
-                  href="/login"
-                  onClick={() => setMobileOpen(false)}
-                  className={`py-3 text-center rounded-xl text-[14px] font-medium border transition-colors ${
-                    isDark
-                      ? "border-white/10 text-zinc-400 hover:bg-white/8"
-                      : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
-                  }`}
-                >
-                  Sign In
-                </Link>
+                {navUser ? (
+                  <>
+                    <Link
+                      href="/upload"
+                      onClick={() => setMobileOpen(false)}
+                      className={`py-3 text-center rounded-xl text-[14px] font-bold transition-colors ${
+                        isDark
+                          ? "bg-white text-zinc-950 hover:bg-zinc-100"
+                          : "bg-zinc-950 text-white hover:bg-zinc-800"
+                      }`}
+                    >
+                      Analyze Resume
+                    </Link>
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileOpen(false)}
+                      className={`py-3 text-center rounded-xl text-[14px] font-medium border transition-colors ${
+                        isDark
+                          ? "border-white/10 text-zinc-400 hover:bg-white/8"
+                          : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                      }`}
+                    >
+                      Dashboard
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/try"
+                      onClick={() => setMobileOpen(false)}
+                      className={`py-3 text-center rounded-xl text-[14px] font-bold transition-colors ${
+                        isDark
+                          ? "bg-white text-zinc-950 hover:bg-zinc-100"
+                          : "bg-zinc-950 text-white hover:bg-zinc-800"
+                      }`}
+                    >
+                      Try Free — No Login
+                    </Link>
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileOpen(false)}
+                      className={`py-3 text-center rounded-xl text-[14px] font-medium border transition-colors ${
+                        isDark
+                          ? "border-white/10 text-zinc-400 hover:bg-white/8"
+                          : "border-zinc-200 text-zinc-600 hover:bg-zinc-50"
+                      }`}
+                    >
+                      Sign In
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </motion.div>

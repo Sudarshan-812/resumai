@@ -1,9 +1,11 @@
 "use client";
 
 import type { FC, JSX } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { ArrowRight, CheckCircle2, TrendingUp, Users, Zap, Star } from "lucide-react";
+import { ArrowRight, CheckCircle2, TrendingUp, LayoutDashboard, Zap, Star } from "lucide-react";
+import { createClient } from "@/app/lib/supabase/client";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -17,6 +19,17 @@ const STATS = [
 ];
 
 const HeroSection: FC = (): JSX.Element => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsLoggedIn(!!user);
+    });
+  }, []);
+
   return (
     <section
       className="relative flex min-h-[96vh] w-full flex-col items-center justify-center overflow-hidden bg-background pt-28 pb-16"
@@ -80,26 +93,52 @@ const HeroSection: FC = (): JSX.Element => {
           transition={{ delay: 0.24 }}
           className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
-          <Link href="/try" aria-label="Try free without signing up">
-            <motion.div
-              whileHover={{ y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              className="group h-12 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 text-sm font-semibold text-white cursor-pointer transition-colors"
-            >
-              Try Free — No Login
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-            </motion.div>
-          </Link>
-
-          <Link href="/login" aria-label="Create a free account">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="h-12 flex items-center gap-2 rounded-xl border border-border bg-card/60 px-8 text-sm font-semibold text-foreground hover:bg-muted/60 cursor-pointer transition-colors backdrop-blur-sm"
-            >
-              Create Free Account
-            </motion.div>
-          </Link>
+          {mounted && isLoggedIn ? (
+            <>
+              <Link href="/upload" aria-label="Analyze your resume">
+                <motion.div
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group h-12 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 text-sm font-semibold text-white cursor-pointer transition-colors"
+                >
+                  Analyze My Resume
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                </motion.div>
+              </Link>
+              <Link href="/dashboard" aria-label="Go to your dashboard">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="h-12 flex items-center gap-2 rounded-xl border border-border bg-card/60 px-8 text-sm font-semibold text-foreground hover:bg-muted/60 cursor-pointer transition-colors backdrop-blur-sm"
+                >
+                  <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
+                  Go to Dashboard
+                </motion.div>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/try" aria-label="Try free without signing up">
+                <motion.div
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="group h-12 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 text-sm font-semibold text-white cursor-pointer transition-colors"
+                >
+                  Try Free — No Login
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+                </motion.div>
+              </Link>
+              <Link href="/login" aria-label="Create a free account">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="h-12 flex items-center gap-2 rounded-xl border border-border bg-card/60 px-8 text-sm font-semibold text-foreground hover:bg-muted/60 cursor-pointer transition-colors backdrop-blur-sm"
+                >
+                  Create Free Account
+                </motion.div>
+              </Link>
+            </>
+          )}
         </motion.div>
 
         {/* Microcopy */}
@@ -110,7 +149,10 @@ const HeroSection: FC = (): JSX.Element => {
           transition={{ delay: 0.32 }}
           className="mt-4 text-[12px] text-muted-foreground"
         >
-          No credit card required · 3 free scans · Results in ~10 seconds
+          {mounted && isLoggedIn
+            ? "AI-powered analysis · Instant results · Free to use"
+            : "No credit card required · 3 free scans · Results in ~10 seconds"
+          }
         </motion.p>
 
         {/* Stats bar */}

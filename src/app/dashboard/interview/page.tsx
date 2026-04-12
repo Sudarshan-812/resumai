@@ -22,6 +22,16 @@ export default function InterviewPage() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [loading, setLoading] = useState(false);
 
+  const parseErrorResponse = async (res: Response): Promise<string> => {
+    try {
+      const data = await res.json();
+      return data.error || data.message || `Request failed (${res.status})`;
+    } catch {
+      try { return (await res.text()) || `Request failed (${res.status})`; } catch {}
+    }
+    return `Request failed (${res.status})`;
+  };
+
   const generateQuestions = async () => {
     if (!role.trim() || !jobDesc.trim()) return;
     setLoading(true);
@@ -31,8 +41,9 @@ export default function InterviewPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role, jobDesc }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || await res.text());
+      if (!res.ok) throw new Error(await parseErrorResponse(res));
       const data = await res.json();
+      if (!data.questions?.length) throw new Error("No questions returned. Please try again.");
       setQuestions(data.questions);
       setCurrentIdx(0);
       setFeedbacks([]);
@@ -53,8 +64,9 @@ export default function InterviewPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: questions[currentIdx].question, answer, role, jobDesc }),
       });
-      if (!res.ok) throw new Error((await res.json()).error || await res.text());
+      if (!res.ok) throw new Error(await parseErrorResponse(res));
       const fb: Feedback = await res.json();
+      if (typeof fb.score !== "number") throw new Error("Invalid feedback response. Please try again.");
       const newFeedbacks = [...feedbacks, fb];
       setFeedbacks(newFeedbacks);
       setAnswer("");

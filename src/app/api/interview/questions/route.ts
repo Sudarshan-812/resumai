@@ -25,24 +25,29 @@ export async function POST(req: Request) {
     }
 
     const { object } = await generateObject({
-      model: google("gemini-2.5-flash-preview-04-17"),
+      model: google("gemini-3.1-flash-lite-preview"),
       schema: z.object({
         questions: z.array(z.object({
           question: z.string(),
           category: z.enum(["Behavioral", "Technical", "Situational", "Culture Fit"]),
         })).length(5),
       }),
-      prompt: `Generate 5 interview questions for a ${role} role.
+      prompt: `You are a senior hiring manager conducting a real interview for a ${role} position. Generate 5 high-quality, specific interview questions.
 
 Job Description:
 ${jobDesc.slice(0, 2000)}
 
-Requirements:
-- Mix of behavioral (2), technical (2), and situational/culture fit (1) questions
-- Each question should be specific to the role and JD, not generic
-- Behavioral questions should use "Tell me about a time..." or "Describe a situation..."
-- Technical questions should test skills mentioned in the JD
-- Questions should be challenging but fair for the level implied by the JD`,
+REQUIREMENTS:
+- 2 behavioral questions: Use "Tell me about a time..." or "Describe a situation where..." — focus on skills directly mentioned in the JD
+- 2 technical questions: Test specific technologies/methodologies listed in the JD, not generic knowledge
+- 1 situational or culture-fit question: Scenario-based or values alignment
+
+QUALITY BARS:
+- Questions must reference the SPECIFIC role level and responsibilities in the JD
+- Technical questions should name actual tools/languages/frameworks from the JD
+- Behavioral questions should target competencies that are explicitly or implicitly required
+- NO generic questions like "Tell me about yourself" or "Where do you see yourself in 5 years"
+- Each question should be something a candidate would actually struggle with if underprepared`,
     });
 
     return Response.json(object);

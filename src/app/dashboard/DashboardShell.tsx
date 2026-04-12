@@ -231,6 +231,64 @@ function SidebarContent({
   );
 }
 
+function SignOutConfirmDialog({
+  open,
+  onConfirm,
+  onCancel,
+  isDark,
+}: {
+  open: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  isDark: boolean;
+}) {
+  if (!open) return null;
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-sm"
+        onClick={onCancel}
+      />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 8 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 8 }}
+        transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        className={cn(
+          "fixed z-[201] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm rounded-2xl border p-6 shadow-2xl",
+          isDark ? "bg-zinc-900 border-white/10" : "bg-white border-zinc-200"
+        )}
+      >
+        <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center mb-4", isDark ? "bg-rose-500/15" : "bg-rose-50")}>
+          <LogOut size={18} className="text-rose-500" />
+        </div>
+        <h3 className="text-[15px] font-semibold text-foreground mb-1">Sign out?</h3>
+        <p className="text-sm text-muted-foreground mb-5">You'll need to sign in again to access your account.</p>
+        <div className="flex gap-2">
+          <button
+            onClick={onCancel}
+            className={cn(
+              "flex-1 h-9 rounded-xl border text-sm font-medium transition-colors",
+              isDark ? "border-white/10 text-zinc-300 hover:bg-white/8" : "border-zinc-200 text-zinc-700 hover:bg-zinc-50"
+            )}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 h-9 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold transition-colors"
+          >
+            Sign out
+          </button>
+        </div>
+      </motion.div>
+    </>
+  );
+}
+
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
   const { resolvedTheme, setTheme } = useTheme();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -238,6 +296,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const [signOutConfirmOpen, setSignOutConfirmOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
@@ -262,7 +321,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase.from("profiles").select("credits, full_name").eq("id", user.id).single();
+      const { data } = await supabase.from("profiles").select("credits, full_name").eq("id", user.id).maybeSingle();
       const name = data?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "User";
       setProfile({
         name,
@@ -275,7 +334,10 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOutClick = () => setSignOutConfirmOpen(true);
+
+  const handleSignOutConfirm = async () => {
+    setSignOutConfirmOpen(false);
     setSigningOut(true);
     await supabase.auth.signOut();
     router.push("/");
@@ -300,12 +362,23 @@ export default function DashboardShell({ children }: { children: React.ReactNode
   const sidebarProps = {
     profile, activeId, collapsed, isDark,
     onNavigate: () => setMobileOpen(false),
-    onSignOut: handleSignOut,
+    onSignOut: handleSignOutClick,
     signingOut,
     onToggleCollapse: handleToggleCollapse,
   };
 
   return (
+    <>
+    <AnimatePresence>
+      {signOutConfirmOpen && (
+        <SignOutConfirmDialog
+          open={signOutConfirmOpen}
+          onConfirm={handleSignOutConfirm}
+          onCancel={() => setSignOutConfirmOpen(false)}
+          isDark={isDark}
+        />
+      )}
+    </AnimatePresence>
     <div className="flex h-screen bg-background overflow-hidden">
 
       {/* Desktop sidebar */}
@@ -428,5 +501,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         </main>
       </div>
     </div>
+    </>
   );
 }

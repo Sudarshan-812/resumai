@@ -89,7 +89,7 @@ export async function processResume(formData: FormData) {
     // Try with calculated_yoe; fall back without it if the column doesn't exist
     let { error: analysisError } = await supabase
       .from('analyses')
-      .insert({ ...baseAnalysisData, calculated_yoe: analysis.calculated_yoe ?? 0 });
+      .insert({ ...baseAnalysisData, calculated_yoe: Math.round(analysis.calculated_yoe ?? 0) });
 
     if (analysisError) {
       const { error: retryError } = await supabase

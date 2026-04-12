@@ -16,7 +16,12 @@
       "Bash(mv public/window.svg _unused/public/)",
       "Bash(rmdir public/animations)",
       "Bash(rmdir animations:*)",
-      "Bash(xargs grep:*)"
+      "Bash(xargs grep:*)",
+      "Bash(xargs wc:*)",
+      "Bash(npm run:*)",
+      "Bash(python -c ':*)",
+      "Bash(python:*)",
+      "Bash(grep -n \"latexCode\\\\|onLatexChange\\\\|LaTeXViewer\\\\|resume-latex\" src/app/dashboard/AiAssistant.tsx src/app/dashboard/[id]/ClientReport.tsx src/app/api/chat/route.ts)"
     ]
   }
 }

@@ -33,25 +33,30 @@ export async function POST(req: Request) {
       concise: "brief, direct, and impact-focused — under 200 words",
     };
 
-    const prompt = `Write a cover letter for the following application.
+    const prompt = `You are an expert career coach who writes cover letters that get callbacks. Write a compelling, personalized cover letter for this exact application.
 
 Company: ${company}
 Role: ${role}
+Writing Tone: ${toneGuide[validatedTone]}
+
 Job Description:
 ${jobDesc.slice(0, 3000)}
 
-Tone: ${toneGuide[validatedTone]}
+STRICT REQUIREMENTS:
+1. Address it to "Dear Hiring Team" or "Dear ${company} Team" (no generic "To Whom It May Concern")
+2. OPENING: Start with a punchy, specific hook that names the role AND ${company} — reference something specific about the company or role (not generic flattery)
+3. PARAGRAPH 2: Connect 2-3 specific skills/experiences from the JD requirements to concrete achievements with numbers/results
+4. PARAGRAPH 3: Show you understand the company's mission/product and how you specifically add value
+5. CLOSING: Strong call to action, express genuine enthusiasm, sign off as "Sincerely, [Applicant]"
+6. Length: 3-4 paragraphs, under 350 words
+7. DO NOT use placeholder brackets like [Your Name] or [Your Phone] — write the letter completely, signed as "[Applicant]"
+8. DO NOT add any meta-commentary, notes, or explanations — output ONLY the cover letter text itself
+9. Make every sentence earn its place — cut fluff, focus on specific value
 
-Requirements:
-- Address it to the hiring team (no specific name)
-- Open with a strong hook that references the specific role and company
-- 2-3 body paragraphs connecting the candidate's background to the JD requirements
-- Close with a clear call to action
-- Do NOT include placeholder brackets like [Your Name] — write it as a complete, ready-to-send letter
-- Do NOT add any commentary before or after the letter itself`;
+Output the cover letter now:`;
 
     const result = streamText({
-      model: google("gemini-2.5-flash-preview-04-17"),
+      model: google("gemini-3.1-flash-lite-preview"),
       prompt,
     });
 

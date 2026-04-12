@@ -8,7 +8,7 @@ export async function analyzeResume(resumeText: string, jobDescription: string) 
 
   try {
     const { object: analysis } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-3.1-flash-lite-preview"),
       maxRetries: 2,
       schema: z.object({
         ats_score: z.number().min(0).max(100),

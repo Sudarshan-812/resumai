@@ -3,15 +3,17 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AiAssistant from "@/app/dashboard/AiAssistant";
+import LaTeXViewer from "./LaTeXViewer";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import {
   Download, X, CheckCircle2, Copy,
   FileText, AlertCircle, ArrowLeft,
-  MessageSquare, ChevronRight
+  ChevronRight, ArrowLeftRight,
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+/* ─── Score Ring ─────────────────────────────────────────── */
 function ScoreRing({ score }: { score: number }) {
   const [current, setCurrent] = useState(0);
 
@@ -61,49 +63,7 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function ChatPanel({ onClose, resumeId }: { onClose: () => void; resumeId: string }) {
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
-
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[100]"
-      />
-      <motion.div
-        initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-        transition={{ type: "spring", damping: 26, stiffness: 220 }}
-        className="fixed top-4 right-4 bottom-4 w-full max-w-[400px] bg-card rounded-2xl shadow-2xl z-[101] flex flex-col overflow-hidden border border-border"
-      >
-        <div className="px-5 py-4 border-b border-border flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center">
-              <MessageSquare className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">AI Assistant</p>
-              <span className="text-[10px] text-emerald-500 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Online
-              </span>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-2 hover:bg-muted rounded-lg text-muted-foreground transition-colors">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex-1 overflow-hidden">
-          <AiAssistant resumeId={resumeId} />
-        </div>
-      </motion.div>
-    </>
-  );
-}
-
+/* ─── Keyword Chip ─────────────────────────────────────────── */
 function Chip({ label, variant }: { label: string; variant: "match" | "missing" }) {
   const clean = label.replace(/\[REQUIRED\]\s?|\[PREFERRED\]\s?/g, "");
   const isRequired = label.includes("[REQUIRED]");
@@ -125,22 +85,135 @@ function Chip({ label, variant }: { label: string; variant: "match" | "missing" 
   );
 }
 
+/* ─── AI Split View Overlay ──────────────────────────────── */
+function AiSplitView({
+  onClose,
+  resume,
+}: {
+  onClose: () => void;
+  resume: any;
+}) {
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [latexCode, setLatexCode] = useState("");
+  const [isLatexLoading, setIsLatexLoading] = useState(true);
+
+  // Generate LaTeX on mount
+  useEffect(() => {
+    let cancelled = false;
+    setIsLatexLoading(true);
+    fetch("/api/resume-latex", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ resumeId: resume.id }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        if (!cancelled && data.latex) setLatexCode(data.latex);
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setIsLatexLoading(false); });
+    return () => { cancelled = true; };
+  }, [resume.id]);
+
+  const handleDownload = () => {
+    const blob = new Blob([latexCode || ""], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = resume.file_name.replace(/\.[^.]+$/, "") + ".tex";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-[150] bg-background flex flex-col"
+    >
+      {/* Header */}
+      <div className="h-14 shrink-0 border-b border-border flex items-center justify-between px-5 bg-background">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <X size={16} />
+          </button>
+          <div>
+            <p className="text-[14px] font-semibold text-foreground leading-none">Resumai Copilot</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Resume on left · Chat on right</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <motion.div
+            animate={isAiLoading ? { opacity: [0.5, 1, 0.5] } : { opacity: 0 }}
+            transition={{ duration: 1.2, repeat: Infinity }}
+            className="hidden sm:flex items-center gap-1.5 text-[11px] text-blue-500 font-medium"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            AI analyzing your resume…
+          </motion.div>
+
+          {latexCode && (
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 h-8 px-3 rounded-lg border border-border text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:border-border/80 transition-all"
+            >
+              <Download size={12} />
+              <span className="hidden sm:inline">Download .tex</span>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Split view */}
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+
+        {/* Left: LaTeX viewer */}
+        <div className="hidden md:flex flex-col border-r border-border overflow-hidden">
+          <LaTeXViewer
+            code={latexCode}
+            fileName={resume.file_name}
+            isLoading={isLatexLoading}
+            isAiLoading={isAiLoading}
+          />
+        </div>
+
+        {/* Right: AI Chat */}
+        <div className="flex flex-col overflow-hidden">
+          <AiAssistant
+            resumeId={resume.id}
+            onLoadingChange={setIsAiLoading}
+            latexCode={latexCode}
+            onLatexChange={setLatexCode}
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ─── Main Report ────────────────────────────────────────── */
 export default function ClientReport({
   resume, analysis,
 }: {
   resume: any; analysis: any;
 }) {
-  const [tab, setTab]         = useState<"summary" | "keywords" | "formatting">("summary");
-  const [chatOpen, setChatOpen] = useState(false);
-  const [copied, setCopied]   = useState(false);
+  const [tab, setTab]           = useState<"summary" | "keywords" | "formatting">("summary");
+  const [aiViewOpen, setAiViewOpen] = useState(false);
+  const [copied, setCopied]     = useState(false);
 
-  const score      = analysis.ats_score        || 0;
-  const skills     = analysis.skills_found     || [];
-  const missing    = analysis.missing_keywords || [];
-  const issues     = analysis.formatting_issues || [];
-  const feedback   = analysis.summary_feedback || "";
-  const yoe        = analysis.calculated_yoe   || 0;
-  const fileName   = resume.file_name.replace(".pdf", "");
+  const score    = analysis.ats_score        || 0;
+  const skills   = analysis.skills_found     || [];
+  const missing  = analysis.missing_keywords || [];
+  const issues   = analysis.formatting_issues || [];
+  const feedback = analysis.summary_feedback  || "";
+  const yoe      = analysis.calculated_yoe   || 0;
+  const fileName = resume.file_name.replace(".pdf", "");
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(JSON.stringify({ fileName, analysis }, null, 2)).then(() => {
@@ -229,9 +302,9 @@ export default function ClientReport({
           className="grid grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-6"
         >
           {[
-            { label: "ATS Score",     value: `${score}%` },
-            { label: "Experience",    value: `${yoe} yrs` },
-            { label: "Skills found",  value: `${skills.length}` },
+            { label: "ATS Score",    value: `${score}%` },
+            { label: "Experience",   value: `${yoe} yrs` },
+            { label: "Skills found", value: `${skills.length}` },
           ].map(stat => (
             <div key={stat.label} className="bg-card px-6 py-5">
               <p className="text-xs text-muted-foreground mb-1">{stat.label}</p>
@@ -363,26 +436,34 @@ export default function ClientReport({
 
           <div className="space-y-4">
 
+            {/* AI Assistant CTA */}
             <motion.div
               initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             >
               <button
-                onClick={() => setChatOpen(true)}
-                className="group w-full bg-card border border-border hover:border-foreground/20 rounded-2xl p-5 text-left transition-all duration-300"
+                onClick={() => setAiViewOpen(true)}
+                className="group w-full bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 rounded-2xl p-5 text-left transition-all duration-300 shadow-lg shadow-blue-500/20"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-foreground text-background flex items-center justify-center">
-                    <MessageSquare className="w-5 h-5" />
+                  <div className="flex items-center gap-1 text-white/60">
+                    <ArrowLeftRight size={12} />
+                    <span className="text-[10px] font-medium">Split view</span>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
                 </div>
-                <p className="text-sm font-semibold text-foreground mb-1">AI Assistant</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">Ask for rewrites, keyword suggestions, or cover letter help.</p>
+                <p className="text-sm font-bold text-white mb-1">Open Resumai Copilot</p>
+                <p className="text-[11.5px] text-white/70 leading-relaxed">
+                  Your resume on the left, AI chat on the right. Ask for rewrites, keywords, and more.
+                </p>
+                <div className="mt-4 flex items-center gap-1 text-white/80 text-[11px] font-semibold">
+                  Start chatting
+                  <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </button>
             </motion.div>
 
+            {/* Score range */}
             <motion.div
               initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
@@ -420,8 +501,14 @@ export default function ClientReport({
         </div>
       </div>
 
+      {/* AI Split View */}
       <AnimatePresence>
-        {chatOpen && <ChatPanel onClose={() => setChatOpen(false)} resumeId={resume.id} />}
+        {aiViewOpen && (
+          <AiSplitView
+            onClose={() => setAiViewOpen(false)}
+            resume={resume}
+          />
+        )}
       </AnimatePresence>
     </DashboardShell>
   );
