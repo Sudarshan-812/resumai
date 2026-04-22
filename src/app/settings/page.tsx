@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { LogOut, CreditCard, Mail, User, ShieldCheck, Pencil, Check, X, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
 import DashboardShell from "@/app/dashboard/DashboardShell";
@@ -18,9 +19,9 @@ export default function SettingsPage() {
   const [profile, setProfile] = useState<{ full_name?: string | null; credits?: number | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [signingOut, setSigningOut] = useState(false);
-  const [editingName, setEditingName]   = useState(false);
-  const [nameInput, setNameInput]       = useState("");
-  const [savingName, setSavingName]     = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput]     = useState("");
+  const [savingName, setSavingName]   = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -69,11 +70,17 @@ export default function SettingsPage() {
           <Skeleton className="h-6 w-32 rounded" />
           <div className="bg-card border border-border rounded-2xl p-6 flex items-center gap-4">
             <Skeleton className="h-14 w-14 rounded-full shrink-0" />
-            <div className="space-y-2 flex-1"><Skeleton className="h-4 w-32 rounded" /><Skeleton className="h-3 w-48 rounded" /></div>
+            <div className="space-y-2 flex-1">
+              <Skeleton className="h-4 w-32 rounded" />
+              <Skeleton className="h-3 w-48 rounded" />
+            </div>
           </div>
           {[1, 2, 3].map(i => (
             <div key={i} className="bg-card border border-border rounded-2xl px-6 py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3"><Skeleton className="h-4 w-4 rounded" /><Skeleton className="h-4 w-24 rounded" /></div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-4 w-4 rounded" />
+                <Skeleton className="h-4 w-24 rounded" />
+              </div>
               <Skeleton className="h-4 w-36 rounded" />
             </div>
           ))}
@@ -82,13 +89,12 @@ export default function SettingsPage() {
     );
   }
 
-  const name     = profile?.full_name || user?.email?.split("@")[0] || "User";
-  const initial  = name[0]?.toUpperCase() ?? "U";
-  const credits  = profile?.credits ?? 0;
+  const name      = profile?.full_name || user?.email?.split("@")[0] || "User";
+  const initial   = name[0]?.toUpperCase() ?? "U";
+  const credits   = profile?.credits ?? 0;
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-
-  const rowBase = "bg-card border border-border rounded-2xl px-5 py-4 flex items-center justify-between gap-3";
-  const delay = (n: number) => ({ delay: n * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const });
+  const rowBase   = "bg-card border border-border rounded-2xl px-5 py-4 flex items-center justify-between gap-3";
+  const delay     = (n: number) => ({ delay: n * 0.05, duration: 0.4, ease: [0.16, 1, 0.3, 1] as const });
 
   return (
     <DashboardShell>
@@ -99,13 +105,24 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground mt-0.5">Manage your account and preferences.</p>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={delay(0)} className="bg-card border border-border rounded-2xl p-5">
+        {/* Profile card */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={delay(0)}
+          whileHover={{ y: -1 }}
+          className="bg-card border border-border rounded-2xl p-5"
+        >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-full overflow-hidden bg-zinc-900 text-white flex items-center justify-center text-xl font-bold shrink-0">
+            <motion.div
+              whileHover={{ scale: 1.06 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="w-14 h-14 rounded-full overflow-hidden bg-zinc-900 text-white flex items-center justify-center text-xl font-bold shrink-0 cursor-default"
+            >
               {avatarUrl
                 ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 : initial}
-            </div>
+            </motion.div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-foreground text-[15px] truncate">{name}</p>
               <p className="text-sm text-muted-foreground truncate">{user?.email}</p>
@@ -113,16 +130,32 @@ export default function SettingsPage() {
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(1)} className={rowBase}>
+        {/* Email row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={delay(1)}
+          whileHover={{ x: 2 }}
+          className={rowBase}
+        >
           <div className="flex items-center gap-3 text-muted-foreground">
-            <Mail size={14} /><span className="text-sm font-medium text-foreground">Email</span>
+            <Mail size={14} />
+            <span className="text-sm font-medium text-foreground">Email</span>
           </div>
           <span className="text-sm text-muted-foreground truncate max-w-[200px]">{user?.email}</span>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(2)} className={rowBase}>
+        {/* Display name row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={delay(2)}
+          whileHover={{ x: 2 }}
+          className={rowBase}
+        >
           <div className="flex items-center gap-3 text-muted-foreground shrink-0">
-            <User size={14} /><span className="text-sm font-medium text-foreground">Display name</span>
+            <User size={14} />
+            <span className="text-sm font-medium text-foreground">Display name</span>
           </div>
           {editingName ? (
             <div className="flex items-center gap-2 flex-1 justify-end">
@@ -133,56 +166,106 @@ export default function SettingsPage() {
                 onKeyDown={e => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
                 className="h-8 max-w-[160px] rounded-lg border border-border bg-muted/30 px-3 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
               />
-              <button onClick={handleSaveName} disabled={savingName || !nameInput.trim()} className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white disabled:opacity-50 transition-all">
+              <motion.button
+                onClick={handleSaveName}
+                disabled={savingName || !nameInput.trim()}
+                whileTap={{ scale: 0.9 }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white disabled:opacity-50 transition-all"
+              >
                 {savingName ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-              </button>
-              <button onClick={() => setEditingName(false)} className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground transition-all">
+              </motion.button>
+              <motion.button
+                onClick={() => setEditingName(false)}
+                whileTap={{ scale: 0.9 }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground transition-all"
+              >
                 <X size={12} />
-              </button>
+              </motion.button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground truncate max-w-[160px]">{name}</span>
-              <button
+              <motion.button
                 onClick={() => { setNameInput(name); setEditingName(true); }}
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+                whileHover={{ rotate: 18 }}
+                whileTap={{ scale: 0.88 }}
+                transition={{ type: "spring", stiffness: 400, damping: 18 }}
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 aria-label="Edit display name"
               >
                 <Pencil size={11} />
-              </button>
+              </motion.button>
             </div>
           )}
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(3)} className={rowBase}>
+        {/* Account status row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={delay(3)}
+          whileHover={{ x: 2 }}
+          className={rowBase}
+        >
           <div className="flex items-center gap-3 text-muted-foreground">
-            <ShieldCheck size={14} /><span className="text-sm font-medium text-foreground">Account status</span>
+            <ShieldCheck size={14} />
+            <span className="text-sm font-medium text-foreground">Account status</span>
           </div>
-          <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Active</span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Active</span>
+          </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(4)} className={rowBase}>
+        {/* Credits row */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={delay(4)}
+          whileHover={{ x: 2 }}
+          className={rowBase}
+        >
           <div className="flex items-center gap-3 text-muted-foreground">
-            <CreditCard size={14} /><span className="text-sm font-medium text-foreground">Credits remaining</span>
+            <CreditCard size={14} />
+            <span className="text-sm font-medium text-foreground">Credits remaining</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-sm font-bold text-foreground tabular-nums">{credits}</span>
+            <motion.span
+              key={credits}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className={cn(
+                "text-sm font-bold tabular-nums",
+                credits <= 1 ? "text-amber-600 dark:text-amber-400" : "text-foreground"
+              )}
+            >
+              {credits}
+            </motion.span>
             <Link href="/billing" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">Buy more</Link>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(5)}>
-          <button
+        {/* Sign out */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={delay(5)}
+        >
+          <motion.button
             onClick={handleSignOut}
             disabled={signingOut}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
             className="w-full h-11 rounded-2xl border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm font-semibold hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
             <LogOut size={14} />
             {signingOut ? "Signing out..." : "Sign Out"}
-          </button>
+          </motion.button>
         </motion.div>
 
       </div>
     </DashboardShell>
   );
 }
+

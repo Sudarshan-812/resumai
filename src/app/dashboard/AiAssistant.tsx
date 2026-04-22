@@ -5,12 +5,9 @@ import { Send, Loader2, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
+import { motion, AnimatePresence } from "framer-motion";
 
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
+interface Message { id: string; role: "user" | "assistant"; content: string }
 
 interface Props {
   resumeId: string;
@@ -23,23 +20,19 @@ interface Props {
 const SUGGESTIONS = [
   {
     label: "Rewrite my summary",
-    prompt:
-      "Rewrite my professional summary. Show the BEFORE version, then write a stronger AFTER version — metric-driven, specific, and tailored to the job description.",
+    prompt: "Rewrite my professional summary. Show the BEFORE version, then write a stronger AFTER version — metric-driven, specific, and tailored to the job description.",
   },
   {
     label: "Fix my weakest bullets",
-    prompt:
-      "Find my 3 weakest experience bullets. For each, show BEFORE → AFTER using strong action verbs and specific metrics in STAR format.",
+    prompt: "Find my 3 weakest experience bullets. For each, show BEFORE → AFTER using strong action verbs and specific metrics in STAR format.",
   },
   {
     label: "Add missing keywords",
-    prompt:
-      "List the top 5 missing keywords from my resume. For each, tell me exactly WHERE and HOW to add it naturally.",
+    prompt: "List the top 5 missing keywords from my resume. For each, tell me exactly WHERE and HOW to add it naturally.",
   },
   {
     label: "Full ATS audit",
-    prompt:
-      "Do a full ATS audit: formatting, keyword density, section headers, bullet structure. Give me a prioritized action checklist.",
+    prompt: "Do a full ATS audit: formatting, keyword density, section headers, bullet structure. Give me a prioritized action checklist.",
   },
 ];
 
@@ -67,110 +60,64 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
-      const name =
-        user.user_metadata?.full_name?.split(" ")[0] ||
-        user.email?.split("@")[0] ||
-        "";
+      const name = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "";
       setUserName(name);
     });
   }, []);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
-
-  useEffect(() => {
-    onLoadingChange?.(isLoading);
-  }, [isLoading, onLoadingChange]);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
+  useEffect(() => { onLoadingChange?.(isLoading); }, [isLoading, onLoadingChange]);
 
   const sendMessage = async (content: string) => {
     if (!content.trim() || isLoading) return;
-
-    const userMsg: Message = {
-      id: `u-${Date.now()}`,
-      role: "user",
-      content: content.trim(),
-    };
-
+    const userMsg: Message = { id: `u-${Date.now()}`, role: "user", content: content.trim() };
     const allMsgs = [...messages, userMsg];
     setMessages(allMsgs);
     setInput("");
     setIsLoading(true);
-
     const assistantId = `a-${Date.now()}`;
-    const assistantMsg: Message = { id: assistantId, role: "assistant", content: "" };
-    setMessages([...allMsgs, assistantMsg]);
+    setMessages([...allMsgs, { id: assistantId, role: "assistant", content: "" }]);
 
     try {
       abortRef.current = new AbortController();
-
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: allMsgs.map((m) => ({ role: m.role, content: m.content })),
-          resumeId,
-          latexCode: latexCode || null,
-        }),
+        body: JSON.stringify({ messages: allMsgs.map(m => ({ role: m.role, content: m.content })), resumeId, latexCode: latexCode || null }),
         signal: abortRef.current.signal,
       });
-
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(errText || `Error ${res.status}`);
-      }
-
+      if (!res.ok) throw new Error((await res.text()) || `Error ${res.status}`);
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       let full = "";
-
       if (reader) {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           full += decoder.decode(value, { stream: true });
-          setMessages((prev) =>
-            prev.map((m) => (m.id === assistantId ? { ...m, content: full } : m))
-          );
+          setMessages(prev => prev.map(m => m.id === assistantId ? { ...m, content: full } : m));
         }
       }
-
       onResponse?.(full);
-
-      // Extract a ```latex ... ``` block from the response and propagate it
       if (onLatexChange) {
         const latexMatch = full.match(/```latex\n?([\s\S]*?)```/);
-        if (latexMatch) {
-          onLatexChange(latexMatch[1].trim());
-        }
+        if (latexMatch) onLatexChange(latexMatch[1].trim());
       }
     } catch (err: any) {
       if (err.name === "AbortError") return;
       toast.error(err.message || "Something went wrong. Please try again.");
-      setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+      setMessages(prev => prev.filter(m => m.id !== assistantId));
     } finally {
       setIsLoading(false);
       abortRef.current = null;
     }
   };
 
-  const handleSubmit = (e?: FormEvent) => {
-    e?.preventDefault();
-    sendMessage(input);
-  };
-
+  const handleSubmit = (e?: FormEvent) => { e?.preventDefault(); sendMessage(input); };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage(input);
-    }
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
   };
-
-  const stopGeneration = () => {
-    abortRef.current?.abort();
-    setIsLoading(false);
-  };
-
+  const stopGeneration = () => { abortRef.current?.abort(); setIsLoading(false); };
   const isEmpty = messages.length === 0;
 
   return (
@@ -178,60 +125,69 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
       <div className="flex-1 overflow-y-auto">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full px-6 pb-8 text-center">
-            <div className="mb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="mb-8"
+            >
               <h2 className="text-2xl font-semibold text-foreground tracking-tight mb-2">
-                {userName
-                  ? `How can I help, ${userName}?`
-                  : "How can I help with your resume?"}
+                {userName ? `How can I help, ${userName}?` : "How can I help with your resume?"}
               </h2>
               <p className="text-sm text-muted-foreground">
                 Ask me anything — I have your full resume in front of me.
               </p>
-            </div>
+            </motion.div>
 
             <div className="grid grid-cols-2 gap-2 w-full max-w-md">
-              {SUGGESTIONS.map((s) => (
-                <button
+              {SUGGESTIONS.map((s, i) => (
+                <motion.button
                   key={s.label}
                   onClick={() => sendMessage(s.prompt)}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 + i * 0.07, duration: 0.35 }}
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
                   className={cn(
-                    "text-left p-4 rounded-2xl border text-[12.5px] font-medium leading-snug transition-all",
-                    "border-border bg-card hover:bg-muted text-foreground hover:border-foreground/20"
+                    "text-left p-4 rounded-2xl border text-[12.5px] font-medium leading-snug",
+                    "border-border bg-card hover:bg-muted text-foreground hover:border-foreground/20 transition-colors"
                   )}
                 >
                   <span className="line-clamp-2">{s.label}</span>
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
         ) : (
           <div className="px-4 sm:px-8 py-6 space-y-8 max-w-3xl mx-auto w-full">
-            {messages.map((m) => (
-              <div key={m.id}>
-                {m.role === "user" ? (
-                  <div className="flex justify-end">
-                    <div className="max-w-[80%] bg-muted rounded-3xl px-5 py-3 text-sm text-foreground leading-relaxed">
-                      {m.content}
+            <AnimatePresence initial={false}>
+              {messages.map(m => (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  {m.role === "user" ? (
+                    <motion.div
+                      initial={{ opacity: 0, x: 16, scale: 0.96 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      className="flex justify-end"
+                    >
+                      <div className="max-w-[80%] bg-muted rounded-3xl px-5 py-3 text-sm text-foreground leading-relaxed">
+                        {m.content}
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <div className="text-sm leading-relaxed text-foreground">
+                      {m.content ? <MarkdownText text={m.content} /> : <ThinkingDots />}
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-sm leading-relaxed text-foreground">
-                    {m.content ? (
-                      <MarkdownText text={m.content} />
-                    ) : (
-                      <ThinkingDots />
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
-
-            {isLoading && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "" && (
-              <div className="text-sm text-foreground">
-                <ThinkingDots />
-              </div>
-            )}
-
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
             <div ref={bottomRef} />
           </div>
         )}
@@ -242,39 +198,40 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
           onSubmit={handleSubmit}
           className={cn(
             "relative rounded-3xl border bg-card transition-all",
-            "border-border focus-within:border-foreground/30 focus-within:shadow-sm"
+            "border-border focus-within:border-foreground/30 focus-within:shadow-md focus-within:shadow-black/5"
           )}
         >
           <textarea
             ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask Resumai Copilot…"
             disabled={isLoading}
             rows={1}
             className={cn(
               "w-full resize-none bg-transparent px-5 pt-4 pb-12 text-sm text-foreground",
-              "placeholder:text-muted-foreground/50 focus:outline-none disabled:opacity-60",
-              "leading-relaxed"
+              "placeholder:text-muted-foreground/50 focus:outline-none disabled:opacity-60 leading-relaxed"
             )}
             style={{ minHeight: 56, maxHeight: 200 }}
           />
-
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
             {isLoading ? (
-              <button
+              <motion.button
                 type="button"
                 onClick={stopGeneration}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.94 }}
                 className="flex items-center gap-1.5 h-8 px-3 rounded-full bg-foreground text-background text-[11px] font-semibold transition-all hover:opacity-80"
               >
-                <Square size={10} className="fill-current" />
-                Stop
-              </button>
+                <Square size={10} className="fill-current" /> Stop
+              </motion.button>
             ) : (
-              <button
+              <motion.button
                 type="submit"
                 disabled={!input.trim()}
+                whileTap={input.trim() ? { scale: 0.85 } : {}}
+                transition={{ type: "spring", stiffness: 500, damping: 25 }}
                 className={cn(
                   "w-8 h-8 rounded-full flex items-center justify-center transition-all",
                   input.trim()
@@ -283,11 +240,10 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
                 )}
               >
                 <Send size={13} />
-              </button>
+              </motion.button>
             )}
           </div>
         </form>
-
         <p className="text-center text-[10px] text-muted-foreground/40 mt-3">
           Resumai Copilot · Enter to send · Shift+Enter for new line
         </p>
@@ -298,12 +254,10 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
 
 function MarkdownText({ text }: { text: string }) {
   const lines = text.split("\n");
-
   return (
     <div className="space-y-1.5">
       {lines.map((line, i) => {
         if (!line.trim()) return <div key={i} className="h-2" />;
-
         if (/^[-*•]\s/.test(line)) {
           return (
             <div key={i} className="flex gap-2.5 items-start">
@@ -312,7 +266,6 @@ function MarkdownText({ text }: { text: string }) {
             </div>
           );
         }
-
         if (/^\d+\.\s/.test(line)) {
           const num = line.match(/^(\d+)\./)?.[1];
           return (
@@ -322,7 +275,6 @@ function MarkdownText({ text }: { text: string }) {
             </div>
           );
         }
-
         if (/^#{1,3}\s/.test(line)) {
           return (
             <p key={i} className="font-semibold text-foreground mt-3 mb-1">
@@ -330,7 +282,6 @@ function MarkdownText({ text }: { text: string }) {
             </p>
           );
         }
-
         if (/^(BEFORE|AFTER):/.test(line)) {
           const [label, ...rest] = line.split(":");
           return (
@@ -347,7 +298,6 @@ function MarkdownText({ text }: { text: string }) {
             </div>
           );
         }
-
         return <p key={i}>{renderInline(line)}</p>;
       })}
     </div>
@@ -359,16 +309,10 @@ function renderInline(text: string): React.ReactNode {
   return (
     <>
       {parts.map((part, i) => {
-        if (part.startsWith("**") && part.endsWith("**")) {
+        if (part.startsWith("**") && part.endsWith("**"))
           return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
-        }
-        if (part.startsWith("`") && part.endsWith("`")) {
-          return (
-            <code key={i} className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono">
-              {part.slice(1, -1)}
-            </code>
-          );
-        }
+        if (part.startsWith("`") && part.endsWith("`"))
+          return <code key={i} className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono">{part.slice(1, -1)}</code>;
         return <span key={i}>{part}</span>;
       })}
     </>
@@ -377,12 +321,13 @@ function renderInline(text: string): React.ReactNode {
 
 function ThinkingDots() {
   return (
-    <div className="flex items-center gap-1 py-2">
-      {[0, 1, 2].map((i) => (
-        <span
+    <div className="flex items-center gap-1.5 py-2">
+      {[0, 1, 2].map(i => (
+        <motion.span
           key={i}
-          className="w-2 h-2 rounded-full bg-foreground/30 animate-bounce"
-          style={{ animationDelay: `${i * 0.15}s`, animationDuration: "1s" }}
+          className="w-2 h-2 rounded-full bg-foreground/25"
+          animate={{ scale: [1, 1.5, 1], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 1.1, repeat: Infinity, delay: i * 0.18, ease: "easeInOut" }}
         />
       ))}
     </div>

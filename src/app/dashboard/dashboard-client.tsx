@@ -49,30 +49,48 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
       <div className="max-w-5xl mx-auto px-6 py-8">
 
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          >
             <h1 className="text-2xl font-bold text-foreground tracking-tight">
               Welcome back, {userName}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               Here&apos;s an overview of your resume activity.
             </p>
-          </div>
-          <Link href="/upload">
-            <Button className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-sm shadow-blue-500/20 transition-all">
-              <Plus className="mr-1.5 h-4 w-4" strokeWidth={2.5} />
-              New Analysis
-            </Button>
-          </Link>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.35 }}
+          >
+            <Link href="/upload">
+              <motion.div
+                whileHover={{ y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              >
+                <Button className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-sm shadow-blue-500/20 transition-all">
+                  <Plus className="mr-1.5 h-4 w-4" strokeWidth={2.5} />
+                  New Analysis
+                </Button>
+              </motion.div>
+            </Link>
+          </motion.div>
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <StatCard
+            delay={0}
             title="Total Analyses"
             value={totalScans.toString()}
             icon={<FileText className="h-4 w-4" />}
             trend={totalScans > 0 ? `${totalScans} resume${totalScans !== 1 ? "s" : ""} scanned` : "No scans yet"}
           />
           <StatCard
+            delay={0.08}
             title="Avg ATS Score"
             value={avgScore > 0 ? `${avgScore}` : "—"}
             suffix={avgScore > 0 ? "/ 100" : ""}
@@ -81,6 +99,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             trendColor={avgScore >= 70 ? "text-emerald-600 dark:text-emerald-400" : avgScore > 0 ? "text-amber-600 dark:text-amber-400" : undefined}
           />
           <StatCard
+            delay={0.16}
             title="Credits Available"
             value={credits.toString()}
             icon={<CreditCard className="h-4 w-4" />}
@@ -96,7 +115,13 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-5">
-            <div className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all p-6 flex items-center gap-5">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22, duration: 0.4 }}
+              whileHover={{ y: -1 }}
+              className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all p-6 flex items-center gap-5"
+            >
               <div className="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0">
                 <UploadCloud size={20} strokeWidth={1.5} />
               </div>
@@ -109,14 +134,15 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   Upload PDF
                 </Button>
               </Link>
-            </div>
+            </motion.div>
 
             <div>
               <div className="flex items-center justify-between mb-3 px-0.5">
                 <h2 className="text-sm font-bold text-foreground">Recent Analyses</h2>
                 {recentResumes.length > 0 && (
-                  <Link href="/history" className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
-                    View all <ChevronRight size={11} />
+                  <Link href="/history" className="group text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
+                    View all
+                    <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                   </Link>
                 )}
               </div>
@@ -133,33 +159,38 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                       : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20";
 
                     return (
-                      <Link
+                      <motion.div
                         key={resume.id}
-                        href={`/dashboard/${resume.id}`}
-                        className={cn(
-                          "flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group",
-                          i < recentResumes.length - 1 && "border-b border-border"
-                        )}
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.28 + i * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        whileHover={{ x: 3 }}
+                        className={i < recentResumes.length - 1 ? "border-b border-border" : ""}
                       >
-                        <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-colors shrink-0">
-                          <FileText size={16} strokeWidth={1.5} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground truncate leading-none mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={resume.file_name}>
-                            {resume.file_name.replace(/\.pdf$/i, "")}
-                          </p>
-                          <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                            <Clock size={10} />
-                            {formatDate(resume.created_at)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold border tabular-nums", scoreColor)}>
-                            {score > 0 ? `${score}/100` : "—"}
-                          </span>
-                          <ChevronRight size={14} className="text-muted-foreground/40 group-hover:text-foreground transition-colors" />
-                        </div>
-                      </Link>
+                        <Link
+                          href={`/dashboard/${resume.id}`}
+                          className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-all shrink-0">
+                            <FileText size={16} strokeWidth={1.5} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-foreground truncate leading-none mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={resume.file_name}>
+                              {resume.file_name.replace(/\.pdf$/i, "")}
+                            </p>
+                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <Clock size={10} />
+                              {formatDate(resume.created_at)}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3 shrink-0">
+                            <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold border tabular-nums", scoreColor)}>
+                              {score > 0 ? `${score}/100` : "—"}
+                            </span>
+                            <ChevronRight size={14} className="text-muted-foreground/40 group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+                          </div>
+                        </Link>
+                      </motion.div>
                     );
                   })}
                 </div>
@@ -168,8 +199,12 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           </div>
 
           <aside className="space-y-4">
-
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+            >
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles size={14} className="text-blue-500" />
                 <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground">AI Tools</h3>
@@ -188,9 +223,14 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   onClick={() => router.push("/dashboard/interview")}
                 />
               </div>
-            </div>
+            </motion.div>
 
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <motion.div
+              initial={{ opacity: 0, x: 10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.38, duration: 0.4 }}
+              className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+            >
               <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-4">Pro Tips</h3>
               <ul className="space-y-3">
                 {[
@@ -198,15 +238,21 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   "Add measurable metrics to every bullet point.",
                   "Use keywords verbatim from the job description.",
                 ].map((tip, i) => (
-                  <li key={i} className="flex items-start gap-2 text-[12px] text-muted-foreground leading-relaxed">
+                  <motion.li
+                    key={i}
+                    initial={{ opacity: 0, x: 6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.42 + i * 0.07, duration: 0.3 }}
+                    className="flex items-start gap-2 text-[12px] text-muted-foreground leading-relaxed"
+                  >
                     <span className="w-4 h-4 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>
                     {tip}
-                  </li>
+                  </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </aside>
         </div>
       </div>
@@ -214,7 +260,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
   );
 }
 
-function StatCard({ title, value, suffix, icon, trend, trendColor, action }: {
+function StatCard({ title, value, suffix, icon, trend, trendColor, action, delay = 0 }: {
   title: string;
   value: string;
   suffix?: string;
@@ -222,12 +268,15 @@ function StatCard({ title, value, suffix, icon, trend, trendColor, action }: {
   trend?: string;
   trendColor?: string;
   action?: React.ReactNode;
+  delay?: number;
 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-card rounded-2xl border border-border p-5 shadow-sm"
+      transition={{ delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      whileHover={{ y: -2, boxShadow: "0 8px 24px -4px rgb(0 0 0 / 0.10)" }}
+      className="bg-card rounded-2xl border border-border p-5 shadow-sm cursor-default"
     >
       <div className="flex items-center justify-between mb-3">
         <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground">
@@ -254,9 +303,14 @@ function EmptyAnalyses() {
       animate={{ opacity: 1 }}
       className="flex flex-col items-center justify-center py-14 rounded-2xl border border-dashed border-border text-center"
     >
-      <div className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4">
+      <motion.div
+        initial={{ scale: 0.8 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
+        className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4"
+      >
         <FileText size={24} className="text-muted-foreground/50" strokeWidth={1.5} />
-      </div>
+      </motion.div>
       <p className="text-sm font-semibold text-foreground mb-1">No analyses yet</p>
       <p className="text-[12px] text-muted-foreground mb-5 max-w-[220px] leading-relaxed">
         Upload your first resume to see your ATS score and AI feedback.
@@ -278,8 +332,11 @@ function ToolButton({ icon, label, sub, onClick }: {
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      whileHover={{ x: 2 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-muted/60 transition-colors"
     >
       <span className="text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -289,7 +346,7 @@ function ToolButton({ icon, label, sub, onClick }: {
         <p className="text-[12.5px] font-semibold text-foreground leading-none mb-0.5">{label}</p>
         <p className="text-[11px] text-muted-foreground">{sub}</p>
       </div>
-      <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-blue-500 transition-colors shrink-0" />
-    </button>
+      <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-blue-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+    </motion.button>
   );
 }

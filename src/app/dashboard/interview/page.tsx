@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarChart3, Loader2, Send, RotateCcw, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
@@ -11,6 +11,23 @@ import DashboardShell from "@/app/dashboard/DashboardShell";
 interface Question { question: string; category: string }
 interface Feedback { score: number; strengths: string[]; improvements: string[]; model_answer_hint: string }
 type Phase = "setup" | "questions" | "answering" | "feedback" | "complete";
+
+function CountUpScore({ value, className }: { value: number; className?: string }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    let frame: number;
+    const t0 = performance.now();
+    const dur = 800;
+    const tick = (now: number) => {
+      const p = Math.min((now - t0) / dur, 1);
+      setDisplay(Math.round((1 - Math.pow(1 - p, 3)) * value));
+      if (p < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+  return <span className={className}>{display}</span>;
+}
 
 export default function InterviewPage() {
   const [jobDesc, setJobDesc] = useState("");
@@ -121,16 +138,18 @@ export default function InterviewPage() {
                   className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all resize-none"
                 />
               </div>
-              <Button
-                onClick={generateQuestions}
-                disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
-                className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-sm shadow-blue-500/20 disabled:opacity-40 transition-all"
-              >
-                {loading
-                  ? <><Loader2 size={14} className="animate-spin mr-2" />Generating questions...</>
-                  : "Start Interview"
-                }
-              </Button>
+              <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                <Button
+                  onClick={generateQuestions}
+                  disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
+                  className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-sm shadow-blue-500/20 disabled:opacity-40 transition-all"
+                >
+                  {loading
+                    ? <><Loader2 size={14} className="animate-spin mr-2" />Generating questions...</>
+                    : "Start Interview"
+                  }
+                </Button>
+              </motion.div>
             </motion.div>
           )}
 
@@ -140,20 +159,29 @@ export default function InterviewPage() {
                 <span className="text-[11px] font-mono text-muted-foreground">
                   Question {currentIdx + 1} of {questions.length}
                 </span>
-                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20">
+                <motion.span
+                  key={questions[currentIdx].category}
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-[10px] font-bold text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20"
+                >
                   {questions[currentIdx].category}
-                </span>
+                </motion.span>
               </div>
-              <div className="w-full bg-border/50 rounded-full h-1">
+              <div className="w-full bg-border/50 rounded-full h-1 overflow-hidden">
                 <motion.div
-                  className="h-1 rounded-full bg-blue-500"
+                  className="h-1 rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
                   animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 />
               </div>
-              <div className="rounded-2xl border border-border bg-card p-5">
+              <motion.div
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-2xl border border-border bg-card p-5"
+              >
                 <p className="text-[14.5px] font-medium text-foreground leading-relaxed">{questions[currentIdx].question}</p>
-              </div>
+              </motion.div>
               <div>
                 <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">Your Answer</label>
                 <textarea
@@ -164,91 +192,145 @@ export default function InterviewPage() {
                   className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all resize-none"
                 />
               </div>
-              <Button
-                onClick={submitAnswer}
-                disabled={answer.trim().length < 20 || loading}
-                className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm disabled:opacity-40 transition-all"
-              >
-                {loading
-                  ? <><Loader2 size={14} className="animate-spin mr-2" />Evaluating...</>
-                  : <><Send size={13} className="mr-2" />Submit Answer</>
-                }
-              </Button>
+              <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                <Button
+                  onClick={submitAnswer}
+                  disabled={answer.trim().length < 20 || loading}
+                  className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm disabled:opacity-40 transition-all"
+                >
+                  {loading
+                    ? <><Loader2 size={14} className="animate-spin mr-2" />Evaluating...</>
+                    : <><Send size={13} className="mr-2" />Submit Answer</>
+                  }
+                </Button>
+              </motion.div>
             </motion.div>
           )}
 
           {phase === "feedback" && feedbacks[currentIdx] && (
             <motion.div key={`fb-${currentIdx}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
-              <div className="rounded-2xl border border-border bg-card p-5 text-center">
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="rounded-2xl border border-border bg-card p-5 text-center"
+              >
                 <p className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground mb-2">Answer Score</p>
                 <div className={cn(
                   "text-5xl font-bold font-mono tracking-tighter mb-1",
                   feedbacks[currentIdx].score >= 70 ? "text-emerald-500"
                     : feedbacks[currentIdx].score >= 50 ? "text-amber-500" : "text-rose-500"
                 )}>
-                  {feedbacks[currentIdx].score}
+                  <CountUpScore value={feedbacks[currentIdx].score} />
                 </div>
                 <p className="text-xs text-muted-foreground">out of 100</p>
-              </div>
+              </motion.div>
+
               {feedbacks[currentIdx].strengths.length > 0 && (
-                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5"
+                >
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle2 size={13} className="text-emerald-500" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">What worked well</span>
                   </div>
                   <ul className="space-y-1.5">
                     {feedbacks[currentIdx].strengths.map((s, i) => (
-                      <li key={i} className="text-sm text-foreground flex items-start gap-2">
+                      <motion.li
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.15 + i * 0.07 }}
+                        className="text-sm text-foreground flex items-start gap-2"
+                      >
                         <ChevronRight size={12} className="text-emerald-500 mt-0.5 shrink-0" /> {s}
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               )}
+
               {feedbacks[currentIdx].improvements.length > 0 && (
-                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.18 }}
+                  className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5"
+                >
                   <div className="flex items-center gap-2 mb-3">
                     <AlertCircle size={13} className="text-amber-500" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">To improve</span>
                   </div>
                   <ul className="space-y-1.5">
                     {feedbacks[currentIdx].improvements.map((s, i) => (
-                      <li key={i} className="text-sm text-foreground flex items-start gap-2">
+                      <motion.li
+                        key={i}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.22 + i * 0.07 }}
+                        className="text-sm text-foreground flex items-start gap-2"
+                      >
                         <ChevronRight size={12} className="text-amber-500 mt-0.5 shrink-0" /> {s}
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               )}
+
               {feedbacks[currentIdx].model_answer_hint && (
-                <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5">
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.26 }}
+                  className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5"
+                >
                   <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Strong answer approach</p>
                   <p className="text-sm text-foreground leading-relaxed">{feedbacks[currentIdx].model_answer_hint}</p>
-                </div>
+                </motion.div>
               )}
-              <Button onClick={nextQuestion} className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all">
-                Next Question <ChevronRight size={14} className="ml-1" />
-              </Button>
+
+              <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+                <Button onClick={nextQuestion} className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all">
+                  Next Question <ChevronRight size={14} className="ml-1" />
+                </Button>
+              </motion.div>
             </motion.div>
           )}
 
           {phase === "complete" && (
             <motion.div key="complete" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="space-y-5">
               <div className="rounded-2xl border border-border bg-card p-8 text-center">
-                <div className="text-4xl mb-4">{avgScore >= 70 ? "🎯" : avgScore >= 50 ? "📈" : "💪"}</div>
+                <motion.div
+                  className="text-4xl mb-4"
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 280, damping: 15 }}
+                >
+                  {avgScore >= 70 ? "🎯" : avgScore >= 50 ? "📈" : "💪"}
+                </motion.div>
                 <h2 className="text-xl font-bold text-foreground mb-1">Interview Complete</h2>
                 <p className="text-sm text-muted-foreground mb-5">You answered {questions.length} questions.</p>
                 <div className={cn(
                   "text-5xl font-bold font-mono tracking-tighter mb-1",
                   avgScore >= 70 ? "text-emerald-500" : avgScore >= 50 ? "text-amber-500" : "text-rose-500"
                 )}>
-                  {avgScore}
+                  <CountUpScore value={avgScore} />
                 </div>
                 <p className="text-xs text-muted-foreground">average score</p>
               </div>
+
               <div className="space-y-2">
                 {feedbacks.map((fb, i) => (
-                  <div key={i} className="flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-card">
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.06 }}
+                    className="flex items-center justify-between px-4 py-3 rounded-xl border border-border bg-card"
+                  >
                     <span className="text-sm text-muted-foreground">Q{i + 1}: {questions[i]?.category}</span>
                     <span className={cn(
                       "text-sm font-bold font-mono",
@@ -256,19 +338,24 @@ export default function InterviewPage() {
                     )}>
                       {fb.score}/100
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
+
               <div className="flex gap-3">
-                <Button onClick={reset} variant="outline" className="flex-1 h-10 rounded-xl font-semibold">
-                  <RotateCcw size={13} className="mr-2" />Try Again
-                </Button>
-                <Button
-                  onClick={() => window.location.href = "/dashboard"}
-                  className="flex-1 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold"
-                >
-                  Back to Dashboard
-                </Button>
+                <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} className="flex-1">
+                  <Button onClick={reset} variant="outline" className="w-full h-10 rounded-xl font-semibold">
+                    <RotateCcw size={13} className="mr-2" />Try Again
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} className="flex-1">
+                  <Button
+                    onClick={() => window.location.href = "/dashboard"}
+                    className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold"
+                  >
+                    Back to Dashboard
+                  </Button>
+                </motion.div>
               </div>
             </motion.div>
           )}

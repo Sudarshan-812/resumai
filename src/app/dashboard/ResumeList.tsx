@@ -5,6 +5,7 @@ import { FileText, ChevronRight, Clock, UploadCloud } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 type Analysis = { ats_score?: number | null };
 type ResumeItem = { id: string; file_name: string; created_at: string; analyses?: Analysis[] | null };
@@ -20,10 +21,20 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
 
   if (!resumes || resumes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 rounded-2xl border border-dashed border-border bg-muted/10 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4">
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col items-center justify-center py-16 rounded-2xl border border-dashed border-border bg-muted/10 text-center"
+      >
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.15, type: "spring", stiffness: 300, damping: 20 }}
+          className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4"
+        >
           <FileText size={24} className="text-muted-foreground/50" strokeWidth={1.5} />
-        </div>
+        </motion.div>
         <p className="text-sm font-semibold text-foreground mb-1">No resumes yet</p>
         <p className="text-[12px] text-muted-foreground mb-5 max-w-[220px] leading-relaxed">
           Upload your first resume to get an ATS score and AI-powered feedback.
@@ -34,7 +45,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
             Analyze My Resume
           </Button>
         </Link>
-      </div>
+      </motion.div>
     );
   }
 
@@ -51,39 +62,44 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
         const displayName = resume.file_name.replace(/\.pdf$/i, "");
 
         return (
-          <Link
+          <motion.div
             key={resume.id}
-            href={`/dashboard/${resume.id}`}
-            className={cn(
-              "flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group",
-              i < resumes.length - 1 && "border-b border-border"
-            )}
-            prefetch={false}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.07, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            whileHover={{ x: 3 }}
+            className={i < resumes.length - 1 ? "border-b border-border" : ""}
           >
-            <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-colors shrink-0">
-              <FileText size={16} strokeWidth={1.5} />
-            </div>
+            <Link
+              href={`/dashboard/${resume.id}`}
+              className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group"
+              prefetch={false}
+            >
+              <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-all shrink-0">
+                <FileText size={16} strokeWidth={1.5} />
+              </div>
 
-            <div className="flex-1 min-w-0">
-              <h3
-                className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
-                title={displayName}
-              >
-                {displayName}
-              </h3>
-              <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
-                <Clock size={10} />
-                {formatDate(resume.created_at)}
-              </p>
-            </div>
+              <div className="flex-1 min-w-0">
+                <h3
+                  className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                  title={displayName}
+                >
+                  {displayName}
+                </h3>
+                <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
+                  <Clock size={10} />
+                  {formatDate(resume.created_at)}
+                </p>
+              </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold border tabular-nums", scoreColor)}>
-                {score > 0 ? `${score}/100` : "N/A"}
-              </span>
-              <ChevronRight size={14} className="text-muted-foreground/40 group-hover:text-foreground transition-colors" />
-            </div>
-          </Link>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold border tabular-nums", scoreColor)}>
+                  {score > 0 ? `${score}/100` : "N/A"}
+                </span>
+                <ChevronRight size={14} className="text-muted-foreground/40 group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+              </div>
+            </Link>
+          </motion.div>
         );
       })}
     </div>

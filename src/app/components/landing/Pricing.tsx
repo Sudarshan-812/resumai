@@ -75,16 +75,17 @@ const Pricing: FC = (): JSX.Element => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
           {PLANS.map((plan, index) => (
             <motion.div
+              key={plan.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: index * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              key={plan.id}
+              whileHover={{ y: -5, boxShadow: plan.popular ? "0 20px 48px -8px oklch(0.585 0.245 276 / 0.28)" : "0 12px 32px -4px rgb(0 0 0 / 0.12)" }}
               className={cn(
-                "group relative flex flex-col p-8 rounded-3xl transition-all duration-300 backdrop-blur-sm",
+                "group relative flex flex-col p-8 rounded-3xl transition-colors duration-300 backdrop-blur-sm",
                 plan.popular
                   ? "bg-card border-2 border-primary shadow-lg shadow-primary/5 z-10 mt-0 md:-mt-3 md:mb-3"
-                  : "bg-card/50 border border-border hover:bg-card hover:border-primary/30 hover:shadow-md"
+                  : "bg-card/50 border border-border hover:bg-card hover:border-primary/30"
               )}
             >
               {plan.popular && (

@@ -30,7 +30,6 @@ export default function CoverLetterPage() {
         body: JSON.stringify({ company, role, jobDesc, tone }),
       });
       if (!res.ok) throw new Error(await res.text());
-
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       if (!reader) throw new Error("No stream");
@@ -114,32 +113,41 @@ export default function CoverLetterPage() {
             <Field label="Writing Tone">
               <div className="flex gap-2">
                 {(["professional", "enthusiastic", "concise"] as const).map(t => (
-                  <button
+                  <motion.button
                     key={t}
                     onClick={() => setTone(t)}
+                    whileHover={{ scale: tone !== t ? 1.04 : 1 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     className={cn(
-                      "flex-1 h-9 rounded-xl text-[12px] font-semibold border transition-all capitalize",
+                      "flex-1 h-9 rounded-xl text-[12px] font-semibold border transition-colors capitalize",
                       tone === t
                         ? "bg-blue-600 text-white border-blue-600"
                         : "bg-card text-muted-foreground border-border hover:border-blue-500/30 hover:text-foreground"
                     )}
                   >
                     {t}
-                  </button>
+                  </motion.button>
                 ))}
               </div>
             </Field>
 
-            <Button
-              onClick={generate}
-              disabled={!ready || loading}
-              className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-sm shadow-blue-500/20 disabled:opacity-40 transition-all"
+            <motion.div
+              whileHover={ready && !loading ? { y: -1 } : {}}
+              whileTap={ready && !loading ? { scale: 0.98 } : {}}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
             >
-              {loading
-                ? <><Loader2 size={14} className="animate-spin mr-2" />Generating...</>
-                : <><Sparkles size={14} className="mr-2" />Generate Cover Letter</>
-              }
-            </Button>
+              <Button
+                onClick={generate}
+                disabled={!ready || loading}
+                className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-sm shadow-blue-500/20 disabled:opacity-40 transition-all"
+              >
+                {loading
+                  ? <><Loader2 size={14} className="animate-spin mr-2" />Generating...</>
+                  : <><Sparkles size={14} className="mr-2" />Generate Cover Letter</>
+                }
+              </Button>
+            </motion.div>
           </div>
 
           <div className="relative">
@@ -180,19 +188,32 @@ export default function CoverLetterPage() {
                 initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                 className="absolute top-3 right-3 flex items-center gap-1.5"
               >
-                <button
+                <motion.button
                   onClick={download}
+                  whileHover={{ y: -1 }}
+                  whileTap={{ scale: 0.93 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
                   className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-background border border-border text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:border-border/80 transition-all"
                 >
                   <Download size={11} /> Save
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   onClick={copy}
+                  whileTap={{ scale: 0.88 }}
+                  animate={copied ? { scale: [1, 1.12, 1] } : {}}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
                   className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-background border border-border text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:border-border/80 transition-all"
                 >
-                  {copied ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                  <motion.span
+                    key={copied ? "check" : "copy"}
+                    initial={{ scale: 0.7, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  >
+                    {copied ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                  </motion.span>
                   {copied ? "Copied" : "Copy"}
-                </button>
+                </motion.button>
               </motion.div>
             )}
           </div>
