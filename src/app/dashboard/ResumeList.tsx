@@ -65,7 +65,6 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
             </div>
 
             <div className="flex-1 min-w-0">
-              {/* truncate + title tooltip for long filenames */}
               <h3
                 className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
                 title={displayName}

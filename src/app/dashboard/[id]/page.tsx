@@ -12,8 +12,15 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   };
 }
 
-export default async function ResumeReportPage({ params }: { params: { id: string } }) {
+export default async function ResumeReportPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { truncated?: string };
+}) {
   const { id } = await params;
+  const sp = await searchParams;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,6 +37,7 @@ export default async function ResumeReportPage({ params }: { params: { id: strin
     <ClientReport
       resume={resumeRes.data}
       analysis={analysisRes.data}
+      truncated={sp.truncated === "1"}
     />
   );
 }

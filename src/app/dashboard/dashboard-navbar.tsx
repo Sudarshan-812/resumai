@@ -22,7 +22,6 @@ interface DashboardNavbarProps {
   };
 }
 
-// Same logo mark as landing
 function LogoMark() {
   return (
     <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
@@ -98,7 +97,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
                 : "0 4px 24px -8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
           }}
         >
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 ml-3 group" aria-label="Home">
             <div className="w-7 h-7 rounded-lg bg-foreground text-background flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
               <LogoMark />
@@ -108,7 +106,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
             </span>
           </Link>
 
-          {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-0.5">
             {TABS.map((tab) => (
               <Link
@@ -150,9 +147,7 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
             ))}
           </nav>
 
-          {/* Right: theme + credits + avatar */}
           <div className="flex items-center gap-2 mr-1">
-            {/* Credits pill */}
             <Link href="/billing" className={cn(
               "hidden lg:flex items-center gap-1.5 h-8 px-3 rounded-full text-[10px] font-bold transition-colors",
               isDark ? "bg-white/8 text-zinc-300 hover:bg-white/12 border border-white/8" : "bg-black/4 text-zinc-600 hover:bg-black/8 border border-black/5"
@@ -161,12 +156,11 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
               {userProfile.credits} cr
             </Link>
 
-            {/* Theme toggle */}
             {mounted && (
               <button
                 onClick={() => {
                   const next = isDark ? "light" : "dark";
-                  const doc = document as any;
+                  const doc = document as Document & { startViewTransition?: (cb: () => void) => void };
                   if (doc.startViewTransition) { doc.startViewTransition(() => setTheme(next)); }
                   else setTheme(next);
                 }}
@@ -190,7 +184,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
               </button>
             )}
 
-            {/* Avatar */}
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
@@ -207,7 +200,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
         </motion.div>
       </motion.header>
 
-      {/* Full-screen mobile/profile overlay */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -221,7 +213,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
             )}
           >
             <div className="flex items-center justify-between mb-10">
-              {/* User info */}
               <div className="flex items-center gap-3">
                 <div className={cn(
                   "w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold",
@@ -247,7 +238,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
               </button>
             </div>
 
-            {/* Credits */}
             <div className={cn(
               "flex items-center justify-between px-4 py-3 rounded-xl border mb-8",
               isDark ? "border-white/8 bg-white/4" : "border-zinc-100 bg-zinc-50"
@@ -264,7 +254,6 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
               </div>
             </div>
 
-            {/* Nav */}
             <nav className="flex flex-col gap-1">
               {TABS.map((tab, i) => (
                 <motion.div

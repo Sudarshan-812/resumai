@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -52,6 +53,10 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return new Response("Unauthorized", { status: 401 });
 
+    if (isRateLimited(`${user.id}:resume-latex`, 5, 60_000)) {
+      return Response.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const { resumeId } = await req.json();
     if (!resumeId) return Response.json({ error: "Missing resumeId" }, { status: 400 });
 
@@ -101,6 +106,10 @@ STRICT REQUIREMENTS:
       .replace(/^```\n?/i, "")
       .replace(/\n?```$/i, "")
       .trim();
+
+    if (!cleaned.includes("\\documentclass") || !cleaned.includes("\\end{document}")) {
+      return Response.json({ error: "AI returned invalid LaTeX output. Please try again." }, { status: 500 });
+    }
 
     return Response.json({ latex: cleaned });
   } catch (err) {

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Check, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { SplitTextReveal } from "./SplitTextReveal";
+import { motion } from "framer-motion";
 
 const PLANS = [
   {
@@ -57,24 +59,26 @@ const Pricing: FC = (): JSX.Element => {
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
 
-        {/* HEADER */}
         <div className="text-center max-w-2xl mx-auto mb-20">
           <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-primary mb-3.5 font-mono inline-flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
             Simple Pricing
           </div>
           <h2 className="font-serif text-[clamp(32px,4vw,56px)] text-foreground tracking-[-0.02em] leading-[1.1] mb-4">
-            Pay once, keep forever.
+            <SplitTextReveal>Pay once, keep forever.</SplitTextReveal>
           </h2>
           <p className="text-lg text-muted-foreground leading-relaxed">
             No recurring subscriptions. No hidden fees. Just pure, deterministic value for your career trajectory.
           </p>
         </div>
 
-        {/* PRICING GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
-          {PLANS.map((plan) => (
-            <div
+          {PLANS.map((plan, index) => (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ delay: index * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
               key={plan.id}
               className={cn(
                 "group relative flex flex-col p-8 rounded-3xl transition-all duration-300 backdrop-blur-sm",
@@ -90,7 +94,6 @@ const Pricing: FC = (): JSX.Element => {
                 </div>
               )}
 
-              {/* Card Header */}
               <div className="mb-6 text-center">
                 <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-muted/30 border border-border/50">
                   <DotLottieReact
@@ -113,7 +116,6 @@ const Pricing: FC = (): JSX.Element => {
 
               <div className="h-px w-full bg-border mb-6" />
 
-              {/* Features */}
               <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex justify-center mb-6">
                   <div className={cn("px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider inline-flex items-center border", plan.badgeClass)}>
@@ -128,7 +130,6 @@ const Pricing: FC = (): JSX.Element => {
                 ))}
               </ul>
 
-              {/* Action Button */}
               <Link
                 href="/login"
                 className={cn(
@@ -140,7 +141,7 @@ const Pricing: FC = (): JSX.Element => {
               >
                 Choose {plan.name}
               </Link>
-            </div>
+            </motion.div>
           ))}
         </div>
 

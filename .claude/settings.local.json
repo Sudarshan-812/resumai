@@ -21,7 +21,8 @@
       "Bash(npm run:*)",
       "Bash(python -c ':*)",
       "Bash(python:*)",
-      "Bash(grep -n \"latexCode\\\\|onLatexChange\\\\|LaTeXViewer\\\\|resume-latex\" src/app/dashboard/AiAssistant.tsx src/app/dashboard/[id]/ClientReport.tsx src/app/api/chat/route.ts)"
+      "Bash(grep -n \"latexCode\\\\|onLatexChange\\\\|LaTeXViewer\\\\|resume-latex\" src/app/dashboard/AiAssistant.tsx src/app/dashboard/[id]/ClientReport.tsx src/app/api/chat/route.ts)",
+      "Bash(git diff *)"
     ]
   }
 }

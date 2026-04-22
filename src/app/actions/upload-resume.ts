@@ -5,11 +5,16 @@ import { analyzeResume } from '@/app/lib/gemini';
 import { createClient } from '@/app/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 
-const render_page = (pageData: any) => {
-  return pageData.getTextContent().then((textContent: any) => {
+interface PDFTextItem { str: string; transform: number[] }
+interface PDFPageData {
+  getTextContent: () => Promise<{ items: PDFTextItem[] }>
+}
+
+const render_page = (pageData: PDFPageData) => {
+  return pageData.getTextContent().then(({ items }) => {
     let lastY: number | null = null;
     let text = "";
-    for (const item of textContent.items) {
+    for (const item of items) {
       const y = item.transform[5];
       if (lastY !== y && lastY !== null) text += "\n";
       lastY = y;
@@ -101,9 +106,10 @@ export async function processResume(formData: FormData) {
     }
 
     revalidatePath('/dashboard');
-    return { success: true, data: analysis, id: resume.id };
+    return { success: true, data: analysis, id: resume.id, truncated: text.length > 150_000 };
 
-  } catch (error: any) {
-    return { success: false, message: error.message || "Analysis failed due to an unexpected error." };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Analysis failed due to an unexpected error.";
+    return { success: false, message };
   }
 }

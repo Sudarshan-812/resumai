@@ -78,7 +78,6 @@ export default function ResetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-[360px] space-y-8">
 
-        {/* Header */}
         <div className="text-center space-y-2">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-card">
             <Lock className="h-5 w-5 text-primary" />
@@ -96,7 +95,6 @@ export default function ResetPasswordPage() {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* New password */}
             <div className="space-y-2">
               <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
                 New Password
@@ -121,7 +119,6 @@ export default function ResetPasswordPage() {
               </div>
             </div>
 
-            {/* Confirm password */}
             <div className="space-y-2">
               <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground ml-1">
                 Confirm Password

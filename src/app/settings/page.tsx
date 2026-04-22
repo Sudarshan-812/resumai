@@ -99,7 +99,6 @@ export default function SettingsPage() {
           <p className="text-sm text-muted-foreground mt-0.5">Manage your account and preferences.</p>
         </div>
 
-        {/* Profile card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={delay(0)} className="bg-card border border-border rounded-2xl p-5">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-full overflow-hidden bg-zinc-900 text-white flex items-center justify-center text-xl font-bold shrink-0">
@@ -114,7 +113,6 @@ export default function SettingsPage() {
           </div>
         </motion.div>
 
-        {/* Email */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(1)} className={rowBase}>
           <div className="flex items-center gap-3 text-muted-foreground">
             <Mail size={14} /><span className="text-sm font-medium text-foreground">Email</span>
@@ -122,7 +120,6 @@ export default function SettingsPage() {
           <span className="text-sm text-muted-foreground truncate max-w-[200px]">{user?.email}</span>
         </motion.div>
 
-        {/* Display name (editable) */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(2)} className={rowBase}>
           <div className="flex items-center gap-3 text-muted-foreground shrink-0">
             <User size={14} /><span className="text-sm font-medium text-foreground">Display name</span>
@@ -157,7 +154,6 @@ export default function SettingsPage() {
           )}
         </motion.div>
 
-        {/* Account status */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(3)} className={rowBase}>
           <div className="flex items-center gap-3 text-muted-foreground">
             <ShieldCheck size={14} /><span className="text-sm font-medium text-foreground">Account status</span>
@@ -165,7 +161,6 @@ export default function SettingsPage() {
           <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Active</span>
         </motion.div>
 
-        {/* Credits */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(4)} className={rowBase}>
           <div className="flex items-center gap-3 text-muted-foreground">
             <CreditCard size={14} /><span className="text-sm font-medium text-foreground">Credits remaining</span>
@@ -176,7 +171,6 @@ export default function SettingsPage() {
           </div>
         </motion.div>
 
-        {/* Sign out */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={delay(5)}>
           <button
             onClick={handleSignOut}

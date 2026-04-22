@@ -19,16 +19,13 @@ export default function HistoryLoading() {
 
       <main className="max-w-4xl mx-auto px-6 pt-28 pb-12">
 
-        {/* Header */}
         <div className="mb-10 space-y-2">
           <Skeleton className="h-9 w-48 rounded-lg" />
           <Skeleton className="h-4 w-32 rounded" />
         </div>
 
-        {/* Search bar */}
         <Skeleton className="h-11 w-full rounded-xl mb-6" />
 
-        {/* List */}
         <div className="overflow-hidden rounded-2xl border border-border bg-background">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div

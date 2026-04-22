@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { streamText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export const maxDuration = 60;
 
@@ -15,6 +16,10 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return new Response("Unauthorized", { status: 401 });
+  }
+
+  if (isRateLimited(`${user.id}:chat`, 20, 60_000)) {
+    return new Response("Too many requests", { status: 429 });
   }
 
   let context = "";

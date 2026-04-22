@@ -306,7 +306,6 @@ export default function TryPage() {
   return (
     <div className="relative min-h-screen bg-background text-foreground font-sans overflow-hidden">
 
-      {/* Ambient grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.025]"
         style={{
@@ -315,13 +314,11 @@ export default function TryPage() {
         }}
       />
 
-      {/* Top glow */}
       <div
         aria-hidden
         className="pointer-events-none fixed top-[-20%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full bg-primary opacity-[0.07] blur-[100px]"
       />
 
-      {/* Nav */}
       <header className="relative z-50 flex items-center justify-between px-6 py-5 border-b border-border bg-background/70 backdrop-blur-md">
         <Link href="/" className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
@@ -341,7 +338,6 @@ export default function TryPage() {
 
         <AnimatePresence mode="wait">
 
-          {/* ─── STEP: UPLOAD ─── */}
           {step === "upload" && (
             <motion.div
               key="upload"
@@ -351,7 +347,6 @@ export default function TryPage() {
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="w-full max-w-4xl"
             >
-              {/* Header */}
               <div className="text-center mb-10">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -370,7 +365,6 @@ export default function TryPage() {
                 </p>
               </div>
 
-              {/* Usage dots */}
               <div className="flex items-center justify-center gap-2 mb-8">
                 {Array.from({ length: MAX_FREE }).map((_, i) => (
                   <div
@@ -384,10 +378,7 @@ export default function TryPage() {
                 <span className="ml-2 text-[11px] font-mono text-muted-foreground">{remaining} left</span>
               </div>
 
-              {/* Input panels */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-
-                {/* PDF Upload */}
                 <motion.div
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -439,7 +430,6 @@ export default function TryPage() {
                   </div>
                 </motion.div>
 
-                {/* JD Input */}
                 <motion.div
                   initial={{ opacity: 0, x: 16 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -460,7 +450,6 @@ export default function TryPage() {
                 </motion.div>
               </div>
 
-              {/* Error */}
               <AnimatePresence>
                 {error && (
                   <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -471,7 +460,6 @@ export default function TryPage() {
                 )}
               </AnimatePresence>
 
-              {/* Analyze button */}
               <div className="flex flex-col items-center">
                 <motion.button
                   disabled={!canAnalyze}
@@ -502,7 +490,6 @@ export default function TryPage() {
             </motion.div>
           )}
 
-          {/* ─── STEP: ANALYZING ─── */}
           {step === "analyzing" && (
             <motion.div
               key="analyzing"
@@ -516,7 +503,6 @@ export default function TryPage() {
             </motion.div>
           )}
 
-          {/* ─── STEP: RESULT ─── */}
           {step === "result" && result && (
             <motion.div
               key="result"
@@ -525,7 +511,6 @@ export default function TryPage() {
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="w-full max-w-4xl"
             >
-              {/* Result header */}
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-card border border-border rounded-2xl p-8 mb-6 shadow-sm">
                 <div className="flex-1">
                   <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
@@ -562,7 +547,6 @@ export default function TryPage() {
                 </div>
               </div>
 
-              {/* Stats row */}
               <div className="grid grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-6 shadow-sm">
                 {[
                   { label: "ATS Score", value: `${result.ats_score}%`, icon: <Activity className="h-4 w-4" /> },
@@ -583,7 +567,6 @@ export default function TryPage() {
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
-                {/* Formatting Issues */}
                 <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
                   <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 mb-5">
                     <ShieldCheck className="w-4 h-4 text-primary" /> Structural Integrity
@@ -607,7 +590,6 @@ export default function TryPage() {
                   )}
                 </div>
 
-                {/* Keyword grid */}
                 <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
                   <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2 mb-5">
                     <Target className="w-4 h-4 text-primary" /> Keyword Gap Analysis
@@ -647,7 +629,6 @@ export default function TryPage() {
                 </div>
               </div>
 
-              {/* Signup CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}

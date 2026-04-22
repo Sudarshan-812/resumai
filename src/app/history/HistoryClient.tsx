@@ -31,7 +31,6 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
   return (
     <DashboardShell>
       <main className="max-w-4xl mx-auto px-6 py-8">
-        {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -46,7 +45,6 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
           </p>
         </motion.div>
 
-        {/* Search */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -62,7 +60,6 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
           />
         </motion.div>
 
-        {/* List */}
         {filtered.length === 0 ? (
           <div className="py-24 text-center">
             <FileText className="mx-auto h-10 w-10 text-muted/30 mb-4" strokeWidth={1} />

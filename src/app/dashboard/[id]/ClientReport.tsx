@@ -13,6 +13,20 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+interface ResumeData {
+  id: string;
+  file_name: string;
+}
+
+interface AnalysisData {
+  ats_score: number;
+  summary_feedback: string;
+  skills_found: string[];
+  missing_keywords: string[];
+  formatting_issues: string[];
+  calculated_yoe: number;
+}
+
 /* ─── Score Ring ─────────────────────────────────────────── */
 function ScoreRing({ score }: { score: number }) {
   const [current, setCurrent] = useState(0);
@@ -91,7 +105,7 @@ function AiSplitView({
   resume,
 }: {
   onClose: () => void;
-  resume: any;
+  resume: ResumeData;
 }) {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [latexCode, setLatexCode] = useState("");
@@ -199,13 +213,14 @@ function AiSplitView({
 
 /* ─── Main Report ────────────────────────────────────────── */
 export default function ClientReport({
-  resume, analysis,
+  resume, analysis, truncated = false,
 }: {
-  resume: any; analysis: any;
+  resume: ResumeData; analysis: AnalysisData; truncated?: boolean;
 }) {
   const [tab, setTab]           = useState<"summary" | "keywords" | "formatting">("summary");
   const [aiViewOpen, setAiViewOpen] = useState(false);
   const [copied, setCopied]     = useState(false);
+  const [truncWarn, setTruncWarn] = useState(truncated);
 
   const score    = analysis.ats_score        || 0;
   const skills   = analysis.skills_found     || [];
@@ -249,6 +264,25 @@ export default function ClientReport({
           <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
           All analyses
         </Link>
+
+        <AnimatePresence>
+          {truncWarn && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="flex items-start gap-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/25 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 mb-6 text-sm"
+            >
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+              <span className="flex-1">
+                Your resume is very long — only the first 150,000 characters were analysed. For best results, ensure your resume is concise.
+              </span>
+              <button onClick={() => setTruncWarn(false)} className="ml-2 text-amber-600 dark:text-amber-400 hover:opacity-70 transition-opacity">
+                <X className="w-4 h-4" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

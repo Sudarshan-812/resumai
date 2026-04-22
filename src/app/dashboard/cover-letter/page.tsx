@@ -69,7 +69,6 @@ export default function CoverLetterPage() {
     <DashboardShell>
       <div className="max-w-5xl mx-auto px-6 py-8">
 
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400 mb-2">
             <FileText size={11} />
@@ -82,7 +81,6 @@ export default function CoverLetterPage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Inputs */}
           <div className="space-y-5">
 
             <Field label="Company Name">
@@ -144,7 +142,6 @@ export default function CoverLetterPage() {
             </Button>
           </div>
 
-          {/* Output */}
           <div className="relative">
             <div className={cn(
               "w-full min-h-[420px] rounded-2xl border bg-card p-5 text-sm leading-relaxed text-foreground transition-all",

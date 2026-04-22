@@ -19,7 +19,6 @@ export default function ReportLoading() {
 
       <main className="mx-auto max-w-5xl px-6 pt-24 pb-16 space-y-8">
 
-        {/* Back + title */}
         <div className="flex items-center gap-4">
           <Skeleton className="h-9 w-9 rounded-lg shrink-0" />
           <div className="space-y-2">
@@ -28,14 +27,11 @@ export default function ReportLoading() {
           </div>
         </div>
 
-        {/* Score ring + actions bar */}
         <div className="rounded-2xl border border-border bg-card p-8 flex flex-col sm:flex-row items-center gap-8">
-          {/* Ring */}
           <div className="flex flex-col items-center gap-3 shrink-0">
             <Skeleton className="h-36 w-36 rounded-full" />
             <Skeleton className="h-4 w-24 rounded" />
           </div>
-          {/* Stats beside ring */}
           <div className="flex-1 grid grid-cols-2 gap-4 w-full">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="rounded-xl border border-border bg-background/60 p-4 space-y-2">
@@ -46,16 +42,13 @@ export default function ReportLoading() {
           </div>
         </div>
 
-        {/* Action buttons */}
         <div className="flex flex-wrap gap-3">
           {[140, 120, 100].map((w, i) => (
             <Skeleton key={i} className="h-10 rounded-lg" style={{ width: w }} />
           ))}
         </div>
 
-        {/* Two-column sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Keywords section */}
           <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
             <Skeleton className="h-4 w-36 rounded" />
             <div className="flex flex-wrap gap-2">
@@ -65,7 +58,6 @@ export default function ReportLoading() {
             </div>
           </div>
 
-          {/* Missing keywords */}
           <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
             <Skeleton className="h-4 w-40 rounded" />
             <div className="flex flex-wrap gap-2">
@@ -76,7 +68,6 @@ export default function ReportLoading() {
           </div>
         </div>
 
-        {/* Suggestions list */}
         <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
           <Skeleton className="h-4 w-32 rounded mb-2" />
           {[1, 2, 3, 4].map((i) => (

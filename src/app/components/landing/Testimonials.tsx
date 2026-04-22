@@ -40,7 +40,6 @@ const TESTIMONIALS: readonly Testimonial[] = [
   },
 ];
 
-// Reusable fade-up animation for headings & cards
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 20 },
   visible: (index: number = 0) => ({
@@ -53,7 +52,6 @@ const fadeUp: Variants = {
 const Testimonials: FC = (): JSX.Element => {
   return (
     <section className="relative overflow-hidden bg-gray-50 py-24">
-      {/* Decorative background glows (purely visual) */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0"
@@ -92,7 +90,6 @@ const Testimonials: FC = (): JSX.Element => {
               className="rounded-3xl border border-indigo-50 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10"
               aria-label={`Testimonial from ${testimonial.author}`}
             >
-              {/* Static 5-star rating for social proof */}
               <div className="mb-4 flex gap-1">
                 {Array.from({ length: 5 }).map((_, starIndex) => (
                   <Star
@@ -113,7 +110,6 @@ const Testimonials: FC = (): JSX.Element => {
               </p>
 
               <div className="flex items-center gap-3">
-                {/* Avatar with gradient background */}
                 <div
                   className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${testimonial.gradient} text-sm font-bold text-white shadow-md`}
                   aria-hidden="true"

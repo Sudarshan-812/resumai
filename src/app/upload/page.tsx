@@ -75,7 +75,6 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
 
   return (
     <div className="w-full max-w-xl mx-auto">
-      {/* Pulsing orb */}
       <div className="flex flex-col items-center mb-10">
         <div className="relative w-24 h-24 mb-6">
           <motion.div
@@ -96,7 +95,6 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
         <p className="text-sm text-muted-foreground">Scanning <span className="font-medium text-foreground">{fileName}</span></p>
       </div>
 
-      {/* Terminal log */}
       <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/30">
           <div className="flex gap-1.5">
@@ -198,7 +196,10 @@ const UploadPage: FC = (): JSX.Element => {
       fd.append("jobDescription", jobDescription);
       const result = await processResume(fd);
       if (result.success && result.id) {
-        router.push(`/dashboard/${result.id}`);
+        const url = result.truncated
+          ? `/dashboard/${result.id}?truncated=1`
+          : `/dashboard/${result.id}`;
+        router.push(url);
         return;
       }
       throw new Error(result.message || "Analysis failed.");
@@ -213,7 +214,6 @@ const UploadPage: FC = (): JSX.Element => {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
 
-      {/* Nav */}
       <header className="flex items-center justify-between px-6 h-14 border-b border-border bg-background sticky top-0 z-20">
         <Link href="/dashboard" className="group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
@@ -231,7 +231,6 @@ const UploadPage: FC = (): JSX.Element => {
       <main className="flex flex-col items-center px-4 py-12">
         <AnimatePresence mode="wait">
 
-          {/* ─── UPLOAD FORM ─── */}
           {!isUploading && (
             <motion.div
               key="form"
@@ -241,7 +240,6 @@ const UploadPage: FC = (): JSX.Element => {
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               className="w-full max-w-4xl"
             >
-              {/* Page header */}
               <div className="text-center mb-10">
                 <motion.h1
                   initial={{ opacity: 0, y: 8 }}
@@ -261,7 +259,6 @@ const UploadPage: FC = (): JSX.Element => {
                 </motion.p>
               </div>
 
-              {/* Step indicators */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -295,10 +292,8 @@ const UploadPage: FC = (): JSX.Element => {
                 ))}
               </motion.div>
 
-              {/* Input panels */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
 
-                {/* PDF Upload panel */}
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -389,7 +384,6 @@ const UploadPage: FC = (): JSX.Element => {
                   </div>
                 </motion.div>
 
-                {/* JD panel */}
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -408,7 +402,6 @@ const UploadPage: FC = (): JSX.Element => {
                 </motion.div>
               </div>
 
-              {/* Error */}
               <AnimatePresence>
                 {errorMsg && (
                   <motion.div
@@ -422,7 +415,6 @@ const UploadPage: FC = (): JSX.Element => {
                 )}
               </AnimatePresence>
 
-              {/* CTA */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -452,7 +444,6 @@ const UploadPage: FC = (): JSX.Element => {
             </motion.div>
           )}
 
-          {/* ─── ANALYZING STATE ─── */}
           {isUploading && (
             <motion.div
               key="analyzing"

@@ -86,7 +86,6 @@ export default function InterviewPage() {
     <DashboardShell>
       <div className="max-w-2xl mx-auto px-6 py-8">
 
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400 mb-2">
             <BarChart3 size={11} /> AI Tool
@@ -99,7 +98,6 @@ export default function InterviewPage() {
 
         <AnimatePresence mode="wait">
 
-          {/* SETUP */}
           {phase === "setup" && (
             <motion.div key="setup" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
               <div>
@@ -136,7 +134,6 @@ export default function InterviewPage() {
             </motion.div>
           )}
 
-          {/* QUESTION */}
           {(phase === "questions" || phase === "answering") && questions[currentIdx] && (
             <motion.div key={`q-${currentIdx}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
               <div className="flex items-center justify-between">
@@ -180,7 +177,6 @@ export default function InterviewPage() {
             </motion.div>
           )}
 
-          {/* FEEDBACK */}
           {phase === "feedback" && feedbacks[currentIdx] && (
             <motion.div key={`fb-${currentIdx}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
               <div className="rounded-2xl border border-border bg-card p-5 text-center">
@@ -236,7 +232,6 @@ export default function InterviewPage() {
             </motion.div>
           )}
 
-          {/* COMPLETE */}
           {phase === "complete" && (
             <motion.div key="complete" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="space-y-5">
               <div className="rounded-2xl border border-border bg-card p-8 text-center">

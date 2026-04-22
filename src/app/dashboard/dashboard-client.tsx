@@ -48,7 +48,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
     <DashboardShell>
       <div className="max-w-5xl mx-auto px-6 py-8">
 
-        {/* Page header */}
         <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="text-2xl font-bold text-foreground tracking-tight">
@@ -66,7 +65,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           </Link>
         </header>
 
-        {/* Stats grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <StatCard
             title="Total Analyses"
@@ -96,13 +94,8 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           />
         </div>
 
-        {/* Main content grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Recent analyses */}
           <div className="lg:col-span-2 space-y-5">
-
-            {/* Upload CTA */}
             <div className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all p-6 flex items-center gap-5">
               <div className="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0">
                 <UploadCloud size={20} strokeWidth={1.5} />
@@ -118,7 +111,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               </Link>
             </div>
 
-            {/* Resume list */}
             <div>
               <div className="flex items-center justify-between mb-3 px-0.5">
                 <h2 className="text-sm font-bold text-foreground">Recent Analyses</h2>
@@ -175,7 +167,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             </div>
           </div>
 
-          {/* Sidebar tools */}
           <aside className="space-y-4">
 
             <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
@@ -199,7 +190,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               </div>
             </div>
 
-            {/* Quick tips */}
             <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
               <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-4">Pro Tips</h3>
               <ul className="space-y-3">

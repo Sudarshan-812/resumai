@@ -175,11 +175,16 @@ const HeroSection: FC = (): JSX.Element => {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.52, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto mt-16 w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card/60 shadow-2xl shadow-zinc-900/10 backdrop-blur-md"
+          className="mx-auto mt-16 w-full max-w-4xl"
         >
-          {/* Window chrome */}
-          <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-3">
-            <div className="flex gap-1.5">
+          <motion.div
+            animate={{ y: [0, -8, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+            className="overflow-hidden rounded-2xl border border-border bg-card/60 shadow-2xl shadow-zinc-900/10 backdrop-blur-md"
+          >
+            {/* Window chrome */}
+            <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-3">
+              <div className="flex gap-1.5">
               <div className="h-2.5 w-2.5 rounded-full bg-rose-400/60" />
               <div className="h-2.5 w-2.5 rounded-full bg-amber-400/60" />
               <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/60" />
@@ -260,6 +265,7 @@ const HeroSection: FC = (): JSX.Element => {
               </div>
             </div>
           </div>
+          </motion.div>
         </motion.div>
 
       </div>

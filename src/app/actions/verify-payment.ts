@@ -29,7 +29,6 @@ export async function verifyPayment(
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return { success: false, message: "Unauthorized" };
 
-    // Verify Razorpay signature
     const generatedSignature = crypto
       .createHmac("sha256", keySecret)
       .update(orderId + "|" + paymentId)

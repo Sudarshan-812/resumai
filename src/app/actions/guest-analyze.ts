@@ -3,11 +3,16 @@
 import pdfParse from "pdf-parse";
 import { analyzeResume } from "@/app/lib/gemini";
 
-const render_page = (pageData: any) => {
-  return pageData.getTextContent().then((textContent: any) => {
+interface PDFTextItem { str: string; transform: number[] }
+interface PDFPageData {
+  getTextContent: () => Promise<{ items: PDFTextItem[] }>
+}
+
+const render_page = (pageData: PDFPageData) => {
+  return pageData.getTextContent().then(({ items }) => {
     let lastY: number | null = null;
     let text = "";
-    for (const item of textContent.items) {
+    for (const item of items) {
       const y = item.transform[5];
       if (lastY !== y && lastY !== null) text += "\n";
       lastY = y;
@@ -60,10 +65,8 @@ export async function analyzeResumeAsGuest(formData: FormData) {
         file_name: file.name,
       },
     };
-  } catch (error: any) {
-    return {
-      success: false as const,
-      message: error.message || "Analysis failed. Please try again.",
-    };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Analysis failed. Please try again.";
+    return { success: false as const, message };
   }
 }

@@ -19,7 +19,6 @@ export default function DashboardLoading() {
 
       <main className="mx-auto max-w-6xl px-6 pt-24 pb-12">
 
-        {/* Header */}
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="space-y-2">
             <Skeleton className="h-3 w-32 rounded" />
@@ -28,7 +27,6 @@ export default function DashboardLoading() {
           <Skeleton className="h-11 w-44 rounded-xl" />
         </div>
 
-        {/* Stats grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border border border-border rounded-2xl overflow-hidden mb-10">
           {[1, 2, 3].map((i) => (
             <div key={i} className="bg-card p-6 flex items-center gap-4">
@@ -44,7 +42,6 @@ export default function DashboardLoading() {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-10">
 
-            {/* Upload card */}
             <div className="rounded-2xl border border-border bg-card p-8 flex items-center gap-6">
               <Skeleton className="h-14 w-14 rounded-xl shrink-0" />
               <div className="flex-1 space-y-2">
@@ -55,7 +52,6 @@ export default function DashboardLoading() {
               <Skeleton className="h-10 w-28 rounded-lg shrink-0" />
             </div>
 
-            {/* Activity list */}
             <div>
               <div className="flex items-center justify-between mb-4 px-1">
                 <Skeleton className="h-3 w-40 rounded" />
@@ -81,7 +77,6 @@ export default function DashboardLoading() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <aside className="space-y-6">
             <div className="rounded-2xl border border-border bg-card p-6 space-y-4">
               <Skeleton className="h-3 w-32 rounded" />

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { SplitTextReveal } from "./SplitTextReveal";
 
 const FAQS = [
   {
@@ -46,7 +47,7 @@ export default function FAQ() {
             id="faq-heading"
             className="text-[clamp(28px,4vw,44px)] font-bold text-foreground tracking-[-0.02em] leading-[1.12] mb-4"
           >
-            Everything you need to know.
+            <SplitTextReveal>Everything you need to know.</SplitTextReveal>
           </h2>
           <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
             If you don&apos;t see your question here, reach out at{" "}
@@ -56,9 +57,18 @@ export default function FAQ() {
           </p>
         </div>
 
-        <div className="divide-y divide-border rounded-2xl border border-border overflow-hidden bg-card/40">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          variants={{ visible: { transition: { staggerChildren: 0.1 } }, hidden: {} }}
+          className="divide-y divide-border rounded-2xl border border-border overflow-hidden bg-card/40"
+        >
           {FAQS.map((faq, i) => (
-            <div key={i}>
+            <motion.div 
+              key={i}
+              variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } }}
+            >
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
@@ -89,9 +99,9 @@ export default function FAQ() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

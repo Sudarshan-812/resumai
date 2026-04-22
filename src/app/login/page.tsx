@@ -97,10 +97,7 @@ const LoginPage: FC = (): JSX.Element => {
   return (
     <div className="grid h-screen w-screen overflow-hidden bg-background lg:grid-cols-2">
       
-      {/* ─── LEFT PANEL: ULTRA-MINIMALIST ARCHITECTURAL ─── */}
       <div className="relative hidden h-full flex-col border-r border-border bg-muted/20 p-10 lg:flex">
-        
-        {/* Technical Header Info */}
         <div className="flex items-center justify-between opacity-40">
            <div className="flex items-center gap-4">
               <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground">Auth.Protocol.v2</span>
@@ -113,10 +110,6 @@ const LoginPage: FC = (): JSX.Element => {
            <Command size={14} />
         </div>
 
-        {/* Main Content Group
-          REMOVED: Logo Link block completely.
-          REMOVED: mt-12 from this container so the content starts immediately below the technical header.
-        */}
         <div className="flex flex-1 flex-col justify-center">
           <div className="max-w-md space-y-8">
             <div className="space-y-4">
@@ -129,7 +122,6 @@ const LoginPage: FC = (): JSX.Element => {
                 </p>
             </div>
 
-            {/* Animation Box */}
             <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border bg-background/50 shadow-2xl shadow-primary/5">
               <DotLottieReact
                 src="https://lottie.host/1360d328-a6ba-4191-8a54-d40814f1a103/zLX5NEX06c.lottie"
@@ -152,7 +144,6 @@ const LoginPage: FC = (): JSX.Element => {
           </div>
         </div>
 
-        {/* Footer Meta Info */}
         <div className="mt-auto pt-10 flex items-center justify-between border-t border-border/50">
             <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">© 2026 // ResumAI Platform</span>
             <div className="flex items-center gap-4 opacity-50">
@@ -163,7 +154,6 @@ const LoginPage: FC = (): JSX.Element => {
         </div>
       </div>
 
-      {/* ─── RIGHT PANEL: THE AUTH FORM (No Changes) ─── */}
       <div className="relative flex h-full items-center justify-center p-6 sm:p-12 bg-background">
         <div className="w-full max-w-[360px] space-y-8">
           

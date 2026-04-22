@@ -6,6 +6,7 @@ import { motion, type Variants } from "framer-motion";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SplitTextReveal } from "./SplitTextReveal";
 
 interface Step {
   title: string;
@@ -58,7 +59,7 @@ const HowItWorks: FC = (): JSX.Element => {
             id="how-it-works-heading"
             className="font-serif text-[clamp(30px,4vw,48px)] text-foreground tracking-[-0.02em] leading-[1.12] max-w-[560px] mx-auto mb-4"
           >
-            From upload to optimized in under 60 seconds.
+            <SplitTextReveal>From upload to optimized in under 60 seconds.</SplitTextReveal>
           </h2>
           <p className="text-base text-muted-foreground max-w-[480px] mx-auto leading-[1.65]">
             No complex setup. Just drop your resume, paste a job description, and let our pipeline do the heavy lifting.
@@ -70,8 +71,16 @@ const HowItWorks: FC = (): JSX.Element => {
           {/* Connector line */}
           <div
             aria-hidden="true"
-            className="absolute left-[15%] right-[15%] top-16 hidden h-px bg-border md:block"
-          />
+            className="absolute left-[15%] right-[15%] top-16 hidden h-px bg-border md:block overflow-hidden"
+          >
+            <motion.div
+              className="h-full bg-primary/40"
+              initial={{ x: "-100%" }}
+              whileInView={{ x: "0%" }}
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+            />
+          </div>
 
           <div className="grid grid-cols-1 gap-12 md:grid-cols-3 relative z-10">
             {STEPS.map((step, index) => (
@@ -84,15 +93,15 @@ const HowItWorks: FC = (): JSX.Element => {
                 variants={itemFadeUp}
                 className="flex flex-col items-center text-center group"
               >
-                <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:border-primary/30 overflow-hidden">
-                  <div className="absolute top-2.5 left-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground font-mono">
+                <div className="relative mb-8 flex h-32 w-32 items-center justify-center rounded-2xl border border-border bg-card shadow-sm transition-all duration-300 group-hover:shadow-md group-hover:border-primary/30 group-hover:-translate-y-1 overflow-hidden">
+                  <div className="absolute top-2.5 left-2.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground font-mono transition-colors group-hover:bg-primary/10 group-hover:text-primary group-hover:border-primary/20">
                     {index + 1}
                   </div>
                   <DotLottieReact
                     src={step.lottieSrc}
                     loop
                     autoplay
-                    className="h-20 w-20 opacity-80 transition-opacity duration-300 group-hover:opacity-100"
+                    className="h-20 w-20 opacity-80 transition-transform duration-300 group-hover:scale-110 group-hover:opacity-100"
                   />
                 </div>
                 <h3 className="mb-2 text-lg font-semibold tracking-tight text-foreground">

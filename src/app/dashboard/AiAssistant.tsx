@@ -175,11 +175,8 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
 
   return (
     <div className="flex flex-col h-full bg-background">
-
-      {/* Messages area */}
       <div className="flex-1 overflow-y-auto">
         {isEmpty ? (
-          /* ── Empty state ── */
           <div className="flex flex-col items-center justify-center h-full px-6 pb-8 text-center">
             <div className="mb-8">
               <h2 className="text-2xl font-semibold text-foreground tracking-tight mb-2">
@@ -192,7 +189,6 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
               </p>
             </div>
 
-            {/* Suggestion chips */}
             <div className="grid grid-cols-2 gap-2 w-full max-w-md">
               {SUGGESTIONS.map((s) => (
                 <button
@@ -209,19 +205,16 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
             </div>
           </div>
         ) : (
-          /* ── Message thread ── */
           <div className="px-4 sm:px-8 py-6 space-y-8 max-w-3xl mx-auto w-full">
             {messages.map((m) => (
               <div key={m.id}>
                 {m.role === "user" ? (
-                  /* User message — pill style */
                   <div className="flex justify-end">
                     <div className="max-w-[80%] bg-muted rounded-3xl px-5 py-3 text-sm text-foreground leading-relaxed">
                       {m.content}
                     </div>
                   </div>
                 ) : (
-                  /* Assistant message — clean text, no bubble */
                   <div className="text-sm leading-relaxed text-foreground">
                     {m.content ? (
                       <MarkdownText text={m.content} />
@@ -233,7 +226,6 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
               </div>
             ))}
 
-            {/* Loading indicator for assistant (when last message has empty content) */}
             {isLoading && messages[messages.length - 1]?.role === "assistant" && messages[messages.length - 1]?.content === "" && (
               <div className="text-sm text-foreground">
                 <ThinkingDots />
@@ -245,7 +237,6 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
         )}
       </div>
 
-      {/* ── Input bar ── */}
       <div className="px-4 sm:px-8 pb-6 pt-4 max-w-3xl mx-auto w-full">
         <form
           onSubmit={handleSubmit}
@@ -270,7 +261,6 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
             style={{ minHeight: 56, maxHeight: 200 }}
           />
 
-          {/* Bottom row of input */}
           <div className="absolute bottom-3 right-3 flex items-center gap-2">
             {isLoading ? (
               <button
@@ -306,7 +296,6 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
   );
 }
 
-/* ── Inline markdown renderer ── */
 function MarkdownText({ text }: { text: string }) {
   const lines = text.split("\n");
 
@@ -315,7 +304,6 @@ function MarkdownText({ text }: { text: string }) {
       {lines.map((line, i) => {
         if (!line.trim()) return <div key={i} className="h-2" />;
 
-        // Bullet point
         if (/^[-*•]\s/.test(line)) {
           return (
             <div key={i} className="flex gap-2.5 items-start">
@@ -325,7 +313,6 @@ function MarkdownText({ text }: { text: string }) {
           );
         }
 
-        // Numbered list
         if (/^\d+\.\s/.test(line)) {
           const num = line.match(/^(\d+)\./)?.[1];
           return (
@@ -336,7 +323,6 @@ function MarkdownText({ text }: { text: string }) {
           );
         }
 
-        // Heading (##)
         if (/^#{1,3}\s/.test(line)) {
           return (
             <p key={i} className="font-semibold text-foreground mt-3 mb-1">
@@ -345,7 +331,6 @@ function MarkdownText({ text }: { text: string }) {
           );
         }
 
-        // BEFORE/AFTER labels
         if (/^(BEFORE|AFTER):/.test(line)) {
           const [label, ...rest] = line.split(":");
           return (
@@ -370,7 +355,6 @@ function MarkdownText({ text }: { text: string }) {
 }
 
 function renderInline(text: string): React.ReactNode {
-  // Split on **bold** and `code`
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
   return (
     <>
@@ -391,7 +375,6 @@ function renderInline(text: string): React.ReactNode {
   );
 }
 
-/* ── Thinking animation ── */
 function ThinkingDots() {
   return (
     <div className="flex items-center gap-1 py-2">

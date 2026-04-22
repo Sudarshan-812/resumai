@@ -89,7 +89,6 @@ function SidebarContent({
   return (
     <div className="flex flex-col h-full">
 
-      {/* Header: avatar + name / collapse toggle */}
       <div className={cn(
         "flex items-center h-14 border-b border-border shrink-0",
         collapsed ? "justify-center px-2" : "gap-2.5 px-4"
@@ -125,7 +124,6 @@ function SidebarContent({
         )}
       </div>
 
-      {/* Low credits warning */}
       {lowCredits && !collapsed && (
         <div className="mx-3 mt-3 px-3 py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/8 flex items-start gap-2">
           <AlertTriangle size={13} className="text-amber-500 mt-0.5 shrink-0" />
@@ -140,7 +138,6 @@ function SidebarContent({
         </div>
       )}
 
-      {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
@@ -181,7 +178,6 @@ function SidebarContent({
         ))}
       </nav>
 
-      {/* Bottom */}
       <div className={cn("border-t border-border shrink-0", collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3 space-y-2")}>
         {!collapsed && (
           <Link
@@ -381,7 +377,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     </AnimatePresence>
     <div className="flex h-screen bg-background overflow-hidden">
 
-      {/* Desktop sidebar */}
       <aside className={cn(
         "hidden md:flex flex-col shrink-0 border-r border-border transition-[width] duration-200 ease-in-out overflow-hidden",
         collapsed ? "w-[60px]" : "w-60",
@@ -390,7 +385,6 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         <SidebarContent {...sidebarProps} />
       </aside>
 
-      {/* Mobile overlay */}
       <AnimatePresence>
         {mobileOpen && (
           <>
@@ -413,10 +407,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         )}
       </AnimatePresence>
 
-      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-
-        {/* Top bar */}
         <header className={cn(
           "h-14 shrink-0 flex items-center justify-between px-5 border-b border-border",
           isDark ? "bg-zinc-950" : "bg-white"
