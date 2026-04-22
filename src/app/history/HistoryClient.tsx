@@ -2,15 +2,24 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, ChevronRight, Search } from "lucide-react";
+import { FileText, ChevronRight, ChevronLeft, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 
 interface Resume { id: string; file_name: string; created_at: string; ats_score: number }
 
-export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
+interface Props {
+  resumes: Resume[];
+  totalCount: number;
+  page: number;
+  totalPages: number;
+}
+
+export default function HistoryClient({ resumes, totalCount, page, totalPages }: Props) {
   const [query, setQuery] = useState("");
+  const router = useRouter();
 
   const filtered = resumes.filter(r =>
     r.file_name.toLowerCase().includes(query.toLowerCase())
@@ -30,7 +39,7 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
         >
           <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1">All Analyses</h1>
           <p className="text-muted-foreground text-sm">
-            {resumes.length} resume{resumes.length !== 1 ? "s" : ""} analyzed
+            {totalCount} resume{totalCount !== 1 ? "s" : ""} analyzed
           </p>
         </motion.div>
 
@@ -77,7 +86,7 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
             </motion.div>
           ) : (
             <motion.div
-              key="list"
+              key={`list-${page}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -128,6 +137,40 @@ export default function HistoryClient({ resumes }: { resumes: Resume[] }) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Pagination */}
+        {totalPages > 1 && !query && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex items-center justify-between mt-6"
+          >
+            <motion.button
+              onClick={() => router.push(`/history?page=${page - 1}`)}
+              disabled={page <= 1}
+              whileHover={page > 1 ? { x: -2 } : {}}
+              whileTap={page > 1 ? { scale: 0.96 } : {}}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4" /> Previous
+            </motion.button>
+
+            <span className="text-xs text-muted-foreground font-mono">
+              Page {page} of {totalPages}
+            </span>
+
+            <motion.button
+              onClick={() => router.push(`/history?page=${page + 1}`)}
+              disabled={page >= totalPages}
+              whileHover={page < totalPages ? { x: 2 } : {}}
+              whileTap={page < totalPages ? { scale: 0.96 } : {}}
+              className="flex items-center gap-1.5 h-9 px-4 rounded-xl border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Next <ChevronRight className="h-4 w-4" />
+            </motion.button>
+          </motion.div>
+        )}
       </main>
     </DashboardShell>
   );
