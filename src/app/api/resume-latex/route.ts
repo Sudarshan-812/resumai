@@ -1,8 +1,6 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
-import { isRateLimited } from "@/lib/rate-limit";
-
 export const maxDuration = 60;
 
 const LATEX_PREAMBLE = `\\documentclass[letterpaper,10.5pt]{article}
@@ -52,10 +50,6 @@ export async function POST(req: Request) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return new Response("Unauthorized", { status: 401 });
-
-    if (isRateLimited(`${user.id}:resume-latex`, 5, 60_000)) {
-      return Response.json({ error: "Too many requests" }, { status: 429 });
-    }
 
     const { resumeId } = await req.json();
     if (!resumeId) return Response.json({ error: "Missing resumeId" }, { status: 400 });

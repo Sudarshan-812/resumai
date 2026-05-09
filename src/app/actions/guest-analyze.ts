@@ -57,10 +57,10 @@ export async function analyzeResumeAsGuest(formData: FormData) {
       success: true as const,
       data: {
         ats_score: analysis.ats_score,
-        calculated_yoe: analysis.calculated_yoe,
+        calculated_yoe: analysis.inferred_yoe,
         summary_feedback: analysis.summary_feedback,
-        skills_found: analysis.skills_found,
-        missing_keywords: analysis.missing_keywords,
+        skills_found: analysis.domain_skills,
+        missing_keywords: analysis.critical_missing_keywords,
         formatting_issues: analysis.formatting_issues,
         file_name: file.name,
       },

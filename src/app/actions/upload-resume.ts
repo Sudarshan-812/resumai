@@ -71,7 +71,7 @@ export async function processResume(formData: FormData) {
       .insert({
         user_id: user.id,
         file_name: file.name,
-        content: text.slice(0, 150_000),
+        content: text,
       })
       .select()
       .single();
@@ -85,16 +85,16 @@ export async function processResume(formData: FormData) {
       user_id: user.id,
       ats_score: analysis.ats_score,
       summary_feedback: analysis.summary_feedback,
-      skills_found: analysis.skills_found,
-      missing_keywords: analysis.missing_keywords,
-      formatting_issues: analysis.formatting_issues || [],
+      skills_found: analysis.domain_skills,
+      missing_keywords: analysis.critical_missing_keywords,
+      formatting_issues: analysis.formatting_issues ?? [],
       job_description: jobDescription,
     };
 
-    // Try with calculated_yoe; fall back without it if the column doesn't exist
+    // Try with calculated_yoe; fall back without it if the column doesn't exist yet
     let { error: analysisError } = await supabase
       .from('analyses')
-      .insert({ ...baseAnalysisData, calculated_yoe: Math.round(analysis.calculated_yoe ?? 0) });
+      .insert({ ...baseAnalysisData, calculated_yoe: Math.round(analysis.inferred_yoe ?? 0) });
 
     if (analysisError) {
       const { error: retryError } = await supabase
@@ -106,7 +106,7 @@ export async function processResume(formData: FormData) {
     }
 
     revalidatePath('/dashboard');
-    return { success: true, data: analysis, id: resume.id, truncated: text.length > 150_000 };
+    return { success: true, data: analysis, id: resume.id, truncated: false };
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Analysis failed due to an unexpected error.";
