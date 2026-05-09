@@ -7,7 +7,7 @@ export default function Contact() {
 
       <h2>Contact Details</h2>
       <ul className="list-none pl-0 space-y-2">
-        <li><strong>Email:</strong> support@resumai.com (Replace with your email)</li>
+        <li><strong>Email:</strong> support@column8.io (Replace with your email)</li>
         <li><strong>Address:</strong> Vijayapura, Karnataka, India (Replace with your city)</li>
       </ul>
 

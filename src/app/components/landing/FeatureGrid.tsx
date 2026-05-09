@@ -26,13 +26,13 @@ const FEATURES = [
     num: "04",
     icon: FileText,
     title: "Cover Letter Generator",
-    desc: "Generate role-specific cover letters mapped directly to the job description. Not template-generic — each one references your actual experience and the job's requirements.",
+    desc: "Generate role-specific cover letters mapped directly to the job description. Not template-generic — each one references your actual experience.",
   },
   {
     num: "05",
     icon: History,
     title: "Resume Versions",
-    desc: "Track every analysis and compare scores across iterations as you optimize for different roles. See your progress over time.",
+    desc: "Track every analysis and compare scores across iterations as you optimize for different roles. See your improvement over time.",
   },
 ] as const;
 
@@ -41,7 +41,7 @@ export default function FeatureGrid() {
     <section
       id="features"
       className="py-24 md:py-32"
-      style={{ background: "#0A0A0A", borderTop: "1px solid #161616" }}
+      style={{ background: "#FFFFFF", borderTop: "1px solid #E5E3DC" }}
     >
       <div className="max-w-5xl mx-auto px-6">
 
@@ -49,23 +49,26 @@ export default function FeatureGrid() {
         <div className="mb-16">
           <p
             className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono"
-            style={{ color: "#6366f1" }}
+            style={{ color: "#06b6d4" }}
           >
             Platform Capabilities
           </p>
           <h2
-            className="font-bold text-white tracking-tight leading-tight max-w-lg"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
+            className="font-display font-bold tracking-tight leading-tight max-w-lg"
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
           >
             Five tools. One goal:{" "}
-            <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, #818cf8, #6366f1)" }}>
+            <span
+              className="text-transparent bg-clip-text"
+              style={{ backgroundImage: "linear-gradient(90deg, #0891b2, #06b6d4)" }}
+            >
               get the interview.
             </span>
           </h2>
         </div>
 
         {/* Numbered list */}
-        <div style={{ borderTop: "1px solid #161616" }}>
+        <div style={{ borderTop: "1px solid #E5E3DC" }}>
           {FEATURES.map((f, i) => (
             <motion.div
               key={f.num}
@@ -74,27 +77,30 @@ export default function FeatureGrid() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: i * 0.07, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="group flex items-start gap-6 md:gap-10 py-7 cursor-default"
-              style={{ borderBottom: "1px solid #161616" }}
+              style={{ borderBottom: "1px solid #E5E3DC" }}
             >
               {/* Number */}
-              <span className="text-xs font-mono shrink-0 mt-0.5 w-5 tabular-nums" style={{ color: "#333333" }}>
+              <span className="text-xs font-mono shrink-0 mt-0.5 w-5 tabular-nums" style={{ color: "#C8C4BB" }}>
                 {f.num}
               </span>
 
               {/* Icon */}
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 group-hover:border-indigo-500/40"
-                style={{ background: "#111111", border: "1px solid #1f1f1f" }}
+                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 group-hover:border-cyan-400"
+                style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.2)" }}
               >
-                <f.icon size={15} style={{ color: "#6366f1" }} strokeWidth={1.5} aria-hidden />
+                <f.icon size={15} style={{ color: "#06b6d4" }} strokeWidth={1.5} aria-hidden />
               </div>
 
               {/* Content */}
               <div className="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-12">
-                <h3 className="text-sm font-semibold text-white shrink-0 min-w-[160px] transition-colors duration-200 group-hover:text-indigo-400">
+                <h3
+                  className="text-sm font-semibold shrink-0 min-w-[160px] transition-colors duration-200 group-hover:text-cyan-600"
+                  style={{ color: "#111111" }}
+                >
                   {f.title}
                 </h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#555555" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "#6B6860" }}>
                   {f.desc}
                 </p>
               </div>

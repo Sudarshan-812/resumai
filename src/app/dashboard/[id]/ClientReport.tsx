@@ -69,9 +69,9 @@ function ScoreRing({ score }: { score: number }) {
   }, [score]);
 
   const color =
-    score >= 80 ? { stroke: "stroke-emerald-500", text: "text-emerald-600 dark:text-emerald-400", label: "Strong Match" }
-    : score >= 60 ? { stroke: "stroke-amber-500", text: "text-amber-600 dark:text-amber-400", label: "Partial Match" }
-    : { stroke: "stroke-rose-500", text: "text-rose-600 dark:text-rose-400", label: "Weak Match" };
+    score >= 80 ? { stroke: "stroke-emerald-500", text: "text-emerald-600", label: "Strong Match" }
+    : score >= 60 ? { stroke: "stroke-amber-500", text: "text-amber-600", label: "Partial Match" }
+    : { stroke: "stroke-rose-500", text: "text-rose-600", label: "Weak Match" };
 
   const r    = 52;
   const circ = 2 * Math.PI * r;
@@ -121,10 +121,10 @@ function Chip({ label, variant, index = 0 }: { label: string; variant: "match" |
       className={cn(
         "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium border",
         variant === "match"
-          ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
           : isRequired
-            ? "bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-700 dark:text-rose-400"
-            : "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-700 dark:text-amber-400"
+            ? "bg-rose-50 border-rose-200 text-rose-700"
+            : "bg-amber-50 border-amber-200 text-amber-700"
       )}
     >
       {variant === "match"
@@ -186,7 +186,7 @@ function AiSplitView({ onClose, resume }: { onClose: () => void; resume: ResumeD
             <X size={16} />
           </motion.button>
           <div>
-            <p className="text-[14px] font-semibold text-foreground leading-none">Resumai Copilot</p>
+            <p className="text-[14px] font-semibold text-foreground leading-none">Column8 Copilot</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">Resume on left · Chat on right</p>
           </div>
         </div>
@@ -194,9 +194,9 @@ function AiSplitView({ onClose, resume }: { onClose: () => void; resume: ResumeD
           <motion.div
             animate={isAiLoading ? { opacity: [0.5, 1, 0.5] } : { opacity: 0 }}
             transition={{ duration: 1.2, repeat: Infinity }}
-            className="hidden sm:flex items-center gap-1.5 text-[11px] text-blue-500 font-medium"
+            className="hidden sm:flex items-center gap-1.5 text-[11px] text-cyan-600 font-medium"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
             AI analyzing your resume…
           </motion.div>
           {latexCode && (
@@ -290,7 +290,7 @@ export default function ClientReport({
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              className="flex items-start gap-3 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/25 text-amber-800 dark:text-amber-300 rounded-xl px-4 py-3 mb-6 text-sm"
+              className="flex items-start gap-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-3 mb-6 text-sm"
             >
               <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
               <span className="flex-1">
@@ -299,7 +299,7 @@ export default function ClientReport({
               <motion.button
                 onClick={() => setTruncWarn(false)}
                 whileTap={{ scale: 0.9 }}
-                className="ml-2 text-amber-600 dark:text-amber-400 hover:opacity-70 transition-opacity"
+                className="ml-2 text-amber-600 hover:opacity-70 transition-opacity"
               >
                 <X className="w-4 h-4" />
               </motion.button>
@@ -320,7 +320,7 @@ export default function ClientReport({
               </div>
               <span className="text-xs text-muted-foreground font-medium">Analysis Report</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-3 capitalize truncate">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-3 capitalize truncate">
               {fileName}
             </h1>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xl line-clamp-3">{feedback}</p>
@@ -341,7 +341,7 @@ export default function ClientReport({
                 className={cn(
                   "inline-flex items-center gap-1.5 h-8 px-3 rounded-lg border bg-background text-xs font-medium transition-colors",
                   copied
-                    ? "border-emerald-300 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
+                    ? "border-emerald-300 text-emerald-600"
                     : "border-border text-foreground hover:bg-muted"
                 )}
               >
@@ -484,10 +484,10 @@ export default function ClientReport({
                           initial={{ opacity: 0, x: -6 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.06 }}
-                          className="flex gap-3 p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl"
+                          className="flex gap-3 p-4 bg-rose-50 border border-rose-200 rounded-xl"
                         >
                           <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
-                          <p className="text-sm text-rose-700 dark:text-rose-300 leading-relaxed">{iss}</p>
+                          <p className="text-sm text-rose-700 leading-relaxed">{iss}</p>
                         </motion.div>
                       ))}
                     </div>
@@ -498,7 +498,7 @@ export default function ClientReport({
                       transition={{ type: "spring", stiffness: 300, damping: 25 }}
                       className="flex flex-col items-center py-10 text-center"
                     >
-                      <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center mb-3">
+                      <div className="w-12 h-12 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mb-3">
                         <CheckCircle2 className="w-6 h-6 text-emerald-500" />
                       </div>
                       <p className="text-sm font-semibold text-foreground mb-1">No formatting issues</p>
@@ -521,7 +521,7 @@ export default function ClientReport({
                 whileHover={{ y: -2, boxShadow: "0 12px 32px -4px rgb(59 130 246 / 0.35)" }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="group w-full bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 rounded-2xl p-5 text-left transition-colors duration-300 shadow-lg shadow-blue-500/20"
+                className="group w-full bg-gradient-to-br from-cyan-500 to-cyan-600 hover:from-cyan-400 hover:to-cyan-500 rounded-2xl p-5 text-left transition-colors duration-300 shadow-lg shadow-cyan-500/20"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-1 text-white/60">
@@ -529,7 +529,7 @@ export default function ClientReport({
                     <span className="text-[10px] font-medium">Split view</span>
                   </div>
                 </div>
-                <p className="text-sm font-bold text-white mb-1">Open Resumai Copilot</p>
+                <p className="text-sm font-bold text-white mb-1">Open Column8 Copilot</p>
                 <p className="text-[11.5px] text-white/70 leading-relaxed">
                   Your resume on the left, AI chat on the right. Ask for rewrites, keywords, and more.
                 </p>

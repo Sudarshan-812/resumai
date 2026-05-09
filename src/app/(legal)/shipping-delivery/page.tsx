@@ -3,7 +3,7 @@ import { LegalPage } from "@/app/components/legal-layout";
 export default function Shipping() {
   return (
     <LegalPage title="Shipping & Delivery Policy" date="December 9, 2025">
-      <p>ResumAI is a digital SaaS product. We do not ship physical products.</p>
+      <p>Column8 is a digital SaaS product. We do not ship physical products.</p>
 
       <h2>1. Digital Delivery</h2>
       <p>All services (Resume Analysis, Cover Letters, Interview Prep) are delivered digitally and instantly upon successful processing of your request.</p>

@@ -131,7 +131,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
               transition={{ duration: 0.4 }}
               className="mb-8"
             >
-              <h2 className="text-2xl font-semibold text-foreground tracking-tight mb-2">
+              <h2 className="font-display text-2xl font-semibold text-foreground tracking-tight mb-2">
                 {userName ? `How can I help, ${userName}?` : "How can I help with your resume?"}
               </h2>
               <p className="text-sm text-muted-foreground">
@@ -206,7 +206,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Resumai Copilot…"
+            placeholder="Ask Column8 Copilot…"
             disabled={isLoading}
             rows={1}
             className={cn(
@@ -245,7 +245,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
           </div>
         </form>
         <p className="text-center text-[10px] text-muted-foreground/40 mt-3">
-          Resumai Copilot · Enter to send · Shift+Enter for new line
+          Column8 Copilot · Enter to send · Shift+Enter for new line
         </p>
       </div>
     </div>
@@ -289,8 +289,8 @@ function MarkdownText({ text }: { text: string }) {
               <span className={cn(
                 "text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5",
                 label === "BEFORE"
-                  ? "bg-rose-100 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400"
-                  : "bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                  ? "bg-rose-100 text-rose-600"
+                  : "bg-emerald-100 text-emerald-600"
               )}>
                 {label}
               </span>

@@ -38,38 +38,24 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="py-24 md:py-32 relative overflow-hidden"
-      style={{ background: "#0A0A0A", borderTop: "1px solid #161616" }}
+      className="py-24 md:py-32"
+      style={{ background: "#FFFFFF", borderTop: "1px solid #E5E3DC" }}
     >
-      {/* Ambient glow */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div
-          style={{
-            position: "absolute",
-            top: "40%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "600px",
-            height: "400px",
-            background: "radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 70%)",
-          }}
-        />
-      </div>
-
-      <div className="max-w-5xl mx-auto px-6 relative z-10">
+      <div className="max-w-5xl mx-auto px-6">
 
         {/* Header */}
         <div className="text-center mb-20">
-          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#6366f1" }}>
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#06b6d4" }}>
             Simple Pricing
           </p>
           <h2
-            className="font-bold text-white tracking-tight mb-4"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
+            className="font-display font-bold tracking-tight mb-4"
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
           >
-            Pay once, keep forever.
+            Pay once,{" "}
+            <span style={{ color: "#06b6d4" }}>keep forever.</span>
           </h2>
-          <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: "#666666" }}>
+          <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: "#6B6860" }}>
             No recurring subscriptions. No hidden fees. Credits never expire.
           </p>
         </div>
@@ -87,21 +73,21 @@ export default function Pricing() {
               style={
                 plan.popular
                   ? {
-                      background: "#0f0f18",
-                      border: "1px solid rgba(99,102,241,0.4)",
-                      boxShadow: "0 0 0 1px rgba(99,102,241,0.15), 0 20px 60px rgba(99,102,241,0.1)",
+                      background: "#ECFEFF",
+                      border: "2px solid #06b6d4",
+                      boxShadow: "0 8px 32px rgba(6,182,212,0.15)",
                     }
                   : {
-                      background: "#111111",
-                      border: "1px solid #1a1a1a",
+                      background: "#F7F6F2",
+                      border: "1px solid #E5E3DC",
                     }
               }
             >
               {/* Popular badge */}
               {plan.popular && (
                 <div
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
-                  style={{ background: "#6366f1", color: "#ffffff" }}
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white"
+                  style={{ background: "#06b6d4" }}
                 >
                   <Star size={10} className="fill-white" aria-hidden />
                   Most Popular
@@ -110,10 +96,12 @@ export default function Pricing() {
 
               {/* Plan name + price */}
               <div className="mb-6">
-                <h3 className="text-sm font-semibold text-white mb-1">{plan.name}</h3>
-                <p className="text-xs mb-4" style={{ color: "#555555" }}>{plan.description}</p>
+                <h3 className="text-sm font-semibold mb-1" style={{ color: "#111111" }}>{plan.name}</h3>
+                <p className="text-xs mb-4" style={{ color: "#9B9890" }}>{plan.description}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold text-white font-mono tracking-tight">₹{plan.price}</span>
+                  <span className="text-4xl font-bold font-mono tracking-tight" style={{ color: "#111111" }}>
+                    ₹{plan.price}
+                  </span>
                 </div>
               </div>
 
@@ -122,23 +110,23 @@ export default function Pricing() {
                 className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider mb-6 w-fit"
                 style={
                   plan.popular
-                    ? { background: "rgba(99,102,241,0.12)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }
-                    : { background: "#1a1a1a", color: "#555555", border: "1px solid #222222" }
+                    ? { background: "rgba(6,182,212,0.15)", color: "#0891b2", border: "1px solid rgba(6,182,212,0.3)" }
+                    : { background: "#EBEBEB", color: "#6B6860", border: "1px solid #E5E3DC" }
                 }
               >
                 {plan.credits} Credits Included
               </div>
 
-              <div className="h-px mb-6" style={{ background: "#1a1a1a" }} />
+              <div className="h-px mb-6" style={{ background: plan.popular ? "rgba(6,182,212,0.2)" : "#E5E3DC" }} />
 
               {/* Features */}
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#777777" }}>
+                  <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#6B6860" }}>
                     <Check
                       size={14}
                       strokeWidth={2.5}
-                      style={{ color: plan.popular ? "#6366f1" : "#444444", flexShrink: 0 }}
+                      style={{ color: plan.popular ? "#06b6d4" : "#C8C4BB", flexShrink: 0 }}
                       aria-hidden
                     />
                     {feature}
@@ -152,8 +140,8 @@ export default function Pricing() {
                 className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center transition-opacity hover:opacity-90 mt-auto"
                 style={
                   plan.popular
-                    ? { background: "#6366f1", color: "#ffffff" }
-                    : { background: "#1a1a1a", color: "#888888", border: "1px solid #222222" }
+                    ? { background: "#06b6d4", color: "#FFFFFF" }
+                    : { background: "#FFFFFF", color: "#6B6860", border: "1px solid #E5E3DC" }
                 }
               >
                 Choose {plan.name}

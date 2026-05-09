@@ -54,7 +54,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           >
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">
+            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">
               Welcome back, {userName}
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
@@ -72,7 +72,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
-                <Button className="h-10 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm shadow-sm shadow-blue-500/20 transition-all">
+                <Button className="h-10 px-5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-semibold text-sm shadow-sm shadow-cyan-500/20 transition-all">
                   <Plus className="mr-1.5 h-4 w-4" strokeWidth={2.5} />
                   New Analysis
                 </Button>
@@ -106,7 +106,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             trend={credits <= 1 ? "Running low — top up" : `${credits} scans remaining`}
             trendColor={credits <= 1 ? "text-amber-600 dark:text-amber-400" : undefined}
             action={
-              <Link href="/billing" className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline shrink-0">
+              <Link href="/billing" className="text-[11px] font-bold text-cyan-600 hover:underline shrink-0">
                 Top up
               </Link>
             }
@@ -120,9 +120,9 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.22, duration: 0.4 }}
               whileHover={{ y: -1 }}
-              className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-blue-500/40 hover:bg-blue-500/[0.02] transition-all p-6 flex items-center gap-5"
+              className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-cyan-500/40 hover:bg-cyan-500/[0.02] transition-all p-6 flex items-center gap-5"
             >
-              <div className="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 flex items-center justify-center shrink-0">
                 <UploadCloud size={20} strokeWidth={1.5} />
               </div>
               <div className="flex-1 min-w-0">
@@ -140,7 +140,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               <div className="flex items-center justify-between mb-3 px-0.5">
                 <h2 className="text-sm font-bold text-foreground">Recent Analyses</h2>
                 {recentResumes.length > 0 && (
-                  <Link href="/history" className="group text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5">
+                  <Link href="/history" className="group text-[11px] font-bold text-cyan-600 hover:underline flex items-center gap-0.5">
                     View all
                     <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                   </Link>
@@ -171,11 +171,11 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                           href={`/dashboard/${resume.id}`}
                           className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group"
                         >
-                          <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-all shrink-0">
+                          <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-cyan-600 group-hover:border-cyan-500/30 transition-all shrink-0">
                             <FileText size={16} strokeWidth={1.5} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate leading-none mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={resume.file_name}>
+                            <p className="text-sm font-semibold text-foreground truncate leading-none mb-1 group-hover:text-cyan-600 dark:group-hover:text-blue-400 transition-colors" title={resume.file_name}>
                               {resume.file_name.replace(/\.pdf$/i, "")}
                             </p>
                             <p className="text-[11px] text-muted-foreground flex items-center gap-1">
@@ -206,7 +206,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               className="rounded-2xl border border-border bg-card p-5 shadow-sm"
             >
               <div className="flex items-center gap-2 mb-4">
-                <Sparkles size={14} className="text-blue-500" />
+                <Sparkles size={14} className="text-cyan-500" />
                 <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground">AI Tools</h3>
               </div>
               <div className="space-y-1.5">
@@ -245,7 +245,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                     transition={{ delay: 0.42 + i * 0.07, duration: 0.3 }}
                     className="flex items-start gap-2 text-[12px] text-muted-foreground leading-relaxed"
                   >
-                    <span className="w-4 h-4 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <span className="w-4 h-4 rounded-full bg-cyan-500/10 text-cyan-600 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {i + 1}
                     </span>
                     {tip}
@@ -316,7 +316,7 @@ function EmptyAnalyses() {
         Upload your first resume to see your ATS score and AI feedback.
       </p>
       <Link href="/upload">
-        <Button className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm">
+        <Button className="h-9 px-5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-sm">
           <UploadCloud size={14} className="mr-1.5" />
           Analyze My Resume
         </Button>
@@ -339,14 +339,14 @@ function ToolButton({ icon, label, sub, onClick }: {
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-muted/60 transition-colors"
     >
-      <span className="text-muted-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+      <span className="text-muted-foreground group-hover:text-cyan-600 dark:group-hover:text-blue-400 transition-colors">
         {icon}
       </span>
       <div className="flex-1 min-w-0">
         <p className="text-[12.5px] font-semibold text-foreground leading-none mb-0.5">{label}</p>
         <p className="text-[11px] text-muted-foreground">{sub}</p>
       </div>
-      <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-blue-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
+      <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-cyan-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
     </motion.button>
   );
 }

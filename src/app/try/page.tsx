@@ -94,7 +94,7 @@ function AnalysisLoader() {
             <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/20" />
           </div>
           <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-2">
-            resumai_engine.log
+            column8_engine.log
           </span>
         </div>
         <div className="p-4 space-y-2 font-mono text-xs min-h-[240px]">
@@ -111,7 +111,7 @@ function AnalysisLoader() {
                   ) : (
                     <div className="w-3.5 h-3.5 rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
                   )}
-                  <span className={done.includes(i) ? "text-emerald-600 dark:text-emerald-400" : "text-primary"}>
+                  <span className={done.includes(i) ? "text-emerald-600" : "text-primary"}>
                     {done.includes(i) ? "✓ " : "→ "}{msg}
                   </span>
                 </motion.div>
@@ -327,7 +327,7 @@ export default function TryPage() {
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
                       </div>
-          <span className="font-bold text-sm text-foreground">ResumAI</span>
+          <span className="font-bold text-sm text-foreground">Column8</span>
         </div>
         <Link href="/login" className="text-xs font-bold text-primary hover:underline">
           Sign In →
@@ -358,7 +358,7 @@ export default function TryPage() {
                   Free Trial — {remaining} scan{remaining !== 1 ? "s" : ""} remaining
                 </motion.div>
                 <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
-                  Try ResumAI Free
+                  Try Column8 Free
                 </h1>
                 <p className="text-muted-foreground max-w-lg mx-auto text-base">
                   No account needed. Upload your resume and paste a job description to get an instant AI-powered ATS analysis.
@@ -513,7 +513,7 @@ export default function TryPage() {
             >
               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 bg-card border border-border rounded-2xl p-8 mb-6 shadow-sm">
                 <div className="flex-1">
-                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
+                  <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Scan_Complete
                   </div>
                   <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2 capitalize">
@@ -575,7 +575,7 @@ export default function TryPage() {
                     <div className="space-y-3">
                       {result.formatting_issues.map((iss: string, i: number) => (
                         <motion.div key={i} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 * i }}
-                          className="flex gap-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-700 dark:text-rose-400 text-sm leading-relaxed"
+                          className="flex gap-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-700 text-sm leading-relaxed"
                         >
                           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />{iss}
                         </motion.div>
@@ -584,7 +584,7 @@ export default function TryPage() {
                   ) : (
                     <div className="flex flex-col items-center justify-center py-8 text-center bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
                       <CheckCircle2 className="w-7 h-7 text-emerald-500 mb-2" />
-                      <p className="font-mono text-sm font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Parsing Optimal</p>
+                      <p className="font-mono text-sm font-bold text-emerald-700 uppercase tracking-widest">Parsing Optimal</p>
                       <p className="text-xs text-muted-foreground mt-1">No ATS-hostile formatting detected.</p>
                     </div>
                   )}
@@ -601,7 +601,7 @@ export default function TryPage() {
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {result.skills_found.slice(0, 8).map((s: string, i: number) => (
-                          <span key={i} className="px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-mono text-emerald-700 dark:text-emerald-400">
+                          <span key={i} className="px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[11px] font-mono text-emerald-700">
                             {s}
                           </span>
                         ))}
@@ -616,7 +616,7 @@ export default function TryPage() {
                       </p>
                       <div className="flex flex-wrap gap-1.5">
                         {result.missing_keywords.slice(0, 8).map((k: string, i: number) => (
-                          <span key={i} className="px-2 py-1 rounded-md bg-rose-500/10 border border-rose-500/20 text-[11px] font-mono text-rose-700 dark:text-rose-400">
+                          <span key={i} className="px-2 py-1 rounded-md bg-rose-500/10 border border-rose-500/20 text-[11px] font-mono text-rose-700">
                             {k.replace(/\[REQUIRED\]\s?|\[PREFERRED\]\s?/g, "")}
                           </span>
                         ))}

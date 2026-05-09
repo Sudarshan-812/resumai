@@ -16,11 +16,11 @@ interface Testimonial {
 const TESTIMONIALS: readonly Testimonial[] = [
   {
     quote:
-      "I was getting rejected instantly. After ResumAI optimized my CV, I got 3 interview calls in a week.",
+      "I was getting rejected instantly. After Column8 optimized my CV, I got 3 interview calls in a week.",
     author: "Arjun K.",
     role: "Frontend Developer",
     initial: "A",
-    gradient: "from-blue-500 to-indigo-600",
+    gradient: "from-blue-500 to-cyan-600",
   },
   {
     quote:
@@ -57,7 +57,7 @@ const Testimonials: FC = (): JSX.Element => {
         className="pointer-events-none absolute inset-0"
       >
         <div className="absolute right-[-5%] top-[-10%] h-[400px] w-[400px] rounded-full bg-purple-100/60 blur-[80px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[400px] w-[400px] rounded-full bg-indigo-100/60 blur-[80px]" />
+        <div className="absolute bottom-[-10%] left-[-5%] h-[400px] w-[400px] rounded-full bg-cyan-100/60 blur-[80px]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
@@ -70,7 +70,7 @@ const Testimonials: FC = (): JSX.Element => {
             className="mb-4 text-3xl font-bold text-gray-900 md:text-5xl"
           >
             Trusted by{" "}
-            <span className="text-indigo-600">10,000+</span> job seekers
+            <span className="text-cyan-600">10,000+</span> job seekers
           </motion.h2>
           <p className="text-gray-500">
             Join the community landing top-tier tech jobs.
@@ -87,7 +87,7 @@ const Testimonials: FC = (): JSX.Element => {
               viewport={{ once: true }}
               variants={fadeUp}
               whileHover={{ y: -5 }}
-              className="rounded-3xl border border-indigo-50 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10"
+              className="rounded-3xl border border-cyan-50 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10"
               aria-label={`Testimonial from ${testimonial.author}`}
             >
               <div className="mb-4 flex gap-1">
@@ -101,7 +101,7 @@ const Testimonials: FC = (): JSX.Element => {
               </div>
 
               <Quote
-                className="mb-4 h-8 w-8 text-indigo-100"
+                className="mb-4 h-8 w-8 text-cyan-100"
                 aria-hidden="true"
               />
 

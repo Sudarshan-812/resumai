@@ -113,9 +113,9 @@ const LoginPage: FC = (): JSX.Element => {
         <div className="flex flex-1 flex-col justify-center">
           <div className="max-w-md space-y-8">
             <div className="space-y-4">
-                <h1 className="font-serif text-5xl text-foreground leading-[1.05] tracking-tight">
+                <h1 className="font-display text-5xl text-foreground leading-[1.05] tracking-tight">
                     Engineering the <br />
-                    <span className="text-primary italic">Perfect Handshake.</span>
+                    <span className="text-primary">Perfect Handshake.</span>
                 </h1>
                 <p className="text-muted-foreground leading-relaxed text-base max-w-sm">
                     Access the infrastructure used by engineers to bridge the gap between human expertise and ATS logic.
@@ -145,7 +145,7 @@ const LoginPage: FC = (): JSX.Element => {
         </div>
 
         <div className="mt-auto pt-10 flex items-center justify-between border-t border-border/50">
-            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">© 2026 // ResumAI Platform</span>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">© 2026 // Column8 Platform</span>
             <div className="flex items-center gap-4 opacity-50">
                 <div className="h-1.5 w-1.5 rounded-full bg-border" />
                 <div className="h-1.5 w-1.5 rounded-full bg-border" />
@@ -158,7 +158,7 @@ const LoginPage: FC = (): JSX.Element => {
         <div className="w-full max-w-[360px] space-y-8">
           
           <div className="text-center">
-            <h2 className="font-serif text-3xl text-foreground mb-2">
+            <h2 className="font-display text-3xl text-foreground mb-2">
               {isSignUp ? "Create an account" : "Welcome back"}
             </h2>
             <p className="text-sm text-muted-foreground">

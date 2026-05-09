@@ -1,10 +1,10 @@
-# ResumAI 🚀
+# Column8 🚀
 
 **An AI-Powered Resume Builder SaaS**
 
-ResumAI is a production-grade Software-as-a-Service (SaaS) platform that leverages artificial intelligence to help users generate, format, and optimize professional resumes. Built with a focus on performance, real-time data handling, and seamless user experience.
+Column8 is a production-grade Software-as-a-Service (SaaS) platform that leverages artificial intelligence to help users generate, format, and optimize professional resumes. Built with a focus on performance, real-time data handling, and seamless user experience.
 
-🔗 **Live Application:** https://resumai-bay.vercel.app/
+🔗 **Live Application:** https://column8.io/
 
 ---
 

@@ -40,7 +40,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
           Upload your first resume to get an ATS score and AI-powered feedback.
         </p>
         <Link href="/upload">
-          <Button className="h-9 px-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm">
+          <Button className="h-9 px-5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-semibold text-sm">
             <UploadCloud size={14} className="mr-1.5" />
             Analyze My Resume
           </Button>
@@ -54,9 +54,9 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
       {resumes.map((resume, i) => {
         const score = resume.analyses?.[0]?.ats_score ?? 0;
         const scoreColor =
-          score >= 75 ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
-          : score >= 55 ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
-          : score > 0  ? "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20"
+          score >= 75 ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/20"
+          : score >= 55 ? "bg-amber-500/10 text-amber-700 border-amber-500/20"
+          : score > 0  ? "bg-rose-500/10 text-rose-700 border-rose-500/20"
           : "bg-muted/50 text-muted-foreground border-border";
 
         const displayName = resume.file_name.replace(/\.pdf$/i, "");
@@ -75,13 +75,13 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
               className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group"
               prefetch={false}
             >
-              <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-blue-600 group-hover:border-blue-500/30 transition-all shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-cyan-600 group-hover:border-cyan-500/30 transition-all shrink-0">
                 <FileText size={16} strokeWidth={1.5} />
               </div>
 
               <div className="flex-1 min-w-0">
                 <h3
-                  className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                  className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-cyan-600 transition-colors"
                   title={displayName}
                 >
                   {displayName}

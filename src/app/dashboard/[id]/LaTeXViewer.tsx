@@ -91,7 +91,7 @@ function renderInline(text: string): React.ReactNode {
           flush();
           nodes.push(
             <a key={`a-${nodes.length}`} href={urlR.content} target="_blank" rel="noreferrer"
-              className="text-blue-600 underline underline-offset-2 hover:text-blue-800">
+              className="text-cyan-600 underline underline-offset-2 hover:text-cyan-800">
               {renderInline(txtR.content)}
             </a>
           );
@@ -110,7 +110,7 @@ function renderInline(text: string): React.ReactNode {
           flush();
           nodes.push(
             <a key={`pl-${nodes.length}`} href={urlR.content} target="_blank" rel="noreferrer"
-              className="text-blue-600 underline underline-offset-2 hover:text-blue-800">
+              className="text-cyan-600 underline underline-offset-2 hover:text-cyan-800">
               {renderInline(txtR.content)}
             </a>
           );
@@ -476,8 +476,8 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
             </span>
           )}
           {isAiLoading && (
-            <span className="text-[10px] text-blue-500 font-medium flex items-center gap-1 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+            <span className="text-[10px] text-cyan-600 font-medium flex items-center gap-1 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
               AI updating…
             </span>
           )}

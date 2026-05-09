@@ -106,10 +106,10 @@ export default function InterviewPage() {
       <div className="max-w-2xl mx-auto px-6 py-8">
 
         <div className="mb-8">
-          <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400 mb-2">
+          <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-cyan-600 mb-2">
             <BarChart3 size={11} /> AI Tool
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Interview Simulator</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Interview Simulator</h1>
           <p className="text-sm text-muted-foreground mt-1.5">
             AI generates role-specific questions and gives instant feedback on your answers.
           </p>
@@ -154,7 +154,7 @@ export default function InterviewPage() {
                   value={role}
                   onChange={e => setRole(e.target.value)}
                   placeholder="e.g. Product Manager"
-                  className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                  className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
                 />
               </div>
               <div>
@@ -166,14 +166,14 @@ export default function InterviewPage() {
                   onChange={e => setJobDesc(e.target.value)}
                   placeholder="Paste the job description here..."
                   rows={7}
-                  className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all resize-none"
+                  className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all resize-none"
                 />
               </div>
               <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
                 <Button
                   onClick={generateQuestions}
                   disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
-                  className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-sm shadow-blue-500/20 disabled:opacity-40 transition-all"
+                  className="w-full h-10 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm shadow-sm shadow-cyan-500/20 disabled:opacity-40 transition-all"
                 >
                   {loading
                     ? <><Loader2 size={14} className="animate-spin mr-2" />Generating questions...</>
@@ -194,14 +194,14 @@ export default function InterviewPage() {
                   key={questions[currentIdx].category}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-[10px] font-bold text-blue-600 dark:text-blue-400 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20"
+                  className="text-[10px] font-bold text-cyan-600 px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20"
                 >
                   {questions[currentIdx].category}
                 </motion.span>
               </div>
               <div className="w-full bg-border/50 rounded-full h-1 overflow-hidden">
                 <motion.div
-                  className="h-1 rounded-full bg-gradient-to-r from-blue-500 to-blue-400"
+                  className="h-1 rounded-full bg-gradient-to-r from-cyan-500 to-cyan-400"
                   animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
                   transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 />
@@ -220,14 +220,14 @@ export default function InterviewPage() {
                   onChange={e => setAnswer(e.target.value)}
                   placeholder="Type your answer... Use the STAR method: Situation, Task, Action, Result"
                   rows={6}
-                  className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all resize-none"
+                  className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all resize-none"
                 />
               </div>
               <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
                 <Button
                   onClick={submitAnswer}
                   disabled={answer.trim().length < 20 || loading}
-                  className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm disabled:opacity-40 transition-all"
+                  className="w-full h-10 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm disabled:opacity-40 transition-all"
                 >
                   {loading
                     ? <><Loader2 size={14} className="animate-spin mr-2" />Evaluating...</>
@@ -266,7 +266,7 @@ export default function InterviewPage() {
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle2 size={13} className="text-emerald-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">What worked well</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">What worked well</span>
                   </div>
                   <ul className="space-y-1.5">
                     {feedbacks[currentIdx].strengths.map((s, i) => (
@@ -293,7 +293,7 @@ export default function InterviewPage() {
                 >
                   <div className="flex items-center gap-2 mb-3">
                     <AlertCircle size={13} className="text-amber-500" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">To improve</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-amber-600">To improve</span>
                   </div>
                   <ul className="space-y-1.5">
                     {feedbacks[currentIdx].improvements.map((s, i) => (
@@ -316,15 +316,15 @@ export default function InterviewPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.26 }}
-                  className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5"
+                  className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5"
                 >
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-blue-600 dark:text-blue-400 mb-2">Strong answer approach</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-cyan-600 mb-2">Strong answer approach</p>
                   <p className="text-sm text-foreground leading-relaxed">{feedbacks[currentIdx].model_answer_hint}</p>
                 </motion.div>
               )}
 
               <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
-                <Button onClick={nextQuestion} className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm transition-all">
+                <Button onClick={nextQuestion} className="w-full h-10 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm transition-all">
                   Next Question <ChevronRight size={14} className="ml-1" />
                 </Button>
               </motion.div>
@@ -342,7 +342,7 @@ export default function InterviewPage() {
                 >
                   {avgScore >= 70 ? "🎯" : avgScore >= 50 ? "📈" : "💪"}
                 </motion.div>
-                <h2 className="text-xl font-bold text-foreground mb-1">Interview Complete</h2>
+                <h2 className="font-display text-xl font-bold text-foreground mb-1">Interview Complete</h2>
                 <p className="text-sm text-muted-foreground mb-5">You answered {questions.length} questions.</p>
                 <div className={cn(
                   "text-5xl font-bold font-mono tracking-tighter mb-1",
@@ -382,7 +382,7 @@ export default function InterviewPage() {
                 <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97 }} className="flex-1">
                   <Button
                     onClick={() => window.location.href = "/dashboard"}
-                    className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold"
+                    className="w-full h-10 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold"
                   >
                     Back to Dashboard
                   </Button>

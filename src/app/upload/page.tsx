@@ -90,7 +90,7 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
               <div key={index} className="flex items-center gap-4">
                 <div className="shrink-0 flex items-center justify-center w-6 h-6">
                   {isCompleted ? (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-500" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   ) : isCurrent ? (
                     <Loader2 className="w-4 h-4 text-primary animate-spin" />
                   ) : (
@@ -216,7 +216,7 @@ const UploadPage: FC = (): JSX.Element => {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <span className="font-semibold text-sm tracking-tight">ResumAI</span>
+        <span className="font-semibold text-sm tracking-tight">Column8</span>
         <div className="w-[88px]" /> {/* Spacer */}
       </header>
 
@@ -232,7 +232,7 @@ const UploadPage: FC = (): JSX.Element => {
             >
               {/* Header Section */}
               <div className="mb-10">
-                <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-3">
+                <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-3">
                   Evaluate Candidate Fit
                 </h1>
                 <p className="text-base text-muted-foreground max-w-xl">
@@ -291,7 +291,7 @@ const UploadPage: FC = (): JSX.Element => {
                         </p>
                         <button
                           onClick={handleRemoveFile}
-                          className="h-8 px-4 rounded-md border border-border text-xs font-medium text-foreground hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-500/10 dark:hover:border-rose-500/30 transition-colors"
+                          className="h-8 px-4 rounded-md border border-border text-xs font-medium text-foreground hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-colors"
                         >
                           Remove File
                         </button>
@@ -315,7 +315,7 @@ const UploadPage: FC = (): JSX.Element => {
                     exit={{ opacity: 0, height: 0, marginTop: 0 }}
                     className="overflow-hidden"
                   >
-                    <div className="flex items-center gap-3 text-sm text-rose-600 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 px-4 py-3 rounded-xl">
+                    <div className="flex items-center gap-3 text-sm text-rose-600 bg-rose-50 border border-rose-200 px-4 py-3 rounded-xl">
                       <AlertCircle className="h-4 w-4 shrink-0" />
                       {errorMsg}
                     </div>

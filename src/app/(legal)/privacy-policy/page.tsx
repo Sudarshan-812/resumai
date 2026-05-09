@@ -3,7 +3,7 @@ import { LegalPage } from "@/app/components/legal-layout";
 export default function PrivacyPolicy() {
   return (
     <LegalPage title="Privacy Policy" date="December 9, 2025">
-      <p>At ResumAI, we take your privacy seriously. This Privacy Policy explains how we collect, use, and protect your information.</p>
+      <p>At Column8, we take your privacy seriously. This Privacy Policy explains how we collect, use, and protect your information.</p>
       
       <h2>1. Information We Collect</h2>
       <p>We collect information you provide directly to us, such as when you create an account, upload a resume, or contact support. This includes:</p>

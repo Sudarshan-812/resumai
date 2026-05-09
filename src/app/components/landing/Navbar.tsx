@@ -8,18 +8,18 @@ import { Menu, X, ArrowRight, LayoutDashboard } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
 
 const NAV_LINKS = [
-  { label: "Features",    href: "/#features",      hash: "features"      },
-  { label: "How it works", href: "/#how-it-works", hash: "how-it-works"  },
-  { label: "Pricing",     href: "/#pricing",        hash: "pricing"       },
+  { label: "Features",     href: "/#features",     hash: "features"     },
+  { label: "How it works", href: "/#how-it-works", hash: "how-it-works" },
+  { label: "Pricing",      href: "/#pricing",       hash: "pricing"      },
 ] as const;
 
 interface NavUser { name: string; initial: string; avatarUrl?: string; }
 
 export default function Navbar() {
-  const [scrolled, setScrolled]   = useState(false);
+  const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [navUser, setNavUser]     = useState<NavUser | null>(null);
-  const pathname = usePathname();
+  const [navUser, setNavUser]       = useState<NavUser | null>(null);
+  const pathname  = usePathname();
   const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -65,10 +65,10 @@ export default function Navbar() {
         ref={headerRef}
         className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
         style={{
-          background: scrolled ? "rgba(10,10,10,0.88)" : "transparent",
-          backdropFilter: scrolled ? "blur(24px) saturate(200%)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(24px) saturate(200%)" : "none",
-          borderBottom: `1px solid ${scrolled ? "#1f1f1f" : "transparent"}`,
+          background: scrolled ? "rgba(247,246,242,0.92)" : "transparent",
+          backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
+          borderBottom: `1px solid ${scrolled ? "#E5E3DC" : "transparent"}`,
         }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
@@ -77,25 +77,27 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
             <div
               className="w-7 h-7 rounded-md flex items-center justify-center"
-              style={{ background: "#6366f1" }}
+              style={{ background: "#06b6d4" }}
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
                 <rect x="2" y="1" width="12" height="14" rx="2" stroke="white" strokeWidth="1.5" />
                 <path d="M5 5h6M5 8h6M5 11h3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
               </svg>
             </div>
-            <span className="text-sm font-bold tracking-tight text-white">ResumAI</span>
+            <span className="text-sm font-bold tracking-tight" style={{ color: "#111111" }}>Column8</span>
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-6" aria-label="Main">
+          <nav className="hidden md:flex items-center gap-7" aria-label="Main">
             {NAV_LINKS.map(({ label, href, hash }) => (
               <Link
                 key={label}
                 href={href}
                 onClick={(e) => handleHashClick(e, hash)}
-                className="text-sm transition-colors duration-200 hover:text-white"
-                style={{ color: "#888888" }}
+                className="text-sm font-medium transition-colors duration-200"
+                style={{ color: "#6B6860" }}
+                onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
+                onMouseLeave={e => (e.currentTarget.style.color = "#6B6860")}
               >
                 {label}
               </Link>
@@ -107,27 +109,36 @@ export default function Navbar() {
             {navUser ? (
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-2 h-9 pl-2.5 pr-4 rounded-full text-sm font-medium text-white border transition-colors"
-                style={{ background: "rgba(255,255,255,0.06)", borderColor: "#2a2a2a" }}
+                className="inline-flex items-center gap-2 h-9 pl-2.5 pr-4 rounded-full text-sm font-medium transition-colors"
+                style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#6B6860" }}
               >
-                <div className="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0">
+                <div
+                  className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0 text-white"
+                  style={{ background: "#06b6d4" }}
+                >
                   {navUser.avatarUrl
                     ? <img src={navUser.avatarUrl} alt={navUser.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     : navUser.initial
                   }
                 </div>
-                <span style={{ color: "#aaaaaa" }}>{navUser.name}</span>
-                <LayoutDashboard size={11} style={{ color: "#555555" }} />
+                <span>{navUser.name}</span>
+                <LayoutDashboard size={11} style={{ color: "#9B9890" }} />
               </Link>
             ) : (
               <>
-                <Link href="/login" className="text-sm transition-colors hover:text-white" style={{ color: "#888888" }}>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium transition-colors"
+                  style={{ color: "#6B6860" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#6B6860")}
+                >
                   Sign in
                 </Link>
                 <Link
                   href="/try"
-                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-black transition-colors hover:bg-neutral-100"
-                  style={{ background: "#ffffff" }}
+                  className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  style={{ background: "#06b6d4" }}
                 >
                   Try free
                   <ArrowRight size={12} />
@@ -141,8 +152,8 @@ export default function Navbar() {
             onClick={() => setMobileOpen((v) => !v)}
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
-            className="md:hidden p-1.5 rounded-lg transition-colors hover:text-white"
-            style={{ color: "#888888" }}
+            className="md:hidden p-1.5 rounded-lg transition-colors"
+            style={{ color: "#6B6860" }}
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -158,7 +169,7 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 top-16 z-40 md:hidden overflow-hidden"
-            style={{ background: "rgba(10,10,10,0.97)", borderBottom: "1px solid #1f1f1f" }}
+            style={{ background: "#FDFCF9", borderBottom: "1px solid #E5E3DC" }}
           >
             <nav className="max-w-6xl mx-auto px-6 py-5 flex flex-col gap-1">
               {NAV_LINKS.map(({ label, href, hash }) => (
@@ -166,20 +177,20 @@ export default function Navbar() {
                   key={label}
                   href={href}
                   onClick={(e) => handleHashClick(e, hash)}
-                  className="px-3 py-2.5 rounded-xl text-sm transition-colors hover:text-white hover:bg-white/5"
-                  style={{ color: "#888888" }}
+                  className="px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  style={{ color: "#6B6860" }}
                 >
                   {label}
                 </Link>
               ))}
-              <div className="h-px my-3" style={{ background: "#1f1f1f" }} />
+              <div className="h-px my-3" style={{ background: "#E5E3DC" }} />
               <div className="flex flex-col gap-2">
                 {navUser ? (
                   <Link
                     href="/dashboard"
                     onClick={() => setMobileOpen(false)}
                     className="py-3 text-center rounded-xl text-sm font-semibold text-white"
-                    style={{ background: "#6366f1" }}
+                    style={{ background: "#06b6d4" }}
                   >
                     Dashboard
                   </Link>
@@ -189,7 +200,7 @@ export default function Navbar() {
                       href="/try"
                       onClick={() => setMobileOpen(false)}
                       className="py-3 text-center rounded-xl text-sm font-semibold text-white"
-                      style={{ background: "#6366f1" }}
+                      style={{ background: "#06b6d4" }}
                     >
                       Try Free — No Login
                     </Link>
@@ -197,7 +208,7 @@ export default function Navbar() {
                       href="/login"
                       onClick={() => setMobileOpen(false)}
                       className="py-3 text-center rounded-xl text-sm font-medium"
-                      style={{ color: "#888888", border: "1px solid #1f1f1f" }}
+                      style={{ color: "#6B6860", border: "1px solid #E5E3DC" }}
                     >
                       Sign In
                     </Link>

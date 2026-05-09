@@ -101,7 +101,7 @@ export default function SettingsPage() {
       <div className="max-w-xl mx-auto px-6 py-8 space-y-4">
 
         <div className="mb-2">
-          <h1 className="text-xl font-bold text-foreground tracking-tight">Settings</h1>
+          <h1 className="font-display text-xl font-bold text-foreground tracking-tight">Settings</h1>
           <p className="text-sm text-muted-foreground mt-0.5">Manage your account and preferences.</p>
         </div>
 
@@ -117,7 +117,7 @@ export default function SettingsPage() {
             <motion.div
               whileHover={{ scale: 1.06 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="w-14 h-14 rounded-full overflow-hidden bg-zinc-900 text-white flex items-center justify-center text-xl font-bold shrink-0 cursor-default"
+              className="w-14 h-14 rounded-full overflow-hidden bg-white text-foreground flex items-center justify-center text-xl font-bold shrink-0 cursor-default border border-border"
             >
               {avatarUrl
                 ? <img src={avatarUrl} alt={name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -164,13 +164,13 @@ export default function SettingsPage() {
                 value={nameInput}
                 onChange={e => setNameInput(e.target.value)}
                 onKeyDown={e => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
-                className="h-8 max-w-[160px] rounded-lg border border-border bg-muted/30 px-3 text-sm font-medium outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="h-8 max-w-[160px] rounded-lg border border-border bg-muted/30 px-3 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
               <motion.button
                 onClick={handleSaveName}
                 disabled={savingName || !nameInput.trim()}
                 whileTap={{ scale: 0.9 }}
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white disabled:opacity-50 transition-all"
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500 text-white disabled:opacity-50 transition-all"
               >
                 {savingName ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
               </motion.button>
@@ -213,7 +213,7 @@ export default function SettingsPage() {
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Active</span>
+            <span className="text-sm font-medium text-emerald-600">Active</span>
           </div>
         </motion.div>
 
@@ -236,12 +236,12 @@ export default function SettingsPage() {
               animate={{ scale: 1, opacity: 1 }}
               className={cn(
                 "text-sm font-bold tabular-nums",
-                credits <= 1 ? "text-amber-600 dark:text-amber-400" : "text-foreground"
+                credits <= 1 ? "text-amber-600" : "text-foreground"
               )}
             >
               {credits}
             </motion.span>
-            <Link href="/billing" className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline">Buy more</Link>
+            <Link href="/billing" className="text-xs font-bold text-cyan-600 hover:underline">Buy more</Link>
           </div>
         </motion.div>
 
@@ -257,7 +257,7 @@ export default function SettingsPage() {
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 25 }}
-            className="w-full h-11 rounded-2xl border border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 text-sm font-semibold hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full h-11 rounded-2xl border border-rose-200 text-rose-600 text-sm font-semibold hover:bg-rose-50 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
             <LogOut size={14} />
             {signingOut ? "Signing out..." : "Sign Out"}

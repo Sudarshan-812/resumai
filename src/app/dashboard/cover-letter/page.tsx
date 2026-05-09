@@ -69,11 +69,11 @@ export default function CoverLetterPage() {
       <div className="max-w-5xl mx-auto px-6 py-8">
 
         <div className="mb-8">
-          <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400 mb-2">
+          <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-cyan-600 mb-2">
             <FileText size={11} />
             AI Tool
           </div>
-          <h1 className="text-2xl font-bold text-foreground tracking-tight">Cover Letter Generator</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Cover Letter Generator</h1>
           <p className="text-sm text-muted-foreground mt-1.5">
             Fill in the details and AI will write a tailored, job-specific cover letter in seconds.
           </p>
@@ -87,7 +87,7 @@ export default function CoverLetterPage() {
                 value={company}
                 onChange={e => setCompany(e.target.value)}
                 placeholder="e.g. Google"
-                className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
               />
             </Field>
 
@@ -96,7 +96,7 @@ export default function CoverLetterPage() {
                 value={role}
                 onChange={e => setRole(e.target.value)}
                 placeholder="e.g. Senior Software Engineer"
-                className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all"
+                className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
               />
             </Field>
 
@@ -106,7 +106,7 @@ export default function CoverLetterPage() {
                 onChange={e => setJobDesc(e.target.value)}
                 placeholder="Paste the job description here..."
                 rows={6}
-                className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 transition-all resize-none"
+                className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all resize-none"
               />
             </Field>
 
@@ -122,8 +122,8 @@ export default function CoverLetterPage() {
                     className={cn(
                       "flex-1 h-9 rounded-xl text-[12px] font-semibold border transition-colors capitalize",
                       tone === t
-                        ? "bg-blue-600 text-white border-blue-600"
-                        : "bg-card text-muted-foreground border-border hover:border-blue-500/30 hover:text-foreground"
+                        ? "bg-cyan-500 text-white border-cyan-500"
+                        : "bg-card text-muted-foreground border-border hover:border-cyan-500/30 hover:text-foreground"
                     )}
                   >
                     {t}
@@ -140,7 +140,7 @@ export default function CoverLetterPage() {
               <Button
                 onClick={generate}
                 disabled={!ready || loading}
-                className="w-full h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm shadow-sm shadow-blue-500/20 disabled:opacity-40 transition-all"
+                className="w-full h-10 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm shadow-sm shadow-cyan-500/20 disabled:opacity-40 transition-all"
               >
                 {loading
                   ? <><Loader2 size={14} className="animate-spin mr-2" />Generating...</>
@@ -172,7 +172,7 @@ export default function CoverLetterPage() {
                     initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="h-full flex items-center justify-center py-16"
                   >
-                    <Loader2 size={20} className="animate-spin text-blue-500" />
+                    <Loader2 size={20} className="animate-spin text-cyan-500" />
                   </motion.div>
                 )}
                 {result && (

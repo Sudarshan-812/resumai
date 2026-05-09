@@ -41,10 +41,10 @@ const STATUS: Record<
   { label: string; dotColor: string; ringColor: string; textColor: string; pulse: boolean }
 > = {
   disconnected:           { label: "Disconnected",        dotColor: "bg-zinc-500",    ringColor: "bg-zinc-500",    textColor: "text-zinc-400",    pulse: false },
-  connecting:             { label: "Connecting…",          dotColor: "bg-blue-500",    ringColor: "bg-blue-400",    textColor: "text-blue-400",    pulse: true  },
-  "pre-connect-buffering":{ label: "Preparing…",           dotColor: "bg-blue-500",    ringColor: "bg-blue-400",    textColor: "text-blue-400",    pulse: true  },
+  connecting:             { label: "Connecting…",          dotColor: "bg-cyan-500",    ringColor: "bg-cyan-400",    textColor: "text-cyan-600",    pulse: true  },
+  "pre-connect-buffering":{ label: "Preparing…",           dotColor: "bg-cyan-500",    ringColor: "bg-cyan-400",    textColor: "text-cyan-600",    pulse: true  },
   failed:                 { label: "Connection failed",    dotColor: "bg-rose-500",    ringColor: "bg-rose-400",    textColor: "text-rose-400",    pulse: false },
-  initializing:           { label: "Initializing…",        dotColor: "bg-blue-500",    ringColor: "bg-blue-400",    textColor: "text-blue-400",    pulse: true  },
+  initializing:           { label: "Initializing…",        dotColor: "bg-cyan-500",    ringColor: "bg-cyan-400",    textColor: "text-cyan-600",    pulse: true  },
   idle:                   { label: "Ready",                dotColor: "bg-zinc-400",    ringColor: "bg-zinc-400",    textColor: "text-zinc-400",    pulse: false },
   listening:              { label: "Listening",            dotColor: "bg-emerald-500", ringColor: "bg-emerald-400", textColor: "text-emerald-400", pulse: false },
   thinking:               { label: "Thinking…",            dotColor: "bg-amber-500",   ringColor: "bg-amber-400",   textColor: "text-amber-400",   pulse: true  },
@@ -70,7 +70,7 @@ function AgentOrb({ state }: { state: AgentState }) {
     isSpeaking  ? "139 92 246" :  // violet-500
     isThinking  ? "245 158 11" :  // amber-500
     isListening ? "16 185 129" :  // emerald-500
-                  "113 113 122";  // zinc-500
+                  "6 182 212";    // cyan-500
 
   return (
     <div className="relative flex items-center justify-center w-44 h-44">
@@ -347,7 +347,7 @@ function SetupView({
           <div className="h-10 rounded-xl border border-border bg-card flex items-center px-3.5">
             <span className="text-sm text-muted-foreground">
               No resumes found —{" "}
-              <a href="/upload" className="text-blue-500 hover:underline">upload one first</a>
+              <a href="/upload" className="text-cyan-600 hover:underline">upload one first</a>
             </span>
           </div>
         ) : (
@@ -404,7 +404,7 @@ function SetupView({
       {!LIVEKIT_URL && (
         <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl border border-amber-500/20 bg-amber-500/5">
           <span className="text-amber-400 text-sm leading-none mt-0.5">⚠</span>
-          <p className="text-[12px] text-amber-600 dark:text-amber-400 leading-relaxed">
+          <p className="text-[12px] text-amber-600 leading-relaxed">
             <span className="font-semibold">Not configured.</span>{" "}
             Add <code className="font-mono bg-amber-500/10 px-1 rounded text-[11px]">NEXT_PUBLIC_LIVEKIT_URL</code> to
             your <code className="font-mono bg-amber-500/10 px-1 rounded text-[11px]">.env.local</code> and restart the dev server.

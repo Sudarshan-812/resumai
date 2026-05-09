@@ -27,8 +27,8 @@ const PLANS = [
     lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
     lottieClass: "grayscale brightness-110 contrast-125",
     description: "Perfect for a quick resume polish.",
-    color: "text-blue-500",
-    badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
+    color: "text-cyan-500",
+    badgeColor: "bg-cyan-100 text-cyan-700",
     buttonVariant: "outline",
     popular: false,
     features: ["5 AI Resume Scans", "Basic ATS Score", "Email Support", "PDF Export"],
@@ -41,8 +41,8 @@ const PLANS = [
     lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
     lottieClass: "",
     description: "Our most popular choice for job seekers.",
-    color: "text-blue-500",
-    badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-300",
+    color: "text-cyan-500",
+    badgeColor: "bg-cyan-100 text-cyan-700",
     buttonVariant: "solid",
     popular: true,
     features: ["12 AI Resume Scans", "Detailed Feedback", "Cover Letter Generator", "Priority Support", "LinkedIn Optimization"],
@@ -56,7 +56,7 @@ const PLANS = [
     lottieClass: "scale-110",
     description: "For serious career transformation.",
     color: "text-amber-500",
-    badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300",
+    badgeColor: "bg-amber-100 text-amber-700",
     buttonVariant: "outline",
     popular: false,
     features: ["30 AI Resume Scans", "Full Career Assistant", "Interview Prep AI", "Lifetime Access"],
@@ -78,7 +78,7 @@ export default function BillingPage() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: plan.price * 100,
         currency: "INR",
-        name: `ResumAI ${plan.name}`,
+        name: `Column8 ${plan.name}`,
         description: `${plan.credits} Credits`,
         order_id: result.orderId,
         handler: async function (response: any) {
@@ -118,7 +118,7 @@ export default function BillingPage() {
       <div className="max-w-5xl mx-auto px-6 py-8">
 
         <div className="mb-10">
-          <h1 className="text-2xl font-bold text-foreground tracking-tight mb-1.5">Credits &amp; Billing</h1>
+          <h1 className="font-display text-2xl font-bold text-foreground tracking-tight mb-1.5">Credits &amp; Billing</h1>
           <p className="text-sm text-muted-foreground">
             Pay once, keep your credits forever. No subscriptions, no hidden fees.
           </p>
@@ -131,14 +131,14 @@ export default function BillingPage() {
               key={plan.id}
               className={cn(
                 "group relative flex flex-col p-8 rounded-3xl transition-all duration-300",
-                "bg-white dark:bg-zinc-900/40 backdrop-blur-xl border",
+                "bg-white backdrop-blur-xl border",
                 plan.popular
-                  ? "border-blue-500 dark:border-blue-500/50 shadow-2xl shadow-blue-500/10 z-10"
-                  : "border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-xl"
+                  ? "border-cyan-500 shadow-2xl shadow-cyan-500/10 z-10"
+                  : "border-zinc-200 hover:border-zinc-300 hover:shadow-xl"
               )}
             >
               {plan.popular && (
-                <div className="absolute -top-5 left-0 right-0 mx-auto w-fit bg-blue-600 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg shadow-blue-500/30 flex items-center gap-1.5">
+                <div className="absolute -top-5 left-0 right-0 mx-auto w-fit bg-cyan-500 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg shadow-cyan-500/30 flex items-center gap-1.5">
                   <Star className="w-3 h-3 fill-white" />
                   Most Popular
                 </div>
@@ -155,11 +155,11 @@ export default function BillingPage() {
                    />
                 </div>
 
-                <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2 text-center">
+                <h3 className="text-xl font-bold text-zinc-900 mb-2 text-center">
                   {plan.name}
                 </h3>
 
-                <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6 min-h-[40px] text-center">
+                <p className="text-sm text-zinc-500 mb-6 min-h-[40px] text-center">
                   {plan.description}
                 </p>
 
@@ -169,7 +169,7 @@ export default function BillingPage() {
                 </div>
               </div>
 
-              <div className="h-px w-full bg-zinc-100 dark:bg-zinc-800 mb-6" />
+              <div className="h-px w-full bg-zinc-100 mb-6" />
 
               <ul className="space-y-4 mb-8 flex-1">
                 <li className="flex items-center gap-3">
@@ -178,7 +178,7 @@ export default function BillingPage() {
                   </div>
                 </li>
                 {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-zinc-600 dark:text-zinc-300">
+                  <li key={i} className="flex items-start gap-3 text-sm text-zinc-600">
                     <Check className={cn("w-5 h-5 shrink-0 mt-0.5", plan.color)} />
                     <span className="leading-tight">{feature}</span>
                   </li>
@@ -192,8 +192,8 @@ export default function BillingPage() {
                   "w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 mt-auto",
                   loadingId && loadingId !== plan.id && "opacity-50 cursor-not-allowed",
                   plan.popular
-                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20"
-                    : "bg-zinc-50 dark:bg-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white border border-zinc-200 dark:border-zinc-700"
+                    ? "bg-cyan-500 hover:bg-cyan-400 text-white shadow-md shadow-cyan-500/20"
+                    : "bg-zinc-50 hover:bg-zinc-100 text-zinc-900 border border-zinc-200"
                 )}
               >
                 {loadingId === plan.id ? (
@@ -209,20 +209,20 @@ export default function BillingPage() {
           ))}
         </div>
 
-        <div className="mt-20 pt-10 border-t border-zinc-200 dark:border-zinc-800 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-4 md:gap-12 text-zinc-500 dark:text-zinc-400 text-sm font-medium">
+        <div className="mt-20 pt-10 border-t border-zinc-200 text-center">
+          <div className="inline-flex flex-col md:flex-row items-center gap-4 md:gap-12 text-zinc-500 text-sm font-medium">
             <span className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-emerald-500" />
               Secure Payment via Razorpay
             </span>
-            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300" />
             <span className="flex items-center gap-2">
               <Check className="w-5 h-5 text-emerald-500" />
               Instant Credit Activation
             </span>
-            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300" />
             <span className="flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-blue-500" />
+              <HelpCircle className="w-5 h-5 text-cyan-500" />
               24/7 Priority Support
             </span>
           </div>
