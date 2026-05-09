@@ -1,12 +1,8 @@
 "use client";
 
-import type { FC, JSX } from "react";
 import Link from "next/link";
-import { Check, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
-import { SplitTextReveal } from "./SplitTextReveal";
 import { motion } from "framer-motion";
+import { Check, Star } from "lucide-react";
 
 const PLANS = [
   {
@@ -14,11 +10,7 @@ const PLANS = [
     name: "Starter Pack",
     price: 49,
     credits: 5,
-    lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
-    lottieClass: "grayscale opacity-70",
     description: "Quick resume polish.",
-    iconColor: "text-muted-foreground",
-    badgeClass: "bg-muted text-muted-foreground border-border",
     popular: false,
     features: ["5 AI Resume Scans", "Basic ATS Score", "PDF Export"],
   },
@@ -27,11 +19,7 @@ const PLANS = [
     name: "Pro Bundle",
     price: 99,
     credits: 12,
-    lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
-    lottieClass: "",
     description: "Best for active job seekers.",
-    iconColor: "text-primary",
-    badgeClass: "bg-primary/10 text-primary border-primary/20",
     popular: true,
     features: ["12 AI Resume Scans", "Detailed Feedback", "Cover Letter Gen", "Priority Support"],
   },
@@ -40,105 +28,133 @@ const PLANS = [
     name: "Power User",
     price: 199,
     credits: 30,
-    lottieSrc: "https://lottie.host/655b0575-535f-47ed-91e4-8ed938e2158d/eH0Et5paMQ.lottie",
-    lottieClass: "scale-110 opacity-90",
     description: "Serious career change.",
-    iconColor: "text-foreground",
-    badgeClass: "bg-secondary text-secondary-foreground border-border",
     popular: false,
     features: ["30 AI Resume Scans", "Career Assistant", "Interview Prep AI", "Lifetime Access"],
   },
-];
+] as const;
 
-const Pricing: FC = (): JSX.Element => {
+export default function Pricing() {
   return (
-    <section id="pricing" className="py-24 md:py-32 bg-background relative overflow-hidden border-y border-border">
+    <section
+      id="pricing"
+      className="py-24 md:py-32 relative overflow-hidden"
+      style={{ background: "#0A0A0A", borderTop: "1px solid #161616" }}
+    >
+      {/* Ambient glow */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden>
+        <div
+          style={{
+            position: "absolute",
+            top: "40%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "600px",
+            height: "400px",
+            background: "radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 70%)",
+          }}
+        />
+      </div>
 
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="max-w-5xl mx-auto px-6 relative z-10">
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-
-        <div className="text-center max-w-2xl mx-auto mb-20">
-          <div className="text-[11px] font-semibold tracking-[0.08em] uppercase text-primary mb-3.5 font-mono inline-flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+        {/* Header */}
+        <div className="text-center mb-20">
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#6366f1" }}>
             Simple Pricing
-          </div>
-          <h2 className="font-serif text-[clamp(32px,4vw,56px)] text-foreground tracking-[-0.02em] leading-[1.1] mb-4">
-            <SplitTextReveal>Pay once, keep forever.</SplitTextReveal>
+          </p>
+          <h2
+            className="font-bold text-white tracking-tight mb-4"
+            style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
+          >
+            Pay once, keep forever.
           </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
-            No recurring subscriptions. No hidden fees. Just pure, deterministic value for your career trajectory.
+          <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: "#666666" }}>
+            No recurring subscriptions. No hidden fees. Credits never expire.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto items-stretch">
-          {PLANS.map((plan, index) => (
+        {/* Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+          {PLANS.map((plan, i) => (
             <motion.div
               key={plan.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ delay: index * 0.15, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ y: -5, boxShadow: plan.popular ? "0 20px 48px -8px oklch(0.585 0.245 276 / 0.28)" : "0 12px 32px -4px rgb(0 0 0 / 0.12)" }}
-              className={cn(
-                "group relative flex flex-col p-8 rounded-3xl transition-colors duration-300 backdrop-blur-sm",
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ delay: i * 0.12, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              className="relative flex flex-col p-8 rounded-2xl"
+              style={
                 plan.popular
-                  ? "bg-card border-2 border-primary shadow-lg shadow-primary/5 z-10 mt-0 md:-mt-3 md:mb-3"
-                  : "bg-card/50 border border-border hover:bg-card hover:border-primary/30"
-              )}
+                  ? {
+                      background: "#0f0f18",
+                      border: "1px solid rgba(99,102,241,0.4)",
+                      boxShadow: "0 0 0 1px rgba(99,102,241,0.15), 0 20px 60px rgba(99,102,241,0.1)",
+                    }
+                  : {
+                      background: "#111111",
+                      border: "1px solid #1a1a1a",
+                    }
+              }
             >
+              {/* Popular badge */}
               {plan.popular && (
-                <div className="absolute -top-3.5 left-0 right-0 mx-auto w-fit bg-primary text-primary-foreground px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm flex items-center gap-1.5">
-                  <Star className="w-3 h-3 fill-primary-foreground" />
+                <div
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest"
+                  style={{ background: "#6366f1", color: "#ffffff" }}
+                >
+                  <Star size={10} className="fill-white" aria-hidden />
                   Most Popular
                 </div>
               )}
 
-              <div className="mb-6 text-center">
-                <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-muted/30 border border-border/50">
-                  <DotLottieReact
-                    src={plan.lottieSrc}
-                    loop
-                    autoplay
-                    className={cn("w-12 h-12", plan.lottieClass)}
-                  />
+              {/* Plan name + price */}
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-white mb-1">{plan.name}</h3>
+                <p className="text-xs mb-4" style={{ color: "#555555" }}>{plan.description}</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-bold text-white font-mono tracking-tight">₹{plan.price}</span>
                 </div>
-                <h3 className="text-lg font-medium tracking-tight text-foreground mb-2">
-                  {plan.name}
-                </h3>
-                <div className="flex items-center justify-center gap-1 mb-3">
-                  <span className="text-4xl font-bold tracking-tighter text-foreground font-mono">₹{plan.price}</span>
-                </div>
-                <p className="text-sm text-muted-foreground min-h-[40px] leading-relaxed">
-                  {plan.description}
-                </p>
               </div>
 
-              <div className="h-px w-full bg-border mb-6" />
+              {/* Credits badge */}
+              <div
+                className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider mb-6 w-fit"
+                style={
+                  plan.popular
+                    ? { background: "rgba(99,102,241,0.12)", color: "#818cf8", border: "1px solid rgba(99,102,241,0.2)" }
+                    : { background: "#1a1a1a", color: "#555555", border: "1px solid #222222" }
+                }
+              >
+                {plan.credits} Credits Included
+              </div>
 
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex justify-center mb-6">
-                  <div className={cn("px-3 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider inline-flex items-center border", plan.badgeClass)}>
-                    {plan.credits} Credits Included
-                  </div>
-                </li>
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-muted-foreground">
-                    <Check className={cn("w-4 h-4 shrink-0 mt-0.5", plan.iconColor)} strokeWidth={2.5} />
-                    <span className="leading-snug">{feature}</span>
+              <div className="h-px mb-6" style={{ background: "#1a1a1a" }} />
+
+              {/* Features */}
+              <ul className="space-y-3 mb-8 flex-1">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#777777" }}>
+                    <Check
+                      size={14}
+                      strokeWidth={2.5}
+                      style={{ color: plan.popular ? "#6366f1" : "#444444", flexShrink: 0 }}
+                      aria-hidden
+                    />
+                    {feature}
                   </li>
                 ))}
               </ul>
 
+              {/* CTA */}
               <Link
                 href="/login"
-                className={cn(
-                  "w-full h-12 rounded-xl text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 mt-auto active:scale-[0.98]",
+                className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center transition-opacity hover:opacity-90 mt-auto"
+                style={
                   plan.popular
-                    ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
-                    : "bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80"
-                )}
+                    ? { background: "#6366f1", color: "#ffffff" }
+                    : { background: "#1a1a1a", color: "#888888", border: "1px solid #222222" }
+                }
               >
                 Choose {plan.name}
               </Link>
@@ -149,6 +165,4 @@ const Pricing: FC = (): JSX.Element => {
       </div>
     </section>
   );
-};
-
-export default Pricing;
+}

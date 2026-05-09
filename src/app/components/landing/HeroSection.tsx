@@ -1,276 +1,289 @@
 "use client";
 
-import type { FC, JSX } from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, type Variants } from "framer-motion";
-import { ArrowRight, CheckCircle2, TrendingUp, LayoutDashboard, Zap, Star } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Mic, Sparkles, LayoutDashboard, CheckCircle2, TrendingUp, Zap } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
-};
-
-const STATS = [
-  { value: "2,400+", label: "Resumes Analyzed" },
-  { value: "89%",    label: "Avg Score Improvement" },
-  { value: "10 sec", label: "Average Analysis Time" },
-];
-
-const HeroSection: FC = (): JSX.Element => {
+export default function HeroSection() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsLoggedIn(!!user);
-    });
+    supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
   }, []);
 
   return (
     <section
-      className="relative flex min-h-[96vh] w-full flex-col items-center justify-center overflow-hidden bg-background pt-28 pb-16"
+      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden"
+      style={{ background: "#0A0A0A" }}
       aria-labelledby="hero-heading"
     >
-      {/* Subtle dot grid */}
-      <div
-        className="absolute inset-0 z-0 opacity-[0.4] dark:opacity-[0.15]"
-        style={{
-          backgroundImage: "radial-gradient(circle, var(--color-border) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-        }}
-        aria-hidden="true"
-      />
+      {/* Radial indigo glow */}
+      <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
+        <div
+          style={{
+            position: "absolute",
+            top: "35%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "900px",
+            height: "700px",
+            background: "radial-gradient(ellipse, rgba(99,102,241,0.13) 0%, transparent 65%)",
+            borderRadius: "50%",
+          }}
+        />
+      </div>
 
-      <div className="relative z-10 w-full max-w-5xl px-4 text-center">
+      <div className="relative z-10 w-full max-w-4xl px-6 text-center pt-32 pb-20">
 
-        {/* Social proof badge */}
-        <motion.div initial="hidden" animate="visible" variants={fadeUp} className="mx-auto mb-8 w-fit">
-          <div className="flex items-center gap-2.5 rounded-full border border-border bg-card px-4 py-2">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-            <span className="text-xs font-medium text-muted-foreground">
-              <span className="font-bold text-foreground">2,400+</span> job seekers improved their resume
-            </span>
+        {/* Pill badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="inline-flex items-center justify-center mb-8"
+        >
+          <div
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium"
+            style={{
+              background: "rgba(99,102,241,0.1)",
+              border: "1px solid rgba(99,102,241,0.3)",
+              color: "#a5b4fc",
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+            <Mic size={11} aria-hidden />
+            Voice AI Interview — Now Live
           </div>
         </motion.div>
 
-        {/* Heading */}
+        {/* Headline */}
         <motion.h1
           id="hero-heading"
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ delay: 0.08 }}
-          className="pb-3 text-[clamp(40px,7vw,80px)] font-bold leading-[1.04] tracking-[-0.03em] text-foreground"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="font-bold text-white tracking-tight leading-[1.05] mb-6"
+          style={{ fontSize: "clamp(40px, 6.5vw, 68px)" }}
         >
-          Beat the ATS Filter.{" "}
-          <br className="hidden sm:block" />
-          <span className="text-blue-600 dark:text-blue-400">
-            Land the Interview.
+          Land more interviews.
+          <br />
+          <span
+            className="text-transparent bg-clip-text"
+            style={{ backgroundImage: "linear-gradient(135deg, #818cf8 0%, #6366f1 40%, #a78bfa 100%)" }}
+          >
+            Beat the ATS filter.
           </span>
         </motion.h1>
 
-        {/* Description */}
+        {/* Subhead */}
         <motion.p
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ delay: 0.16 }}
-          className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-muted-foreground"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="text-lg leading-relaxed mb-10 max-w-2xl mx-auto"
+          style={{ color: "#888888" }}
         >
-          Upload your resume, paste a job description, and get a detailed ATS score with
-          AI-powered rewrites — in under 10 seconds.
+          Upload your resume, paste a job description, and get an AI-powered ATS score with
+          specific rewrites — in under 60 seconds. Then practice with a live voice interviewer.
         </motion.p>
 
         {/* CTAs */}
         <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ delay: 0.24 }}
-          className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14"
         >
           {mounted && isLoggedIn ? (
             <>
-              <Link href="/upload" aria-label="Analyze your resume">
-                <motion.div
+              <Link href="/upload">
+                <motion.span
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group h-12 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 text-sm font-semibold text-white cursor-pointer transition-colors"
+                  className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
+                  style={{ background: "#6366f1" }}
                 >
+                  <Sparkles size={14} aria-hidden />
                   Analyze My Resume
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                </motion.div>
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
+                </motion.span>
               </Link>
-              <Link href="/dashboard" aria-label="Go to your dashboard">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
+              <Link href="/dashboard">
+                <motion.span
+                  whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className="h-12 flex items-center gap-2 rounded-xl border border-border bg-card/60 px-8 text-sm font-semibold text-foreground hover:bg-muted/60 cursor-pointer transition-colors backdrop-blur-sm"
+                  className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-medium cursor-pointer"
+                  style={{ background: "#111111", border: "1px solid #222222", color: "#aaaaaa" }}
                 >
-                  <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
-                  Go to Dashboard
-                </motion.div>
+                  <LayoutDashboard size={14} aria-hidden />
+                  Dashboard
+                </motion.span>
               </Link>
             </>
           ) : (
             <>
-              <Link href="/try" aria-label="Try free without signing up">
-                <motion.div
+              <Link href="/try">
+                <motion.span
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group h-12 flex items-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-700 px-8 text-sm font-semibold text-white cursor-pointer transition-colors"
+                  className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
+                  style={{ background: "#6366f1" }}
                 >
-                  Try Free — No Login
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
-                </motion.div>
+                  <Sparkles size={14} aria-hidden />
+                  Analyze My Resume Free
+                  <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
+                </motion.span>
               </Link>
-              <Link href="/login" aria-label="Create a free account">
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
+              <Link href="/login">
+                <motion.span
+                  whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className="h-12 flex items-center gap-2 rounded-xl border border-border bg-card/60 px-8 text-sm font-semibold text-foreground hover:bg-muted/60 cursor-pointer transition-colors backdrop-blur-sm"
+                  className="inline-flex items-center h-12 px-7 rounded-xl text-sm font-medium cursor-pointer"
+                  style={{ background: "#111111", border: "1px solid #222222", color: "#aaaaaa" }}
                 >
-                  Create Free Account
-                </motion.div>
+                  Create Account
+                </motion.span>
               </Link>
             </>
           )}
         </motion.div>
 
-        {/* Microcopy */}
-        <motion.p
-          initial="hidden"
-          animate="visible"
-          variants={fadeUp}
-          transition={{ delay: 0.32 }}
-          className="mt-4 text-[12px] text-muted-foreground"
-        >
-          {mounted && isLoggedIn
-            ? "AI-powered analysis · Instant results · Free to use"
-            : "No credit card required · 3 free scans · Results in ~10 seconds"
-          }
-        </motion.p>
-
-        {/* Stats bar */}
+        {/* Social proof stats */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.44, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto mt-12 mb-2 grid grid-cols-3 gap-px bg-border/50 rounded-2xl border border-border overflow-hidden max-w-lg shadow-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="flex items-center justify-center gap-10 flex-wrap mb-20"
         >
-          {STATS.map((s) => (
-            <div key={s.label} className="flex flex-col items-center justify-center py-4 px-3 bg-card/80 backdrop-blur-sm">
-              <span className="text-xl font-bold tracking-tight text-foreground font-mono">{s.value}</span>
-              <span className="mt-0.5 text-[10px] font-medium text-muted-foreground text-center leading-tight">{s.label}</span>
+          {[
+            ["10,000+", "Resumes Scored"],
+            ["94%",     "ATS Pass Rate"],
+            ["< 60s",   "Analysis Time"],
+          ].map(([stat, label]) => (
+            <div key={label} className="flex flex-col items-center">
+              <span className="text-2xl font-bold text-white font-mono">{stat}</span>
+              <span className="text-xs mt-1" style={{ color: "#555555" }}>{label}</span>
             </div>
           ))}
         </motion.div>
 
-        {/* Hero mockup */}
+        {/* Browser mockup */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.52, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="mx-auto mt-16 w-full max-w-4xl"
+          transition={{ delay: 0.55, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="mx-auto w-full max-w-4xl"
         >
           <motion.div
             animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="overflow-hidden rounded-2xl border border-border bg-card/60 shadow-2xl shadow-zinc-900/10 backdrop-blur-md"
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+            className="overflow-hidden rounded-2xl"
+            style={{ background: "#111111", border: "1px solid #1f1f1f", boxShadow: "0 40px 80px rgba(0,0,0,0.6)" }}
           >
             {/* Window chrome */}
-            <div className="flex items-center gap-3 border-b border-border bg-muted/30 px-4 py-3">
+            <div
+              className="flex items-center gap-3 px-4 py-3"
+              style={{ background: "#0d0d0d", borderBottom: "1px solid #1a1a1a" }}
+            >
               <div className="flex gap-1.5">
-              <div className="h-2.5 w-2.5 rounded-full bg-rose-400/60" />
-              <div className="h-2.5 w-2.5 rounded-full bg-amber-400/60" />
-              <div className="h-2.5 w-2.5 rounded-full bg-emerald-400/60" />
-            </div>
-            <div className="flex-1 flex justify-center">
-              <div className="h-5 w-48 rounded-md bg-muted/60 flex items-center justify-center">
-                <span className="text-[9px] font-mono text-muted-foreground">resumai.in/dashboard/report</span>
+                <div className="h-2.5 w-2.5 rounded-full" style={{ background: "rgba(239,68,68,0.5)" }} />
+                <div className="h-2.5 w-2.5 rounded-full" style={{ background: "rgba(234,179,8,0.5)" }} />
+                <div className="h-2.5 w-2.5 rounded-full" style={{ background: "rgba(34,197,94,0.5)" }} />
               </div>
-            </div>
-          </div>
-
-          {/* Report mockup */}
-          <div className="grid grid-cols-1 gap-5 p-6 text-left md:grid-cols-3">
-
-            {/* ATS Score */}
-            <div className="col-span-1 flex flex-col items-center justify-center rounded-xl border border-border bg-background/60 p-6">
-              <div className="mb-3 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                ATS Match Score
-              </div>
-              <div className="relative flex h-24 w-24 items-center justify-center">
-                <svg className="h-full w-full -rotate-90">
-                  <circle cx="48" cy="48" r="44" className="fill-none stroke-muted stroke-[5]" />
-                  <motion.circle
-                    cx="48" cy="48" r="44"
-                    className="fill-none stroke-emerald-500 stroke-[5] stroke-linecap-round"
-                    strokeDasharray="276"
-                    initial={{ strokeDashoffset: 276 }}
-                    animate={{ strokeDashoffset: 22 }}
-                    transition={{ duration: 2, delay: 1.2, ease: "easeOut" }}
-                  />
-                </svg>
-                <div className="absolute flex flex-col items-center">
-                  <span className="text-3xl font-bold text-foreground font-mono leading-none">92</span>
-                  <span className="text-[9px] text-muted-foreground mt-0.5">/ 100</span>
+              <div className="flex-1 flex justify-center">
+                <div
+                  className="h-5 w-48 rounded-md flex items-center justify-center"
+                  style={{ background: "#1a1a1a" }}
+                >
+                  <span className="text-[9px] font-mono" style={{ color: "#555555" }}>resumai.in/dashboard/report</span>
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                <TrendingUp className="h-3 w-3" aria-hidden="true" />
-                +24 pts after optimize
-              </div>
             </div>
 
-            {/* AI Suggestions */}
-            <div className="col-span-1 flex flex-col justify-center rounded-xl border border-border bg-background/60 p-6 md:col-span-2">
-              <div className="mb-4 flex items-center gap-2">
-                <Zap size={12} className="text-blue-500" aria-hidden="true" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  AI Suggestions
-                </span>
-              </div>
-              <div className="space-y-3">
-                {[
-                  {
-                    color: "bg-emerald-500/10 text-emerald-500",
-                    title: "Quantify impact",
-                    text: 'Changed "managed team" → "led 12-person team, increasing output by 34%"',
-                  },
-                  {
-                    color: "bg-blue-500/10 text-blue-500",
-                    title: "Add Keywords",
-                    text: 'Injected "React Native" and "CI/CD" — present in 94% of matching JDs',
-                  },
-                  {
-                    color: "bg-amber-500/10 text-amber-500",
-                    title: "Remove columns",
-                    text: "Multi-column layout detected — ATS reads it as garbled text",
-                  },
-                ].map((item) => (
-                  <div key={item.title} className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
-                    <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md ${item.color}`}>
-                      <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                    </div>
-                    <div className="text-[12.5px] leading-snug text-muted-foreground">
-                      <strong className="font-semibold text-foreground">{item.title}</strong> — {item.text}
-                    </div>
+            {/* Report content */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 text-left">
+
+              {/* ATS Score */}
+              <div
+                className="col-span-1 flex flex-col items-center justify-center rounded-xl p-6"
+                style={{ background: "#0d0d0d", border: "1px solid #1a1a1a" }}
+              >
+                <div className="mb-3 text-[10px] font-bold uppercase tracking-widest" style={{ color: "#555555" }}>
+                  ATS Match Score
+                </div>
+                <div className="relative flex h-24 w-24 items-center justify-center">
+                  <svg className="h-full w-full -rotate-90">
+                    <circle cx="48" cy="48" r="44" fill="none" stroke="#1a1a1a" strokeWidth="5" />
+                    <motion.circle
+                      cx="48" cy="48" r="44"
+                      fill="none"
+                      stroke="#22c55e"
+                      strokeWidth="5"
+                      strokeLinecap="round"
+                      strokeDasharray="276"
+                      initial={{ strokeDashoffset: 276 }}
+                      animate={{ strokeDashoffset: 22 }}
+                      transition={{ duration: 2, delay: 1.2, ease: "easeOut" }}
+                    />
+                  </svg>
+                  <div className="absolute flex flex-col items-center">
+                    <span className="text-3xl font-bold text-white font-mono leading-none">92</span>
+                    <span className="text-[9px] mt-0.5" style={{ color: "#555555" }}>/ 100</span>
                   </div>
-                ))}
+                </div>
+                <div
+                  className="mt-4 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold"
+                  style={{ background: "rgba(34,197,94,0.1)", color: "#22c55e" }}
+                >
+                  <TrendingUp className="h-3 w-3" aria-hidden />
+                  +24 pts after optimize
+                </div>
+              </div>
+
+              {/* AI Suggestions */}
+              <div
+                className="col-span-1 flex flex-col justify-center rounded-xl p-6 md:col-span-2"
+                style={{ background: "#0d0d0d", border: "1px solid #1a1a1a" }}
+              >
+                <div className="mb-4 flex items-center gap-2">
+                  <Zap size={12} style={{ color: "#6366f1" }} aria-hidden />
+                  <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#555555" }}>
+                    AI Suggestions
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {[
+                    { color: "rgba(34,197,94,0.1)", textColor: "#22c55e", title: "Quantify impact", text: 'Changed "managed team" → "led 12-person team, increasing output by 34%"' },
+                    { color: "rgba(99,102,241,0.1)", textColor: "#818cf8", title: "Add Keywords", text: 'Injected "React Native" and "CI/CD" — present in 94% of matching JDs' },
+                    { color: "rgba(234,179,8,0.1)", textColor: "#eab308", title: "Remove columns", text: "Multi-column layout detected — ATS reads it as garbled text" },
+                  ].map((item) => (
+                    <div
+                      key={item.title}
+                      className="flex items-start gap-3 rounded-lg p-3"
+                      style={{ background: "#111111", border: "1px solid #1a1a1a" }}
+                    >
+                      <div
+                        className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
+                        style={{ background: item.color }}
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" style={{ color: item.textColor }} aria-hidden />
+                      </div>
+                      <div className="text-[12.5px] leading-snug" style={{ color: "#666666" }}>
+                        <strong className="font-semibold text-white">{item.title}</strong> — {item.text}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
           </motion.div>
         </motion.div>
-
       </div>
     </section>
   );
-};
-
-export default HeroSection;
+}

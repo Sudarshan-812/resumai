@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import { SplitTextReveal } from "./SplitTextReveal";
+import { Plus, Minus } from "lucide-react";
 
 const FAQS = [
   {
@@ -16,7 +15,7 @@ const FAQS = [
   },
   {
     q: "What types of PDF resumes work best?",
-    a: 'ResumAI works with any text-based PDF. The most common issue is "scanned" or image-based PDFs (e.g. photographed resumes or locked documents from some design tools). If you get a "No readable text" error, export your resume as a text PDF from Google Docs, Word, or Canva.',
+    a: 'ResumAI works with any text-based PDF. The most common issue is "scanned" or image-based PDFs (e.g. photographed resumes or locked documents from design tools). If you get a "No readable text" error, export your resume as a text PDF from Google Docs, Word, or Canva.',
   },
   {
     q: "How is the score calculated?",
@@ -30,58 +29,61 @@ const FAQS = [
     q: "Can I use ResumAI for multiple job applications?",
     a: "Absolutely. Each job application needs a tailored analysis since different roles require different keywords. We recommend running a fresh scan for every unique role you apply to — that's why our credits are designed to be bought in bulk.",
   },
-];
+] as const;
 
 export default function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="py-24 md:py-32 bg-background" aria-labelledby="faq-heading">
-      <div className="max-w-3xl mx-auto px-6">
+    <section
+      className="py-24 md:py-32"
+      style={{ background: "#0A0A0A", borderTop: "1px solid #161616" }}
+      aria-labelledby="faq-heading"
+    >
+      <div className="max-w-2xl mx-auto px-6">
 
+        {/* Header */}
         <div className="text-center mb-14">
-          <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-blue-600 dark:text-blue-400 mb-3.5 font-mono">
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#6366f1" }}>
             FAQ
-          </div>
+          </p>
           <h2
             id="faq-heading"
-            className="text-[clamp(28px,4vw,44px)] font-bold text-foreground tracking-[-0.02em] leading-[1.12] mb-4"
+            className="font-bold text-white tracking-tight mb-4"
+            style={{ fontSize: "clamp(28px, 4vw, 44px)" }}
           >
-            <SplitTextReveal>Everything you need to know.</SplitTextReveal>
+            Everything you need to know.
           </h2>
-          <p className="text-base text-muted-foreground max-w-md mx-auto leading-relaxed">
-            If you don&apos;t see your question here, reach out at{" "}
-            <a href="mailto:support@resumai.in" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">
+          <p className="text-sm leading-relaxed" style={{ color: "#555555" }}>
+            Still have questions?{" "}
+            <a
+              href="mailto:support@resumai.in"
+              className="transition-colors hover:text-indigo-400"
+              style={{ color: "#6366f1" }}
+            >
               support@resumai.in
             </a>
           </p>
         </div>
 
-        <motion.div 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          variants={{ visible: { transition: { staggerChildren: 0.1 } }, hidden: {} }}
-          className="divide-y divide-border rounded-2xl border border-border overflow-hidden bg-card/40"
-        >
+        {/* Accordion */}
+        <div style={{ borderTop: "1px solid #1a1a1a" }}>
           {FAQS.map((faq, i) => (
-            <motion.div 
-              key={i}
-              variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } } }}
-            >
+            <div key={i} style={{ borderBottom: "1px solid #1a1a1a" }}>
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
-                className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left hover:bg-muted/40 transition-colors group"
+                className="w-full flex items-center justify-between gap-4 py-5 text-left group"
               >
-                <span className="text-[14.5px] font-semibold text-foreground leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                <span
+                  className="text-sm font-medium text-white leading-snug transition-colors duration-150 group-hover:text-indigo-400"
+                >
                   {faq.q}
                 </span>
-                <ChevronDown
-                  size={16}
-                  className={`shrink-0 text-muted-foreground transition-transform duration-200 ${open === i ? "rotate-180 text-blue-500" : ""}`}
-                  aria-hidden="true"
-                />
+                {open === i
+                  ? <Minus size={14} style={{ color: "#6366f1", flexShrink: 0 }} aria-hidden />
+                  : <Plus size={14} style={{ color: "#444444", flexShrink: 0 }} aria-hidden />
+                }
               </button>
 
               <AnimatePresence>
@@ -90,18 +92,19 @@ export default function FAQ() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <p className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed">
+                    <p className="pb-5 text-sm leading-relaxed" style={{ color: "#666666" }}>
                       {faq.a}
                     </p>
                   </motion.div>
                 )}
               </AnimatePresence>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
+
       </div>
     </section>
   );

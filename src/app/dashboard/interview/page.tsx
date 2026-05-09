@@ -2,11 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { BarChart3, Loader2, Send, RotateCcw, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
+import { BarChart3, Loader2, Send, RotateCcw, CheckCircle2, AlertCircle, ChevronRight, Mic, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import DashboardShell from "@/app/dashboard/DashboardShell";
+import VoiceInterview from "./VoiceInterview";
 
 interface Question { question: string; category: string }
 interface Feedback { score: number; strengths: string[]; improvements: string[]; model_answer_hint: string }
@@ -38,6 +39,7 @@ export default function InterviewPage() {
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [phase, setPhase] = useState<Phase>("setup");
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"text" | "voice">("text");
 
   const parseErrorResponse = async (res: Response): Promise<string> => {
     try {
@@ -113,7 +115,36 @@ export default function InterviewPage() {
           </p>
         </div>
 
-        <AnimatePresence mode="wait">
+        {/* ── Mode toggle ───────────────────────────────────────── */}
+        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-xl border border-border w-fit mb-6">
+          {(
+            [
+              { id: "text" as const,  label: "Text Mode",  icon: MessageSquare },
+              { id: "voice" as const, label: "Voice AI",   icon: Mic           },
+            ] as const
+          ).map(({ id, label, icon: Icon }) => (
+            <motion.button
+              key={id}
+              onClick={() => setMode(id)}
+              whileTap={{ scale: 0.96 }}
+              className={cn(
+                "flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors",
+                mode === id
+                  ? "bg-background text-foreground shadow-sm border border-border/50"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon size={12} />
+              {label}
+            </motion.button>
+          ))}
+        </div>
+
+        {/* ── Voice mode ────────────────────────────────────────── */}
+        {mode === "voice" && <VoiceInterview />}
+
+        {/* ── Text mode ─────────────────────────────────────────── */}
+        {mode === "text" && <AnimatePresence mode="wait">
 
           {phase === "setup" && (
             <motion.div key="setup" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-5">
@@ -360,7 +391,8 @@ export default function InterviewPage() {
             </motion.div>
           )}
 
-        </AnimatePresence>
+        </AnimatePresence>}
+
       </div>
     </DashboardShell>
   );
