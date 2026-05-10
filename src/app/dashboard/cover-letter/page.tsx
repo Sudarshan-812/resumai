@@ -2,20 +2,22 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Copy, Check, Loader2, Sparkles, Download } from "lucide-react";
+import { Copy, Check, Loader2, Download, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+const TONES = ["Professional", "Enthusiastic", "Concise"] as const;
+type Tone = Lowercase<typeof TONES[number]>;
+
 export default function CoverLetterPage() {
-  const [company, setCompany] = useState("");
-  const [role, setRole] = useState("");
-  const [jobDesc, setJobDesc] = useState("");
-  const [tone, setTone] = useState<"professional" | "enthusiastic" | "concise">("professional");
-  const [result, setResult] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [company, setCompany]   = useState("");
+  const [role, setRole]         = useState("");
+  const [jobDesc, setJobDesc]   = useState("");
+  const [tone, setTone]         = useState<Tone>("professional");
+  const [result, setResult]     = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [copied, setCopied]     = useState(false);
 
   const ready = company.trim() && role.trim() && jobDesc.trim().length > 50;
 
@@ -30,7 +32,7 @@ export default function CoverLetterPage() {
         body: JSON.stringify({ company, role, jobDesc, tone }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const reader = res.body?.getReader();
+      const reader  = res.body?.getReader();
       const decoder = new TextDecoder();
       if (!reader) throw new Error("No stream");
       let text = "";
@@ -56,8 +58,8 @@ export default function CoverLetterPage() {
 
   const download = () => {
     const blob = new Blob([result], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
     a.href = url;
     a.download = `cover-letter-${company.toLowerCase().replace(/\s+/g, "-")}.txt`;
     a.click();
@@ -66,156 +68,196 @@ export default function CoverLetterPage() {
 
   return (
     <DashboardShell>
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="min-h-full" style={{ background: "#F7F6F2" }}>
+        <div className="max-w-5xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
-        <div className="mb-8">
-          <div className="flex items-center gap-2 text-[10px] font-bold font-mono uppercase tracking-[0.18em] text-cyan-600 mb-2">
-            <FileText size={11} />
-            AI Tool
-          </div>
-          <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Cover Letter Generator</h1>
-          <p className="text-sm text-muted-foreground mt-1.5">
-            Fill in the details and AI will write a tailored, job-specific cover letter in seconds.
-          </p>
-        </div>
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+            className="mb-10"
+          >
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-1.5" style={{ color: "#9B9890" }}>
+              AI Tool
+            </p>
+            <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#111111" }}>
+              Cover Letter Generator
+            </h1>
+            <p className="text-sm mt-1.5" style={{ color: "#9B9890" }}>
+              Fill in the details and AI writes a tailored, job-specific letter in seconds.
+            </p>
+          </motion.div>
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <div className="space-y-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
 
-            <Field label="Company Name">
-              <input
-                value={company}
-                onChange={e => setCompany(e.target.value)}
-                placeholder="e.g. Google"
-                className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-              />
-            </Field>
-
-            <Field label="Job Title">
-              <input
-                value={role}
-                onChange={e => setRole(e.target.value)}
-                placeholder="e.g. Senior Software Engineer"
-                className="w-full h-10 px-3.5 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all"
-              />
-            </Field>
-
-            <Field label="Job Description" hint="paste the key requirements">
-              <textarea
-                value={jobDesc}
-                onChange={e => setJobDesc(e.target.value)}
-                placeholder="Paste the job description here..."
-                rows={6}
-                className="w-full px-3.5 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 transition-all resize-none"
-              />
-            </Field>
-
-            <Field label="Writing Tone">
-              <div className="flex gap-2">
-                {(["professional", "enthusiastic", "concise"] as const).map(t => (
-                  <motion.button
-                    key={t}
-                    onClick={() => setTone(t)}
-                    whileHover={{ scale: tone !== t ? 1.04 : 1 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    className={cn(
-                      "flex-1 h-9 rounded-xl text-[12px] font-semibold border transition-colors capitalize",
-                      tone === t
-                        ? "bg-cyan-500 text-white border-cyan-500"
-                        : "bg-card text-muted-foreground border-border hover:border-cyan-500/30 hover:text-foreground"
-                    )}
-                  >
-                    {t}
-                  </motion.button>
-                ))}
-              </div>
-            </Field>
-
+            {/* Left — Form */}
             <motion.div
-              whileHover={ready && !loading ? { y: -1 } : {}}
-              whileTap={ready && !loading ? { scale: 0.98 } : {}}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08, duration: 0.4, ease: EASE }}
+              className="space-y-5"
             >
-              <Button
+              <div className="grid grid-cols-2 gap-4">
+                <FormField label="Company">
+                  <input
+                    value={company}
+                    onChange={e => setCompany(e.target.value)}
+                    placeholder="Google"
+                    className="w-full h-10 px-3.5 rounded-lg text-sm focus:outline-none transition-all"
+                    style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#111111" }}
+                  />
+                </FormField>
+                <FormField label="Job Title">
+                  <input
+                    value={role}
+                    onChange={e => setRole(e.target.value)}
+                    placeholder="Software Engineer"
+                    className="w-full h-10 px-3.5 rounded-lg text-sm focus:outline-none transition-all"
+                    style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#111111" }}
+                  />
+                </FormField>
+              </div>
+
+              <FormField label="Job Description" hint="paste the key requirements">
+                <textarea
+                  value={jobDesc}
+                  onChange={e => setJobDesc(e.target.value)}
+                  placeholder="Paste the job description here…"
+                  rows={8}
+                  className="w-full px-3.5 py-3 rounded-lg text-sm focus:outline-none transition-all resize-none"
+                  style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#111111" }}
+                />
+              </FormField>
+
+              <FormField label="Writing Tone">
+                <div className="inline-flex rounded-lg overflow-hidden" style={{ border: "1px solid #E5E3DC" }}>
+                  {TONES.map((t, i) => {
+                    const val = t.toLowerCase() as Tone;
+                    const active = tone === val;
+                    return (
+                      <button
+                        key={t}
+                        onClick={() => setTone(val)}
+                        className="h-9 px-4 text-[12px] font-medium transition-all"
+                        style={{
+                          background: active ? "#111111" : "#FFFFFF",
+                          color: active ? "#FFFFFF" : "#6B6860",
+                          borderRight: i < TONES.length - 1 ? "1px solid #E5E3DC" : undefined,
+                        }}
+                      >
+                        {t}
+                      </button>
+                    );
+                  })}
+                </div>
+              </FormField>
+
+              <motion.button
                 onClick={generate}
                 disabled={!ready || loading}
-                className="w-full h-10 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm shadow-sm shadow-cyan-500/20 disabled:opacity-40 transition-all"
+                whileHover={ready && !loading ? { scale: 1.01 } : {}}
+                whileTap={ready && !loading ? { scale: 0.98 } : {}}
+                className="w-full h-11 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 transition-all disabled:opacity-40"
+                style={{ background: "#06b6d4" }}
               >
-                {loading
-                  ? <><Loader2 size={14} className="animate-spin mr-2" />Generating...</>
-                  : <><Sparkles size={14} className="mr-2" />Generate Cover Letter</>
-                }
-              </Button>
+                {loading ? (
+                  <><Loader2 size={14} className="animate-spin" />Generating…</>
+                ) : (
+                  <>Generate Cover Letter <ArrowRight size={14} /></>
+                )}
+              </motion.button>
             </motion.div>
-          </div>
 
-          <div className="relative">
-            <div className={cn(
-              "w-full min-h-[420px] rounded-2xl border bg-card p-5 text-sm leading-relaxed text-foreground transition-all",
-              result ? "border-border" : "border-dashed border-border/50"
-            )}>
-              <AnimatePresence mode="wait">
-                {!result && !loading && (
-                  <motion.div
-                    key="empty"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-16"
-                  >
-                    <FileText size={28} strokeWidth={1} className="mb-3 opacity-25" />
-                    <p className="text-xs text-muted-foreground/70">Your cover letter will appear here.</p>
-                  </motion.div>
-                )}
-                {loading && !result && (
-                  <motion.div
-                    key="loading"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="h-full flex items-center justify-center py-16"
-                  >
-                    <Loader2 size={20} className="animate-spin text-cyan-500" />
-                  </motion.div>
-                )}
-                {result && (
-                  <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <pre className="whitespace-pre-wrap font-sans text-[13px] leading-relaxed">{result}</pre>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {result && (
-              <motion.div
-                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                className="absolute top-3 right-3 flex items-center gap-1.5"
+            {/* Right — Output */}
+            <motion.div
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.14, duration: 0.4, ease: EASE }}
+            >
+              <div
+                className="relative min-h-[480px] rounded-xl overflow-hidden flex flex-col"
+                style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
               >
-                <motion.button
-                  onClick={download}
-                  whileHover={{ y: -1 }}
-                  whileTap={{ scale: 0.93 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-background border border-border text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:border-border/80 transition-all"
+                {/* Paper header */}
+                <div
+                  className="flex items-center justify-between px-5 py-3 shrink-0"
+                  style={{ borderBottom: "1px solid #E5E3DC", background: "#FDFCF9" }}
                 >
-                  <Download size={11} /> Save
-                </motion.button>
-                <motion.button
-                  onClick={copy}
-                  whileTap={{ scale: 0.88 }}
-                  animate={copied ? { scale: [1, 1.12, 1] } : {}}
-                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  className="flex items-center gap-1.5 h-8 px-3 rounded-lg bg-background border border-border text-[11px] font-semibold text-muted-foreground hover:text-foreground hover:border-border/80 transition-all"
-                >
-                  <motion.span
-                    key={copied ? "check" : "copy"}
-                    initial={{ scale: 0.7, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                  >
-                    {copied ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
-                  </motion.span>
-                  {copied ? "Copied" : "Copy"}
-                </motion.button>
-              </motion.div>
-            )}
+                  <p className="text-[10px] font-mono uppercase tracking-[0.18em]" style={{ color: "#C8C4BB" }}>
+                    Cover Letter
+                  </p>
+                  {result && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex items-center gap-1.5"
+                    >
+                      <button
+                        onClick={download}
+                        className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-colors"
+                        style={{ border: "1px solid #E5E3DC", color: "#9B9890" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "#9B9890")}
+                      >
+                        <Download size={10} /> Save
+                      </button>
+                      <motion.button
+                        onClick={copy}
+                        animate={copied ? { scale: [1, 1.1, 1] } : {}}
+                        className="flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11px] font-medium transition-colors"
+                        style={{ border: "1px solid #E5E3DC", color: "#9B9890" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "#9B9890")}
+                      >
+                        {copied
+                          ? <><Check size={10} style={{ color: "#059669" }} />Copied</>
+                          : <><Copy size={10} />Copy</>
+                        }
+                      </motion.button>
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 px-6 py-5 relative">
+                  <AnimatePresence mode="wait">
+                    {!result && !loading && (
+                      <motion.div
+                        key="empty"
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <p className="text-[13px]" style={{ color: "#C8C4BB" }}>
+                          Your cover letter will appear here.
+                        </p>
+                      </motion.div>
+                    )}
+                    {loading && !result && (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        className="absolute inset-0 flex items-center justify-center"
+                      >
+                        <Loader2 size={20} className="animate-spin" style={{ color: "#06b6d4" }} />
+                      </motion.div>
+                    )}
+                    {result && (
+                      <motion.pre
+                        key="result"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="whitespace-pre-wrap font-sans text-[13px] leading-[1.8]"
+                        style={{ color: "#111111" }}
+                      >
+                        {result}
+                      </motion.pre>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
+
           </div>
         </div>
       </div>
@@ -223,12 +265,12 @@ export default function CoverLetterPage() {
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function FormField({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+      <label className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>
         {label}
-        {hint && <span className="normal-case font-normal tracking-normal text-muted-foreground/60">({hint})</span>}
+        {hint && <span className="normal-case font-normal tracking-normal" style={{ color: "#C8C4BB" }}>— {hint}</span>}
       </label>
       {children}
     </div>

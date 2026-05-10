@@ -24,7 +24,7 @@ export default function AppLoader() {
           transition={{ duration: 0.5, ease: "easeInOut" }}
           className="fixed inset-0 z-[999] flex flex-col items-center justify-center bg-[#0A0A0A]"
         >
-          <Column8Logo width={400} height={155} />
+          <Column8Logo width={400} height={155} onDark />
 
           <motion.p
             initial={{ opacity: 0 }}

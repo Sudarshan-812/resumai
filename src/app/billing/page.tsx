@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { Check, Loader2, ShieldCheck, HelpCircle, Star } from "lucide-react";
+import { Check, Loader2, ShieldCheck, Zap } from "lucide-react";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
@@ -9,67 +8,67 @@ import { verifyPayment } from "@/app/actions/verify-payment";
 import { toast } from "sonner";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { motion } from "framer-motion";
 
 declare global {
-  interface Window {
-    Razorpay: any;
-  }
+  interface Window { Razorpay: any; }
 }
 
 const PLANS = [
   {
     id: "starter",
-    name: "Starter Pack",
+    name: "Starter",
     price: 49,
     credits: 5,
-    lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
-    lottieClass: "grayscale brightness-110 contrast-125",
-    description: "Perfect for a quick resume polish.",
-    color: "text-cyan-500",
-    badgeColor: "bg-cyan-100 text-cyan-700",
-    buttonVariant: "outline",
+    description: "Quick resume polish for a single application.",
     popular: false,
-    features: ["5 AI Resume Scans", "Basic ATS Score", "Email Support", "PDF Export"],
+    features: [
+      "5 AI resume scans",
+      "ATS score + keyword gaps",
+      "PDF export",
+      "Email support",
+    ],
   },
   {
     id: "pro",
-    name: "Pro Bundle",
+    name: "Pro",
     price: 99,
     credits: 12,
-    lottieSrc: "https://lottie.host/6d6286d6-3fc7-46aa-9697-ddd04346c8ac/tb1vgbgp3m.lottie",
-    lottieClass: "",
-    description: "Our most popular choice for job seekers.",
-    color: "text-cyan-500",
-    badgeColor: "bg-cyan-100 text-cyan-700",
-    buttonVariant: "solid",
+    description: "The right amount for an active job search.",
     popular: true,
-    features: ["12 AI Resume Scans", "Detailed Feedback", "Cover Letter Generator", "Priority Support", "LinkedIn Optimization"],
+    features: [
+      "12 AI resume scans",
+      "Detailed AI feedback",
+      "Cover letter generator",
+      "Interview simulator",
+      "Priority support",
+    ],
   },
   {
     id: "power",
-    name: "Power User",
+    name: "Power",
     price: 199,
     credits: 30,
-    lottieSrc: "https://lottie.host/655b0575-535f-47ed-91e4-8ed938e2158d/eH0Et5paMQ.lottie",
-    lottieClass: "scale-110",
-    description: "For serious career transformation.",
-    color: "text-amber-500",
-    badgeColor: "bg-amber-100 text-amber-700",
-    buttonVariant: "outline",
+    description: "For serious candidates targeting multiple roles.",
     popular: false,
-    features: ["30 AI Resume Scans", "Full Career Assistant", "Interview Prep AI", "Lifetime Access"],
+    features: [
+      "30 AI resume scans",
+      "Everything in Pro",
+      "Voice AI interviews",
+      "LinkedIn optimization",
+      "Lifetime access",
+    ],
   },
-];
+] as const;
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function BillingPage() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const router = useRouter();
 
-  const handlePurchase = async (plan: typeof PLANS[0]) => {
+  const handlePurchase = async (plan: typeof PLANS[number]) => {
     setLoadingId(plan.id);
-
     try {
       const result = await createRazorpayOrder(plan.price);
       if (!result.success || !result.orderId) throw new Error("Order creation failed");
@@ -82,31 +81,28 @@ export default function BillingPage() {
         description: `${plan.credits} Credits`,
         order_id: result.orderId,
         handler: async function (response: any) {
-          toast.loading("Verifying Payment...");
+          toast.loading("Verifying payment…");
           const verification = await verifyPayment(
             response.razorpay_order_id,
             response.razorpay_payment_id,
             response.razorpay_signature,
           );
-
+          toast.dismiss();
           if (verification.success) {
-            toast.dismiss();
-            toast.success(`Success! ${verification.creditsAdded} Credits Added.`);
+            toast.success(`${verification.creditsAdded} credits added.`);
             router.push("/dashboard");
             router.refresh();
           } else {
-            toast.dismiss();
-            toast.error("Verification Failed");
+            toast.error("Payment verification failed.");
           }
         },
-        theme: { color: "#4F46E5" },
+        theme: { color: "#06b6d4" },
       };
 
-      const rzp1 = new window.Razorpay(options);
-      rzp1.open();
-
-    } catch (error) {
-      toast.error("Payment failed to start");
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch {
+      toast.error("Payment failed to start.");
     } finally {
       setLoadingId(null);
     }
@@ -115,119 +111,156 @@ export default function BillingPage() {
   return (
     <DashboardShell>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="min-h-full" style={{ background: "#F7F6F2" }}>
+        <div className="max-w-5xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
-        <div className="mb-10">
-          <h1 className="font-display text-2xl font-bold text-foreground tracking-tight mb-1.5">Credits &amp; Billing</h1>
-          <p className="text-sm text-muted-foreground">
-            Pay once, keep your credits forever. No subscriptions, no hidden fees.
-          </p>
-        </div>
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+            className="mb-12"
+          >
+            <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-1.5" style={{ color: "#9B9890" }}>
+              Credits & Billing
+            </p>
+            <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#111111" }}>
+              Pay once. Keep forever.
+            </h1>
+            <p className="text-sm mt-1.5" style={{ color: "#9B9890" }}>
+              No subscriptions. No monthly fees. Credits never expire.
+            </p>
+          </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative items-start">
+          {/* Plans */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {PLANS.map((plan, i) => {
+              const isDark = plan.popular;
+              return (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.07, duration: 0.45, ease: EASE }}
+                  className="relative flex flex-col rounded-2xl overflow-hidden"
+                  style={{
+                    background: isDark ? "#111111" : "#FFFFFF",
+                    border: isDark ? "1px solid #1f1f1f" : "1px solid #E5E3DC",
+                  }}
+                >
+                  {isDark && (
+                    <div
+                      className="absolute inset-0 pointer-events-none opacity-20"
+                      style={{
+                        backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0)",
+                        backgroundSize: "24px 24px",
+                      }}
+                    />
+                  )}
 
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={cn(
-                "group relative flex flex-col p-8 rounded-3xl transition-all duration-300",
-                "bg-white backdrop-blur-xl border",
-                plan.popular
-                  ? "border-cyan-500 shadow-2xl shadow-cyan-500/10 z-10"
-                  : "border-zinc-200 hover:border-zinc-300 hover:shadow-xl"
-              )}
-            >
-              {plan.popular && (
-                <div className="absolute -top-5 left-0 right-0 mx-auto w-fit bg-cyan-500 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide shadow-lg shadow-cyan-500/30 flex items-center gap-1.5">
-                  <Star className="w-3 h-3 fill-white" />
-                  Most Popular
-                </div>
-              )}
+                  {plan.popular && (
+                    <div
+                      className="relative px-5 py-2 text-[10px] font-mono uppercase tracking-[0.18em] font-semibold"
+                      style={{ background: "#06b6d4", color: "#FFFFFF" }}
+                    >
+                      Most Popular
+                    </div>
+                  )}
 
-              <div className="mb-6">
+                  <div className="relative flex flex-col flex-1 p-6">
+                    <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9B9890" }}>
+                      {plan.name}
+                    </p>
+                    <p className="text-[13px] leading-relaxed mb-6" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6B6860" }}>
+                      {plan.description}
+                    </p>
 
-                <div className="w-20 h-20 mx-auto mb-6 flex items-center justify-center">
-                   <DotLottieReact
-                      src={plan.lottieSrc}
-                      loop
-                      autoplay
-                      className={cn("w-full h-full", plan.lottieClass)}
-                   />
-                </div>
+                    <div className="mb-1">
+                      <span className="text-4xl font-bold tracking-tight tabular-nums" style={{ color: isDark ? "#FFFFFF" : "#111111" }}>
+                        ₹{plan.price}
+                      </span>
+                      <span className="text-[12px] ml-1.5" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#C8C4BB" }}>
+                        one-time
+                      </span>
+                    </div>
 
-                <h3 className="text-xl font-bold text-zinc-900 mb-2 text-center">
-                  {plan.name}
-                </h3>
+                    <div className="mb-6">
+                      <span
+                        className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full"
+                        style={{
+                          background: isDark ? "rgba(6,182,212,0.15)" : "rgba(6,182,212,0.08)",
+                          color: "#06b6d4",
+                          border: "1px solid rgba(6,182,212,0.2)",
+                        }}
+                      >
+                        <Zap size={10} />
+                        {plan.credits} credits included
+                      </span>
+                    </div>
 
-                <p className="text-sm text-zinc-500 mb-6 min-h-[40px] text-center">
-                  {plan.description}
-                </p>
+                    <div className="mb-5" style={{ height: "1px", background: isDark ? "rgba(255,255,255,0.08)" : "#E5E3DC" }} />
 
-                <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-4xl font-bold tracking-tight">₹{plan.price}</span>
-                  <span className="text-zinc-400 text-sm font-medium">/ one-time</span>
-                </div>
-              </div>
+                    <ul className="space-y-3 mb-8 flex-1">
+                      {plan.features.map((f, fi) => (
+                        <li key={fi} className="flex items-start gap-2.5">
+                          <div
+                            className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                            style={{ background: isDark ? "rgba(6,182,212,0.15)" : "rgba(6,182,212,0.08)" }}
+                          >
+                            <Check size={9} style={{ color: "#06b6d4" }} strokeWidth={3} />
+                          </div>
+                          <span className="text-[13px] leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.65)" : "#6B6860" }}>
+                            {f}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
 
-              <div className="h-px w-full bg-zinc-100 mb-6" />
-
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-center gap-3">
-                  <div className={cn("px-2.5 py-1 rounded-md text-sm font-bold", plan.badgeColor)}>
-                    {plan.credits} Credits Included
+                    <motion.button
+                      onClick={() => handlePurchase(plan)}
+                      disabled={!!loadingId}
+                      whileHover={!loadingId ? { scale: 1.01 } : {}}
+                      whileTap={!loadingId ? { scale: 0.98 } : {}}
+                      className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                      style={
+                        isDark
+                          ? { background: "#06b6d4", color: "#FFFFFF" }
+                          : { background: "#111111", color: "#FFFFFF" }
+                      }
+                    >
+                      {loadingId === plan.id ? (
+                        <><Loader2 size={14} className="animate-spin" />Processing…</>
+                      ) : (
+                        "Get Started"
+                      )}
+                    </motion.button>
                   </div>
-                </li>
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm text-zinc-600">
-                    <Check className={cn("w-5 h-5 shrink-0 mt-0.5", plan.color)} />
-                    <span className="leading-tight">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                onClick={() => handlePurchase(plan)}
-                disabled={!!loadingId}
-                className={cn(
-                  "w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 mt-auto",
-                  loadingId && loadingId !== plan.id && "opacity-50 cursor-not-allowed",
-                  plan.popular
-                    ? "bg-cyan-500 hover:bg-cyan-400 text-white shadow-md shadow-cyan-500/20"
-                    : "bg-zinc-50 hover:bg-zinc-100 text-zinc-900 border border-zinc-200"
-                )}
-              >
-                {loadingId === plan.id ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  "Get Started"
-                )}
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-20 pt-10 border-t border-zinc-200 text-center">
-          <div className="inline-flex flex-col md:flex-row items-center gap-4 md:gap-12 text-zinc-500 text-sm font-medium">
-            <span className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-emerald-500" />
-              Secure Payment via Razorpay
-            </span>
-            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300" />
-            <span className="flex items-center gap-2">
-              <Check className="w-5 h-5 text-emerald-500" />
-              Instant Credit Activation
-            </span>
-            <span className="hidden md:block w-1.5 h-1.5 rounded-full bg-zinc-300" />
-            <span className="flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-cyan-500" />
-              24/7 Priority Support
-            </span>
+                </motion.div>
+              );
+            })}
           </div>
-        </div>
 
+          {/* Trust strip */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.35, duration: 0.5 }}
+            className="mt-14 pt-8 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12"
+            style={{ borderTop: "1px solid #E5E3DC" }}
+          >
+            {[
+              { icon: ShieldCheck, text: "Secure via Razorpay" },
+              { icon: Zap,         text: "Instant activation"  },
+              { icon: Check,       text: "Credits never expire" },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-2">
+                <Icon size={14} style={{ color: "#9B9890" }} />
+                <span className="text-[12px]" style={{ color: "#9B9890" }}>{text}</span>
+              </div>
+            ))}
+          </motion.div>
+
+        </div>
       </div>
     </DashboardShell>
   );

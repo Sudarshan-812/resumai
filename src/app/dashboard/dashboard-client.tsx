@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import {
-  FileText, BarChart3, UploadCloud, ChevronRight,
-  Plus, CreditCard, ArrowUpRight, Zap, PenLine,
-  TrendingUp, Clock, Sparkles,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { createClient } from "@/app/lib/supabase/client";
-import { Button } from "@/components/ui/button";
+import { FileText, ArrowUpRight, Plus, ChevronRight, UploadCloud, Mic, PenLine } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardShell from "./DashboardShell";
 
@@ -29,118 +21,136 @@ interface DashboardClientProps {
   stats: { totalScans: number; avgScore: number };
 }
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+
 export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
   const [mounted, setMounted] = useState(false);
-  const router = useRouter();
 
   useEffect(() => { setMounted(true); }, []);
 
-  const userName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
+  const userName  = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
   const credits   = profile?.credits ?? 0;
   const { totalScans, avgScore } = stats;
 
-  const formatDate = (ds: string) => {
-    if (!mounted) return "—";
-    return new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-  };
+  const today = mounted
+    ? new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
+    : "";
+
+  const fmt = (ds: string) =>
+    mounted ? new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
   return (
     <DashboardShell>
-      <div className="max-w-5xl mx-auto px-6 py-8">
+      <div className="min-h-full" style={{ background: "#F7F6F2" }}>
+        <div className="max-w-5xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
+          {/* ── Header ── */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.5, ease: EASE }}
+            className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-10"
           >
-            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">
-              Welcome back, {userName}
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Here&apos;s an overview of your resume activity.
-            </p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: 0.35 }}
-          >
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1.5" style={{ color: "#9B9890" }}>
+                {today}
+              </p>
+              <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#111111" }}>
+                Good to see you, {userName}.
+              </h1>
+            </div>
+
             <Link href="/upload">
-              <motion.div
-                whileHover={{ y: -1 }}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="inline-flex items-center gap-2 h-10 px-5 rounded-lg text-sm font-semibold text-white shrink-0"
+                style={{ background: "#06b6d4" }}
               >
-                <Button className="h-10 px-5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-semibold text-sm shadow-sm shadow-cyan-500/20 transition-all">
-                  <Plus className="mr-1.5 h-4 w-4" strokeWidth={2.5} />
-                  New Analysis
-                </Button>
-              </motion.div>
+                <Plus size={15} strokeWidth={2.5} />
+                New Analysis
+              </motion.button>
             </Link>
           </motion.div>
-        </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <StatCard
-            delay={0}
-            title="Total Analyses"
-            value={totalScans.toString()}
-            icon={<FileText className="h-4 w-4" />}
-            trend={totalScans > 0 ? `${totalScans} resume${totalScans !== 1 ? "s" : ""} scanned` : "No scans yet"}
-          />
-          <StatCard
-            delay={0.08}
-            title="Avg ATS Score"
-            value={avgScore > 0 ? `${avgScore}` : "—"}
-            suffix={avgScore > 0 ? "/ 100" : ""}
-            icon={<TrendingUp className="h-4 w-4" />}
-            trend={avgScore >= 70 ? "Above average" : avgScore > 0 ? "Needs improvement" : "Run a scan to see"}
-            trendColor={avgScore >= 70 ? "text-emerald-600 dark:text-emerald-400" : avgScore > 0 ? "text-amber-600 dark:text-amber-400" : undefined}
-          />
-          <StatCard
-            delay={0.16}
-            title="Credits Available"
-            value={credits.toString()}
-            icon={<CreditCard className="h-4 w-4" />}
-            trend={credits <= 1 ? "Running low — top up" : `${credits} scans remaining`}
-            trendColor={credits <= 1 ? "text-amber-600 dark:text-amber-400" : undefined}
-            action={
-              <Link href="/billing" className="text-[11px] font-bold text-cyan-600 hover:underline shrink-0">
-                Top up
-              </Link>
-            }
-          />
-        </div>
+          {/* ── Metric strip ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, duration: 0.45, ease: EASE }}
+            className="grid grid-cols-3 mb-10 rounded-xl overflow-hidden"
+            style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}
+          >
+            {[
+              { label: "Analyses", value: totalScans.toString(), note: "total scans" },
+              {
+                label: "Avg Score",
+                value: avgScore > 0 ? `${avgScore}` : "—",
+                note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
+                valueColor: avgScore >= 70 ? "#059669" : avgScore > 0 ? "#d97706" : "#9B9890",
+              },
+              {
+                label: "Credits",
+                value: credits.toString(),
+                note: credits <= 1 ? "top up soon" : "remaining",
+                noteColor: credits <= 1 ? "#d97706" : undefined,
+                action: (
+                  <Link
+                    href="/billing"
+                    className="text-[10px] font-bold tracking-wide transition-colors"
+                    style={{ color: "#06b6d4" }}
+                  >
+                    Top up →
+                  </Link>
+                ),
+              },
+            ].map((m, i) => (
+              <div
+                key={i}
+                className="relative px-6 py-5"
+                style={{ borderRight: i < 2 ? "1px solid #E5E3DC" : undefined }}
+              >
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>
+                  {m.label}
+                </p>
+                <p
+                  className="text-3xl font-bold tracking-tight tabular-nums leading-none mb-1.5"
+                  style={{ color: (m as any).valueColor ?? "#111111" }}
+                >
+                  {m.value}
+                </p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[11px]" style={{ color: (m as any).noteColor ?? "#9B9890" }}>
+                    {m.note}
+                  </p>
+                  {(m as any).action}
+                </div>
+              </div>
+            ))}
+          </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-5">
+          {/* ── Main grid ── */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 lg:gap-10 items-start">
+
+            {/* Left — Recent analyses */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.22, duration: 0.4 }}
-              whileHover={{ y: -1 }}
-              className="group relative overflow-hidden rounded-2xl border border-dashed border-border bg-card hover:border-cyan-500/40 hover:bg-cyan-500/[0.02] transition-all p-6 flex items-center gap-5"
+              transition={{ delay: 0.16, duration: 0.45, ease: EASE }}
             >
-              <div className="w-11 h-11 rounded-xl bg-cyan-500/10 text-cyan-600 border border-cyan-500/20 flex items-center justify-center shrink-0">
-                <UploadCloud size={20} strokeWidth={1.5} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-foreground">Analyze a new resume</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Upload your PDF and paste a job description to get your ATS score and AI suggestions.</p>
-              </div>
-              <Link href="/upload">
-                <Button variant="outline" className="h-9 px-4 text-sm font-semibold rounded-xl border-border shrink-0">
-                  Upload PDF
-                </Button>
-              </Link>
-            </motion.div>
-
-            <div>
-              <div className="flex items-center justify-between mb-3 px-0.5">
-                <h2 className="text-sm font-bold text-foreground">Recent Analyses</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-[11px] font-mono uppercase tracking-[0.15em]" style={{ color: "#9B9890" }}>
+                  Recent Analyses
+                </h2>
                 {recentResumes.length > 0 && (
-                  <Link href="/history" className="group text-[11px] font-bold text-cyan-600 hover:underline flex items-center gap-0.5">
+                  <Link
+                    href="/resumes"
+                    className="group flex items-center gap-1 text-[11px] font-medium transition-colors"
+                    style={{ color: "#9B9890" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "#9B9890")}
+                  >
                     View all
                     <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                   </Link>
@@ -148,46 +158,61 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               </div>
 
               {recentResumes.length === 0 ? (
-                <EmptyAnalyses />
+                <EmptyState />
               ) : (
-                <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-sm">
-                  {recentResumes.map((resume, i) => {
-                    const score = resume.ats_score ?? 0;
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}>
+                  {recentResumes.map((r, i) => {
+                    const score = r.ats_score ?? 0;
                     const scoreColor =
-                      score >= 75 ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20"
-                      : score >= 55 ? "bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20"
-                      : "bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20";
+                      score >= 75 ? "#059669"
+                      : score >= 55 ? "#d97706"
+                      : score > 0  ? "#e11d48"
+                      : "#C8C4BB";
 
                     return (
                       <motion.div
-                        key={resume.id}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.28 + i * 0.06, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                        whileHover={{ x: 3 }}
-                        className={i < recentResumes.length - 1 ? "border-b border-border" : ""}
+                        key={r.id}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.2 + i * 0.05, duration: 0.3 }}
+                        style={{ borderBottom: i < recentResumes.length - 1 ? "1px solid #E5E3DC" : undefined }}
                       >
                         <Link
-                          href={`/dashboard/${resume.id}`}
-                          className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group"
+                          href={`/dashboard/${r.id}`}
+                          className="group flex items-center gap-4 px-5 py-4 transition-colors"
+                          style={{ background: "transparent" }}
+                          onMouseEnter={e => (e.currentTarget.style.background = "#F7F6F2")}
+                          onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                         >
-                          <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-cyan-600 group-hover:border-cyan-500/30 transition-all shrink-0">
-                            <FileText size={16} strokeWidth={1.5} />
+                          {/* File icon */}
+                          <div
+                            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors"
+                            style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+                          >
+                            <FileText size={14} style={{ color: "#9B9890" }} strokeWidth={1.5} />
                           </div>
+
+                          {/* Name + date */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate leading-none mb-1 group-hover:text-cyan-600 dark:group-hover:text-blue-400 transition-colors" title={resume.file_name}>
-                              {resume.file_name.replace(/\.pdf$/i, "")}
+                            <p className="text-sm font-medium truncate leading-none mb-1 transition-colors" style={{ color: "#111111" }} title={r.file_name}>
+                              {r.file_name.replace(/\.pdf$/i, "")}
                             </p>
-                            <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                              <Clock size={10} />
-                              {formatDate(resume.created_at)}
+                            <p className="text-[11px] font-mono" style={{ color: "#C8C4BB" }}>
+                              {fmt(r.created_at)}
                             </p>
                           </div>
+
+                          {/* Score */}
                           <div className="flex items-center gap-3 shrink-0">
-                            <span className={cn("px-2 py-0.5 rounded-md text-[11px] font-bold border tabular-nums", scoreColor)}>
-                              {score > 0 ? `${score}/100` : "—"}
+                            <span className="text-sm font-bold tabular-nums" style={{ color: scoreColor }}>
+                              {score > 0 ? score : "—"}
+                              {score > 0 && <span className="text-[11px] font-normal ml-0.5" style={{ color: "#C8C4BB" }}>/100</span>}
                             </span>
-                            <ChevronRight size={14} className="text-muted-foreground/40 group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
+                            <ArrowUpRight
+                              size={13}
+                              className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                              style={{ color: "#C8C4BB" }}
+                            />
                           </div>
                         </Link>
                       </motion.div>
@@ -195,158 +220,128 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   })}
                 </div>
               )}
-            </div>
-          </div>
-
-          <aside className="space-y-4">
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3, duration: 0.4 }}
-              className="rounded-2xl border border-border bg-card p-5 shadow-sm"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles size={14} className="text-cyan-500" />
-                <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground">AI Tools</h3>
-              </div>
-              <div className="space-y-1.5">
-                <ToolButton
-                  icon={<PenLine size={15} />}
-                  label="Cover Letter Generator"
-                  sub="Role-specific in seconds"
-                  onClick={() => router.push("/dashboard/cover-letter")}
-                />
-                <ToolButton
-                  icon={<BarChart3 size={15} />}
-                  label="Interview Simulator"
-                  sub="Practice with AI feedback"
-                  onClick={() => router.push("/dashboard/interview")}
-                />
-              </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
+            {/* Right — sidebar panel */}
+            <motion.aside
+              initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.38, duration: 0.4 }}
-              className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+              transition={{ delay: 0.22, duration: 0.45, ease: EASE }}
+              className="space-y-6"
             >
-              <h3 className="text-[11px] font-bold uppercase tracking-widest text-foreground mb-4">Pro Tips</h3>
-              <ul className="space-y-3">
-                {[
-                  "Tailor your resume for each role — generic resumes score 20–30 pts lower.",
-                  "Add measurable metrics to every bullet point.",
-                  "Use keywords verbatim from the job description.",
-                ].map((tip, i) => (
-                  <motion.li
-                    key={i}
-                    initial={{ opacity: 0, x: 6 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.42 + i * 0.07, duration: 0.3 }}
-                    className="flex items-start gap-2 text-[12px] text-muted-foreground leading-relaxed"
+              {/* AI Tools */}
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#9B9890" }}>
+                  AI Tools
+                </p>
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}>
+                  {[
+                    { icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
+                    { icon: Mic,     label: "Interview Prep", sub: "Practice with AI feedback", href: "/dashboard/interview" },
+                  ].map(({ icon: Icon, label, sub, href }, i) => (
+                    <Link
+                      key={label}
+                      href={href}
+                      className="group flex items-center gap-3.5 px-4 py-3.5 transition-colors"
+                      style={{
+                        background: "transparent",
+                        borderBottom: i === 0 ? "1px solid #E5E3DC" : undefined,
+                      }}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#F7F6F2")}
+                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                    >
+                      <div
+                        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                        style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.15)" }}
+                      >
+                        <Icon size={13} style={{ color: "#06b6d4" }} strokeWidth={1.75} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-medium leading-none mb-0.5" style={{ color: "#111111" }}>{label}</p>
+                        <p className="text-[11px]" style={{ color: "#9B9890" }}>{sub}</p>
+                      </div>
+                      <ArrowUpRight
+                        size={12}
+                        className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0"
+                        style={{ color: "#C8C4BB" }}
+                      />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upload CTA */}
+              <div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#9B9890" }}>
+                  Quick Upload
+                </p>
+                <Link href="/upload">
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className="relative overflow-hidden rounded-xl p-5 cursor-pointer"
+                    style={{ background: "#111111" }}
                   >
-                    <span className="w-4 h-4 rounded-full bg-cyan-500/10 text-cyan-600 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
-                      {i + 1}
-                    </span>
-                    {tip}
-                  </motion.li>
-                ))}
-              </ul>
-            </motion.div>
-          </aside>
+                    {/* subtle grid texture */}
+                    <div
+                      className="absolute inset-0 pointer-events-none opacity-20"
+                      style={{
+                        backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)",
+                        backgroundSize: "20px 20px",
+                      }}
+                    />
+                    <div className="relative">
+                      <UploadCloud size={18} style={{ color: "#06b6d4" }} strokeWidth={1.5} className="mb-3" />
+                      <p className="text-sm font-semibold mb-1" style={{ color: "#FFFFFF" }}>Analyze a resume</p>
+                      <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
+                        Upload a PDF + job description for an instant ATS match report.
+                      </p>
+                      <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "#06b6d4" }}>
+                        Upload PDF <ArrowUpRight size={11} />
+                      </div>
+                    </div>
+                  </motion.div>
+                </Link>
+              </div>
+            </motion.aside>
+          </div>
         </div>
       </div>
     </DashboardShell>
   );
 }
 
-function StatCard({ title, value, suffix, icon, trend, trendColor, action, delay = 0 }: {
-  title: string;
-  value: string;
-  suffix?: string;
-  icon: React.ReactNode;
-  trend?: string;
-  trendColor?: string;
-  action?: React.ReactNode;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      whileHover={{ y: -2, boxShadow: "0 8px 24px -4px rgb(0 0 0 / 0.10)" }}
-      className="bg-card rounded-2xl border border-border p-5 shadow-sm cursor-default"
-    >
-      <div className="flex items-center justify-between mb-3">
-        <div className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground">
-          {icon}
-        </div>
-        {action}
-      </div>
-      <div className="flex items-baseline gap-1.5 mb-1.5">
-        <span className="text-2xl font-bold tracking-tight text-foreground tabular-nums">{value}</span>
-        {suffix && <span className="text-sm text-muted-foreground">{suffix}</span>}
-      </div>
-      <p className="text-[11px] font-medium text-muted-foreground">{title}</p>
-      {trend && (
-        <p className={cn("text-[10px] mt-1 font-medium", trendColor ?? "text-muted-foreground/60")}>{trend}</p>
-      )}
-    </motion.div>
-  );
-}
-
-function EmptyAnalyses() {
+function EmptyState() {
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="flex flex-col items-center justify-center py-14 rounded-2xl border border-dashed border-border text-center"
+      transition={{ duration: 0.4 }}
+      className="rounded-xl py-16 flex flex-col items-center text-center"
+      style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}
     >
-      <motion.div
-        initial={{ scale: 0.8 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.1, type: "spring", stiffness: 300, damping: 20 }}
-        className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4"
+      <div
+        className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+        style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
       >
-        <FileText size={24} className="text-muted-foreground/50" strokeWidth={1.5} />
-      </motion.div>
-      <p className="text-sm font-semibold text-foreground mb-1">No analyses yet</p>
-      <p className="text-[12px] text-muted-foreground mb-5 max-w-[220px] leading-relaxed">
-        Upload your first resume to see your ATS score and AI feedback.
+        <FileText size={18} style={{ color: "#C8C4BB" }} strokeWidth={1.5} />
+      </div>
+      <p className="text-sm font-medium mb-1" style={{ color: "#111111" }}>No analyses yet</p>
+      <p className="text-[12px] mb-6 max-w-[200px] leading-relaxed" style={{ color: "#9B9890" }}>
+        Upload your first resume to get your ATS score.
       </p>
       <Link href="/upload">
-        <Button className="h-9 px-5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-semibold text-sm">
-          <UploadCloud size={14} className="mr-1.5" />
-          Analyze My Resume
-        </Button>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
+          className="inline-flex items-center gap-2 h-9 px-5 rounded-lg text-sm font-semibold text-white"
+          style={{ background: "#06b6d4" }}
+        >
+          <UploadCloud size={13} strokeWidth={2} />
+          Upload Resume
+        </motion.button>
       </Link>
     </motion.div>
-  );
-}
-
-function ToolButton({ icon, label, sub, onClick }: {
-  icon: React.ReactNode;
-  label: string;
-  sub: string;
-  onClick: () => void;
-}) {
-  return (
-    <motion.button
-      onClick={onClick}
-      whileHover={{ x: 2 }}
-      whileTap={{ scale: 0.97 }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-      className="group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left hover:bg-muted/60 transition-colors"
-    >
-      <span className="text-muted-foreground group-hover:text-cyan-600 dark:group-hover:text-blue-400 transition-colors">
-        {icon}
-      </span>
-      <div className="flex-1 min-w-0">
-        <p className="text-[12.5px] font-semibold text-foreground leading-none mb-0.5">{label}</p>
-        <p className="text-[11px] text-muted-foreground">{sub}</p>
-      </div>
-      <ArrowUpRight size={13} className="text-muted-foreground/30 group-hover:text-cyan-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0" />
-    </motion.button>
   );
 }

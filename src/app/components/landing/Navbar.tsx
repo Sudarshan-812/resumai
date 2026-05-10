@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight, LayoutDashboard } from "lucide-react";
@@ -74,17 +75,15 @@ export default function Navbar() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
-            <div
-              className="w-7 h-7 rounded-md flex items-center justify-center"
-              style={{ background: "#06b6d4" }}
-            >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-                <rect x="2" y="1" width="12" height="14" rx="2" stroke="white" strokeWidth="1.5" />
-                <path d="M5 5h6M5 8h6M5 11h3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </div>
-            <span className="text-sm font-bold tracking-tight" style={{ color: "#111111" }}>Column8</span>
+          <Link href="/" className="flex items-center flex-shrink-0" aria-label="Column8 home">
+            <Image
+              src="/column8_black_transparent.png"
+              alt="Column8"
+              width={560}
+              height={217}
+              className="h-8 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop nav */}

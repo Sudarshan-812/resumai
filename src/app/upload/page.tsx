@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import type { FC, JSX } from "react";
 import { useState, useCallback, useRef, useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   FileText, Loader2, ArrowLeft, AlertCircle, X,
   UploadCloud, CheckCircle2, ArrowRight, AlignLeft
@@ -216,7 +217,14 @@ const UploadPage: FC = (): JSX.Element => {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <span className="font-semibold text-sm tracking-tight">Column8</span>
+        <Image
+            src="/column8_black_transparent.png"
+            alt="Column8"
+            width={560}
+            height={217}
+            className="h-7 w-auto"
+            priority
+          />
         <div className="w-[88px]" /> {/* Spacer */}
       </header>
 

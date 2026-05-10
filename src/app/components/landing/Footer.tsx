@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Twitter, Linkedin, Github } from "lucide-react";
@@ -76,15 +77,13 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="space-y-5">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ background: "#06b6d4" }}>
-                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-                  <rect x="2" y="1" width="12" height="14" rx="2" stroke="white" strokeWidth="1.5" />
-                  <path d="M5 5h6M5 8h6M5 11h3.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-              </div>
-              <span className="text-sm font-bold tracking-tight" style={{ color: "#111111" }}>Column8</span>
-            </div>
+            <Image
+              src="/column8_black_transparent.png"
+              alt="Column8"
+              width={560}
+              height={217}
+              className="h-9 w-auto"
+            />
             <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: "#9B9890" }}>
               AI-powered resume optimization for the modern job market.
             </p>

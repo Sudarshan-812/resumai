@@ -10,152 +10,136 @@ import {
   useLocalParticipant,
 } from "@livekit/components-react";
 import type { AgentState } from "@livekit/components-react";
-import {
-  Mic, MicOff, PhoneOff, Loader2,
-  FileText, ChevronDown, Radio,
-} from "lucide-react";
+import { Mic, MicOff, PhoneOff, Loader2, FileText, ChevronDown } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-// Resolved once at module load — undefined when env var is not set in .env.local
 const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "";
+const EASE = [0.16, 1, 0.3, 1] as const;
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+interface Resume { id: string; file_name: string; created_at: string }
+interface LiveSession { token: string; roomName: string }
 
-interface Resume {
-  id: string;
-  file_name: string;
-  created_at: string;
-}
+// ── Status config ──────────────────────────────────────────────────────────────
 
-interface LiveSession {
-  token: string;
-  roomName: string;
-}
-
-// ── Status config keyed on AgentState string literals ─────────────────────────
-
-const STATUS: Record<
-  string,
-  { label: string; dotColor: string; ringColor: string; textColor: string; pulse: boolean }
-> = {
-  disconnected:           { label: "Disconnected",        dotColor: "bg-zinc-500",    ringColor: "bg-zinc-500",    textColor: "text-zinc-400",    pulse: false },
-  connecting:             { label: "Connecting…",          dotColor: "bg-cyan-500",    ringColor: "bg-cyan-400",    textColor: "text-cyan-600",    pulse: true  },
-  "pre-connect-buffering":{ label: "Preparing…",           dotColor: "bg-cyan-500",    ringColor: "bg-cyan-400",    textColor: "text-cyan-600",    pulse: true  },
-  failed:                 { label: "Connection failed",    dotColor: "bg-rose-500",    ringColor: "bg-rose-400",    textColor: "text-rose-400",    pulse: false },
-  initializing:           { label: "Initializing…",        dotColor: "bg-cyan-500",    ringColor: "bg-cyan-400",    textColor: "text-cyan-600",    pulse: true  },
-  idle:                   { label: "Ready",                dotColor: "bg-zinc-400",    ringColor: "bg-zinc-400",    textColor: "text-zinc-400",    pulse: false },
-  listening:              { label: "Listening",            dotColor: "bg-emerald-500", ringColor: "bg-emerald-400", textColor: "text-emerald-400", pulse: false },
-  thinking:               { label: "Thinking…",            dotColor: "bg-amber-500",   ringColor: "bg-amber-400",   textColor: "text-amber-400",   pulse: true  },
-  speaking:               { label: "Speaking",             dotColor: "bg-violet-500",  ringColor: "bg-violet-400",  textColor: "text-violet-400",  pulse: true  },
+const STATUS: Record<string, { label: string; dotColor: string; pulse: boolean }> = {
+  disconnected:            { label: "Disconnected",     dotColor: "#94a3b8", pulse: false },
+  connecting:              { label: "Connecting…",      dotColor: "#06b6d4", pulse: true  },
+  "pre-connect-buffering": { label: "Preparing…",       dotColor: "#06b6d4", pulse: true  },
+  failed:                  { label: "Connection failed",dotColor: "#f43f5e", pulse: false },
+  initializing:            { label: "Initializing…",    dotColor: "#06b6d4", pulse: true  },
+  idle:                    { label: "Ready",            dotColor: "#94a3b8", pulse: false },
+  listening:               { label: "Listening",        dotColor: "#10b981", pulse: false },
+  thinking:                { label: "Thinking…",        dotColor: "#f59e0b", pulse: true  },
+  speaking:                { label: "Speaking",         dotColor: "#8b5cf6", pulse: true  },
 };
+function getStatus(s: string) { return STATUS[s] ?? STATUS.disconnected; }
 
-function getStatus(state: string) {
-  return STATUS[state] ?? STATUS.disconnected;
-}
-
-// ── Animated orb ─────────────────────────────────────────────────────────────
+// ── Orb ────────────────────────────────────────────────────────────────────────
 
 function AgentOrb({ state }: { state: AgentState }) {
-  const cfg = getStatus(state);
-
   const isSpeaking  = state === "speaking";
   const isThinking  = state === "thinking";
   const isListening = state === "listening";
   const isActive    = isSpeaking || isThinking || isListening;
 
-  // Outer ring colour as a hex-ish tailwind bg for inline style
   const ringRgb =
-    isSpeaking  ? "139 92 246" :  // violet-500
-    isThinking  ? "245 158 11" :  // amber-500
-    isListening ? "16 185 129" :  // emerald-500
-                  "6 182 212";    // cyan-500
+    isSpeaking  ? "139 92 246" :
+    isThinking  ? "245 158 11" :
+    isListening ? "16 185 129" :
+                  "6 182 212";
 
   return (
-    <div className="relative flex items-center justify-center w-44 h-44">
-      {/* Slow outer halo — always present when active */}
+    <div className="relative flex items-center justify-center w-36 h-36">
       <AnimatePresence>
         {isActive && (
           <motion.div
             key="halo"
             className="absolute inset-0 rounded-full"
-            style={{ background: `rgba(${ringRgb} / 0.08)` }}
+            style={{ background: `rgba(${ringRgb} / 0.07)` }}
             initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: [1, 1.55, 1], opacity: [0.12, 0, 0.12] }}
+            animate={{ scale: [1, 1.6, 1], opacity: [0.1, 0, 0.1] }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
         )}
       </AnimatePresence>
 
-      {/* Mid ring — speaking / thinking */}
       <AnimatePresence>
         {(isSpeaking || isThinking) && (
           <motion.div
             key="midring"
             className="absolute rounded-full"
-            style={{
-              inset: "12px",
-              background: `rgba(${ringRgb} / 0.1)`,
-            }}
+            style={{ inset: "14px", background: `rgba(${ringRgb} / 0.09)` }}
             initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0, 0.2] }}
+            animate={{ scale: [1, 1.28, 1], opacity: [0.18, 0, 0.18] }}
             exit={{ opacity: 0 }}
-            transition={{
-              duration: isSpeaking ? 1.2 : 2.4,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.25,
-            }}
+            transition={{ duration: isSpeaking ? 1.2 : 2.4, repeat: Infinity, ease: "easeInOut", delay: 0.25 }}
           />
         )}
       </AnimatePresence>
 
-      {/* Core orb */}
       <motion.div
-        className={cn(
-          "relative w-24 h-24 rounded-full flex items-center justify-center border",
-          "shadow-lg transition-colors duration-500"
-        )}
+        className="relative w-20 h-20 rounded-full flex items-center justify-center"
         style={{
-          background: `rgba(${ringRgb} / 0.12)`,
-          borderColor: `rgba(${ringRgb} / 0.3)`,
-          boxShadow: isActive ? `0 0 32px rgba(${ringRgb} / 0.25)` : "none",
+          background: `rgba(${ringRgb} / 0.1)`,
+          border: `1.5px solid rgba(${ringRgb} / 0.28)`,
+          boxShadow: isActive ? `0 0 36px rgba(${ringRgb} / 0.22)` : "none",
         }}
         animate={
-          isSpeaking
-            ? { scale: [1, 1.06, 1] }
-            : isThinking
-            ? { scale: [1, 0.94, 1] }
-            : { scale: 1 }
+          isSpeaking ? { scale: [1, 1.07, 1] } :
+          isThinking ? { scale: [1, 0.93, 1] } :
+          { scale: 1 }
         }
-        transition={{
-          duration: isSpeaking ? 0.7 : 1.8,
-          repeat: isActive ? Infinity : 0,
-          ease: "easeInOut",
-        }}
+        transition={{ duration: isSpeaking ? 0.7 : 1.8, repeat: isActive ? Infinity : 0, ease: "easeInOut" }}
       >
-        {/* Inner dot */}
         <motion.div
-          className={cn("w-8 h-8 rounded-full", cfg.dotColor)}
+          className="w-5 h-5 rounded-full"
+          style={{ background: getStatus(state).dotColor }}
           animate={
-            cfg.pulse
-              ? { opacity: [0.7, 1, 0.7], scale: [0.9, 1.1, 0.9] }
+            getStatus(state).pulse
+              ? { opacity: [0.7, 1, 0.7], scale: [0.88, 1.12, 0.88] }
               : { opacity: 1, scale: 1 }
           }
-          transition={{ duration: 1.4, repeat: cfg.pulse ? Infinity : 0, ease: "easeInOut" }}
+          transition={{ duration: 1.4, repeat: getStatus(state).pulse ? Infinity : 0, ease: "easeInOut" }}
         />
       </motion.div>
     </div>
   );
 }
 
-// ── Status pill ────────────────────────────────────────────────────────────────
+// ── Status pill (light, for active session) ────────────────────────────────────
 
 function StatusPill({ state, connectionState }: { state: AgentState; connectionState: string }) {
-  const isRoomConnecting = connectionState === "connecting";
-  const effectiveState = isRoomConnecting && state === "disconnected" ? "connecting" : state;
+  const effectiveState = connectionState === "connecting" && state === "disconnected" ? "connecting" : state;
+  const cfg = getStatus(effectiveState);
+
+  return (
+    <motion.div
+      key={effectiveState}
+      initial={{ opacity: 0, y: 4, scale: 0.94 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -4, scale: 0.94 }}
+      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+      style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+    >
+      <span
+        className={cn("w-1.5 h-1.5 rounded-full shrink-0", cfg.pulse && "animate-pulse")}
+        style={{ background: cfg.dotColor }}
+      />
+      <span className="text-[11px] font-medium" style={{ color: "#6B6860" }}>
+        {cfg.label}
+      </span>
+    </motion.div>
+  );
+}
+
+// ── Status pill (dark, for setup) ─────────────────────────────────────────────
+
+function StatusPillDark({ state, connectionState }: { state: AgentState; connectionState: string }) {
+  const effectiveState = connectionState === "connecting" && state === "disconnected" ? "connecting" : state;
   const cfg = getStatus(effectiveState);
 
   return (
@@ -165,52 +149,47 @@ function StatusPill({ state, connectionState }: { state: AgentState; connectionS
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -4, scale: 0.94 }}
       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-      className="flex items-center gap-2 px-4 py-2 rounded-full border border-border/60 bg-card/80 backdrop-blur-sm"
+      className="flex items-center gap-2 px-4 py-2 rounded-full"
+      style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
     >
       <span
-        className={cn(
-          "w-2 h-2 rounded-full shrink-0",
-          cfg.dotColor,
-          cfg.pulse && "animate-pulse"
-        )}
+        className={cn("w-2 h-2 rounded-full shrink-0", cfg.pulse && "animate-pulse")}
+        style={{ background: cfg.dotColor }}
       />
-      <span className={cn("text-[12px] font-semibold", cfg.textColor)}>
+      <span className="text-[12px] font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
         {cfg.label}
       </span>
     </motion.div>
   );
 }
 
-// ── Transcript area ───────────────────────────────────────────────────────────
+// ── Transcript ─────────────────────────────────────────────────────────────────
 
-interface TranscriptSegment {
-  id: string;
-  text: string;
-  final: boolean;
-}
+interface TranscriptSegment { id: string; text: string; final: boolean }
 
-function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
+function TranscriptArea({ segments, light = false }: { segments: TranscriptSegment[]; light?: boolean }) {
   const bottomRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [segments.length]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [segments.length]);
-
-  const finalSegments = segments.filter((s) => s.final && s.text.trim());
-
-  if (finalSegments.length === 0) return null;
+  const finals = segments.filter(s => s.final && s.text.trim());
+  if (finals.length === 0) return null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-h-52 overflow-y-auto rounded-2xl border border-border bg-card/60 backdrop-blur-sm p-4 space-y-2 scrollbar-none"
+      className="w-full max-h-40 overflow-y-auto rounded-xl p-4 space-y-2.5 scrollbar-none"
+      style={
+        light
+          ? { background: "#F7F6F2", border: "1px solid #E5E3DC" }
+          : { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }
+      }
     >
-      <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-3">
+      <p className="text-[9px] font-mono uppercase tracking-widest mb-2.5" style={{ color: light ? "#C8C4BB" : "rgba(255,255,255,0.25)" }}>
         Transcript
       </p>
       <AnimatePresence initial={false}>
-        {finalSegments.map((seg) => (
+        {finals.map((seg) => (
           <motion.div
             key={seg.id}
             initial={{ opacity: 0, x: -8, height: 0 }}
@@ -218,8 +197,13 @@ function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
             className="flex gap-2.5"
           >
-            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-violet-500 shrink-0" />
-            <p className="text-[13px] text-foreground leading-relaxed">{seg.text}</p>
+            <div
+              className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+              style={{ background: light ? "#06b6d4" : "#8b5cf6" }}
+            />
+            <p className="text-[13px] leading-relaxed" style={{ color: light ? "#6B6860" : "rgba(255,255,255,0.7)" }}>
+              {seg.text}
+            </p>
           </motion.div>
         ))}
       </AnimatePresence>
@@ -228,83 +212,158 @@ function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
   );
 }
 
-// ── Active session (must live inside <LiveKitRoom>) ───────────────────────────
+// ── Active Session — Google Meet style ────────────────────────────────────────
 
-function ActiveSession({
-  onEnd,
-  roomName,
-}: {
-  onEnd: () => void;
-  roomName: string;
-}) {
+function ActiveSession({ onEnd, roomName }: { onEnd: () => void; roomName: string }) {
   const { state, agentTranscriptions } = useVoiceAssistant();
   const connectionState = useConnectionState() as string;
   const { isMicrophoneEnabled, localParticipant } = useLocalParticipant();
 
-  const toggleMic = useCallback(() => {
-    localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled);
+  const toggleMic = useCallback(async () => {
+    try {
+      await localParticipant.setMicrophoneEnabled(!isMicrophoneEnabled);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.toLowerCase().includes("permission") || msg.toLowerCase().includes("denied") || msg.toLowerCase().includes("notallowed")) {
+        toast.error("Microphone access denied — check your browser permissions and reload.");
+      } else {
+        toast.error("Could not toggle microphone.");
+      }
+    }
   }, [localParticipant, isMicrophoneEnabled]);
 
   return (
-    <div className="flex flex-col items-center gap-6 py-8 px-6">
-      {/* Orb + status */}
-      <div className="flex flex-col items-center gap-5">
-        <AgentOrb state={state} />
-        <AnimatePresence mode="wait">
-          <StatusPill key={state} state={state} connectionState={connectionState} />
-        </AnimatePresence>
-        <p className="text-[10px] font-mono text-muted-foreground/40">{roomName}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: EASE }}
+      className="flex flex-col gap-4"
+    >
+      {/* Tile row */}
+      <div className="flex gap-3 items-stretch">
+
+        {/* AI Tile */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, ease: EASE }}
+          className="flex-1 relative rounded-2xl flex flex-col items-center justify-center gap-4 overflow-hidden"
+          style={{
+            background: "#FAFAF8",
+            border: "1px solid #E5E3DC",
+            minHeight: 272,
+            boxShadow: "0 2px 16px rgba(0,0,0,0.04)",
+          }}
+        >
+          {/* Ambient cyan radial glow */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at 50% 10%, rgba(6,182,212,0.07) 0%, transparent 65%)" }}
+          />
+
+          {/* Status pill */}
+          <div className="absolute top-4 left-4">
+            <AnimatePresence mode="wait">
+              <StatusPill key={state} state={state} connectionState={connectionState} />
+            </AnimatePresence>
+          </div>
+
+          {/* Orb */}
+          <div className="relative mt-4">
+            <AgentOrb state={state} />
+          </div>
+
+          {/* Label */}
+          <div className="relative text-center pb-2">
+            <p className="text-[13px] font-semibold" style={{ color: "#111111" }}>Column8 AI</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5" style={{ color: "#9B9890" }}>Interviewer</p>
+          </div>
+        </motion.div>
+
+        {/* User Tile */}
+        <motion.div
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.1, duration: 0.45, ease: EASE }}
+          className="w-[108px] rounded-2xl flex flex-col items-center justify-center gap-3 py-6"
+          style={{
+            background: "#F7F6F2",
+            border: "1px solid #E5E3DC",
+            boxShadow: "0 2px 16px rgba(0,0,0,0.04)",
+          }}
+        >
+          <motion.div
+            className="w-12 h-12 rounded-full flex items-center justify-center"
+            style={{
+              background: isMicrophoneEnabled ? "rgba(16,185,129,0.08)" : "rgba(244,63,94,0.08)",
+              border: `1.5px solid ${isMicrophoneEnabled ? "rgba(16,185,129,0.28)" : "rgba(244,63,94,0.28)"}`,
+            }}
+            animate={
+              isMicrophoneEnabled
+                ? { boxShadow: ["0 0 0 0 rgba(16,185,129,0)", "0 0 0 8px rgba(16,185,129,0.08)", "0 0 0 0 rgba(16,185,129,0)"] }
+                : {}
+            }
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
+          >
+            {isMicrophoneEnabled
+              ? <Mic size={17} style={{ color: "#10b981" }} />
+              : <MicOff size={17} style={{ color: "#f43f5e" }} />
+            }
+          </motion.div>
+
+          <div className="text-center">
+            <p className="text-[12px] font-semibold" style={{ color: "#111111" }}>You</p>
+            <p className="text-[10px] font-mono mt-0.5" style={{ color: isMicrophoneEnabled ? "#10b981" : "#f43f5e" }}>
+              {isMicrophoneEnabled ? "Live" : "Muted"}
+            </p>
+          </div>
+        </motion.div>
       </div>
 
       {/* Transcript */}
-      <TranscriptArea segments={agentTranscriptions} />
+      <TranscriptArea segments={agentTranscriptions} light />
+
+      {/* Hint */}
+      <p className="text-center text-[11px]" style={{ color: "#C8C4BB" }}>
+        Speak naturally — the AI handles turn-taking
+      </p>
 
       {/* Controls */}
-      <div className="flex items-center gap-4">
-        {/* Mic toggle */}
+      <div className="flex items-center justify-center gap-3 pb-1">
         <motion.button
           onClick={toggleMic}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.93 }}
-          title={isMicrophoneEnabled ? "Mute microphone" : "Unmute microphone"}
-          className={cn(
-            "w-12 h-12 rounded-full border flex items-center justify-center transition-colors",
+          whileHover={{ scale: 1.07 }}
+          whileTap={{ scale: 0.92 }}
+          title={isMicrophoneEnabled ? "Mute" : "Unmute"}
+          className="w-12 h-12 rounded-full flex items-center justify-center transition-colors"
+          style={
             isMicrophoneEnabled
-              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20"
-              : "bg-rose-500/10 border-rose-500/30 text-rose-400 hover:bg-rose-500/20"
-          )}
+              ? { background: "#F7F6F2", border: "1px solid #E5E3DC", color: "#6B6860" }
+              : { background: "rgba(244,63,94,0.09)", border: "1.5px solid rgba(244,63,94,0.28)", color: "#f43f5e" }
+          }
         >
           {isMicrophoneEnabled ? <Mic size={16} /> : <MicOff size={16} />}
         </motion.button>
 
-        {/* End session */}
         <motion.button
           onClick={onEnd}
-          whileHover={{ scale: 1.06 }}
-          whileTap={{ scale: 0.93 }}
-          title="End session"
-          className="w-14 h-14 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center shadow-lg shadow-rose-500/25 transition-colors"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.95 }}
+          className="h-12 px-8 rounded-full flex items-center gap-2 text-sm font-semibold text-white"
+          style={{ background: "#e11d48", boxShadow: "0 4px 22px rgba(225,29,72,0.28)" }}
         >
-          <PhoneOff size={18} />
+          <PhoneOff size={15} />
+          End Interview
         </motion.button>
       </div>
-
-      <p className="text-[11px] text-muted-foreground/50">
-        Speak naturally — the AI agent will respond in real time.
-      </p>
-    </div>
+    </motion.div>
   );
 }
 
-// ── Setup view ────────────────────────────────────────────────────────────────
+// ── Setup view (dark-adapted) ─────────────────────────────────────────────────
 
 function SetupView({
-  resumes,
-  resumesLoading,
-  selectedId,
-  onSelect,
-  onStart,
-  loading,
+  resumes, resumesLoading, selectedId, onSelect, onStart, loading,
 }: {
   resumes: Resume[];
   resumesLoading: boolean;
@@ -315,147 +374,139 @@ function SetupView({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6"
+      className="space-y-5"
     >
-      {/* Header card */}
-      <div className="rounded-2xl border border-violet-500/20 bg-violet-500/5 p-5 flex items-start gap-4">
-        <div className="w-10 h-10 rounded-xl bg-violet-500/15 border border-violet-500/25 flex items-center justify-center shrink-0">
-          <Radio size={16} className="text-violet-400" />
-        </div>
-        <div>
-          <p className="text-[13px] font-semibold text-foreground mb-1">Voice AI Interview</p>
-          <p className="text-[12px] text-muted-foreground leading-relaxed">
-            A real-time AI interviewer trained on your resume and target JD. Speak your answers
-            naturally — no typing required.
-          </p>
-        </div>
-      </div>
-
       {/* Resume picker */}
       <div>
-        <label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">
-          Select resume
+        <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>
+          Select Resume
         </label>
         {resumesLoading ? (
-          <div className="h-10 rounded-xl border border-border bg-card flex items-center px-3.5 gap-2">
-            <Loader2 size={13} className="animate-spin text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Loading resumes…</span>
+          <div
+            className="h-11 rounded-xl flex items-center px-4 gap-2"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <Loader2 size={13} className="animate-spin" style={{ color: "rgba(255,255,255,0.3)" }} />
+            <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Loading resumes…</span>
           </div>
         ) : resumes.length === 0 ? (
-          <div className="h-10 rounded-xl border border-border bg-card flex items-center px-3.5">
-            <span className="text-sm text-muted-foreground">
+          <div
+            className="h-11 rounded-xl flex items-center px-4"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" }}
+          >
+            <span className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>
               No resumes found —{" "}
-              <a href="/upload" className="text-cyan-600 hover:underline">upload one first</a>
+              <a href="/upload" className="underline" style={{ color: "#06b6d4" }}>upload one first</a>
             </span>
           </div>
         ) : (
           <div className="relative">
-            <FileText
-              size={14}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-            />
+            <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.3)" }} />
             <select
               value={selectedId}
-              onChange={(e) => onSelect(e.target.value)}
-              className={cn(
-                "w-full h-10 pl-9 pr-9 rounded-xl border border-border bg-card text-sm",
-                "text-foreground appearance-none cursor-pointer",
-                "focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500/50",
-                "transition-all"
-              )}
+              onChange={e => onSelect(e.target.value)}
+              className="w-full h-11 pl-9 pr-9 rounded-xl text-sm appearance-none cursor-pointer focus:outline-none transition-all"
+              style={{
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                color: selectedId ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.35)",
+              }}
             >
-              <option value="" disabled>Choose a resume…</option>
-              {resumes.map((r) => (
-                <option key={r.id} value={r.id}>
+              <option value="" disabled style={{ color: "#111" }}>Choose a resume…</option>
+              {resumes.map(r => (
+                <option key={r.id} value={r.id} style={{ color: "#111" }}>
                   {r.file_name.replace(/\.pdf$/i, "")}
                 </option>
               ))}
             </select>
-            <ChevronDown
-              size={14}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-            />
+            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "rgba(255,255,255,0.3)" }} />
           </div>
         )}
       </div>
 
-      {/* Requirements */}
-      <div className="rounded-xl border border-border bg-card/50 p-4 space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+      {/* Checklist */}
+      <div
+        className="rounded-xl p-4 space-y-2.5"
+        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+      >
+        <p className="text-[9px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "rgba(255,255,255,0.25)" }}>
           Before you begin
         </p>
         {[
-          "Allow microphone access when the browser prompts",
+          "Allow microphone access when prompted",
           "Use headphones to prevent echo",
           "Speak at a natural pace — the AI handles turn-taking",
         ].map((item, i) => (
-          <div key={i} className="flex items-start gap-2.5">
-            <span className="w-4 h-4 rounded-full bg-violet-500/15 border border-violet-500/20 text-violet-400 text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+          <div key={i} className="flex items-start gap-3">
+            <span
+              className="w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5"
+              style={{ background: "rgba(6,182,212,0.12)", border: "1px solid rgba(6,182,212,0.2)", color: "#06b6d4" }}
+            >
               {i + 1}
             </span>
-            <p className="text-[12px] text-muted-foreground leading-relaxed">{item}</p>
+            <p className="text-[12px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>{item}</p>
           </div>
         ))}
       </div>
 
-      {/* Not-configured warning */}
       {!LIVEKIT_URL && (
-        <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl border border-amber-500/20 bg-amber-500/5">
-          <span className="text-amber-400 text-sm leading-none mt-0.5">⚠</span>
-          <p className="text-[12px] text-amber-600 leading-relaxed">
+        <div
+          className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
+          style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)" }}
+        >
+          <span className="text-sm leading-none mt-0.5" style={{ color: "#f59e0b" }}>⚠</span>
+          <p className="text-[12px] leading-relaxed" style={{ color: "rgba(245,158,11,0.8)" }}>
             <span className="font-semibold">Not configured.</span>{" "}
-            Add <code className="font-mono bg-amber-500/10 px-1 rounded text-[11px]">NEXT_PUBLIC_LIVEKIT_URL</code> to
-            your <code className="font-mono bg-amber-500/10 px-1 rounded text-[11px]">.env.local</code> and restart the dev server.
+            Add <code className="font-mono px-1 rounded text-[11px]" style={{ background: "rgba(245,158,11,0.1)" }}>NEXT_PUBLIC_LIVEKIT_URL</code> to
+            your <code className="font-mono px-1 rounded text-[11px]" style={{ background: "rgba(245,158,11,0.1)" }}>.env.local</code> and restart.
           </p>
         </div>
       )}
 
-      {/* Start button */}
       <motion.button
         onClick={onStart}
         disabled={!selectedId || loading || !LIVEKIT_URL}
-        whileHover={selectedId && !loading && !!LIVEKIT_URL ? { y: -1 } : {}}
+        whileHover={selectedId && !loading && !!LIVEKIT_URL ? { scale: 1.01 } : {}}
         whileTap={selectedId && !loading && !!LIVEKIT_URL ? { scale: 0.98 } : {}}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
-        className={cn(
-          "w-full h-11 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-all",
-          "bg-violet-600 hover:bg-violet-500 text-white shadow-md shadow-violet-500/20",
-          "disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
-        )}
+        className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ background: "#06b6d4", color: "#FFFFFF", boxShadow: "0 4px 20px rgba(6,182,212,0.25)" }}
       >
-        {loading ? (
-          <><Loader2 size={14} className="animate-spin" />Connecting…</>
-        ) : (
-          <><Mic size={14} />Start Voice Interview</>
-        )}
+        {loading
+          ? <><Loader2 size={15} className="animate-spin" />Connecting…</>
+          : <><Mic size={15} />Start Voice Interview</>
+        }
       </motion.button>
     </motion.div>
   );
 }
 
-// ── Ended view ────────────────────────────────────────────────────────────────
+// ── Ended view (dark-adapted) ─────────────────────────────────────────────────
 
 function EndedView({ onRestart }: { onRestart: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="flex flex-col items-center gap-5 py-10 text-center"
+      className="flex flex-col items-center gap-5 py-8 text-center"
     >
-      <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-        <Radio size={20} className="text-emerald-500" />
+      <div
+        className="w-14 h-14 rounded-2xl flex items-center justify-center"
+        style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.2)" }}
+      >
+        <Mic size={20} style={{ color: "#10b981" }} />
       </div>
       <div>
-        <h3 className="text-[15px] font-semibold text-foreground mb-1">Session ended</h3>
-        <p className="text-sm text-muted-foreground">Your voice interview session has concluded.</p>
+        <p className="text-[15px] font-semibold mb-1" style={{ color: "rgba(255,255,255,0.85)" }}>Session ended</p>
+        <p className="text-sm" style={{ color: "rgba(255,255,255,0.4)" }}>Your voice interview session has concluded.</p>
       </div>
       <motion.button
         onClick={onRestart}
-        whileHover={{ y: -1 }}
+        whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
-        className="h-10 px-6 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-bold transition-colors shadow-md shadow-violet-500/20"
+        className="h-10 px-6 rounded-xl text-sm font-semibold transition-colors"
+        style={{ background: "#06b6d4", color: "#FFFFFF" }}
       >
         Start New Session
       </motion.button>
@@ -465,31 +516,30 @@ function EndedView({ onRestart }: { onRestart: () => void }) {
 
 // ── Root export ───────────────────────────────────────────────────────────────
 
-export default function VoiceInterview() {
-  const [resumes, setResumes] = useState<Resume[]>([]);
+export default function VoiceInterview({ onActiveChange }: { onActiveChange?: (active: boolean) => void }) {
+  const [resumes, setResumes]               = useState<Resume[]>([]);
   const [resumesLoading, setResumesLoading] = useState(true);
-  const [selectedId, setSelectedId] = useState("");
-  const [session, setSession] = useState<LiveSession | null>(null);
-  const [sessionEnded, setSessionEnded] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [selectedId, setSelectedId]         = useState("");
+  const [session, setSession]               = useState<LiveSession | null>(null);
+  const [sessionEnded, setSessionEnded]     = useState(false);
+  const [loading, setLoading]               = useState(false);
 
-  // Fetch user's resumes on mount via browser Supabase client
+  useEffect(() => {
+    onActiveChange?.(!!session && !sessionEnded);
+  }, [session, sessionEnded, onActiveChange]);
+
   useEffect(() => {
     const supabase = createClient();
     (async () => {
       try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-
         const { data } = await supabase
           .from("resumes")
           .select("id, file_name, created_at")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(10);
-
         if (data) setResumes(data);
       } finally {
         setResumesLoading(false);
@@ -500,7 +550,7 @@ export default function VoiceInterview() {
   const handleStart = async () => {
     if (!selectedId) return;
     if (!LIVEKIT_URL) {
-      toast.error("Voice interview is not configured — add NEXT_PUBLIC_LIVEKIT_URL to your .env.local file.");
+      toast.error("Voice interview is not configured — add NEXT_PUBLIC_LIVEKIT_URL to your .env.local.");
       return;
     }
     setLoading(true);
@@ -510,12 +560,10 @@ export default function VoiceInterview() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resumeId: selectedId }),
       });
-
       if (!res.ok) {
         const payload = await res.json().catch(() => ({})) as { error?: string };
         throw new Error(payload.error ?? `Server error ${res.status}`);
       }
-
       const { token, roomName } = await res.json() as { token: string; roomName: string };
       setSession({ token, roomName });
       setSessionEnded(false);
@@ -531,53 +579,29 @@ export default function VoiceInterview() {
     setSessionEnded(true);
   }, []);
 
-  // ── Render ──────────────────────────────────────────────────────────────
   if (session) {
-    // LIVEKIT_URL is guaranteed non-empty here — handleStart guards against it.
-    // The explicit check below is a safety net for future code paths.
     if (!LIVEKIT_URL) {
       return (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center gap-3 py-12 text-center"
-        >
-          <p className="text-sm font-semibold text-foreground">Voice interview not configured</p>
-          <p className="text-xs text-muted-foreground max-w-xs">
-            Add <code className="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">NEXT_PUBLIC_LIVEKIT_URL</code> to
-            your <code className="font-mono bg-muted px-1 py-0.5 rounded text-[11px]">.env.local</code> file and
-            restart the dev server.
-          </p>
-          <motion.button
-            onClick={handleEnd}
-            whileTap={{ scale: 0.97 }}
-            className="mt-2 h-9 px-5 rounded-xl border border-border text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
+        <div className="flex flex-col items-center gap-3 py-10 text-center">
+          <p className="text-sm font-semibold" style={{ color: "#6B6860" }}>Voice interview not configured</p>
+          <motion.button onClick={handleEnd} whileTap={{ scale: 0.97 }}
+            className="h-9 px-5 rounded-xl text-xs font-semibold"
+            style={{ border: "1px solid #E5E3DC", color: "#9B9890" }}
           >
             Back
           </motion.button>
-        </motion.div>
+        </div>
       );
     }
-
     return (
-      <LiveKitRoom
-        serverUrl={LIVEKIT_URL}
-        token={session.token}
-        connect
-        audio
-        video={false}
-        onDisconnected={handleEnd}
-      >
-        {/* Renders remote audio tracks to the page */}
+      <LiveKitRoom serverUrl={LIVEKIT_URL} token={session.token} connect audio video={false} onDisconnected={handleEnd} options={{ stopLocalTrackOnUnpublish: false }}>
         <RoomAudioRenderer />
         <ActiveSession onEnd={handleEnd} roomName={session.roomName} />
       </LiveKitRoom>
     );
   }
 
-  if (sessionEnded) {
-    return <EndedView onRestart={() => setSessionEnded(false)} />;
-  }
+  if (sessionEnded) return <EndedView onRestart={() => setSessionEnded(false)} />;
 
   return (
     <SetupView

@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,15 +46,6 @@ const NAV_SECTIONS = [
     ],
   },
 ];
-
-function LogoMark() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function UserAvatar({ profile, size = "sm" }: { profile: UserProfile | null; size?: "sm" | "md" }) {
   const dim = size === "md" ? "w-8 h-8 text-sm" : "w-7 h-7 text-xs";
@@ -378,11 +370,15 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               >
                 <Menu size={17} />
               </button>
-              <Link href="/dashboard" className="flex items-center gap-2">
-                <div className="w-6 h-6 rounded-md flex items-center justify-center text-white" style={{ background: "#06b6d4" }}>
-                  <LogoMark />
-                </div>
-                <span className="text-[14px] font-bold text-foreground">Column8</span>
+              <Link href="/dashboard" className="flex items-center">
+                <Image
+                  src="/column8_black_transparent.png"
+                  alt="Column8"
+                  width={560}
+                  height={217}
+                  className="h-7 w-auto"
+                  priority
+                />
               </Link>
             </div>
 
