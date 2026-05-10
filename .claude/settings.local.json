@@ -37,7 +37,9 @@
       "Bash(node -e \"const exports = Object.keys\\(require\\('./node_modules/@livekit/components-react/dist/index.cjs'\\)\\); const target = ['LiveKitRoom','RoomAudioRenderer','useVoiceAssistant','AgentState','useConnectionState','useLocalParticipant','useIsSpeaking','useRemoteParticipants']; target.forEach\\(k => console.log\\(k+':', exports.includes\\(k\\) ? 'YES' : 'NO'\\)\\);\")",
       "Bash(node -e \"const pkg = require\\('./node_modules/@livekit/components-react/package.json'\\); console.log\\('version:', pkg.version, 'exports:', Object.keys\\(pkg.exports||{}\\).slice\\(0,5\\)\\);\")",
       "Bash(node *)",
-      "WebFetch(domain:www.everia.io)"
+      "WebFetch(domain:www.everia.io)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\mrsud\\\\OneDrive\\\\Desktop\\\\AI RESUME PROJ\")",
+      "Bash(Select-Object Name, Mode)"
     ]
   }
 }

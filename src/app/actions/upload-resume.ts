@@ -4,6 +4,8 @@ import pdfParse from "pdf-parse";
 import { analyzeResume } from '@/app/lib/gemini';
 import { createClient } from '@/app/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import { after } from 'next/server';
+import { chunkAndEmbedResume } from '@/app/lib/chunking';
 
 interface PDFTextItem { str: string; transform: number[] }
 interface PDFPageData {
@@ -106,6 +108,16 @@ export async function processResume(formData: FormData) {
     }
 
     revalidatePath('/dashboard');
+
+    // Background chunking for version control — runs after the response is sent
+    after(async () => {
+      try {
+        await chunkAndEmbedResume(resume.id, text, user.id);
+      } catch (err) {
+        console.error("[upload] background chunking failed:", err);
+      }
+    });
+
     return { success: true, data: analysis, id: resume.id, truncated: false };
 
   } catch (error: unknown) {

@@ -9,7 +9,7 @@ import {
   LayoutDashboard, History, FileText, PenLine,
   BarChart3, CreditCard, Settings, LogOut,
   Menu, ChevronRight, AlertTriangle, Zap,
-  PanelLeftClose,
+  PanelLeftClose, GitBranch,
 } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -34,8 +34,9 @@ const NAV_SECTIONS = [
   {
     label: "AI Tools",
     items: [
-      { id: "cover-letter", label: "Cover Letter",   href: "/dashboard/cover-letter", icon: PenLine   },
-      { id: "interview",    label: "Interview Prep",  href: "/dashboard/interview",   icon: BarChart3 },
+      { id: "cover-letter", label: "Cover Letter",    href: "/dashboard/cover-letter", icon: PenLine    },
+      { id: "interview",    label: "Interview Prep",  href: "/dashboard/interview",    icon: BarChart3  },
+      { id: "versions",     label: "Resume Versions", href: "/dashboard/versions",     icon: GitBranch  },
     ],
   },
   {
@@ -304,6 +305,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
     if (pathname.startsWith("/dashboard/resumes"))  return "resumes";
     if (pathname.startsWith("/dashboard/cover-letter")) return "cover-letter";
     if (pathname.startsWith("/dashboard/interview")) return "interview";
+    if (pathname.startsWith("/dashboard/versions"))  return "versions";
     if (pathname.startsWith("/billing"))            return "billing";
     if (pathname.startsWith("/settings"))           return "settings";
     return "dashboard";
