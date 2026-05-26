@@ -99,7 +99,7 @@ function AnalysisLoader() {
         </div>
         <div className="p-4 space-y-2 font-mono text-xs min-h-[240px]">
           {LOG_STEPS.map((msg, i) => (
-            <AnimatePresence key={i}>
+            <AnimatePresence key={msg}>
               {i <= step && (
                 <motion.div
                   initial={{ opacity: 0, x: -8 }}

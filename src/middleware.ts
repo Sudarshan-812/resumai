@@ -3,27 +3,72 @@ import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { createServerClient } from "@supabase/ssr";
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+// Issue 8: Initialise Redis only when env vars are present — crashes are prevented
+const redis =
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+    ? new Redis({
+        url: process.env.UPSTASH_REDIS_REST_URL,
+        token: process.env.UPSTASH_REDIS_REST_TOKEN,
+      })
+    : null;
 
-const ratelimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(20, "10 s"),
-  analytics: false,
-});
+const ratelimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "10 s"),
+      analytics: false,
+    })
+  : null;
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // ── 1. Rate-limit every /api/* request by client IP ──────────────────────
-  if (pathname.startsWith("/api/")) {
+  const isApiRoute = pathname.startsWith("/api/");
+  const isDashboardRoute = pathname.startsWith("/dashboard");
+
+  // Skip middleware entirely for non-API, non-dashboard routes
+  if (!isApiRoute && !isDashboardRoute) {
+    return NextResponse.next();
+  }
+
+  // Build a mutable response so refreshed session cookies are forwarded
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Issue 4: Rate-limit by user ID when authenticated, IP as fallback
+  if (isApiRoute && ratelimit) {
     const ip =
+      request.headers.get("x-real-ip") ??
       request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
       "127.0.0.1";
+    const rateLimitKey = user?.id ?? ip;
 
-    const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+    const { success, limit, remaining, reset } =
+      await ratelimit.limit(rateLimitKey);
 
     if (!success) {
       return NextResponse.json(
@@ -41,56 +86,24 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // ── 2. Auth guard for /dashboard/* and /api/interview/* ──────────────────
+  // Issue 2: Expanded auth guard — covers all sensitive API routes
   const isProtected =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/api/interview/");
+    isDashboardRoute ||
+    pathname.startsWith("/api/interview/") ||
+    pathname.startsWith("/api/chat") ||
+    pathname.startsWith("/api/resume/") ||
+    pathname.startsWith("/api/cover-letter") ||
+    pathname.startsWith("/api/analyze/");
 
-  if (!isProtected) {
-    return NextResponse.next();
-  }
-
-  // Build a mutable response so refreshed session cookies are forwarded.
-  let supabaseResponse = NextResponse.next({ request });
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          // Write refreshed cookies onto both the mutated request object and
-          // the response so that downstream server components see them.
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    if (pathname.startsWith("/api/")) {
+  if (isProtected && !user) {
+    if (isApiRoute) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirectedFrom", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Return the supabaseResponse so any refreshed session cookies are sent.
   return supabaseResponse;
 }
 

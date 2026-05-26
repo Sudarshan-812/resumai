@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@/app/lib/supabase/server";
 
 async function callOpenAI(prompt: string, key: string) {
   const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -52,8 +53,13 @@ async function callGemini(prompt: string, key: string) {
   return { ok: res.ok, status: res.status, provider: "gemini", data: json, text: textOutput };
 }
 
+// Issue 1: Protected — middleware auth guard + defence-in-depth check here
 export async function GET() {
   try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const OPENAI_KEY = process.env.OPENAI_API_KEY;
     const GEMINI_KEY = process.env.GEMINI_API_KEY;
 

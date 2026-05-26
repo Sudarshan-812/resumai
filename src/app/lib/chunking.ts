@@ -1,7 +1,6 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { createClient } from "@/app/lib/supabase/server";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+import { getBatchEmbeddings } from "@/app/lib/embedding";
+import "@/env";
 
 type ChunkType = "summary" | "experience" | "education" | "skills" | "project";
 
@@ -53,11 +52,9 @@ function isSectionHeader(line: string): ChunkType | null {
   const trimmed = line.trim();
   if (!trimmed || trimmed.length > 80) return null;
 
-  // Strip trailing decoration characters
   const cleaned = trimmed.replace(/[\s\-_=:•|*]+$/g, "").trim();
   if (!cleaned || cleaned.length < 3) return null;
 
-  // Normalise to lowercase, keep only letters, spaces, ampersands
   const lower = cleaned.toLowerCase().replace(/[^a-z\s&]/g, " ").replace(/\s+/g, " ").trim();
   const wordCount = lower.split(" ").filter(Boolean).length;
   if (wordCount === 0 || wordCount > 5) return null;
@@ -183,16 +180,7 @@ function splitIntoChunks(
   const byLines = splitByLineGroups(resumeText);
   if (byLines.length >= 1) return byLines;
 
-  // Absolute last resort: one chunk
   return [{ content: resumeText.slice(0, 8000).trim(), chunk_type: "summary" }];
-}
-
-// ── Embedding ──────────────────────────────────────────────────────────────
-
-async function getEmbedding(text: string): Promise<number[]> {
-  const model = genAI.getGenerativeModel({ model: "embedding-001" });
-  const result = await model.embedContent(text.slice(0, 8000));
-  return result.embedding.values;
 }
 
 // ── Public export ──────────────────────────────────────────────────────────
@@ -204,50 +192,58 @@ export async function chunkAndEmbedResume(
 ): Promise<{ chunks_stored: number; error?: string }> {
   const supabase = await createClient();
 
-  await supabase
-    .from("resume_chunks")
-    .delete()
-    .eq("resume_id", resumeId)
-    .eq("user_id", userId);
-
   const chunks = splitIntoChunks(resumeText);
 
   if (chunks.length === 0) {
     return { chunks_stored: 0, error: "No sections could be extracted from this resume." };
   }
 
-  let stored = 0;
-  let lastError = "";
-
-  for (const chunk of chunks) {
-    try {
-      const embedding = await getEmbedding(chunk.content);
-      const embeddingStr = `[${embedding.join(",")}]`;
-
-      const { error } = await supabase.from("resume_chunks").insert({
-        user_id: userId,
-        resume_id: resumeId,
-        content: chunk.content,
-        chunk_type: chunk.chunk_type,
-        embedding: embeddingStr,
-        metadata: { length: chunk.content.length },
-      });
-
-      if (error) {
-        lastError = error.message;
-        console.error("[chunking] insert error:", error.message);
-      } else {
-        stored++;
-      }
-    } catch (err) {
-      lastError = err instanceof Error ? err.message : String(err);
-      console.error("[chunking] embed error:", lastError);
-    }
+  // Issue 9: Single batch API call for all embeddings instead of N individual calls
+  let embeddings: (number[] | null)[];
+  try {
+    embeddings = await getBatchEmbeddings(chunks.map((c) => c.content));
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[chunking] batch embed error:", msg);
+    return { chunks_stored: 0, error: msg };
   }
 
-  if (stored === 0 && lastError) {
-    return { chunks_stored: 0, error: lastError };
+  const rows = chunks
+    .map((chunk, i) => ({
+      user_id: userId,
+      resume_id: resumeId,
+      content: chunk.content,
+      chunk_type: chunk.chunk_type,
+      embedding: embeddings[i] ? `[${embeddings[i]!.join(",")}]` : null,
+      metadata: { length: chunk.content.length },
+    }))
+    .filter((row) => row.embedding !== null);
+
+  if (rows.length === 0) {
+    return { chunks_stored: 0, error: "All embeddings failed — no chunks stored." };
   }
 
-  return { chunks_stored: stored };
+  // Issue 10: Snapshot old IDs, insert new rows first, then delete old ones.
+  // This ensures old chunks are never lost if the insert fails.
+  const { data: oldChunks } = await supabase
+    .from("resume_chunks")
+    .select("id")
+    .eq("resume_id", resumeId)
+    .eq("user_id", userId);
+
+  const oldIds = (oldChunks ?? []).map((c) => c.id as string);
+
+  const { error: insertError } = await supabase.from("resume_chunks").insert(rows);
+
+  if (insertError) {
+    console.error("[chunking] insert error:", insertError.message);
+    return { chunks_stored: 0, error: insertError.message };
+  }
+
+  // Only delete old chunks after successful insert — preserves data on failure
+  if (oldIds.length > 0) {
+    await supabase.from("resume_chunks").delete().in("id", oldIds);
+  }
+
+  return { chunks_stored: rows.length };
 }

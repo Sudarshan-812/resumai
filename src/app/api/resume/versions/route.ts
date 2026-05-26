@@ -58,13 +58,15 @@ export async function POST(req: Request) {
       .map((c: { content: string }) => c.content.trim())
       .join("\n\n");
 
-    let ats_score = 0;
+    // Issue 12: Use null (not 0) for unanalysed/failed — client already handles null correctly
+    let ats_score: number | null = null;
     if (job_description?.trim() && combinedContent.length > 50) {
       try {
         const analysis = await analyzeResume(combinedContent, job_description);
         ats_score = analysis.ats_score;
-      } catch {
-        // Non-fatal: save version without ATS score
+      } catch (err) {
+        console.error("[versions] ATS analysis failed (non-fatal):", err);
+        // ats_score stays null — version still saves
       }
     }
 

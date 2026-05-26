@@ -82,9 +82,15 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
     try {
       const res = await fetch(`/api/resume/chunk?resume_id=${resumeId}`);
       const data = await res.json();
-      setAllChunks(data.chunks ?? []);
-    } catch {
+      if (data.error) {
+        console.error("[loadChunks]", data.error);
+        toast.error(data.error);
+      } else {
+        setAllChunks(data.chunks ?? []);
+      }
+    } catch (err) {
       toast.error("Failed to load chunks");
+      console.error("[loadChunks]", err);
     } finally {
       setChunksLoading(false);
     }
@@ -120,7 +126,9 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
         toast.success(`Generated ${data.chunks_stored} sections`);
         loadChunks(selectedResumeId);
       } else {
-        toast.error("Could not generate chunks");
+        const msg = data.error ?? "Could not generate sections";
+        console.error("[generateChunks]", msg);
+        toast.error(msg);
       }
     } catch {
       toast.error("Chunking failed");

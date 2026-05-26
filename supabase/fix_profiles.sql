@@ -45,20 +45,35 @@ WHERE NOT EXISTS (
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Trigger function: auto-create profile on every new signup
+-- Issue 20: Validate raw_user_meta_data before extracting fields.
+-- raw_user_meta_data is typed jsonb by Supabase so it's always valid JSON or NULL.
+-- NULLIF+TRIM ensures empty strings from OAuth providers are stored as NULL, not "".
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_full_name text;
 BEGIN
+  -- Safely extract full_name; treat empty strings as NULL
+  v_full_name := NULLIF(
+    TRIM(COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NEW.raw_user_meta_data->>'name'
+    )),
+    ''
+  );
+
   INSERT INTO public.profiles (id, full_name, credits)
-  VALUES (
-    NEW.id,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
-    0
-  )
+  VALUES (NEW.id, v_full_name, 0)
   ON CONFLICT (id) DO NOTHING;
+
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  -- Never block signup due to profile creation failure
+  RAISE WARNING 'handle_new_user: profile creation failed for user %: %', NEW.id, SQLERRM;
   RETURN NEW;
 END;
 $$;

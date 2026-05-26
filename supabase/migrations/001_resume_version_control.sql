@@ -42,6 +42,11 @@ CREATE POLICY "resume_versions_user_policy"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
+-- Ensure embedding column is vector(768) (safe to re-run on existing tables)
+ALTER TABLE resume_chunks
+  ALTER COLUMN embedding TYPE vector(768)
+  USING embedding::vector(768);
+
 -- Semantic search RPC: ranks chunks by cosine similarity to a query embedding
 CREATE OR REPLACE FUNCTION search_resume_chunks(
   query_embedding vector(768),

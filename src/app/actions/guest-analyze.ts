@@ -2,25 +2,7 @@
 
 import pdfParse from "pdf-parse";
 import { analyzeResume } from "@/app/lib/gemini";
-
-interface PDFTextItem { str: string; transform: number[] }
-interface PDFPageData {
-  getTextContent: () => Promise<{ items: PDFTextItem[] }>
-}
-
-const render_page = (pageData: PDFPageData) => {
-  return pageData.getTextContent().then(({ items }) => {
-    let lastY: number | null = null;
-    let text = "";
-    for (const item of items) {
-      const y = item.transform[5];
-      if (lastY !== y && lastY !== null) text += "\n";
-      lastY = y;
-      text += item.str;
-    }
-    return text;
-  }).catch(() => "");
-};
+import { render_page } from "@/app/lib/pdf";
 
 export async function analyzeResumeAsGuest(formData: FormData) {
   const file = formData.get("file") as File | null;

@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
 export const maxDuration = 60;
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     const resumeText = resumeRes.data.content;
 
     const { text: latex } = await generateText({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: groq("llama-3.3-70b-versatile"),
       prompt: `You are a LaTeX resume formatter. Convert the resume text below into a complete, professional LaTeX document.
 
 USE EXACTLY THIS PREAMBLE (copy verbatim):

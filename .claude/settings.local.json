@@ -39,7 +39,9 @@
       "Bash(node *)",
       "WebFetch(domain:www.everia.io)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\mrsud\\\\OneDrive\\\\Desktop\\\\AI RESUME PROJ\")",
-      "Bash(Select-Object Name, Mode)"
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\mrsud\\\\OneDrive\\\\Desktop\\\\AI RESUME PROJ\" -Recurse -Directory)",
+      "Bash(Select-Object FullName)"
     ]
   }
 }

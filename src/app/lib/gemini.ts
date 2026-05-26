@@ -1,5 +1,5 @@
 import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 import { z } from "zod";
 import "@/env";
 
@@ -72,15 +72,21 @@ export type ATSEvaluation = z.infer<typeof ATSEvaluationSchema>;
 
 // ── Core function ─────────────────────────────────────────────────────────────
 
+// Issue 5: Hard caps prevent prompt injection and runaway token usage
+const RESUME_MAX_CHARS = 15_000;
+const JD_MAX_CHARS = 5_000;
+
 export async function analyzeResume(
   resumeText: string,
   jobDescription: string
 ): Promise<ATSEvaluation> {
   const currentDate = new Date().toISOString().split("T")[0];
+  const safeResume = resumeText.slice(0, RESUME_MAX_CHARS);
+  const safeJD = jobDescription.slice(0, JD_MAX_CHARS);
 
   try {
     const { object } = await generateObject({
-      model: google("gemini-2.0-flash-lite"),
+      model: groq("llama-3.3-70b-versatile"),
       maxRetries: 2,
       schema: ATSEvaluationSchema,
 
@@ -121,12 +127,12 @@ SCORING RUBRIC — Compute ats_score / 100 with these exact weights:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 JOB DESCRIPTION:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${jobDescription}
+${safeJD}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RESUME TEXT:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${resumeText}
+${safeResume}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 FIELD-LEVEL INSTRUCTIONS:

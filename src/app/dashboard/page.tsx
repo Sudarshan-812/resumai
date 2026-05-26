@@ -2,6 +2,14 @@ import { createClient } from "@/app/lib/supabase/server";
 import { redirect } from "next/navigation";
 import DashboardClient from "./dashboard-client";
 
+// Issue 13: Proper types instead of `any`
+interface ResumeRow {
+  id: string;
+  file_name: string;
+  created_at: string;
+  analyses: Array<{ ats_score: number | null }> | null;
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient();
 
@@ -28,17 +36,17 @@ export default async function DashboardPage() {
       .eq("user_id", user.id)
   ]);
 
-  const rawResumes = resumesResponse.data || [];
+  const rawResumes = (resumesResponse.data ?? []) as ResumeRow[];
   const profile = profileResponse.data;
-  const totalScansCount = countResponse.count || 0;
+  const totalScansCount = countResponse.count ?? 0;
 
-  const recentResumes = rawResumes.map((r: any) => ({
+  const recentResumes = rawResumes.map((r) => ({
     ...r,
-    ats_score: r.analyses?.[0]?.ats_score || 0
+    ats_score: r.analyses?.[0]?.ats_score ?? 0,
   }));
 
   const avgScore = recentResumes.length > 0
-    ? Math.round(recentResumes.reduce((acc: number, r: any) => acc + r.ats_score, 0) / recentResumes.length)
+    ? Math.round(recentResumes.reduce((acc, r) => acc + (r.ats_score ?? 0), 0) / recentResumes.length)
     : 0;
 
   return (

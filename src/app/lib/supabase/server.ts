@@ -18,6 +18,8 @@ export async function createClient() {
               cookieStore.set(name, value, options);
             });
           } catch {
+            // Issue 19: Server Components render with read-only cookies — this error is expected
+            // and safe to ignore. The session cookie is set on the Response by the middleware.
           }
         },
       },

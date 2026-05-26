@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { createClient } from "@/app/lib/supabase/server";
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     }
 
     const { object } = await generateObject({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: groq("llama-3.3-70b-versatile"),
       schema: z.object({
         score: z.number().min(0).max(100),
         strengths: z.array(z.string()).max(3),

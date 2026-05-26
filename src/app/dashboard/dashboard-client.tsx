@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FileText, ArrowUpRight, Plus, ChevronRight, UploadCloud, Mic, PenLine } from "lucide-react";
 import { motion } from "framer-motion";
@@ -82,18 +82,22 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             className="grid grid-cols-3 mb-10 rounded-xl overflow-hidden"
             style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}
           >
-            {[
-              { label: "Analyses", value: totalScans.toString(), note: "total scans" },
+            {(
+            [
+              { label: "Analyses", value: totalScans.toString(), note: "total scans", valueColor: undefined, noteColor: undefined, action: undefined },
               {
                 label: "Avg Score",
                 value: avgScore > 0 ? `${avgScore}` : "—",
                 note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
                 valueColor: avgScore >= 70 ? "#059669" : avgScore > 0 ? "#d97706" : "#9B9890",
+                noteColor: undefined,
+                action: undefined,
               },
               {
                 label: "Credits",
                 value: credits.toString(),
                 note: credits <= 1 ? "top up soon" : "remaining",
+                valueColor: undefined,
                 noteColor: credits <= 1 ? "#d97706" : undefined,
                 action: (
                   <Link
@@ -105,7 +109,15 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   </Link>
                 ),
               },
-            ].map((m, i) => (
+            ] satisfies Array<{
+              label: string;
+              value: string;
+              note: string;
+              valueColor: string | undefined;
+              noteColor: string | undefined;
+              action: React.ReactNode;
+            }>
+          ).map((m, i) => (
               <div
                 key={i}
                 className="relative px-6 py-5"
@@ -116,15 +128,15 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                 </p>
                 <p
                   className="text-3xl font-bold tracking-tight tabular-nums leading-none mb-1.5"
-                  style={{ color: (m as any).valueColor ?? "#111111" }}
+                  style={{ color: m.valueColor ?? "#111111" }}
                 >
                   {m.value}
                 </p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px]" style={{ color: (m as any).noteColor ?? "#9B9890" }}>
+                  <p className="text-[11px]" style={{ color: m.noteColor ?? "#9B9890" }}>
                     {m.note}
                   </p>
-                  {(m as any).action}
+                  {m.action}
                 </div>
               </div>
             ))}

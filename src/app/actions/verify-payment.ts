@@ -40,8 +40,14 @@ export async function verifyPayment(
 
     // Fetch the order from Razorpay to get the authoritative amount.
     // This prevents clients from manipulating how many credits they receive.
+    // Issue 6: Wrap with a 10-second timeout so a slow Razorpay response doesn't hang.
     const razorpay = new Razorpay({ key_id: keyId, key_secret: keySecret });
-    const order = await razorpay.orders.fetch(orderId);
+    const order = await Promise.race([
+      razorpay.orders.fetch(orderId),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Razorpay order fetch timed out")), 10_000)
+      ),
+    ]);
     const paidAmountPaise = Number(order.amount);
 
     const creditsToAdd = PLAN_CREDITS[paidAmountPaise];

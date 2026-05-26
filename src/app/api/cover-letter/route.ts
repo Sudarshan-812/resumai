@@ -1,4 +1,4 @@
-import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 import { streamText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
 export const maxDuration = 60;
@@ -55,7 +55,7 @@ STRICT REQUIREMENTS:
 Output the cover letter now:`;
 
     const result = streamText({
-      model: google("gemini-3.1-flash-lite-preview"),
+      model: groq("llama-3.3-70b-versatile"),
       prompt,
     });
 

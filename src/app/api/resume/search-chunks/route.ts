@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/app/lib/supabase/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getEmbedding } from "@/app/lib/embedding";
 import "@/env";
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
-async function getEmbedding(text: string): Promise<number[]> {
-  const model = genAI.getGenerativeModel({ model: "embedding-001" });
-  const result = await model.embedContent(text.slice(0, 8000));
-  return result.embedding.values;
-}
 
 export async function POST(req: Request) {
   try {
