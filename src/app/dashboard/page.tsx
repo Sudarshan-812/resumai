@@ -16,11 +16,12 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return redirect("/login");
 
-  const [resumesResponse, profileResponse, countResponse] = await Promise.all([
+  const [resumesResponse, profileResponse] = await Promise.all([
     supabase
       .from("resumes")
-      .select("id, file_name, created_at, analyses(ats_score)")
+      .select("id, file_name, created_at, analyses(ats_score)", { count: "exact" })
       .eq("user_id", user.id)
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(5),
 
@@ -29,16 +30,11 @@ export default async function DashboardPage() {
       .select("credits, full_name")
       .eq("id", user.id)
       .single(),
-
-    supabase
-      .from("resumes")
-      .select("*", { count: 'exact', head: true })
-      .eq("user_id", user.id)
   ]);
 
   const rawResumes = (resumesResponse.data ?? []) as ResumeRow[];
   const profile = profileResponse.data;
-  const totalScansCount = countResponse.count ?? 0;
+  const totalScansCount = resumesResponse.count ?? 0;
 
   const recentResumes = rawResumes.map((r) => ({
     ...r,

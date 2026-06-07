@@ -6,15 +6,10 @@ import {
   Loader2, Send, RotateCcw, CheckCircle2, AlertCircle,
   ChevronRight, Mic, ArrowRight,
 } from "lucide-react";
-import { toast } from "sonner";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import VoiceInterview from "./VoiceInterview";
 import UpgradeModal from "@/app/components/UpgradeModal";
-import { createClient } from "@/app/lib/supabase/client";
-
-interface Question { question: string; category: string }
-interface Feedback { score: number; strengths: string[]; improvements: string[]; model_answer_hint: string }
-type Phase = "setup" | "questions" | "answering" | "feedback" | "complete";
+import { useInterviewState } from "./useInterviewState";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -49,40 +44,17 @@ const inputStyle = {
 };
 
 export default function InterviewPage() {
+  const {
+    userPlan, refreshPlan,
+    jobDesc, setJobDesc, role, setRole,
+    questions, currentIdx, answer, setAnswer,
+    feedbacks, phase, loading, avgScore,
+    generateQuestions, submitAnswer, nextQuestion, reset,
+  } = useInterviewState();
+
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-
-  const [userPlan, setUserPlan] = useState<string>("free");
   const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; reason: "voice" | "limit" }>({ open: false, reason: "voice" });
-
-  const [jobDesc, setJobDesc] = useState("");
-  const [role, setRole] = useState("");
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [answer, setAnswer] = useState("");
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
-  const [phase, setPhase] = useState<Phase>("setup");
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-      if (data?.plan) setUserPlan(data.plan);
-    })();
-  }, []);
-
-  const refreshPlan = useCallback(() => {
-    const supabase = createClient();
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-      if (data?.plan) setUserPlan(data.plan);
-    })();
-  }, []);
 
   useEffect(() => {
     if (!isVoiceActive) { setElapsed(0); return; }
@@ -90,72 +62,7 @@ export default function InterviewPage() {
     return () => clearInterval(id);
   }, [isVoiceActive]);
 
-  const handleVoiceActiveChange = useCallback((active: boolean) => {
-    setIsVoiceActive(active);
-  }, []);
-
-  const parseError = async (res: Response): Promise<string> => {
-    try { const d = await res.json(); return d.error || d.message || `Error ${res.status}`; } catch {}
-    try { return (await res.text()) || `Error ${res.status}`; } catch {}
-    return `Error ${res.status}`;
-  };
-
-  const generateQuestions = async () => {
-    if (!role.trim() || !jobDesc.trim()) return;
-    setLoading(true);
-    try {
-      const res = await fetch("/api/interview/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role, jobDesc }),
-      });
-      if (res.status === 402) {
-        const payload = await res.json().catch(() => ({})) as { error?: string };
-        if (payload.error === "interview_limit_reached") {
-          setUpgradeModal({ open: true, reason: "limit" });
-          return;
-        }
-      }
-      if (!res.ok) throw new Error(await parseError(res));
-      const data = await res.json();
-      if (!data.questions?.length) throw new Error("No questions returned.");
-      setQuestions(data.questions);
-      setCurrentIdx(0);
-      setFeedbacks([]);
-      setPhase("questions");
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to generate questions");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const submitAnswer = async () => {
-    if (!answer.trim() || loading) return;
-    setLoading(true);
-    try {
-      const res = await fetch("/api/interview/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: questions[currentIdx].question, answer, role, jobDesc }),
-      });
-      if (!res.ok) throw new Error(await parseError(res));
-      const fb: Feedback = await res.json();
-      if (typeof fb.score !== "number") throw new Error("Invalid feedback response.");
-      const next = [...feedbacks, fb];
-      setFeedbacks(next);
-      setAnswer("");
-      setPhase(currentIdx + 1 >= questions.length ? "complete" : "feedback");
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Failed to get feedback");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const nextQuestion = () => { setCurrentIdx(i => i + 1); setPhase("questions"); };
-  const reset = () => { setQuestions([]); setFeedbacks([]); setCurrentIdx(0); setAnswer(""); setPhase("setup"); };
-  const avgScore = feedbacks.length > 0 ? Math.round(feedbacks.reduce((s, f) => s + f.score, 0) / feedbacks.length) : 0;
+  const handleVoiceActiveChange = useCallback((active: boolean) => setIsVoiceActive(active), []);
 
   return (
     <DashboardShell>
@@ -302,7 +209,7 @@ export default function InterviewPage() {
                     />
                   </div>
                   <motion.button
-                    onClick={generateQuestions}
+                    onClick={() => generateQuestions(() => setUpgradeModal({ open: true, reason: "limit" }))}
                     disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
                     whileHover={!loading ? { scale: 1.01 } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}

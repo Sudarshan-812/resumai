@@ -2,6 +2,18 @@ import { groq } from "@ai-sdk/groq";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { createClient } from "@/app/lib/supabase/server";
+import { Redis } from "@upstash/redis";
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+function cacheKey(role: string, jobDesc: string) {
+  // Deterministic 80-char key from first 200 chars of each input
+  const raw = `${role.slice(0, 100)}::${jobDesc.slice(0, 200)}`;
+  return `interview:q:${Buffer.from(raw).toString("base64url").slice(0, 80)}`;
+}
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
@@ -34,6 +46,11 @@ export async function POST(req: Request) {
       return Response.json({ error: "Job description too long (max 10000 chars)" }, { status: 400 });
     }
 
+    // Cache hit — return without generating or incrementing the counter
+    const key = cacheKey(role, jobDesc);
+    const cached = await redis.get(key).catch(() => null);
+    if (cached) return Response.json(cached);
+
     const { object } = await generateObject({
       model: groq("llama-3.3-70b-versatile"),
       schema: z.object({
@@ -60,8 +77,9 @@ QUALITY BARS:
 - Each question should be something a candidate would actually struggle with if underprepared`,
     });
 
-    // Increment counter only after a successful generation
+    // Increment counter and cache only after successful generation
     await supabase.rpc("increment_interview_count", { p_user_id: user.id });
+    await redis.setex(key, 60 * 60 * 24, object).catch(() => {});
 
     return Response.json(object);
   } catch (err) {

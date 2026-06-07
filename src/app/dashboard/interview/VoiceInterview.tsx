@@ -470,7 +470,9 @@ function EndedView({ onRestart }: { onRestart: () => void }) {
 
 // ── Root export ───────────────────────────────────────────────────────────────
 
-export default function VoiceInterview({
+import React from "react";
+
+function VoiceInterview({
   onActiveChange,
   userPlan = "free",
   onUpgradeNeeded,
@@ -581,3 +583,5 @@ export default function VoiceInterview({
     />
   );
 }
+
+export default React.memo(VoiceInterview);

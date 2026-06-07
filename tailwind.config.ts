@@ -12,6 +12,29 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'Georgia', 'serif'],
+      },
+      colors: {
+        cream: {
+          DEFAULT: '#F7F6F2',
+          dark: '#F0EFE9',
+          faint: '#FAFAF8',
+        },
+        brand: {
+          DEFAULT: '#06b6d4',
+          dark: '#0891b2',
+          light: '#22d3ee',
+          faint: '#A5F3FC',
+        },
+        ink: {
+          DEFAULT: '#111111',
+          muted: '#6B6860',
+          subtle: '#9B9890',
+          faint: '#C8C4BB',
+        },
+        border: {
+          DEFAULT: '#E5E3DC',
+        },
       },
       animation: {
         'gradient-x': 'gradient-x 15s ease infinite',

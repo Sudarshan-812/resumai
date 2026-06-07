@@ -4,6 +4,7 @@ import Razorpay from "razorpay";
 import { createClient } from "@/app/lib/supabase/server";
 import crypto from "crypto";
 import { revalidatePath } from "next/cache";
+import { sendPaymentReceiptEmail } from "@/app/lib/email";
 
 // Server-side authoritative amount (paise) → credits map.
 // Never trust the client to tell us how many credits a payment is worth.
@@ -82,6 +83,16 @@ export async function verifyPayment(
     revalidatePath("/dashboard");
     revalidatePath("/billing");
     revalidatePath("/dashboard/interview");
+
+    // Fire-and-forget receipt email — never block the payment confirmation
+    if (user.email) {
+      sendPaymentReceiptEmail({
+        to: user.email,
+        creditsAdded: creditsToAdd,
+        planUpgraded: planToUpgrade ?? null,
+        paymentId,
+      }).catch(() => {});
+    }
 
     return { success: true, creditsAdded: creditsToAdd, planUpgraded: planToUpgrade ?? null };
   } catch (err) {

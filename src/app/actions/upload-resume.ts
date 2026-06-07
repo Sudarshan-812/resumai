@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache';
 import { after } from 'next/server';
 import { chunkAndEmbedResume } from '@/app/lib/chunking';
 import { render_page } from '@/app/lib/pdf';
+import { sendAnalysisDoneEmail } from '@/app/lib/email';
 
 export async function processResume(formData: FormData) {
   const file = formData.get('file') as File | null;
@@ -91,13 +92,21 @@ export async function processResume(formData: FormData) {
 
     revalidatePath('/dashboard');
 
-    // Background chunking for version control — runs after the response is sent
+    // Background tasks: chunking + email notification — run after response is sent
     after(async () => {
-      try {
-        await chunkAndEmbedResume(resume.id, text, user.id);
-      } catch (err) {
-        console.error("[upload] background chunking failed:", err);
-      }
+      await Promise.allSettled([
+        chunkAndEmbedResume(resume.id, text, user.id).catch(err =>
+          console.error("[upload] background chunking failed:", err)
+        ),
+        user.email
+          ? sendAnalysisDoneEmail({
+              to: user.email,
+              fileName: file.name,
+              atsScore: analysis.ats_score,
+              resumeId: resume.id,
+            }).catch(() => {})
+          : Promise.resolve(),
+      ]);
     });
 
     return { success: true, data: analysis, id: resume.id, truncated: false };
