@@ -10,7 +10,13 @@ import { revalidatePath } from "next/cache";
 const PLAN_CREDITS: Record<number, number> = {
   4900: 5,   // ₹49  Starter
   9900: 12,  // ₹99  Pro
-  19900: 30, // ₹199 Power User
+  19900: 30, // ₹199 Premium
+};
+
+// Amounts that also upgrade the interview plan tier.
+const PLAN_UPGRADE: Record<number, string> = {
+  9900:  "pro",     // ₹99  → unlimited interviews + voice
+  19900: "premium", // ₹199 → same perks + more credits
 };
 
 export async function verifyPayment(
@@ -64,10 +70,20 @@ export async function verifyPayment(
       return { success: false, message: "Payment received but credit update failed. Contact support with your payment ID." };
     }
 
+    // Upgrade plan tier if this payment unlocks Pro or Premium
+    const planToUpgrade = PLAN_UPGRADE[paidAmountPaise];
+    if (planToUpgrade) {
+      await supabase.rpc("set_user_plan", {
+        p_user_id: user.id,
+        p_plan: planToUpgrade,
+      });
+    }
+
     revalidatePath("/dashboard");
     revalidatePath("/billing");
+    revalidatePath("/dashboard/interview");
 
-    return { success: true, creditsAdded: creditsToAdd };
+    return { success: true, creditsAdded: creditsToAdd, planUpgraded: planToUpgrade ?? null };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unexpected error during payment verification.";
     return { success: false, message };

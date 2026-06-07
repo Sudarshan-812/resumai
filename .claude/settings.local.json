@@ -41,7 +41,18 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\mrsud\\\\OneDrive\\\\Desktop\\\\AI RESUME PROJ\")",
       "Bash(Select-Object Name, Mode)",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\mrsud\\\\OneDrive\\\\Desktop\\\\AI RESUME PROJ\" -Recurse -Directory)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem *)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(Write-Output \"Deleted\")",
+      "Bash(git restore *)",
+      "Bash(git clean *)",
+      "Bash(rm -rf .next)",
+      "Bash(npm ci *)",
+      "Bash(npm list *)",
+      "PowerShell(head *)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

@@ -16,7 +16,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // ── 2. Parse and validate request body ───────────────────────────────────
+  // ── 2. Gate: voice requires Pro or Premium plan ───────────────────────────
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || profile.plan === "free") {
+    return NextResponse.json(
+      { error: "voice_not_allowed", message: "Voice interviews require a Pro or Premium plan." },
+      { status: 402 }
+    );
+  }
+
+  // ── 3. Parse and validate request body ───────────────────────────────────
   let resumeId: string | undefined;
   try {
     const body = await req.json();

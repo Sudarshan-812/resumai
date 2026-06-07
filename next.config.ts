@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
   // Required for pdf-parse to work in serverless
   serverExternalPackages: ["pdf-parse"],
 
+  // Pin the workspace root so Turbopack doesn't pick up a lockfile
+  // from a parent directory (C:\Users\mrsud\package-lock.json)
+  turbopack: {
+    root: process.cwd(),
+  },
+
   async headers() {
     return [
       {

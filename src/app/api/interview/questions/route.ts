@@ -8,6 +8,17 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return new Response("Unauthorized", { status: 401 });
 
+    // Gate: check monthly interview limit before doing anything expensive
+    const { data: limitStatus } = await supabase.rpc("check_interview_limit", {
+      p_user_id: user.id,
+    });
+    if (limitStatus === "limit_reached") {
+      return Response.json(
+        { error: "interview_limit_reached", message: "You've used all 3 free interviews this month. Upgrade to continue." },
+        { status: 402 }
+      );
+    }
+
     const body = await req.json();
     const { role, jobDesc } = body;
 
@@ -48,6 +59,9 @@ QUALITY BARS:
 - NO generic questions like "Tell me about yourself" or "Where do you see yourself in 5 years"
 - Each question should be something a candidate would actually struggle with if underprepared`,
     });
+
+    // Increment counter only after a successful generation
+    await supabase.rpc("increment_interview_count", { p_user_id: user.id });
 
     return Response.json(object);
   } catch (err) {

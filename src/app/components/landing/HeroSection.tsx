@@ -5,10 +5,18 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Mic, Sparkles, LayoutDashboard, CheckCircle2, TrendingUp, Zap } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
+import SplitText from "@/app/components/ui/SplitText";
+import TextType from "@/app/components/ui/TextType";
+import dynamic from "next/dynamic";
+
+// SideRays uses WebGL — dynamic import prevents SSR
+const SideRays = dynamic(() => import("@/app/components/ui/SideRays"), { ssr: false });
+
+const EASE = [0.16, 1, 0.3, 1] as const;
 
 export default function HeroSection() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [mounted, setMounted]       = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -22,7 +30,41 @@ export default function HeroSection() {
       style={{ background: "#F7F6F2" }}
       aria-labelledby="hero-heading"
     >
-      {/* Radial cyan glow — very subtle */}
+      {/* SideRays — subtle cyan rays from top-right */}
+      <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
+        <SideRays
+          speed={1.2}
+          rayColor1="#06b6d4"
+          rayColor2="#A5F3FC"
+          intensity={1.4}
+          spread={2.2}
+          origin="top-right"
+          tilt={0}
+          saturation={0.9}
+          blend={0.7}
+          falloff={1.8}
+          opacity={0.38}
+        />
+      </div>
+
+      {/* Additional SideRays from top-left for symmetry */}
+      <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
+        <SideRays
+          speed={1.5}
+          rayColor1="#22d3ee"
+          rayColor2="#CFFAFE"
+          intensity={1.2}
+          spread={1.8}
+          origin="top-left"
+          tilt={0}
+          saturation={0.7}
+          blend={0.6}
+          falloff={2.0}
+          opacity={0.22}
+        />
+      </div>
+
+      {/* Radial glow underneath */}
       <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
         <div
           style={{
@@ -32,7 +74,7 @@ export default function HeroSection() {
             transform: "translate(-50%, -50%)",
             width: "900px",
             height: "600px",
-            background: "radial-gradient(ellipse, rgba(6,182,212,0.08) 0%, transparent 65%)",
+            background: "radial-gradient(ellipse, rgba(6,182,212,0.06) 0%, transparent 65%)",
             borderRadius: "50%",
           }}
         />
@@ -61,42 +103,75 @@ export default function HeroSection() {
           </div>
         </motion.div>
 
-        {/* Headline */}
-        <motion.h1
-          id="hero-heading"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display font-bold tracking-tight leading-[1.05] mb-6"
-          style={{ fontSize: "clamp(40px, 6.5vw, 68px)", color: "#111111" }}
-        >
-          Land more interviews.
-          <br />
-          <span
-            className="text-transparent bg-clip-text"
-            style={{ backgroundImage: "linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%)" }}
-          >
-            Beat the ATS filter.
-          </span>
-        </motion.h1>
+        {/* Headline — SplitText animated by char */}
+        <div className="mb-6">
+          <SplitText
+            text="Land more interviews."
+            tag="h1"
+            id="hero-heading"
+            splitType="chars"
+            delay={20}
+            duration={0.55}
+            from={{ opacity: 0, y: 28 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.2}
+            textAlign="center"
+            className="font-display font-bold tracking-tight leading-[1.08] block"
+            style={{ fontSize: "clamp(38px, 6.5vw, 68px)", color: "#111111" }}
+          />
+          <SplitText
+            text="Beat the ATS filter."
+            tag="span"
+            splitType="chars"
+            delay={20}
+            duration={0.55}
+            from={{ opacity: 0, y: 28 }}
+            to={{ opacity: 1, y: 0 }}
+            threshold={0.2}
+            textAlign="center"
+            className="font-display font-bold tracking-tight leading-[1.08] block text-transparent bg-clip-text"
+            style={{
+              fontSize: "clamp(38px, 6.5vw, 68px)",
+              backgroundImage: "linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          />
+        </div>
 
-        {/* Subhead */}
-        <motion.p
+        {/* Subhead — TextType cycling phrases */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="text-lg leading-relaxed mb-10 max-w-2xl mx-auto"
-          style={{ color: "#6B6860" }}
+          transition={{ duration: 0.7, delay: 0.4, ease: EASE }}
+          className="mb-10 max-w-xl mx-auto"
         >
-          Upload your resume, paste a job description, and get an AI-powered ATS score with
-          specific rewrites — in under 60 seconds. Then practice with a live voice interviewer.
-        </motion.p>
+          <div className="text-lg leading-relaxed" style={{ color: "#6B6860" }}>
+            <TextType
+              as="span"
+              text={[
+                "AI-powered ATS score in under 60 seconds.",
+                "Specific resume rewrites for each job.",
+                "Live voice interview practice with AI.",
+                "Land your dream role faster.",
+              ]}
+              typingSpeed={42}
+              deletingSpeed={22}
+              pauseDuration={2200}
+              showCursor
+              cursorCharacter="_"
+              cursorClassName="font-light"
+              className="font-normal"
+              style={{ color: "#6B6860" }}
+            />
+          </div>
+        </motion.div>
 
         {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
           className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-14"
         >
           {mounted && isLoggedIn ? (
@@ -106,7 +181,7 @@ export default function HeroSection() {
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
-                  style={{ background: "#06b6d4" }}
+                  style={{ background: "#06b6d4", boxShadow: "0 4px 20px rgba(6,182,212,0.3)" }}
                 >
                   <Sparkles size={14} aria-hidden />
                   Analyze My Resume
@@ -132,7 +207,7 @@ export default function HeroSection() {
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
-                  style={{ background: "#06b6d4" }}
+                  style={{ background: "#06b6d4", boxShadow: "0 4px 20px rgba(6,182,212,0.3)" }}
                 >
                   <Sparkles size={14} aria-hidden />
                   Analyze My Resume Free
@@ -153,11 +228,11 @@ export default function HeroSection() {
           )}
         </motion.div>
 
-        {/* Social proof stats */}
+        {/* Social proof */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
           className="flex items-center justify-center gap-12 flex-wrap mb-20"
         >
           {[
@@ -176,7 +251,7 @@ export default function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ delay: 0.65, duration: 0.9, ease: EASE }}
           className="mx-auto w-full max-w-4xl"
         >
           <motion.div
@@ -200,10 +275,7 @@ export default function HeroSection() {
                 <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#BBF7D0" }} />
               </div>
               <div className="flex-1 flex justify-center">
-                <div
-                  className="h-5 w-48 rounded-md flex items-center justify-center"
-                  style={{ background: "#EBEBEB" }}
-                >
+                <div className="h-5 w-48 rounded-md flex items-center justify-center" style={{ background: "#EBEBEB" }}>
                   <span className="text-[9px] font-mono" style={{ color: "#9B9890" }}>column8.io/dashboard/report</span>
                 </div>
               </div>
@@ -211,7 +283,6 @@ export default function HeroSection() {
 
             {/* Report content */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 text-left" style={{ background: "#FAFAF8" }}>
-
               {/* ATS Score */}
               <div
                 className="col-span-1 flex flex-col items-center justify-center rounded-xl p-6"

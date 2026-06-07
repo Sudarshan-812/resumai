@@ -1,5 +1,5 @@
 import { generateObject } from "ai";
-import { groq } from "@ai-sdk/groq";
+import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import "@/env";
 
@@ -86,7 +86,7 @@ export async function analyzeResume(
 
   try {
     const { object } = await generateObject({
-      model: groq("llama-3.3-70b-versatile"),
+      model: google("gemini-2.5-flash"),
       maxRetries: 2,
       schema: ATSEvaluationSchema,
 

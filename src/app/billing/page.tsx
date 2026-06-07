@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2, ShieldCheck, Zap } from "lucide-react";
+import { Check, Loader2, ShieldCheck, Zap, Star } from "lucide-react";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
@@ -135,7 +135,7 @@ export default function BillingPage() {
           {/* Plans */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {PLANS.map((plan, i) => {
-              const isDark = plan.popular;
+              const isPopular = plan.popular;
               return (
                 <motion.div
                   key={plan.id}
@@ -144,42 +144,38 @@ export default function BillingPage() {
                   transition={{ delay: i * 0.07, duration: 0.45, ease: EASE }}
                   className="relative flex flex-col rounded-2xl overflow-hidden"
                   style={{
-                    background: isDark ? "#111111" : "#FFFFFF",
-                    border: isDark ? "1px solid #1f1f1f" : "1px solid #E5E3DC",
+                    background: "#FFFFFF",
+                    border: isPopular ? "2px solid #06b6d4" : "1px solid #E5E3DC",
+                    boxShadow: isPopular ? "0 8px 32px rgba(6,182,212,0.12)" : "none",
                   }}
                 >
-                  {isDark && (
+                  {/* Popular badge */}
+                  {isPopular && (
                     <div
-                      className="absolute inset-0 pointer-events-none opacity-20"
-                      style={{
-                        backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0)",
-                        backgroundSize: "24px 24px",
-                      }}
-                    />
-                  )}
-
-                  {plan.popular && (
-                    <div
-                      className="relative px-5 py-2 text-[10px] font-mono uppercase tracking-[0.18em] font-semibold"
-                      style={{ background: "#06b6d4", color: "#FFFFFF" }}
+                      className="flex items-center gap-1.5 px-5 py-2 text-[10px] font-mono uppercase tracking-[0.18em] font-semibold"
+                      style={{ background: "rgba(6,182,212,0.08)", borderBottom: "1px solid rgba(6,182,212,0.15)", color: "#0891b2" }}
                     >
+                      <Star size={10} fill="currentColor" />
                       Most Popular
                     </div>
                   )}
 
-                  <div className="relative flex flex-col flex-1 p-6">
-                    <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: isDark ? "rgba(255,255,255,0.4)" : "#9B9890" }}>
+                  <div className="flex flex-col flex-1 p-6">
+                    <p
+                      className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1"
+                      style={{ color: isPopular ? "#06b6d4" : "#9B9890" }}
+                    >
                       {plan.name}
                     </p>
-                    <p className="text-[13px] leading-relaxed mb-6" style={{ color: isDark ? "rgba(255,255,255,0.5)" : "#6B6860" }}>
+                    <p className="text-[13px] leading-relaxed mb-6" style={{ color: "#6B6860" }}>
                       {plan.description}
                     </p>
 
                     <div className="mb-1">
-                      <span className="text-4xl font-bold tracking-tight tabular-nums" style={{ color: isDark ? "#FFFFFF" : "#111111" }}>
+                      <span className="text-4xl font-bold tracking-tight tabular-nums" style={{ color: "#111111" }}>
                         ₹{plan.price}
                       </span>
-                      <span className="text-[12px] ml-1.5" style={{ color: isDark ? "rgba(255,255,255,0.3)" : "#C8C4BB" }}>
+                      <span className="text-[12px] ml-1.5" style={{ color: "#C8C4BB" }}>
                         one-time
                       </span>
                     </div>
@@ -188,7 +184,7 @@ export default function BillingPage() {
                       <span
                         className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full"
                         style={{
-                          background: isDark ? "rgba(6,182,212,0.15)" : "rgba(6,182,212,0.08)",
+                          background: "rgba(6,182,212,0.08)",
                           color: "#06b6d4",
                           border: "1px solid rgba(6,182,212,0.2)",
                         }}
@@ -198,18 +194,18 @@ export default function BillingPage() {
                       </span>
                     </div>
 
-                    <div className="mb-5" style={{ height: "1px", background: isDark ? "rgba(255,255,255,0.08)" : "#E5E3DC" }} />
+                    <div className="mb-5" style={{ height: "1px", background: "#E5E3DC" }} />
 
                     <ul className="space-y-3 mb-8 flex-1">
                       {plan.features.map((f, fi) => (
                         <li key={fi} className="flex items-start gap-2.5">
                           <div
                             className="w-4 h-4 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                            style={{ background: isDark ? "rgba(6,182,212,0.15)" : "rgba(6,182,212,0.08)" }}
+                            style={{ background: "rgba(6,182,212,0.08)" }}
                           >
                             <Check size={9} style={{ color: "#06b6d4" }} strokeWidth={3} />
                           </div>
-                          <span className="text-[13px] leading-snug" style={{ color: isDark ? "rgba(255,255,255,0.65)" : "#6B6860" }}>
+                          <span className="text-[13px] leading-snug" style={{ color: "#6B6860" }}>
                             {f}
                           </span>
                         </li>
@@ -223,9 +219,9 @@ export default function BillingPage() {
                       whileTap={!loadingId ? { scale: 0.98 } : {}}
                       className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                       style={
-                        isDark
-                          ? { background: "#06b6d4", color: "#FFFFFF" }
-                          : { background: "#111111", color: "#FFFFFF" }
+                        isPopular
+                          ? { background: "#06b6d4", color: "#FFFFFF", boxShadow: "0 4px 16px rgba(6,182,212,0.28)" }
+                          : { background: "#F7F6F2", color: "#6B6860", border: "1px solid #E5E3DC" }
                       }
                     >
                       {loadingId === plan.id ? (
