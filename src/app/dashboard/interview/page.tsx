@@ -11,38 +11,176 @@ import VoiceInterview from "./VoiceInterview";
 import UpgradeModal from "@/app/components/UpgradeModal";
 import { useInterviewState } from "./useInterviewState";
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
-function CountUpScore({ value }: { value: number }) {
-  const [display, setDisplay] = useState(0);
-  useEffect(() => {
-    let frame: number;
-    const t0 = performance.now();
-    const dur = 800;
-    const tick = (now: number) => {
-      const p = Math.min((now - t0) / dur, 1);
-      setDisplay(Math.round((1 - Math.pow(1 - p, 3)) * value));
-      if (p < 1) frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [value]);
-  return <>{display}</>;
-}
-
-const scoreColor = (s: number) => s >= 70 ? "#059669" : s >= 50 ? "#d97706" : "#e11d48";
+const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
+const EASE   = [0.16, 1, 0.3, 1] as const;
 
 function fmt(s: number) {
   return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 }
+const scoreColor = (s: number) => s >= 70 ? "#059669" : s >= 50 ? "#d97706" : "#e11d48";
 
-const inputStyle = {
-  background: "#FFFFFF",
-  border: "1.5px solid #E5E3DC",
-  color: "#111111",
-  transition: "border-color 0.2s",
-};
+/* ── Count-up ────────────────────────────────────────────────── */
+function CountUp({ value, size = 48 }: { value: number; size?: number }) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    let f: number;
+    const t0 = performance.now(), dur = 900;
+    const tick = (now: number) => {
+      const p = Math.min((now - t0) / dur, 1);
+      setN(Math.round((1 - Math.pow(1 - p, 3)) * value));
+      if (p < 1) f = requestAnimationFrame(tick);
+    };
+    f = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(f);
+  }, [value]);
+  return (
+    <motion.span
+      animate={{ scale: [1, 1.07, 0.97, 1] }}
+      transition={{ delay: 0.85, duration: 0.4, ease: EASE }}
+      style={{ fontSize: size, fontWeight: 900, fontFamily: "monospace", color: scoreColor(value), letterSpacing: "-0.04em", lineHeight: 1, display: "inline-block" }}
+    >
+      {n}
+    </motion.span>
+  );
+}
 
+/* ── Step indicator (white layer) ───────────────────────────── */
+const STEPS = ["Setup", "Interview", "Results"] as const;
+
+function StepBar({ phase, currentIdx, total }: { phase: string; currentIdx: number; total: number }) {
+  const active = phase === "setup" ? 0 : phase === "complete" ? 2 : 1;
+
+  return (
+    <div className="flex items-start justify-center gap-0 py-5 px-6"
+      style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E3DC" }}>
+      {STEPS.map((label, i) => {
+        const done    = i < active;
+        const current = i === active;
+        const dotColor = done ? "#059669" : current ? "#06b6d4" : "#D4D0C8";
+        const textColor = done ? "#059669" : current ? "#06b6d4" : "#C8C4BB";
+        const displayLabel = i === 1 && total > 0 && !["setup", "complete"].includes(phase)
+          ? `Q ${currentIdx + 1}/${total}`
+          : label;
+
+        return (
+          <div key={label} className="flex items-start">
+            {/* Node */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="relative flex items-center justify-center" style={{ width: 28, height: 28 }}>
+                {/* Pulse ring for current step */}
+                {current && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full"
+                    style={{ border: `1.5px solid ${dotColor}` }}
+                    animate={{ scale: [1, 1.6], opacity: [0.5, 0] }}
+                    transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
+                  />
+                )}
+                <motion.div
+                  className="rounded-full flex items-center justify-center"
+                  animate={{
+                    width:  current ? 10 : done ? 8 : 6,
+                    height: current ? 10 : done ? 8 : 6,
+                    background: dotColor,
+                  }}
+                  transition={SPRING}
+                />
+              </div>
+              <motion.span
+                animate={{ color: textColor }}
+                transition={{ duration: 0.3 }}
+                className="text-[9px] font-mono uppercase tracking-[0.14em] font-semibold text-center"
+                style={{ minWidth: 52 }}
+              >
+                {displayLabel}
+              </motion.span>
+            </div>
+
+            {/* Connector line */}
+            {i < STEPS.length - 1 && (
+              <div className="flex items-center" style={{ paddingTop: 13, marginLeft: 4, marginRight: 4 }}>
+                <div className="relative overflow-hidden" style={{ width: 56, height: 1.5, background: "#E5E3DC", borderRadius: 99 }}>
+                  <motion.div
+                    className="absolute inset-y-0 left-0 rounded-full"
+                    animate={{ width: done ? "100%" : "0%" }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                    style={{ background: "#059669" }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Underline input ─────────────────────────────────────────── */
+function UInput({ value, onChange, placeholder, label, hint }: {
+  value: string; onChange: (v: string) => void;
+  placeholder: string; label: string; hint?: string;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#6B6860" }}>
+        {label}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#9B9890" }}>— {hint}</span>}
+      </p>
+      <div className="relative">
+        <input
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="w-full py-2 text-[14px] bg-transparent focus:outline-none placeholder:text-[#B8B4AA]"
+          style={{ color: "#111111", borderBottom: `1px solid ${focused ? "#06b6d4" : "#C8C4BB"}`, transition: "border-color 0.2s" }}
+        />
+        {focused && (
+          <motion.div className="absolute bottom-0 left-0 h-[2px] rounded-full"
+            initial={{ width: 0 }} animate={{ width: "100%" }}
+            style={{ background: "#06b6d4" }} transition={{ duration: 0.25, ease: EASE }} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
+  value: string; onChange: (v: string) => void;
+  placeholder: string; label: string; hint?: string; rows?: number;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#6B6860" }}>
+        {label}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#9B9890" }}>— {hint}</span>}
+      </p>
+      <div className="relative">
+        <textarea
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows={rows}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="w-full bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none placeholder:text-[#B8B4AA] pb-2"
+          style={{ color: "#111111", borderBottom: `1px solid ${focused ? "#06b6d4" : "#C8C4BB"}`, transition: "border-color 0.2s" }}
+        />
+        {focused && (
+          <motion.div className="absolute bottom-0 left-0 h-[2px] rounded-full"
+            initial={{ width: 0 }} animate={{ width: "100%" }}
+            style={{ background: "#06b6d4" }} transition={{ duration: 0.28, ease: EASE }} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Main ────────────────────────────────────────────────────── */
 export default function InterviewPage() {
   const {
     userPlan, refreshPlan,
@@ -53,8 +191,8 @@ export default function InterviewPage() {
   } = useInterviewState();
 
   const [isVoiceActive, setIsVoiceActive] = useState(false);
-  const [elapsed, setElapsed] = useState(0);
-  const [upgradeModal, setUpgradeModal] = useState<{ open: boolean; reason: "voice" | "limit" }>({ open: false, reason: "voice" });
+  const [elapsed, setElapsed]             = useState(0);
+  const [upgradeModal, setUpgradeModal]   = useState<{ open: boolean; reason: "voice" | "limit" }>({ open: false, reason: "voice" });
 
   useEffect(() => {
     if (!isVoiceActive) { setElapsed(0); return; }
@@ -66,328 +204,365 @@ export default function InterviewPage() {
 
   return (
     <DashboardShell>
-      <div className="min-h-full" style={{ background: "#F7F6F2" }}>
-        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-14">
+      <div style={{ background: "#F7F6F2", minHeight: "100%" }}>
 
-          {/* ── Voice Section (clean, light) ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: EASE }}
-            className="mb-10"
-          >
-            {/* Header area */}
-            <div className="mb-6">
+        {/* ── White header ── */}
+        <div style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E3DC" }}>
+          <div className="max-w-3xl mx-auto px-6 md:px-10 pt-10 pb-0">
+            <motion.div
+              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: EASE }}
+            >
               <div className="flex items-center gap-2 mb-3">
                 <motion.span
                   className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.15em]"
                   style={{ background: "rgba(6,182,212,0.1)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.2)" }}
                 >
-                  <motion.span
-                    className="w-1.5 h-1.5 rounded-full inline-block"
-                    style={{ background: "#06b6d4" }}
+                  <motion.span className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: "#06b6d4", display: "inline-block" }}
                     animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
-                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                  />
+                    transition={{ duration: 1.6, repeat: Infinity }} />
                   Live AI
                 </motion.span>
-                <span
-                  className="px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ background: "#F0EFE9", color: "#C8C4BB", border: "1px solid #E5E3DC" }}
-                >
+                <span className="px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em]"
+                  style={{ background: "#F0EFE9", color: "#9B9890", border: "1px solid #E5E3DC" }}>
                   Signature Feature
                 </span>
               </div>
 
-              <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight mb-2" style={{ color: "#111111" }}>
-                Voice AI Interview
+              <h1 className="font-display font-semibold tracking-tight mb-2"
+                style={{ color: "#111111", fontSize: "clamp(24px, 5vw, 36px)", lineHeight: 1.15 }}>
+                AI Interview
               </h1>
-              <p className="text-sm max-w-md leading-relaxed" style={{ color: "#6B6860" }}>
-                Real-time AI interviewer trained on your resume. Speak naturally — no typing required.
+              <p className="text-[14px] leading-relaxed pb-7" style={{ color: "#6B6860" }}>
+                Real-time AI interviewer — speak naturally or practice with text.
               </p>
-            </div>
+            </motion.div>
+          </div>
 
-            {/* Voice interview card */}
-            <div
-              className="rounded-2xl overflow-hidden"
-              style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 2px 16px rgba(0,0,0,0.04)" }}
-            >
-              {/* Active session header strip */}
-              <AnimatePresence>
-                {isVoiceActive && (
-                  <motion.div
-                    key="session-header"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center justify-between px-6 py-3.5"
-                    style={{ borderBottom: "1px solid #E5E3DC", background: "#FAFAF8" }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full"
-                        style={{ background: "rgba(225,29,72,0.07)", border: "1px solid rgba(225,29,72,0.18)" }}
-                      >
-                        <motion.div
-                          className="w-1.5 h-1.5 rounded-full"
-                          style={{ background: "#e11d48" }}
-                          animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
-                          transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-                        />
-                        <span className="text-[10px] font-bold uppercase tracking-[0.12em]" style={{ color: "#e11d48" }}>Live</span>
-                      </div>
-                      <span className="text-sm font-semibold" style={{ color: "#111111" }}>Voice Interview</span>
-                    </div>
-                    <span className="text-sm font-mono tabular-nums font-medium" style={{ color: "#9B9890" }}>
-                      {fmt(elapsed)}
-                    </span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+          {/* Step bar lives in the white section */}
+          <div className="max-w-3xl mx-auto px-6 md:px-10">
+            <StepBar phase={phase} currentIdx={currentIdx} total={questions.length} />
+          </div>
+        </div>
 
-              <div className="p-6 md:p-8">
-                <VoiceInterview
-                  onActiveChange={handleVoiceActiveChange}
-                  userPlan={userPlan}
-                  onUpgradeNeeded={() => setUpgradeModal({ open: true, reason: "voice" })}
-                />
-              </div>
-            </div>
+        {/* ── Cream content ── */}
+        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10">
+
+          {/* ── Voice section ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: EASE }}
+            className="mb-10"
+          >
+            {/* Live session strip (no box, floating on cream) */}
+            <AnimatePresence>
+              {isVoiceActive && (
+                <motion.div
+                  key="live-strip"
+                  initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                  transition={SPRING}
+                  className="flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl"
+                  style={{ background: "rgba(225,29,72,0.05)", border: "1px solid rgba(225,29,72,0.15)" }}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <motion.div className="w-2 h-2 rounded-full" style={{ background: "#e11d48" }}
+                      animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
+                      transition={{ duration: 1.4, repeat: Infinity }} />
+                    <span className="text-[11px] font-semibold" style={{ color: "#e11d48" }}>Recording</span>
+                  </div>
+                  <span className="text-[13px] font-mono tabular-nums font-bold" style={{ color: "#e11d48" }}>
+                    {fmt(elapsed)}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <VoiceInterview
+              onActiveChange={handleVoiceActiveChange}
+              userPlan={userPlan}
+              onUpgradeNeeded={() => setUpgradeModal({ open: true, reason: "voice" })}
+            />
           </motion.div>
 
-          {/* ── Divider ── */}
-          <div className="flex items-center gap-4 mb-8">
+          {/* Divider */}
+          <div className="flex items-center gap-4 mb-10">
             <div className="flex-1 h-px" style={{ background: "#E5E3DC" }} />
-            <span className="text-[10px] font-mono uppercase tracking-[0.15em]" style={{ color: "#C8C4BB" }}>
-              Or practice with text
+            <span className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#C8C4BB" }}>
+              or practice with text
             </span>
             <div className="flex-1 h-px" style={{ background: "#E5E3DC" }} />
           </div>
 
-          {/* ── Text Mode ── */}
+          {/* ── Text mode ── */}
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18, duration: 0.4, ease: EASE }}
+            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16, duration: 0.4, ease: EASE }}
           >
-            <div className="mb-6">
-              <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-1" style={{ color: "#9B9890" }}>Text Mode</p>
-              <p className="text-sm" style={{ color: "#9B9890" }}>AI generates role-specific questions and evaluates your written answers.</p>
-            </div>
-
             <AnimatePresence mode="wait">
 
-              {/* Setup */}
+              {/* ── Setup ── */}
               {phase === "setup" && (
-                <motion.div key="setup" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-4">
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>Job Title</label>
-                    <input
-                      value={role}
-                      onChange={e => setRole(e.target.value)}
-                      placeholder="Product Manager"
-                      className="w-full h-10 px-3.5 rounded-lg text-sm focus:outline-none"
-                      style={inputStyle}
-                      onFocus={e => { e.currentTarget.style.borderColor = "#06b6d4"; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = "#E5E3DC"; }}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>
-                      Job Description{" "}
-                      <span className="normal-case font-normal tracking-normal" style={{ color: "#C8C4BB" }}>— paste key requirements</span>
-                    </label>
-                    <textarea
-                      value={jobDesc}
-                      onChange={e => setJobDesc(e.target.value)}
-                      placeholder="Paste the job description here…"
-                      rows={6}
-                      className="w-full px-3.5 py-3 rounded-lg text-sm focus:outline-none resize-none"
-                      style={inputStyle}
-                      onFocus={e => { e.currentTarget.style.borderColor = "#06b6d4"; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = "#E5E3DC"; }}
-                    />
-                  </div>
+                <motion.div key="setup"
+                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 28 }}
+                  className="space-y-8"
+                >
+                  <UInput value={role} onChange={setRole} placeholder="Product Manager" label="Job Title" />
+                  <UTextarea value={jobDesc} onChange={setJobDesc}
+                    placeholder="Paste the job description here…"
+                    label="Job Description" hint="paste key requirements" rows={6} />
                   <motion.button
                     onClick={() => generateQuestions(() => setUpgradeModal({ open: true, reason: "limit" }))}
                     disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
-                    whileHover={!loading ? { scale: 1.01 } : {}}
+                    whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(6,182,212,0.28)" } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}
-                    className="w-full h-11 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-40 transition-all"
-                    style={{ background: "#06b6d4", boxShadow: "0 4px 16px rgba(6,182,212,0.22)" }}
+                    transition={SPRING}
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35"
+                    style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 20px rgba(6,182,212,0.18)" }}
                   >
-                    {loading ? <><Loader2 size={14} className="animate-spin" />Generating…</> : <><Mic size={14} />Start Text Interview</>}
+                    {loading
+                      ? <><Loader2 size={14} className="animate-spin" />Generating questions…</>
+                      : <><Mic size={14} />Start Interview</>
+                    }
                   </motion.button>
                 </motion.div>
               )}
 
-              {/* Question */}
+              {/* ── Question / Answering ── */}
               {(phase === "questions" || phase === "answering") && questions[currentIdx] && (
-                <motion.div key={`q-${currentIdx}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono" style={{ color: "#9B9890" }}>
-                      Question {currentIdx + 1} of {questions.length}
-                    </span>
-                    <span
-                      className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
-                      style={{ background: "rgba(6,182,212,0.08)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.15)" }}
-                    >
-                      {questions[currentIdx].category}
-                    </span>
+                <motion.div key={`q-${currentIdx}`}
+                  initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 28 }}
+                  className="space-y-7"
+                >
+                  {/* Progress bar + meta */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-mono" style={{ color: "#9B9890" }}>
+                        Question {currentIdx + 1} of {questions.length}
+                      </span>
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING}
+                        className="text-[9px] font-bold px-2.5 py-1 rounded-full"
+                        style={{ background: "rgba(6,182,212,0.08)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.18)" }}
+                      >
+                        {questions[currentIdx].category}
+                      </motion.span>
+                    </div>
+                    <div className="h-[2px] rounded-full overflow-hidden" style={{ background: "#E5E3DC" }}>
+                      <motion.div className="h-full rounded-full" style={{ background: "#06b6d4" }}
+                        animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
+                        transition={{ duration: 0.6, ease: EASE }} />
+                    </div>
                   </div>
 
-                  <div className="h-0.5 rounded-full overflow-hidden" style={{ background: "#E5E3DC" }}>
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: "#06b6d4" }}
-                      animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
-                      transition={{ duration: 0.5, ease: EASE }}
-                    />
-                  </div>
-
-                  <div className="rounded-xl p-5" style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}>
-                    <p className="text-[14.5px] font-medium leading-relaxed" style={{ color: "#111111" }}>
+                  {/* Question text — left accent line, no box */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 26 }}
+                    className="pl-4"
+                    style={{ borderLeft: "3px solid #06b6d4" }}
+                  >
+                    <p className="text-[15px] font-medium leading-[1.75]" style={{ color: "#111111" }}>
                       {questions[currentIdx].question}
                     </p>
-                  </div>
+                  </motion.div>
 
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>Your Answer</label>
-                    <textarea
-                      value={answer}
-                      onChange={e => setAnswer(e.target.value)}
-                      placeholder="Use the STAR method: Situation, Task, Action, Result…"
-                      rows={6}
-                      className="w-full px-3.5 py-3 rounded-lg text-sm focus:outline-none resize-none"
-                      style={inputStyle}
-                      onFocus={e => { e.currentTarget.style.borderColor = "#06b6d4"; }}
-                      onBlur={e => { e.currentTarget.style.borderColor = "#E5E3DC"; }}
-                    />
-                  </div>
+                  <UTextarea value={answer} onChange={setAnswer}
+                    placeholder="Use the STAR method: Situation, Task, Action, Result…"
+                    label="Your Answer" rows={6} />
 
                   <motion.button
                     onClick={submitAnswer}
                     disabled={answer.trim().length < 20 || loading}
-                    whileHover={!loading ? { scale: 1.01 } : {}}
+                    whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(6,182,212,0.28)" } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}
-                    className="w-full h-11 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 disabled:opacity-40 transition-all"
-                    style={{ background: "#06b6d4", boxShadow: "0 4px 16px rgba(6,182,212,0.22)" }}
+                    transition={SPRING}
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35"
+                    style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 20px rgba(6,182,212,0.18)" }}
                   >
-                    {loading ? <><Loader2 size={14} className="animate-spin" />Evaluating…</> : <><Send size={13} />Submit Answer</>}
+                    {loading
+                      ? <><Loader2 size={14} className="animate-spin" />Evaluating…</>
+                      : <><Send size={13} />Submit Answer</>
+                    }
                   </motion.button>
                 </motion.div>
               )}
 
-              {/* Feedback */}
+              {/* ── Feedback ── */}
               {phase === "feedback" && feedbacks[currentIdx] && (
-                <motion.div key={`fb-${currentIdx}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="space-y-4">
-                  <div className="rounded-xl p-5 text-center" style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>Answer Score</p>
-                    <div className="text-5xl font-bold tracking-tighter mb-1" style={{ color: scoreColor(feedbacks[currentIdx].score) }}>
-                      <CountUpScore value={feedbacks[currentIdx].score} />
+                <motion.div key={`fb-${currentIdx}`}
+                  initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+                  transition={{ type: "spring", stiffness: 240, damping: 28 }}
+                  className="space-y-8"
+                >
+                  {/* Score */}
+                  <div>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "#C8C4BB" }}>Answer Score</p>
+                    <div className="flex items-baseline gap-2">
+                      <CountUp value={feedbacks[currentIdx].score} size={56} />
+                      <span className="text-[14px] font-semibold pb-1" style={{ color: "#C8C4BB" }}>/100</span>
                     </div>
-                    <p className="text-[11px]" style={{ color: "#9B9890" }}>out of 100</p>
+                    <div className="mt-3 h-[2px] rounded-full overflow-hidden" style={{ background: "#E5E3DC" }}>
+                      <motion.div className="h-full rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${feedbacks[currentIdx].score}%` }}
+                        transition={{ duration: 1.1, ease: EASE, delay: 0.3 }}
+                        style={{ background: scoreColor(feedbacks[currentIdx].score) }} />
+                    </div>
                   </div>
 
+                  {/* Strengths */}
                   {feedbacks[currentIdx].strengths.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                      className="rounded-xl p-5" style={{ background: "rgba(5,150,105,0.04)", border: "1px solid rgba(5,150,105,0.15)" }}>
-                      <div className="flex items-center gap-2 mb-3">
+                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+                      <div style={{ height: 1, background: "#E5E3DC", marginBottom: 20 }} />
+                      <div className="flex items-center gap-2 mb-4">
                         <CheckCircle2 size={13} style={{ color: "#059669" }} />
-                        <span className="text-[10px] font-mono uppercase tracking-[0.12em] font-semibold" style={{ color: "#059669" }}>What worked well</span>
+                        <span className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#059669" }}>What worked</span>
                       </div>
-                      <ul className="space-y-1.5">
+                      <ul className="space-y-3">
                         {feedbacks[currentIdx].strengths.map((s, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2" style={{ color: "#111111" }}>
-                            <ChevronRight size={12} style={{ color: "#059669", marginTop: 2 }} className="shrink-0" /> {s}
-                          </li>
+                          <motion.li key={i}
+                            initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.14 + i * 0.06, type: "spring", stiffness: 280, damping: 26 }}
+                            className="flex items-start gap-3 text-[13.5px] leading-relaxed"
+                            style={{ color: "#2D2C2A" }}
+                          >
+                            <ChevronRight size={12} style={{ color: "#059669", marginTop: 3 }} className="shrink-0" />
+                            {s}
+                          </motion.li>
                         ))}
                       </ul>
                     </motion.div>
                   )}
 
+                  {/* Improvements */}
                   {feedbacks[currentIdx].improvements.length > 0 && (
-                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
-                      className="rounded-xl p-5" style={{ background: "rgba(217,119,6,0.04)", border: "1px solid rgba(217,119,6,0.15)" }}>
-                      <div className="flex items-center gap-2 mb-3">
+                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+                      <div style={{ height: 1, background: "#E5E3DC", marginBottom: 20 }} />
+                      <div className="flex items-center gap-2 mb-4">
                         <AlertCircle size={13} style={{ color: "#d97706" }} />
-                        <span className="text-[10px] font-mono uppercase tracking-[0.12em] font-semibold" style={{ color: "#d97706" }}>To improve</span>
+                        <span className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#d97706" }}>To improve</span>
                       </div>
-                      <ul className="space-y-1.5">
+                      <ul className="space-y-3">
                         {feedbacks[currentIdx].improvements.map((s, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2" style={{ color: "#111111" }}>
-                            <ChevronRight size={12} style={{ color: "#d97706", marginTop: 2 }} className="shrink-0" /> {s}
-                          </li>
+                          <motion.li key={i}
+                            initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.2 + i * 0.06, type: "spring", stiffness: 280, damping: 26 }}
+                            className="flex items-start gap-3 text-[13.5px] leading-relaxed"
+                            style={{ color: "#2D2C2A" }}
+                          >
+                            <ChevronRight size={12} style={{ color: "#d97706", marginTop: 3 }} className="shrink-0" />
+                            {s}
+                          </motion.li>
                         ))}
                       </ul>
                     </motion.div>
                   )}
 
+                  {/* Model answer hint */}
                   {feedbacks[currentIdx].model_answer_hint && (
-                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                      className="rounded-xl p-5" style={{ background: "rgba(6,182,212,0.04)", border: "1px solid rgba(6,182,212,0.15)" }}>
-                      <p className="text-[10px] font-mono uppercase tracking-[0.12em] font-semibold mb-2" style={{ color: "#06b6d4" }}>Strong answer approach</p>
-                      <p className="text-sm leading-relaxed" style={{ color: "#111111" }}>{feedbacks[currentIdx].model_answer_hint}</p>
+                    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
+                      <div style={{ height: 1, background: "#E5E3DC", marginBottom: 20 }} />
+                      <p className="text-[10px] font-mono uppercase tracking-[0.16em] mb-3" style={{ color: "#06b6d4" }}>Strong approach</p>
+                      <p className="text-[13.5px] leading-[1.85] pl-4"
+                        style={{ color: "#2D2C2A", borderLeft: "3px solid rgba(6,182,212,0.35)" }}>
+                        {feedbacks[currentIdx].model_answer_hint}
+                      </p>
                     </motion.div>
                   )}
 
                   <motion.button
                     onClick={nextQuestion}
-                    whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                    className="w-full h-11 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2"
-                    style={{ background: "#06b6d4", boxShadow: "0 4px 16px rgba(6,182,212,0.22)" }}
+                    whileHover={{ y: -2, boxShadow: "0 16px 36px rgba(6,182,212,0.28)" }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={SPRING}
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2"
+                    style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 20px rgba(6,182,212,0.18)" }}
                   >
-                    Next Question <ArrowRight size={14} />
+                    {currentIdx < questions.length - 1 ? (
+                      <>Next Question <ArrowRight size={14} /></>
+                    ) : (
+                      <>See Results <ArrowRight size={14} /></>
+                    )}
                   </motion.button>
                 </motion.div>
               )}
 
-              {/* Complete */}
+              {/* ── Complete ── */}
               {phase === "complete" && (
-                <motion.div key="complete" initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="space-y-4">
-                  <div className="rounded-xl p-8 text-center" style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}>
-                    <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#9B9890" }}>Interview Complete</p>
-                    <div className="text-5xl font-bold tracking-tighter mb-1" style={{ color: scoreColor(avgScore) }}>
-                      <CountUpScore value={avgScore} />
+                <motion.div key="complete"
+                  initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 240, damping: 26 }}
+                  className="space-y-8"
+                >
+                  {/* Overall score */}
+                  <div>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "#C8C4BB" }}>
+                      Final Score
+                    </p>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <CountUp value={avgScore} size={64} />
+                      <span className="text-[16px] font-semibold pb-1.5" style={{ color: "#C8C4BB" }}>/100</span>
                     </div>
-                    <p className="text-[11px] mb-1" style={{ color: "#9B9890" }}>average score</p>
-                    <p className="text-sm" style={{ color: "#9B9890" }}>{questions.length} questions answered</p>
+                    <p className="text-[12px]" style={{ color: "#9B9890" }}>{questions.length} questions answered</p>
+                    <div className="mt-4 h-[2px] rounded-full overflow-hidden" style={{ background: "#E5E3DC" }}>
+                      <motion.div className="h-full rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${avgScore}%` }}
+                        transition={{ duration: 1.4, ease: EASE, delay: 0.3 }}
+                        style={{ background: scoreColor(avgScore) }} />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    {feedbacks.map((fb, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                        className="flex items-center justify-between px-4 py-3 rounded-lg"
-                        style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
-                      >
-                        <span className="text-sm" style={{ color: "#6B6860" }}>Q{i + 1}: {questions[i]?.category}</span>
-                        <span className="text-sm font-bold tabular-nums font-mono" style={{ color: scoreColor(fb.score) }}>
-                          {fb.score}/100
-                        </span>
-                      </motion.div>
-                    ))}
+                  {/* Per-question breakdown */}
+                  <div>
+                    <div style={{ height: 1, background: "#E5E3DC", marginBottom: 20 }} />
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-5" style={{ color: "#C8C4BB" }}>Breakdown</p>
+                    <div className="space-y-0">
+                      {feedbacks.map((fb, i) => (
+                        <motion.div key={i}
+                          initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.07, type: "spring", stiffness: 280, damping: 26 }}
+                          className="flex items-center justify-between py-4"
+                          style={{ borderBottom: i < feedbacks.length - 1 ? "1px solid #E5E3DC" : "none" }}
+                        >
+                          <div>
+                            <p className="text-[12px] font-semibold" style={{ color: "#111111" }}>Q{i + 1}</p>
+                            <p className="text-[11px]" style={{ color: "#9B9890" }}>{questions[i]?.category}</p>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="w-20 h-[2px] rounded-full overflow-hidden" style={{ background: "#E5E3DC" }}>
+                              <motion.div className="h-full rounded-full"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${fb.score}%` }}
+                                transition={{ duration: 0.9, ease: EASE, delay: i * 0.07 + 0.2 }}
+                                style={{ background: scoreColor(fb.score) }} />
+                            </div>
+                            <span className="text-[14px] font-black font-mono tabular-nums w-10 text-right"
+                              style={{ color: scoreColor(fb.score), letterSpacing: "-0.02em" }}>
+                              {fb.score}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
 
+                  {/* Actions */}
                   <div className="flex gap-3">
-                    <motion.button
-                      onClick={reset}
-                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-                      className="flex-1 h-11 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"
-                      style={{ background: "#F7F6F2", border: "1px solid #E5E3DC", color: "#6B6860" }}
-                    >
-                      <RotateCcw size={13} />Try Again
+                    <motion.button onClick={reset}
+                      whileHover={{ y: -1 }} whileTap={{ scale: 0.96 }} transition={SPRING}
+                      className="flex-1 h-11 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-2"
+                      style={{ border: "1px solid #E5E3DC", color: "#6B6860", background: "#FFFFFF" }}>
+                      <RotateCcw size={13} /> Try again
                     </motion.button>
-                    <motion.button
-                      onClick={() => { window.location.href = "/dashboard"; }}
-                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-                      className="flex-1 h-11 rounded-lg text-sm font-semibold text-white flex items-center justify-center"
-                      style={{ background: "#06b6d4", boxShadow: "0 4px 16px rgba(6,182,212,0.22)" }}
-                    >
-                      Back to Dashboard
+                    <motion.button onClick={() => { window.location.href = "/dashboard"; }}
+                      whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(6,182,212,0.24)" }} whileTap={{ scale: 0.97 }} transition={SPRING}
+                      className="flex-1 h-11 rounded-xl text-[12px] font-bold text-white flex items-center justify-center"
+                      style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 16px rgba(6,182,212,0.18)" }}>
+                      Dashboard
                     </motion.button>
                   </div>
                 </motion.div>
@@ -396,8 +571,10 @@ export default function InterviewPage() {
             </AnimatePresence>
           </motion.div>
 
+          <div className="h-10" />
         </div>
       </div>
+
       <UpgradeModal
         open={upgradeModal.open}
         reason={upgradeModal.reason}

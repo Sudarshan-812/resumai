@@ -17,6 +17,8 @@ interface Props {
   onSuccess: () => void;
 }
 
+const SPRING = { type: "spring", stiffness: 360, damping: 28 } as const;
+
 const PLANS = [
   {
     id: "pro",
@@ -86,38 +88,40 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
         {open && (
           <motion.div
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
           >
             {/* Backdrop */}
             <motion.div
               className="absolute inset-0"
-              style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(3px)" }}
+              style={{ background: "rgba(17,17,17,0.35)", backdropFilter: "blur(4px)" }}
               onClick={onClose}
             />
 
-            {/* Card */}
+            {/* Modal */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 14 }}
+              initial={{ opacity: 0, scale: 0.94, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 14 }}
-              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              exit={{ opacity: 0, scale: 0.94, y: 16 }}
+              transition={SPRING}
               className="relative w-full max-w-md rounded-2xl overflow-hidden"
-              style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 24px 64px rgba(0,0,0,0.16)" }}
+              style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 32px 80px rgba(0,0,0,0.12)" }}
             >
+              {/* Cyan accent stripe */}
+              <div style={{ height: 3, background: "linear-gradient(90deg,#06b6d4,#0891b2)" }} />
+
               {/* Close */}
-              <button
+              <motion.button
                 onClick={onClose}
-                className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} transition={SPRING}
+                className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center"
                 style={{ background: "#F7F6F2", color: "#9B9890" }}
               >
                 <X size={14} />
-              </button>
+              </motion.button>
 
-              <div className="p-6">
-                {/* Icon */}
+              <div className="p-6 pt-5">
+                {/* Icon + heading */}
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
                   style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.18)" }}
@@ -128,46 +132,51 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                   }
                 </div>
 
-                <h2 className="font-display text-xl font-semibold mb-1" style={{ color: "#111111" }}>
+                <h2 className="font-display text-xl font-semibold mb-1.5" style={{ color: "#111111" }}>
                   {reason === "voice" ? "Unlock Voice Interviews" : "Interview Limit Reached"}
                 </h2>
-                <p className="text-sm mb-6" style={{ color: "#9B9890" }}>
+                <p className="text-[13px] leading-relaxed mb-6" style={{ color: "#6B6860" }}>
                   {reason === "voice"
                     ? "Voice AI interviewer is available on Pro and Premium plans."
-                    : "You've used all 3 free interviews this month. Upgrade to practice without limits."}
+                    : "You've used all 3 free interviews this month. Upgrade to practice without limits."
+                  }
                 </p>
 
                 {/* Plans */}
                 <div className="space-y-3">
-                  {PLANS.map((plan) => (
-                    <div
+                  {PLANS.map((plan, pi) => (
+                    <motion.div
                       key={plan.id}
-                      className="rounded-xl p-4"
+                      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: pi * 0.07, type: "spring", stiffness: 280, damping: 26 }}
+                      className="rounded-xl p-4 relative"
                       style={plan.popular
-                        ? { background: "#111111", border: "1px solid #1f1f1f" }
+                        ? { background: "#F0FDFE", border: "2px solid #06b6d4" }
                         : { background: "#F7F6F2", border: "1px solid #E5E3DC" }
                       }
                     >
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-semibold" style={{ color: plan.popular ? "#FFFFFF" : "#111111" }}>
-                            {plan.name}
-                          </span>
-                          {plan.popular && (
-                            <span className="text-[9px] font-bold uppercase tracking-[0.12em] px-2 py-0.5 rounded-full" style={{ background: "#06b6d4", color: "#FFFFFF" }}>
-                              Recommended
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-lg font-bold tabular-nums" style={{ color: plan.popular ? "#FFFFFF" : "#111111" }}>
-                          ₹{plan.price}
+                      {/* Popular badge */}
+                      {plan.popular && (
+                        <span className="absolute -top-2.5 left-4 text-[9px] font-bold uppercase tracking-[0.14em] px-2.5 py-0.5 rounded-full"
+                          style={{ background: "#06b6d4", color: "#FFFFFF" }}>
+                          Recommended
                         </span>
+                      )}
+
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-[14px] font-bold" style={{ color: "#111111" }}>{plan.name}</span>
+                        <div className="text-right">
+                          <span className="text-[20px] font-black tabular-nums" style={{ color: "#111111", letterSpacing: "-0.03em" }}>
+                            ₹{plan.price}
+                          </span>
+                          <span className="text-[10px] ml-1" style={{ color: "#9B9890" }}>one-time</span>
+                        </div>
                       </div>
 
-                      <ul className="space-y-1.5 mb-3">
+                      <ul className="space-y-2 mb-4">
                         {plan.features.map((f) => (
-                          <li key={f} className="flex items-center gap-2 text-[12px]" style={{ color: plan.popular ? "rgba(255,255,255,0.65)" : "#6B6860" }}>
-                            <Check size={10} style={{ color: "#06b6d4" }} strokeWidth={3} />
+                          <li key={f} className="flex items-start gap-2 text-[12px]" style={{ color: "#6B6860" }}>
+                            <Check size={10} style={{ color: "#06b6d4", marginTop: 2 }} strokeWidth={3} className="shrink-0" />
                             {f}
                           </li>
                         ))}
@@ -176,20 +185,18 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                       <motion.button
                         onClick={() => handlePurchase(plan)}
                         disabled={!!loadingId}
-                        whileHover={!loadingId ? { scale: 1.01 } : {}}
+                        whileHover={!loadingId ? { y: -1, boxShadow: "0 10px 24px rgba(6,182,212,0.28)" } : {}}
                         whileTap={!loadingId ? { scale: 0.98 } : {}}
-                        className="w-full h-9 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50"
-                        style={plan.popular
-                          ? { background: "#06b6d4", color: "#FFFFFF" }
-                          : { background: "#111111", color: "#FFFFFF" }
-                        }
+                        transition={SPRING}
+                        className="w-full h-9 rounded-xl text-[12px] font-bold flex items-center justify-center gap-1.5 disabled:opacity-50"
+                        style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", color: "#FFFFFF", boxShadow: "0 4px 14px rgba(6,182,212,0.2)" }}
                       >
                         {loadingId === plan.id
                           ? <><Loader2 size={12} className="animate-spin" />Processing…</>
                           : `Upgrade to ${plan.name} — ₹${plan.price}`
                         }
                       </motion.button>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
 
