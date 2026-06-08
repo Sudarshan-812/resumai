@@ -5,7 +5,6 @@ import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/app/components/theme-provider";
-import AppLoader from "@/app/components/AppLoader";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -57,8 +56,7 @@ export default function RootLayout({
             speed={200}
             shadow="0 0 10px #06b6d4,0 0 5px #06b6d4"
           />
-          <AppLoader />
-          {children}
+{children}
           <Toaster richColors />
           <Analytics />
         </ThemeProvider>
