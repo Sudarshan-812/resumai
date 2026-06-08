@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -73,7 +73,7 @@ export default function Footer() {
 
       {/* Footer grid */}
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 py-16" style={{ borderBottom: "1px solid #E5E3DC" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-16" style={{ borderBottom: "1px solid #E5E3DC" }}>
 
           {/* Brand */}
           <div className="space-y-5">
@@ -87,19 +87,6 @@ export default function Footer() {
             <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: "#9B9890" }}>
               AI-powered resume optimization for the modern job market.
             </p>
-            <div className="flex gap-4">
-              {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  className="transition-colors hover:text-cyan-500"
-                  style={{ color: "#C8C4BB" }}
-                >
-                  <Icon size={15} aria-hidden />
-                </Link>
-              ))}
-            </div>
           </div>
 
           {/* Product */}
@@ -138,39 +125,25 @@ export default function Footer() {
             </ul>
           </nav>
 
-          {/* Status */}
-          <div
-            className="rounded-xl p-5"
-            style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
-          >
-            <h3 className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: "#9B9890" }}>
-              Global Status
-            </h3>
-            <div className="flex items-center gap-2 text-xs font-medium" style={{ color: "#16a34a" }} role="status">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ background: "#22c55e" }} />
-                <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: "#22c55e" }} />
-              </span>
-              All systems operational
-            </div>
-            <div
-              className="mt-4 pt-4 text-[10px] font-mono"
-              style={{ color: "#C8C4BB", borderTop: "1px solid #E5E3DC" }}
-            >
-              v2.1.0 · Gemini Flash 2.0
-            </div>
-          </div>
-
         </div>
 
         {/* Bottom bar */}
-        <div className="py-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs" style={{ color: "#9B9890" }}>
             © 2026 Column8. Made in India 🇮🇳
           </p>
-          <div className="flex gap-6 text-[10px] font-mono uppercase tracking-wider" style={{ color: "#C8C4BB" }}>
-            <span>Mumbai-AW-1</span>
-            <span>24ms</span>
+          <div className="flex gap-4">
+            {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
+              <Link
+                key={label}
+                href={href}
+                aria-label={label}
+                className="transition-colors hover:text-cyan-500"
+                style={{ color: "#C8C4BB" }}
+              >
+                <Icon size={15} aria-hidden />
+              </Link>
+            ))}
           </div>
         </div>
       </div>
