@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { BarChart3, Wand2, Mic, FileText, History } from "lucide-react";
 
 const FEATURES = [
@@ -36,6 +36,29 @@ const FEATURES = [
   },
 ] as const;
 
+const EASE = [0.16, 1, 0.3, 1] as const;
+const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
+
+const rowVariants: Variants = {
+  rest: { x: 0 },
+  hover: { x: 6, transition: SPRING },
+};
+
+const numVariants: Variants = {
+  rest: { color: "#C8C4BB" },
+  hover: { color: "#06b6d4", transition: { duration: 0.18 } },
+};
+
+const iconBgVariants: Variants = {
+  rest: { scale: 1, background: "rgba(6,182,212,0.08)" },
+  hover: { scale: 1.14, background: "rgba(6,182,212,0.18)", transition: SPRING },
+};
+
+const titleVariants: Variants = {
+  rest: { color: "#111111" },
+  hover: { color: "#0891b2", transition: { duration: 0.18 } },
+};
+
 export default function FeatureGrid() {
   return (
     <section
@@ -67,7 +90,7 @@ export default function FeatureGrid() {
           </h2>
         </div>
 
-        {/* Numbered list */}
+        {/* Numbered list — Framer Motion parent variant hover propagation */}
         <div style={{ borderTop: "1px solid #E5E3DC" }}>
           {FEATURES.map((f, i) => (
             <motion.div
@@ -75,31 +98,38 @@ export default function FeatureGrid() {
               initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ delay: i * 0.07, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="group flex items-start gap-6 md:gap-10 py-7 cursor-default"
+              transition={{ delay: i * 0.07, duration: 0.6, ease: EASE }}
+              whileHover="hover"
+              animate="rest"
+              variants={rowVariants}
+              className="flex items-start gap-6 md:gap-10 py-7 cursor-default"
               style={{ borderBottom: "1px solid #E5E3DC" }}
             >
               {/* Number */}
-              <span className="text-xs font-mono shrink-0 mt-0.5 w-5 tabular-nums" style={{ color: "#C8C4BB" }}>
+              <motion.span
+                variants={numVariants}
+                className="text-xs font-mono shrink-0 mt-0.5 w-5 tabular-nums"
+              >
                 {f.num}
-              </span>
+              </motion.span>
 
               {/* Icon */}
-              <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all duration-200 group-hover:border-cyan-400"
-                style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.2)" }}
+              <motion.div
+                variants={iconBgVariants}
+                className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                style={{ border: "1px solid rgba(6,182,212,0.2)" }}
               >
                 <f.icon size={15} style={{ color: "#06b6d4" }} strokeWidth={1.5} aria-hidden />
-              </div>
+              </motion.div>
 
               {/* Content */}
               <div className="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-12">
-                <h3
-                  className="text-sm font-semibold shrink-0 min-w-[160px] transition-colors duration-200 group-hover:text-cyan-600"
-                  style={{ color: "#111111" }}
+                <motion.h3
+                  variants={titleVariants}
+                  className="text-sm font-semibold shrink-0 min-w-[160px]"
                 >
                   {f.title}
-                </h3>
+                </motion.h3>
                 <p className="text-sm leading-relaxed" style={{ color: "#6B6860" }}>
                   {f.desc}
                 </p>

@@ -69,6 +69,10 @@ export default function Pricing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: i * 0.12, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={plan.popular
+                ? { y: -8, boxShadow: "0 24px 60px rgba(6,182,212,0.25)" }
+                : { y: -5, boxShadow: "0 16px 40px rgba(0,0,0,0.08)" }}
+              whileTap={{ scale: 0.99 }}
               className="relative flex flex-col p-8 rounded-2xl"
               style={
                 plan.popular

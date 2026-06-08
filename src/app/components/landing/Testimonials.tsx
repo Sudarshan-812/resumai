@@ -2,132 +2,151 @@
 
 import type { FC, JSX } from "react";
 import { motion, type Variants } from "framer-motion";
-import { Quote, Star } from "lucide-react";
 
 interface Testimonial {
   quote: string;
   author: string;
   role: string;
   initial: string;
-  gradient: string;
+  accentColor: string;
 }
-
 
 const TESTIMONIALS: readonly Testimonial[] = [
   {
-    quote:
-      "I was getting rejected instantly. After Column8 optimized my CV, I got 3 interview calls in a week.",
+    quote: "I was getting rejected instantly. After Column8 optimized my CV, I got 3 interview calls in a week.",
     author: "Arjun K.",
     role: "Frontend Developer",
     initial: "A",
-    gradient: "from-blue-500 to-cyan-600",
+    accentColor: "#06b6d4",
   },
   {
-    quote:
-      "The cover letter generator is magic. It actually sounds like me, but professional.",
+    quote: "The cover letter generator is magic. It actually sounds like me, but professional.",
     author: "Sarah J.",
     role: "Product Manager",
     initial: "S",
-    gradient: "from-purple-500 to-pink-500",
+    accentColor: "#0891b2",
   },
   {
-    quote:
-      "Simple, fast, and effective. The ATS scoring feature is a game changer.",
+    quote: "Simple, fast, and effective. The ATS scoring feature is a game changer.",
     author: "David R.",
     role: "Data Scientist",
     initial: "D",
-    gradient: "from-amber-500 to-orange-600",
+    accentColor: "#22d3ee",
   },
 ];
 
-const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (index: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: index * 0.1 },
+const EASE = [0.16, 1, 0.3, 1] as const;
+const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: (i: number) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.1, duration: 0.7, ease: EASE },
+  }),
+};
+
+const starVariants: Variants = {
+  hidden: { opacity: 0, scale: 0.4 },
+  visible: (i: number) => ({
+    opacity: 1, scale: 1,
+    transition: { delay: i * 0.07, type: "spring", stiffness: 500, damping: 20 },
   }),
 };
 
 const Testimonials: FC = (): JSX.Element => {
   return (
-    <section className="relative overflow-hidden bg-gray-50 py-24">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-      >
-        <div className="absolute right-[-5%] top-[-10%] h-[400px] w-[400px] rounded-full bg-purple-100/60 blur-[80px]" />
-        <div className="absolute bottom-[-10%] left-[-5%] h-[400px] w-[400px] rounded-full bg-cyan-100/60 blur-[80px]" />
-      </div>
+    <section
+      className="py-24 md:py-32"
+      style={{ background: "#FFFFFF", borderTop: "1px solid #E5E3DC" }}
+    >
+      <div className="max-w-5xl mx-auto px-6">
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div className="mb-16 text-center">
-          <motion.h2
-            initial="hidden"
-            whileInView="visible"
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            variants={fadeUp}
-            className="mb-4 text-3xl font-bold text-gray-900 md:text-5xl"
+            transition={{ duration: 0.5, ease: EASE }}
+            className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono"
+            style={{ color: "#06b6d4" }}
+          >
+            What People Say
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 14 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.08, ease: EASE }}
+            className="font-display font-bold tracking-tight"
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
           >
             Trusted by{" "}
-            <span className="text-cyan-600">10,000+</span> job seekers
+            <span style={{ color: "#06b6d4" }}>10,000+</span> job seekers
           </motion.h2>
-          <p className="text-gray-500">
-            Join the community landing top-tier tech jobs.
-          </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {TESTIMONIALS.map((testimonial, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {TESTIMONIALS.map((t, i) => (
             <motion.article
-              key={testimonial.author}
-              custom={index}
+              key={t.author}
+              custom={i}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              whileHover={{ y: -5 }}
-              className="rounded-3xl border border-cyan-50 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10"
-              aria-label={`Testimonial from ${testimonial.author}`}
+              viewport={{ once: true, margin: "-60px" }}
+              variants={cardVariants}
+              whileHover={{ y: -6, boxShadow: "0 20px 44px rgba(0,0,0,0.07)" }}
+              transition={SPRING}
+              className="flex flex-col p-7 rounded-2xl"
+              style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+              aria-label={`Testimonial from ${t.author}`}
             >
-              <div className="mb-4 flex gap-1">
-                {Array.from({ length: 5 }).map((_, starIndex) => (
-                  <Star
-                    key={starIndex}
-                    className="h-4 w-4 fill-amber-400 text-amber-400"
+              {/* Stars — staggered spring entrance */}
+              <div className="flex gap-1 mb-5">
+                {Array.from({ length: 5 }).map((_, si) => (
+                  <motion.svg
+                    key={si}
+                    custom={si}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={starVariants}
+                    width="13" height="13" viewBox="0 0 14 14" fill="#F59E0B"
                     aria-hidden="true"
-                  />
+                  >
+                    <path d="M7 1l1.545 3.13 3.455.502-2.5 2.438.59 3.44L7 8.885 3.91 10.51l.59-3.44L2 4.632l3.455-.502z" />
+                  </motion.svg>
                 ))}
               </div>
 
-              <Quote
-                className="mb-4 h-8 w-8 text-cyan-100"
-                aria-hidden="true"
-              />
-
-              <p className="mb-6 text-lg font-medium leading-relaxed text-gray-700">
-                “{testimonial.quote}”
+              {/* Quote */}
+              <p className="flex-1 text-sm leading-relaxed mb-6" style={{ color: "#6B6860" }}>
+                &ldquo;{t.quote}&rdquo;
               </p>
 
+              {/* Author */}
               <div className="flex items-center gap-3">
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br ${testimonial.gradient} text-sm font-bold text-white shadow-md`}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                  style={{ background: t.accentColor }}
                   aria-hidden="true"
                 >
-                  {testimonial.initial}
+                  {t.initial}
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">
-                    {testimonial.author}
+                  <p className="text-sm font-semibold leading-none" style={{ color: "#111111" }}>
+                    {t.author}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {testimonial.role}
+                  <p className="text-xs mt-0.5" style={{ color: "#9B9890" }}>
+                    {t.role}
                   </p>
                 </div>
               </div>
             </motion.article>
           ))}
         </div>
+
       </div>
     </section>
   );

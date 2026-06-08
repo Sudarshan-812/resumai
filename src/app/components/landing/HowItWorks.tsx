@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { Upload, Cpu, Download, ArrowRight } from "lucide-react";
 
 const STEPS = [
@@ -24,6 +24,19 @@ const STEPS = [
     desc: "Apply one-click AI rewrites to your weakest points and download the ATS-ready version. No manual editing required.",
   },
 ] as const;
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
+
+const cardVariants: Variants = {
+  rest: { y: 0, boxShadow: "0 0px 0px rgba(0,0,0,0)" },
+  hover: { y: -5, boxShadow: "0 16px 40px rgba(0,0,0,0.07)", transition: SPRING },
+};
+
+const iconVariants: Variants = {
+  rest: { scale: 1, background: "rgba(6,182,212,0.08)" },
+  hover: { scale: 1.12, background: "rgba(6,182,212,0.16)", transition: SPRING },
+};
 
 export default function HowItWorks() {
   return (
@@ -58,25 +71,26 @@ export default function HowItWorks() {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ delay: i * 0.15, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="relative p-8 rounded-2xl group"
+              transition={{ delay: i * 0.15, duration: 0.7, ease: EASE }}
+              whileHover="hover"
+              animate="rest"
+              variants={cardVariants}
+              className="relative p-8 rounded-2xl cursor-default"
               style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
             >
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center mb-6 transition-all duration-200 group-hover:border-cyan-400"
-                style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.2)" }}
+              <motion.div
+                variants={iconVariants}
+                className="w-10 h-10 rounded-xl flex items-center justify-center mb-6"
+                style={{ border: "1px solid rgba(6,182,212,0.2)" }}
               >
                 <step.icon size={18} style={{ color: "#06b6d4" }} strokeWidth={1.5} aria-hidden />
-              </div>
+              </motion.div>
 
               <div className="text-[10px] font-mono mb-3" style={{ color: "#C8C4BB" }}>
                 Step {step.num}
               </div>
 
-              <h3
-                className="text-base font-semibold mb-3 transition-colors duration-200 group-hover:text-cyan-600"
-                style={{ color: "#111111" }}
-              >
+              <h3 className="text-base font-semibold mb-3" style={{ color: "#111111" }}>
                 {step.title}
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: "#6B6860" }}>

@@ -89,17 +89,31 @@ export default function Navbar() {
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-7" aria-label="Main">
             {NAV_LINKS.map(({ label, href, hash }) => (
-              <Link
+              <motion.div
                 key={label}
-                href={href}
-                onClick={(e) => handleHashClick(e, hash)}
-                className="text-sm font-medium transition-colors duration-200"
-                style={{ color: "#6B6860" }}
-                onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
-                onMouseLeave={e => (e.currentTarget.style.color = "#6B6860")}
+                className="relative"
+                whileHover="hover"
+                initial="rest"
+                animate="rest"
               >
-                {label}
-              </Link>
+                <Link
+                  href={href}
+                  onClick={(e) => handleHashClick(e, hash)}
+                  className="text-sm font-medium transition-colors duration-200 block"
+                  style={{ color: "#6B6860" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#6B6860")}
+                >
+                  {label}
+                </Link>
+                <motion.span
+                  variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute -bottom-0.5 left-0 right-0 block h-px origin-left"
+                  style={{ background: "#06b6d4" }}
+                  aria-hidden
+                />
+              </motion.div>
             ))}
           </nav>
 
@@ -171,16 +185,22 @@ export default function Navbar() {
             style={{ background: "#FDFCF9", borderBottom: "1px solid #E5E3DC" }}
           >
             <nav className="max-w-6xl mx-auto px-6 py-5 flex flex-col gap-1">
-              {NAV_LINKS.map(({ label, href, hash }) => (
-                <Link
+              {NAV_LINKS.map(({ label, href, hash }, i) => (
+                <motion.div
                   key={label}
-                  href={href}
-                  onClick={(e) => handleHashClick(e, hash)}
-                  className="px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
-                  style={{ color: "#6B6860" }}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06, duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {label}
-                </Link>
+                  <Link
+                    href={href}
+                    onClick={(e) => handleHashClick(e, hash)}
+                    className="px-3 py-2.5 rounded-xl text-sm font-medium transition-colors block"
+                    style={{ color: "#6B6860" }}
+                  >
+                    {label}
+                  </Link>
+                </motion.div>
               ))}
               <div className="h-px my-3" style={{ background: "#E5E3DC" }} />
               <div className="flex flex-col gap-2">

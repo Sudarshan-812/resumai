@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const FAQS = [
   {
@@ -81,10 +81,12 @@ export default function FAQ() {
                 >
                   {faq.q}
                 </span>
-                {open === i
-                  ? <Minus size={14} style={{ color: "#06b6d4", flexShrink: 0 }} aria-hidden />
-                  : <Plus  size={14} style={{ color: "#C8C4BB", flexShrink: 0 }} aria-hidden />
-                }
+                <motion.div
+                  animate={{ rotate: open === i ? 45 : 0 }}
+                  transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Plus size={14} style={{ color: open === i ? "#06b6d4" : "#C8C4BB", flexShrink: 0 }} aria-hidden />
+                </motion.div>
               </button>
 
               <AnimatePresence>

@@ -81,7 +81,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search by filename…"
-              className="w-full h-10 rounded-lg pl-10 pr-4 text-sm focus:outline-none focus:ring-2 transition-all"
+              className="w-full h-10 rounded-lg pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-[#06b6d4]/30 transition-all"
               style={{
                 background: "#FFFFFF",
                 border: "1px solid #E5E3DC",
@@ -142,6 +142,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                     key={r.id}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
+                    whileHover={{ x: 3 }}
                     transition={{ delay: i * 0.03, duration: 0.3 }}
                     style={{ borderBottom: i < filtered.length - 1 ? "1px solid #E5E3DC" : undefined }}
                   >

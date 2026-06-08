@@ -118,10 +118,12 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               action: React.ReactNode;
             }>
           ).map((m, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="relative px-6 py-5"
+                className="relative px-6 py-5 cursor-default"
                 style={{ borderRight: i < 2 ? "1px solid #E5E3DC" : undefined }}
+                whileHover={{ backgroundColor: "#F0EFE9" }}
+                transition={{ duration: 0.15 }}
               >
                 <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>
                   {m.label}
@@ -138,7 +140,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   </p>
                   {m.action}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 

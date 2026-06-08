@@ -104,7 +104,13 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
               <div key={index} className="flex items-center gap-3.5">
                 <div className="shrink-0 flex items-center justify-center w-5 h-5">
                   {isCompleted ? (
-                    <CheckCircle2 className="w-5 h-5" style={{ color: "#06b6d4" }} />
+                    <motion.div
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 22 }}
+                    >
+                      <CheckCircle2 className="w-5 h-5" style={{ color: "#06b6d4" }} />
+                    </motion.div>
                   ) : isCurrent ? (
                     <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#06b6d4" }} />
                   ) : (
@@ -334,13 +340,16 @@ const UploadPage: FC = (): JSX.Element => {
                           <p className="text-sm font-medium truncate" style={{ color: "#111111" }}>{file.name}</p>
                           <p className="text-xs mt-0.5" style={{ color: "#9B9890" }}>{(file.size / 1024).toFixed(0)} KB · PDF</p>
                         </div>
-                        <button
+                        <motion.button
                           onClick={e => { e.stopPropagation(); handleRemoveFile(); }}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors shrink-0"
+                          className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                           style={{ background: "#F7F6F2", color: "#9B9890" }}
+                          whileHover={{ scale: 1.15, rotate: 90 }}
+                          whileTap={{ scale: 0.9 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 20 }}
                         >
                           <X size={14} />
-                        </button>
+                        </motion.button>
                       </motion.div>
                     )}
                   </div>
