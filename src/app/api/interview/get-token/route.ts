@@ -1,11 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AccessToken } from "livekit-server-sdk";
 import { createClient } from "@/app/lib/supabase/server";
+import { tokenRateLimit, getClientIp } from "@/app/lib/rateLimit";
 
 // Must run in Node.js runtime — livekit-server-sdk depends on Node crypto
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  // ── 0. Rate limit by IP: max 3 token requests / 10 min ────────────────────
+  if (tokenRateLimit) {
+    const ip = getClientIp(req);
+    const { success, limit, remaining, reset } = await tokenRateLimit.limit(ip);
+
+    if (!success) {
+      return NextResponse.json(
+        {
+          error: "rate_limited",
+          message: "Too many voice session requests. Please wait a few minutes and try again.",
+        },
+        {
+          status: 429,
+          headers: {
+            "X-RateLimit-Limit": limit.toString(),
+            "X-RateLimit-Remaining": remaining.toString(),
+            "X-RateLimit-Reset": reset.toString(),
+            "Retry-After": Math.ceil((reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
+  }
+
   // ── 1. Verify authenticated session ──────────────────────────────────────
   const supabase = await createClient();
   const {
