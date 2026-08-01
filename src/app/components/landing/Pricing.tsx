@@ -39,23 +39,23 @@ export default function Pricing() {
     <section
       id="pricing"
       className="py-24 md:py-32"
-      style={{ background: "#FFFFFF", borderTop: "1px solid #E5E3DC" }}
+      style={{ background: "#FFFFFF", borderTop: "1px solid #d9d9e0" }}
     >
       <div className="max-w-5xl mx-auto px-6">
 
         {/* Header */}
         <div className="text-center mb-20">
-          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#06b6d4" }}>
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#12a594" }}>
             Simple Pricing
           </p>
           <h2
             className="font-display font-bold tracking-tight mb-4"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
             Pay once,{" "}
-            <span style={{ color: "#06b6d4" }}>keep forever.</span>
+            <span style={{ color: "#12a594" }}>keep forever.</span>
           </h2>
-          <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: "#6B6860" }}>
+          <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: "#60646c" }}>
             No recurring subscriptions. No hidden fees. Credits never expire.
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function Pricing() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: i * 0.12, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileHover={plan.popular
-                ? { y: -8, boxShadow: "0 24px 60px rgba(6,182,212,0.25)" }
+                ? { y: -8, boxShadow: "0 24px 60px rgba(18,165,148,0.25)" }
                 : { y: -5, boxShadow: "0 16px 40px rgba(0,0,0,0.08)" }}
               whileTap={{ scale: 0.99 }}
               className="relative flex flex-col p-8 rounded-2xl"
@@ -78,12 +78,12 @@ export default function Pricing() {
                 plan.popular
                   ? {
                       background: "#ECFEFF",
-                      border: "2px solid #06b6d4",
-                      boxShadow: "0 8px 32px rgba(6,182,212,0.15)",
+                      border: "2px solid #12a594",
+                      boxShadow: "0 8px 32px rgba(18,165,148,0.15)",
                     }
                   : {
-                      background: "#F7F6F2",
-                      border: "1px solid #E5E3DC",
+                      background: "#f9f9fb",
+                      border: "1px solid #d9d9e0",
                     }
               }
             >
@@ -91,7 +91,7 @@ export default function Pricing() {
               {plan.popular && (
                 <div
                   className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white"
-                  style={{ background: "#06b6d4" }}
+                  style={{ background: "#12a594" }}
                 >
                   <Star size={10} className="fill-white" aria-hidden />
                   Most Popular
@@ -100,10 +100,10 @@ export default function Pricing() {
 
               {/* Plan name + price */}
               <div className="mb-6">
-                <h3 className="text-sm font-semibold mb-1" style={{ color: "#111111" }}>{plan.name}</h3>
-                <p className="text-xs mb-4" style={{ color: "#9B9890" }}>{plan.description}</p>
+                <h3 className="text-sm font-semibold mb-1" style={{ color: "#1c2024" }}>{plan.name}</h3>
+                <p className="text-xs mb-4" style={{ color: "#80838d" }}>{plan.description}</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold font-mono tracking-tight" style={{ color: "#111111" }}>
+                  <span className="text-4xl font-bold font-mono tracking-tight" style={{ color: "#1c2024" }}>
                     ₹{plan.price}
                   </span>
                 </div>
@@ -114,23 +114,23 @@ export default function Pricing() {
                 className="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider mb-6 w-fit"
                 style={
                   plan.popular
-                    ? { background: "rgba(6,182,212,0.15)", color: "#0891b2", border: "1px solid rgba(6,182,212,0.3)" }
-                    : { background: "#EBEBEB", color: "#6B6860", border: "1px solid #E5E3DC" }
+                    ? { background: "rgba(18,165,148,0.15)", color: "#008573", border: "1px solid rgba(18,165,148,0.3)" }
+                    : { background: "#EBEBEB", color: "#60646c", border: "1px solid #d9d9e0" }
                 }
               >
                 {plan.credits} Credits Included
               </div>
 
-              <div className="h-px mb-6" style={{ background: plan.popular ? "rgba(6,182,212,0.2)" : "#E5E3DC" }} />
+              <div className="h-px mb-6" style={{ background: plan.popular ? "rgba(18,165,148,0.2)" : "#d9d9e0" }} />
 
               {/* Features */}
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#6B6860" }}>
+                  <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#60646c" }}>
                     <Check
                       size={14}
                       strokeWidth={2.5}
-                      style={{ color: plan.popular ? "#06b6d4" : "#C8C4BB", flexShrink: 0 }}
+                      style={{ color: plan.popular ? "#12a594" : "#b9bbc6", flexShrink: 0 }}
                       aria-hidden
                     />
                     {feature}
@@ -144,8 +144,8 @@ export default function Pricing() {
                 className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center transition-opacity hover:opacity-90 mt-auto"
                 style={
                   plan.popular
-                    ? { background: "#06b6d4", color: "#FFFFFF" }
-                    : { background: "#FFFFFF", color: "#6B6860", border: "1px solid #E5E3DC" }
+                    ? { background: "#12a594", color: "#FFFFFF" }
+                    : { background: "#FFFFFF", color: "#60646c", border: "1px solid #d9d9e0" }
                 }
               >
                 Choose {plan.name}

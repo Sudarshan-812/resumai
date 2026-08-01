@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -66,13 +66,13 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
         <motion.div
           animate={{
             backdropFilter: scrolled ? "blur(32px) saturate(1.8)" : "blur(18px)",
-            backgroundColor: scrolled ? "rgba(247,246,242,0.92)" : "rgba(255,255,255,0.60)",
+            backgroundColor: scrolled ? "rgba(249,249,251,0.92)" : "rgba(255,255,255,0.60)",
             y: scrolled ? -2 : 0,
           }}
           transition={{ duration: 0.4, ease: EASE_LIQUID }}
           className="pointer-events-auto relative w-full rounded-full flex items-center justify-between p-2"
           style={{
-            border: "1px solid #E5E3DC",
+            border: "1px solid #d9d9e0",
             boxShadow: scrolled
               ? "0 20px 60px -16px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.8)"
               : "0 4px 24px -8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
@@ -102,9 +102,9 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
                       className="absolute inset-0 rounded-full z-0"
                       style={{
                         backdropFilter: "blur(24px) saturate(2)",
-                        backgroundColor: "rgba(6,182,212,0.10)",
-                        border: "1px solid rgba(6,182,212,0.20)",
-                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 12px rgba(6,182,212,0.08)",
+                        backgroundColor: "rgba(18,165,148,0.10)",
+                        border: "1px solid rgba(18,165,148,0.20)",
+                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.9), 0 4px 12px rgba(18,165,148,0.08)",
                       }}
                     />
                   )}
@@ -112,7 +112,7 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
                 <motion.span
                   animate={{
                     scale: activeId === tab.id ? 1.1 : 1,
-                    color: activeId === tab.id ? "#0891b2" : "#9B9890",
+                    color: activeId === tab.id ? "#008573" : "#80838d",
                   }}
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className="relative z-10 text-[11px] font-semibold tracking-wide inline-block"
@@ -137,8 +137,8 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold transition-all ring-2 ring-transparent hover:ring-cyan-400/30 text-white"
-              style={{ background: !userProfile.avatarUrl ? "#06b6d4" : undefined }}
+              className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold transition-all ring-2 ring-transparent hover:ring-teal-400/30 text-white"
+              style={{ background: !userProfile.avatarUrl ? "#12a594" : undefined }}
             >
               {userProfile.avatarUrl
                 ? <img src={userProfile.avatarUrl} alt={userProfile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -156,11 +156,11 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[110] flex flex-col p-8 bg-[#F7F6F2]/97 backdrop-blur-2xl"
+            className="fixed inset-0 z-[110] flex flex-col p-8 bg-[#f9f9fb]/97 backdrop-blur-2xl"
           >
             <div className="flex items-center justify-between mb-10">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold text-white" style={{ background: !userProfile.avatarUrl ? "#06b6d4" : undefined }}>
+                <div className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold text-white" style={{ background: !userProfile.avatarUrl ? "#12a594" : undefined }}>
                   {userProfile.avatarUrl
                     ? <img src={userProfile.avatarUrl} alt={userProfile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     : userProfile.initial}
@@ -185,7 +185,7 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-sm font-bold text-foreground">{userProfile.credits}</span>
-                <Link href="/billing" onClick={() => setOpen(false)} className="text-xs font-bold text-cyan-600 hover:underline">
+                <Link href="/billing" onClick={() => setOpen(false)} className="text-xs font-bold text-teal-600 hover:underline">
                   Top up
                 </Link>
               </div>
@@ -208,7 +208,7 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
                       <span className="text-[10px] font-black tabular-nums text-muted-foreground/40">0{i+1}</span>
                       <span className={cn(
                         "text-3xl font-black tracking-tight transition-colors",
-                        activeId === tab.id ? "text-cyan-600" : "text-foreground/20 group-hover:text-foreground"
+                        activeId === tab.id ? "text-teal-600" : "text-foreground/20 group-hover:text-foreground"
                       )}>
                         {tab.label}
                       </span>

@@ -41,6 +41,7 @@
     "nextjs-toploader": "^3.9.17",
     "ogl": "^1.0.11",
     "pdf-parse": "^1.1.1",
+    "radix-ui": "^1.6.7",
     "razorpay": "^2.9.6",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",

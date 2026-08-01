@@ -40,7 +40,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
           Upload your first resume to get an ATS score and AI-powered feedback.
         </p>
         <Link href="/upload">
-          <Button className="h-9 px-5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white font-semibold text-sm">
+          <Button className="h-9 px-5 rounded-xl bg-teal-500 hover:bg-teal-400 text-white font-semibold text-sm">
             <UploadCloud size={14} className="mr-1.5" />
             Analyze My Resume
           </Button>
@@ -75,13 +75,13 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
               className="flex items-center gap-4 px-5 py-4 hover:bg-muted/40 transition-colors group"
               prefetch={false}
             >
-              <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-cyan-600 group-hover:border-cyan-500/30 transition-all shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-teal-600 group-hover:border-teal-500/30 transition-all shrink-0">
                 <FileText size={16} strokeWidth={1.5} />
               </div>
 
               <div className="flex-1 min-w-0">
                 <h3
-                  className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-cyan-600 transition-colors"
+                  className="text-sm font-semibold text-foreground truncate leading-none mb-1.5 group-hover:text-teal-600 transition-colors"
                   title={displayName}
                 >
                   {displayName}

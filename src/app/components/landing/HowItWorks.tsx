@@ -34,8 +34,8 @@ const cardVariants: Variants = {
 };
 
 const iconVariants: Variants = {
-  rest: { scale: 1, background: "rgba(6,182,212,0.08)" },
-  hover: { scale: 1.12, background: "rgba(6,182,212,0.16)", transition: SPRING },
+  rest: { scale: 1, background: "rgba(18,165,148,0.08)" },
+  hover: { scale: 1.12, background: "rgba(18,165,148,0.16)", transition: SPRING },
 };
 
 export default function HowItWorks() {
@@ -43,23 +43,23 @@ export default function HowItWorks() {
     <section
       id="how-it-works"
       className="py-24 md:py-32"
-      style={{ background: "#F7F6F2", borderTop: "1px solid #E5E3DC" }}
+      style={{ background: "#f9f9fb", borderTop: "1px solid #d9d9e0" }}
       aria-labelledby="hiw-heading"
     >
       <div className="max-w-5xl mx-auto px-6">
 
         {/* Header */}
         <div className="text-center mb-20">
-          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#06b6d4" }}>
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#12a594" }}>
             How It Works
           </p>
           <h2
             id="hiw-heading"
             className="font-display font-bold tracking-tight"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
             From upload to optimized{" "}
-            <span style={{ color: "#06b6d4" }}>in 60 seconds.</span>
+            <span style={{ color: "#12a594" }}>in 60 seconds.</span>
           </h2>
         </div>
 
@@ -76,24 +76,24 @@ export default function HowItWorks() {
               animate="rest"
               variants={cardVariants}
               className="relative p-8 rounded-2xl cursor-default"
-              style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
+              style={{ background: "#FFFFFF", border: "1px solid #d9d9e0" }}
             >
               <motion.div
                 variants={iconVariants}
                 className="w-10 h-10 rounded-xl flex items-center justify-center mb-6"
-                style={{ border: "1px solid rgba(6,182,212,0.2)" }}
+                style={{ border: "1px solid rgba(18,165,148,0.2)" }}
               >
-                <step.icon size={18} style={{ color: "#06b6d4" }} strokeWidth={1.5} aria-hidden />
+                <step.icon size={18} style={{ color: "#12a594" }} strokeWidth={1.5} aria-hidden />
               </motion.div>
 
-              <div className="text-[10px] font-mono mb-3" style={{ color: "#C8C4BB" }}>
+              <div className="text-[10px] font-mono mb-3" style={{ color: "#b9bbc6" }}>
                 Step {step.num}
               </div>
 
-              <h3 className="text-base font-semibold mb-3" style={{ color: "#111111" }}>
+              <h3 className="text-base font-semibold mb-3" style={{ color: "#1c2024" }}>
                 {step.title}
               </h3>
-              <p className="text-sm leading-relaxed" style={{ color: "#6B6860" }}>
+              <p className="text-sm leading-relaxed" style={{ color: "#60646c" }}>
                 {step.desc}
               </p>
             </motion.div>
@@ -110,8 +110,8 @@ export default function HowItWorks() {
         >
           <Link
             href="/try"
-            className="group inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-cyan-600"
-            style={{ color: "#6B6860" }}
+            className="group inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-teal-600"
+            style={{ color: "#60646c" }}
           >
             Start optimizing now
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />

@@ -22,12 +22,12 @@ interface Resume { id: string; file_name: string; created_at: string }
 interface LiveSession { token: string; roomName: string }
 
 const STATUS: Record<string, { label: string; dotColor: string; pulse: boolean }> = {
-  disconnected:            { label: "Disconnected",      dotColor: "#C8C4BB", pulse: false },
-  connecting:              { label: "Connecting…",       dotColor: "#06b6d4", pulse: true  },
-  "pre-connect-buffering": { label: "Preparing…",        dotColor: "#06b6d4", pulse: true  },
+  disconnected:            { label: "Disconnected",      dotColor: "#b9bbc6", pulse: false },
+  connecting:              { label: "Connecting…",       dotColor: "#12a594", pulse: true  },
+  "pre-connect-buffering": { label: "Preparing…",        dotColor: "#12a594", pulse: true  },
   failed:                  { label: "Connection failed", dotColor: "#f43f5e", pulse: false },
-  initializing:            { label: "Initializing…",     dotColor: "#06b6d4", pulse: true  },
-  idle:                    { label: "Ready",             dotColor: "#C8C4BB", pulse: false },
+  initializing:            { label: "Initializing…",     dotColor: "#12a594", pulse: true  },
+  idle:                    { label: "Ready",             dotColor: "#b9bbc6", pulse: false },
   listening:               { label: "Listening",         dotColor: "#10b981", pulse: false },
   thinking:                { label: "Thinking…",         dotColor: "#f59e0b", pulse: true  },
   speaking:                { label: "Speaking",          dotColor: "#8b5cf6", pulse: true  },
@@ -121,13 +121,13 @@ function StatusPill({ state, connectionState }: { state: AgentState; connectionS
       exit={{ opacity: 0, y: -4, scale: 0.94 }}
       transition={{ type: "spring", stiffness: 380, damping: 30 }}
       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-      style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+      style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
     >
       <span
         className={cn("w-1.5 h-1.5 rounded-full shrink-0", cfg.pulse && "animate-pulse")}
         style={{ background: cfg.dotColor }}
       />
-      <span className="text-[11px] font-medium" style={{ color: "#6B6860" }}>
+      <span className="text-[11px] font-medium" style={{ color: "#60646c" }}>
         {cfg.label}
       </span>
     </motion.div>
@@ -150,9 +150,9 @@ function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-h-40 overflow-y-auto rounded-xl p-4 space-y-2.5 scrollbar-none"
-      style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+      style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
     >
-      <p className="text-[9px] font-mono uppercase tracking-widest mb-2.5" style={{ color: "#C8C4BB" }}>
+      <p className="text-[9px] font-mono uppercase tracking-widest mb-2.5" style={{ color: "#b9bbc6" }}>
         Transcript
       </p>
       <AnimatePresence initial={false}>
@@ -164,8 +164,8 @@ function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
             className="flex gap-2.5"
           >
-            <div className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#06b6d4" }} />
-            <p className="text-[13px] leading-relaxed" style={{ color: "#6B6860" }}>{seg.text}</p>
+            <div className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#12a594" }} />
+            <p className="text-[13px] leading-relaxed" style={{ color: "#60646c" }}>{seg.text}</p>
           </motion.div>
         ))}
       </AnimatePresence>
@@ -210,14 +210,14 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           transition={{ duration: 0.5, ease: EASE }}
           className="flex-1 relative rounded-2xl flex flex-col items-center justify-center gap-4 overflow-hidden"
           style={{
-            background: "#FAFAF8",
-            border: "1px solid #E5E3DC",
+            background: "#fcfcfd",
+            border: "1px solid #d9d9e0",
             minHeight: 260,
           }}
         >
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at 50% 10%, rgba(6,182,212,0.06) 0%, transparent 65%)" }}
+            style={{ background: "radial-gradient(ellipse at 50% 10%, rgba(18,165,148,0.06) 0%, transparent 65%)" }}
           />
 
           <div className="absolute top-4 left-4">
@@ -231,8 +231,8 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           </div>
 
           <div className="relative text-center pb-2">
-            <p className="text-[13px] font-semibold" style={{ color: "#111111" }}>Column8 AI</p>
-            <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5" style={{ color: "#9B9890" }}>Interviewer</p>
+            <p className="text-[13px] font-semibold" style={{ color: "#1c2024" }}>Column8 AI</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5" style={{ color: "#80838d" }}>Interviewer</p>
           </div>
         </motion.div>
 
@@ -242,7 +242,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1, duration: 0.45, ease: EASE }}
           className="w-[108px] rounded-2xl flex flex-col items-center justify-center gap-3 py-6"
-          style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+          style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
         >
           <motion.div
             className="w-12 h-12 rounded-full flex items-center justify-center"
@@ -264,7 +264,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           </motion.div>
 
           <div className="text-center">
-            <p className="text-[12px] font-semibold" style={{ color: "#111111" }}>You</p>
+            <p className="text-[12px] font-semibold" style={{ color: "#1c2024" }}>You</p>
             <p className="text-[10px] font-mono mt-0.5" style={{ color: isMicrophoneEnabled ? "#10b981" : "#f43f5e" }}>
               {isMicrophoneEnabled ? "Live" : "Muted"}
             </p>
@@ -274,7 +274,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
 
       <TranscriptArea segments={agentTranscriptions} />
 
-      <p className="text-center text-[11px]" style={{ color: "#C8C4BB" }}>
+      <p className="text-center text-[11px]" style={{ color: "#b9bbc6" }}>
         Speak naturally — the AI handles turn-taking
       </p>
 
@@ -288,7 +288,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           className="w-12 h-12 rounded-full flex items-center justify-center transition-colors"
           style={
             isMicrophoneEnabled
-              ? { background: "#F7F6F2", border: "1px solid #E5E3DC", color: "#6B6860" }
+              ? { background: "#f9f9fb", border: "1px solid #d9d9e0", color: "#60646c" }
               : { background: "rgba(244,63,94,0.09)", border: "1.5px solid rgba(244,63,94,0.28)", color: "#f43f5e" }
           }
         >
@@ -331,38 +331,38 @@ function SetupView({
     >
       {/* Resume picker */}
       <div>
-        <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>
+        <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#80838d" }}>
           Select Resume
         </label>
         {resumesLoading ? (
           <div
             className="h-11 rounded-xl flex items-center px-4 gap-2"
-            style={{ background: "#FAFAF8", border: "1px solid #E5E3DC" }}
+            style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
           >
-            <Loader2 size={13} className="animate-spin" style={{ color: "#C8C4BB" }} />
-            <span className="text-sm" style={{ color: "#C8C4BB" }}>Loading resumes…</span>
+            <Loader2 size={13} className="animate-spin" style={{ color: "#b9bbc6" }} />
+            <span className="text-sm" style={{ color: "#b9bbc6" }}>Loading resumes…</span>
           </div>
         ) : resumes.length === 0 ? (
           <div
             className="h-11 rounded-xl flex items-center px-4"
-            style={{ background: "#FAFAF8", border: "1px solid #E5E3DC" }}
+            style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
           >
-            <span className="text-sm" style={{ color: "#9B9890" }}>
+            <span className="text-sm" style={{ color: "#80838d" }}>
               No resumes found —{" "}
-              <a href="/upload" className="underline" style={{ color: "#06b6d4" }}>upload one first</a>
+              <a href="/upload" className="underline" style={{ color: "#12a594" }}>upload one first</a>
             </span>
           </div>
         ) : (
           <div className="relative">
-            <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#C8C4BB" }} />
+            <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#b9bbc6" }} />
             <select
               value={selectedId}
               onChange={e => onSelect(e.target.value)}
               className="w-full h-11 pl-9 pr-9 rounded-xl text-sm appearance-none cursor-pointer focus:outline-none transition-all"
               style={{
                 background: "#FFFFFF",
-                border: "1.5px solid #E5E3DC",
-                color: selectedId ? "#111111" : "#9B9890",
+                border: "1.5px solid #d9d9e0",
+                color: selectedId ? "#1c2024" : "#80838d",
               }}
             >
               <option value="" disabled>Choose a resume…</option>
@@ -370,7 +370,7 @@ function SetupView({
                 <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
               ))}
             </select>
-            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#C8C4BB" }} />
+            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#b9bbc6" }} />
           </div>
         )}
       </div>
@@ -378,9 +378,9 @@ function SetupView({
       {/* Checklist */}
       <div
         className="rounded-xl p-4 space-y-3"
-        style={{ background: "#FAFAF8", border: "1px solid #E5E3DC" }}
+        style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
       >
-        <p className="text-[9px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#C8C4BB" }}>
+        <p className="text-[9px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#b9bbc6" }}>
           Before you begin
         </p>
         {[
@@ -391,11 +391,11 @@ function SetupView({
           <div key={i} className="flex items-start gap-3">
             <span
               className="w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5"
-              style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.15)", color: "#06b6d4" }}
+              style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)", color: "#12a594" }}
             >
               {i + 1}
             </span>
-            <p className="text-[12px] leading-relaxed" style={{ color: "#6B6860" }}>{item}</p>
+            <p className="text-[12px] leading-relaxed" style={{ color: "#60646c" }}>{item}</p>
           </div>
         ))}
       </div>
@@ -421,8 +421,8 @@ function SetupView({
         whileTap={{ scale: 0.98 }}
         className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
         style={isLocked
-          ? { background: "rgba(6,182,212,0.08)", border: "1.5px solid rgba(6,182,212,0.2)", color: "#06b6d4" }
-          : { background: "#06b6d4", color: "#FFFFFF", boxShadow: "0 4px 20px rgba(6,182,212,0.25)" }
+          ? { background: "rgba(18,165,148,0.08)", border: "1.5px solid rgba(18,165,148,0.2)", color: "#12a594" }
+          : { background: "#12a594", color: "#FFFFFF", boxShadow: "0 4px 20px rgba(18,165,148,0.25)" }
         }
       >
         {isLocked
@@ -452,15 +452,15 @@ function EndedView({ onRestart }: { onRestart: () => void }) {
         <Mic size={20} style={{ color: "#10b981" }} />
       </div>
       <div>
-        <p className="text-[15px] font-semibold mb-1" style={{ color: "#111111" }}>Session ended</p>
-        <p className="text-sm" style={{ color: "#6B6860" }}>Your voice interview session has concluded.</p>
+        <p className="text-[15px] font-semibold mb-1" style={{ color: "#1c2024" }}>Session ended</p>
+        <p className="text-sm" style={{ color: "#60646c" }}>Your voice interview session has concluded.</p>
       </div>
       <motion.button
         onClick={onRestart}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
         className="h-10 px-6 rounded-xl text-sm font-semibold transition-colors"
-        style={{ background: "#06b6d4", color: "#FFFFFF", boxShadow: "0 4px 16px rgba(6,182,212,0.22)" }}
+        style={{ background: "#12a594", color: "#FFFFFF", boxShadow: "0 4px 16px rgba(18,165,148,0.22)" }}
       >
         Start New Session
       </motion.button>
@@ -551,10 +551,10 @@ function VoiceInterview({
     if (!LIVEKIT_URL) {
       return (
         <div className="flex flex-col items-center gap-3 py-10 text-center">
-          <p className="text-sm font-semibold" style={{ color: "#6B6860" }}>Voice interview not configured</p>
+          <p className="text-sm font-semibold" style={{ color: "#60646c" }}>Voice interview not configured</p>
           <motion.button onClick={handleEnd} whileTap={{ scale: 0.97 }}
             className="h-9 px-5 rounded-xl text-xs font-semibold"
-            style={{ border: "1px solid #E5E3DC", color: "#9B9890" }}
+            style={{ border: "1px solid #d9d9e0", color: "#80838d" }}
           >
             Back
           </motion.button>

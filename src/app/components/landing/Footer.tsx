@@ -29,12 +29,12 @@ export default function Footer() {
   return (
     <footer
       aria-labelledby="footer-heading"
-      style={{ background: "#F0EFE9", borderTop: "1px solid #E5E3DC" }}
+      style={{ background: "#f0f0f3", borderTop: "1px solid #d9d9e0" }}
     >
       <h2 id="footer-heading" className="sr-only">Footer</h2>
 
       {/* CTA block */}
-      <div className="py-24" style={{ borderBottom: "1px solid #E5E3DC" }}>
+      <div className="py-24" style={{ borderBottom: "1px solid #d9d9e0" }}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -44,26 +44,26 @@ export default function Footer() {
         >
           <h2
             className="font-bold tracking-tight mb-4"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
             Your next interview starts<br />with your resume.
           </h2>
-          <p className="text-sm leading-relaxed mb-8 max-w-xs mx-auto" style={{ color: "#6B6860" }}>
+          <p className="text-sm leading-relaxed mb-8 max-w-xs mx-auto" style={{ color: "#60646c" }}>
             Upload and get your ATS score in under 10 seconds. No account required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/try"
               className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              style={{ background: "#06b6d4" }}
+              style={{ background: "#12a594" }}
             >
               Try Free — No Login
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center h-11 px-6 rounded-xl text-sm font-medium transition-colors hover:text-cyan-600"
-              style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#6B6860" }}
+              className="inline-flex items-center h-11 px-6 rounded-xl text-sm font-medium transition-colors hover:text-teal-600"
+              style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", color: "#60646c" }}
             >
               Create Account
             </Link>
@@ -73,7 +73,7 @@ export default function Footer() {
 
       {/* Footer grid */}
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-16" style={{ borderBottom: "1px solid #E5E3DC" }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 py-16" style={{ borderBottom: "1px solid #d9d9e0" }}>
 
           {/* Brand */}
           <div className="space-y-5">
@@ -84,21 +84,21 @@ export default function Footer() {
               height={217}
               className="h-9 w-auto"
             />
-            <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: "#9B9890" }}>
+            <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: "#80838d" }}>
               AI-powered resume optimization for the modern job market.
             </p>
           </div>
 
           {/* Product */}
           <nav aria-label="Product links" className="space-y-4">
-            <h3 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#9B9890" }}>Product</h3>
+            <h3 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#80838d" }}>Product</h3>
             <ul className="space-y-3">
               {PRODUCT_LINKS.map(({ label, href }) => (
                 <li key={label}>
                   <Link
                     href={href}
-                    className="text-sm transition-colors hover:text-cyan-600"
-                    style={{ color: "#6B6860" }}
+                    className="text-sm transition-colors hover:text-teal-600"
+                    style={{ color: "#60646c" }}
                   >
                     {label}
                   </Link>
@@ -109,14 +109,14 @@ export default function Footer() {
 
           {/* Legal */}
           <nav aria-label="Legal links" className="space-y-4">
-            <h3 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#9B9890" }}>Legal</h3>
+            <h3 className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#80838d" }}>Legal</h3>
             <ul className="space-y-3">
               {LEGAL_LINKS.map(({ label, href }) => (
                 <li key={label}>
                   <Link
                     href={href}
-                    className="text-sm transition-colors hover:text-cyan-600"
-                    style={{ color: "#6B6860" }}
+                    className="text-sm transition-colors hover:text-teal-600"
+                    style={{ color: "#60646c" }}
                   >
                     {label}
                   </Link>
@@ -129,7 +129,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs" style={{ color: "#9B9890" }}>
+          <p className="text-xs" style={{ color: "#80838d" }}>
             © 2026 Column8. Made in India 🇮🇳
           </p>
           <div className="flex gap-4">
@@ -138,8 +138,8 @@ export default function Footer() {
                 key={label}
                 href={href}
                 aria-label={label}
-                className="transition-colors hover:text-cyan-500"
-                style={{ color: "#C8C4BB" }}
+                className="transition-colors hover:text-teal-500"
+                style={{ color: "#b9bbc6" }}
               >
                 <Icon size={15} aria-hidden />
               </Link>

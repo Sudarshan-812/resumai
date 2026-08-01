@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -66,10 +66,10 @@ export default function Navbar() {
         ref={headerRef}
         className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
         style={{
-          background: scrolled ? "rgba(247,246,242,0.92)" : "transparent",
+          background: scrolled ? "rgba(249,249,251,0.92)" : "transparent",
           backdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
           WebkitBackdropFilter: scrolled ? "blur(20px) saturate(180%)" : "none",
-          borderBottom: `1px solid ${scrolled ? "#E5E3DC" : "transparent"}`,
+          borderBottom: `1px solid ${scrolled ? "#d9d9e0" : "transparent"}`,
         }}
       >
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
@@ -100,9 +100,9 @@ export default function Navbar() {
                   href={href}
                   onClick={(e) => handleHashClick(e, hash)}
                   className="text-sm font-medium transition-colors duration-200 block"
-                  style={{ color: "#6B6860" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "#6B6860")}
+                  style={{ color: "#60646c" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#1c2024")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#60646c")}
                 >
                   {label}
                 </Link>
@@ -110,7 +110,7 @@ export default function Navbar() {
                   variants={{ rest: { scaleX: 0 }, hover: { scaleX: 1 } }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                   className="absolute -bottom-0.5 left-0 right-0 block h-px origin-left"
-                  style={{ background: "#06b6d4" }}
+                  style={{ background: "#12a594" }}
                   aria-hidden
                 />
               </motion.div>
@@ -123,11 +123,11 @@ export default function Navbar() {
               <Link
                 href="/dashboard"
                 className="inline-flex items-center gap-2 h-9 pl-2.5 pr-4 rounded-full text-sm font-medium transition-colors"
-                style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#6B6860" }}
+                style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", color: "#60646c" }}
               >
                 <div
                   className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0 text-white"
-                  style={{ background: "#06b6d4" }}
+                  style={{ background: "#12a594" }}
                 >
                   {navUser.avatarUrl
                     ? <img src={navUser.avatarUrl} alt={navUser.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -135,23 +135,23 @@ export default function Navbar() {
                   }
                 </div>
                 <span>{navUser.name}</span>
-                <LayoutDashboard size={11} style={{ color: "#9B9890" }} />
+                <LayoutDashboard size={11} style={{ color: "#80838d" }} />
               </Link>
             ) : (
               <>
                 <Link
                   href="/login"
                   className="text-sm font-medium transition-colors"
-                  style={{ color: "#6B6860" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "#6B6860")}
+                  style={{ color: "#60646c" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#1c2024")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#60646c")}
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/try"
                   className="inline-flex items-center gap-1.5 h-9 px-4 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ background: "#06b6d4" }}
+                  style={{ background: "#12a594" }}
                 >
                   Try free
                   <ArrowRight size={12} />
@@ -166,7 +166,7 @@ export default function Navbar() {
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             className="md:hidden p-1.5 rounded-lg transition-colors"
-            style={{ color: "#6B6860" }}
+            style={{ color: "#60646c" }}
           >
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -182,7 +182,7 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 top-16 z-40 md:hidden overflow-hidden"
-            style={{ background: "#FDFCF9", borderBottom: "1px solid #E5E3DC" }}
+            style={{ background: "#FDFCF9", borderBottom: "1px solid #d9d9e0" }}
           >
             <nav className="max-w-6xl mx-auto px-6 py-5 flex flex-col gap-1">
               {NAV_LINKS.map(({ label, href, hash }, i) => (
@@ -196,20 +196,20 @@ export default function Navbar() {
                     href={href}
                     onClick={(e) => handleHashClick(e, hash)}
                     className="px-3 py-2.5 rounded-xl text-sm font-medium transition-colors block"
-                    style={{ color: "#6B6860" }}
+                    style={{ color: "#60646c" }}
                   >
                     {label}
                   </Link>
                 </motion.div>
               ))}
-              <div className="h-px my-3" style={{ background: "#E5E3DC" }} />
+              <div className="h-px my-3" style={{ background: "#d9d9e0" }} />
               <div className="flex flex-col gap-2">
                 {navUser ? (
                   <Link
                     href="/dashboard"
                     onClick={() => setMobileOpen(false)}
                     className="py-3 text-center rounded-xl text-sm font-semibold text-white"
-                    style={{ background: "#06b6d4" }}
+                    style={{ background: "#12a594" }}
                   >
                     Dashboard
                   </Link>
@@ -219,7 +219,7 @@ export default function Navbar() {
                       href="/try"
                       onClick={() => setMobileOpen(false)}
                       className="py-3 text-center rounded-xl text-sm font-semibold text-white"
-                      style={{ background: "#06b6d4" }}
+                      style={{ background: "#12a594" }}
                     >
                       Try Free — No Login
                     </Link>
@@ -227,7 +227,7 @@ export default function Navbar() {
                       href="/login"
                       onClick={() => setMobileOpen(false)}
                       className="py-3 text-center rounded-xl text-sm font-medium"
-                      style={{ color: "#6B6860", border: "1px solid #E5E3DC" }}
+                      style={{ color: "#60646c", border: "1px solid #d9d9e0" }}
                     >
                       Sign In
                     </Link>

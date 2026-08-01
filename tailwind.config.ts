@@ -16,24 +16,24 @@ const config: Config = {
       },
       colors: {
         cream: {
-          DEFAULT: '#F7F6F2',
-          dark: '#F0EFE9',
-          faint: '#FAFAF8',
+          DEFAULT: '#f9f9fb',
+          dark: '#f0f0f3',
+          faint: '#fcfcfd',
         },
         brand: {
-          DEFAULT: '#06b6d4',
-          dark: '#0891b2',
-          light: '#22d3ee',
-          faint: '#A5F3FC',
+          DEFAULT: '#12a594',
+          dark: '#008573',
+          light: '#53b9ab',
+          faint: '#ccf3ea',
         },
         ink: {
-          DEFAULT: '#111111',
-          muted: '#6B6860',
-          subtle: '#9B9890',
-          faint: '#C8C4BB',
+          DEFAULT: '#1c2024',
+          muted: '#60646c',
+          subtle: '#80838d',
+          faint: '#b9bbc6',
         },
         border: {
-          DEFAULT: '#E5E3DC',
+          DEFAULT: '#d9d9e0',
         },
       },
       animation: {

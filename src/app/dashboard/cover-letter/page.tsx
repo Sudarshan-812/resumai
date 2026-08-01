@@ -15,8 +15,8 @@ type Tone = Lowercase<typeof TONES[number]>;
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#6B6860" }}>
-        {label}{hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#9B9890" }}>— {hint}</span>}
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#60646c" }}>
+        {label}{hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#80838d" }}>— {hint}</span>}
       </p>
       {children}
     </div>
@@ -34,7 +34,7 @@ function TextInput({ value, onChange, placeholder }: { value: string; onChange: 
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         className="w-full py-2 text-[14px] bg-transparent focus:outline-none placeholder:text-[#B8B4AA]"
-        style={{ color: "#111111", borderBottom: `1px solid ${focused ? "#06b6d4" : "#C8C4BB"}`, transition: "border-color 0.2s" }}
+        style={{ color: "#1c2024", borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`, transition: "border-color 0.2s" }}
       />
       {focused && (
         <motion.div
@@ -42,7 +42,7 @@ function TextInput({ value, onChange, placeholder }: { value: string; onChange: 
           className="absolute bottom-0 left-0 h-[2px] rounded-full"
           initial={{ width: 0 }}
           animate={{ width: "100%" }}
-          style={{ background: "#06b6d4" }}
+          style={{ background: "#12a594" }}
           transition={{ duration: 0.25, ease: EASE }}
         />
       )}
@@ -108,7 +108,7 @@ export default function CoverLetterPage() {
 
   return (
     <DashboardShell>
-      <div style={{ background: "#F7F6F2", minHeight: "100%" }}>
+      <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
         <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
           {/* Header */}
@@ -117,14 +117,14 @@ export default function CoverLetterPage() {
             transition={{ duration: 0.4, ease: EASE }}
             className="mb-12"
           >
-            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3" style={{ color: "#9B9890" }}>
+            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3" style={{ color: "#80838d" }}>
               AI Tool
             </p>
             <h1 className="font-display font-semibold tracking-tight mb-2"
-              style={{ color: "#111111", fontSize: "clamp(24px, 5vw, 38px)", lineHeight: 1.15 }}>
+              style={{ color: "#1c2024", fontSize: "clamp(24px, 5vw, 38px)", lineHeight: 1.15 }}>
               Cover Letter
             </h1>
-            <p className="text-[14px] leading-relaxed" style={{ color: "#6B6860" }}>
+            <p className="text-[14px] leading-relaxed" style={{ color: "#60646c" }}>
               Fill in the details — get a tailored, job-specific letter in seconds.
             </p>
           </motion.div>
@@ -172,13 +172,13 @@ export default function CoverLetterPage() {
                     >
                       <motion.span
                         animate={{
-                          background: active ? "#111111" : "#FFFFFF",
-                          color: active ? "#FFFFFF" : "#6B6860",
-                          border: active ? "1px solid #111111" : "1px solid #E5E3DC",
+                          background: active ? "#1c2024" : "#FFFFFF",
+                          color: active ? "#FFFFFF" : "#60646c",
+                          border: active ? "1px solid #1c2024" : "1px solid #d9d9e0",
                         }}
                         transition={{ duration: 0.18 }}
                         className="flex items-center h-full px-4 rounded-full text-[11px] font-semibold"
-                        style={{ border: "1px solid #E5E3DC" }}
+                        style={{ border: "1px solid #d9d9e0" }}
                       >
                         {t}
                       </motion.span>
@@ -192,11 +192,11 @@ export default function CoverLetterPage() {
             <motion.button
               onClick={generate}
               disabled={!ready || loading}
-              whileHover={ready && !loading ? { y: -2, boxShadow: "0 16px 36px rgba(6,182,212,0.28)" } : {}}
+              whileHover={ready && !loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
               whileTap={ready && !loading ? { scale: 0.98 } : {}}
               transition={SPRING}
               className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed"
-              style={{ background: "linear-gradient(135deg,#06b6d4 0%,#0891b2 100%)", boxShadow: "0 4px 20px rgba(6,182,212,0.18)" }}
+              style={{ background: "linear-gradient(135deg,#12a594 0%,#008573 100%)", boxShadow: "0 4px 20px rgba(18,165,148,0.18)" }}
             >
               <AnimatePresence mode="wait">
                 {loading ? (
@@ -225,7 +225,7 @@ export default function CoverLetterPage() {
                 transition={{ type: "spring", stiffness: 240, damping: 26 }}
               >
                 {/* Divider */}
-                <div className="mb-8" style={{ height: 1, background: "#E5E3DC" }} />
+                <div className="mb-8" style={{ height: 1, background: "#d9d9e0" }} />
 
                 {/* Output header */}
                 <div className="flex items-center justify-between mb-5">
@@ -234,9 +234,9 @@ export default function CoverLetterPage() {
                       animate={loading ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
                       transition={{ duration: 1, repeat: Infinity }}
                     >
-                      <FileText size={13} style={{ color: loading ? "#06b6d4" : "#C8C4BB" }} strokeWidth={1.5} />
+                      <FileText size={13} style={{ color: loading ? "#12a594" : "#b9bbc6" }} strokeWidth={1.5} />
                     </motion.div>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em]" style={{ color: "#6B6860" }}>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em]" style={{ color: "#60646c" }}>
                       {loading ? "Writing…" : "Cover Letter"}
                     </p>
                     {loading && (
@@ -244,7 +244,7 @@ export default function CoverLetterPage() {
                         animate={{ opacity: [1, 0, 1] }}
                         transition={{ duration: 0.7, repeat: Infinity }}
                         className="text-[9px] font-mono"
-                        style={{ color: "#06b6d4" }}
+                        style={{ color: "#12a594" }}
                       >▋</motion.span>
                     )}
                   </div>
@@ -258,7 +258,7 @@ export default function CoverLetterPage() {
                         onClick={download}
                         whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
                         className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-medium"
-                        style={{ border: "1px solid #E5E3DC", color: "#9B9890", background: "#FFFFFF" }}
+                        style={{ border: "1px solid #d9d9e0", color: "#80838d", background: "#FFFFFF" }}
                       >
                         <Download size={10} /> Save
                       </motion.button>
@@ -268,7 +268,7 @@ export default function CoverLetterPage() {
                         className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-medium transition-colors"
                         style={copied
                           ? { border: "1px solid rgba(5,150,105,0.3)", background: "rgba(5,150,105,0.07)", color: "#059669" }
-                          : { border: "1px solid #E5E3DC", color: "#9B9890", background: "#FFFFFF" }
+                          : { border: "1px solid #d9d9e0", color: "#80838d", background: "#FFFFFF" }
                         }
                       >
                         <motion.span key={copied ? "y" : "n"} initial={{ scale: 0.6, rotate: -15 }} animate={{ scale: 1, rotate: 0 }} transition={SPRING}>
@@ -287,14 +287,14 @@ export default function CoverLetterPage() {
                 >
                   <p
                     className="text-[14px] leading-[1.95] whitespace-pre-wrap"
-                    style={{ color: "#111111", fontFamily: "inherit" }}
+                    style={{ color: "#1c2024", fontFamily: "inherit" }}
                   >
                     {result}
                     {loading && (
                       <motion.span
                         animate={{ opacity: [1, 0, 1] }}
                         transition={{ duration: 0.6, repeat: Infinity }}
-                        style={{ color: "#06b6d4", fontWeight: 700 }}
+                        style={{ color: "#12a594", fontWeight: 700 }}
                       >▋</motion.span>
                     )}
                   </p>
@@ -327,8 +327,8 @@ function JobDescArea({ value, onChange }: { value: string; onChange: (v: string)
           rows={7}
           className="w-full bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none placeholder:text-[#B8B4AA] pb-3"
           style={{
-            color: "#111111",
-            borderBottom: `1px solid ${focused ? "#06b6d4" : "#C8C4BB"}`,
+            color: "#1c2024",
+            borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`,
             transition: "border-color 0.2s",
           }}
         />
@@ -337,20 +337,20 @@ function JobDescArea({ value, onChange }: { value: string; onChange: (v: string)
             className="absolute bottom-0 left-0 h-[2px] rounded-full"
             initial={{ width: 0 }}
             animate={{ width: "100%" }}
-            style={{ background: "#06b6d4" }}
+            style={{ background: "#12a594" }}
             transition={{ duration: 0.28, ease: EASE }}
           />
         )}
       </div>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-[10px]" style={{ color: charOk ? "#059669" : "#9B9890" }}>
+        <span className="text-[10px]" style={{ color: charOk ? "#059669" : "#80838d" }}>
           {value.trim().length} chars{charOk ? " ✓" : " (min 50)"}
         </span>
         {value.length > 0 && (
           <motion.button
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}
             onClick={() => onChange("")}
-            className="text-[10px]" style={{ color: "#C8C4BB" }}
+            className="text-[10px]" style={{ color: "#b9bbc6" }}
           >
             Clear
           </motion.button>

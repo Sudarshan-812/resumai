@@ -31,14 +31,14 @@ export default function HeroSection() {
   return (
     <section
       className="relative w-full overflow-hidden"
-      style={{ background: "#F7F6F2" }}
+      style={{ background: "#f9f9fb" }}
       aria-labelledby="hero-heading"
     >
-      {/* SideRays — subtle cyan from top-right */}
+      {/* SideRays — subtle teal from top-right */}
       <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
         <SideRays
           speed={1.2}
-          rayColor1="#06b6d4"
+          rayColor1="#12a594"
           rayColor2="#A5F3FC"
           intensity={1.4}
           spread={2.2}
@@ -55,7 +55,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
         <SideRays
           speed={1.5}
-          rayColor1="#22d3ee"
+          rayColor1="#53b9ab"
           rayColor2="#CFFAFE"
           intensity={1.2}
           spread={1.8}
@@ -78,7 +78,7 @@ export default function HeroSection() {
             transform: "translate(-50%, -50%)",
             width: "900px",
             height: "600px",
-            background: "radial-gradient(ellipse, rgba(6,182,212,0.07) 0%, transparent 65%)",
+            background: "radial-gradient(ellipse, rgba(18,165,148,0.07) 0%, transparent 65%)",
             borderRadius: "50%",
           }}
         />
@@ -95,14 +95,14 @@ export default function HeroSection() {
             transition={{ duration: 0.5 }}
             className="flex items-center gap-3 mb-9"
           >
-            <span className="block w-7 h-px" style={{ background: "#06b6d4" }} />
+            <span className="block w-7 h-px" style={{ background: "#12a594" }} />
             <span
               className="text-[10px] font-semibold uppercase tracking-[0.22em]"
-              style={{ color: "#9B9890" }}
+              style={{ color: "#80838d" }}
             >
               AI Resume Optimization
             </span>
-            <span className="block w-7 h-px" style={{ background: "#06b6d4" }} />
+            <span className="block w-7 h-px" style={{ background: "#12a594" }} />
           </motion.div>
 
           {/* Headline */}
@@ -119,7 +119,7 @@ export default function HeroSection() {
               threshold={0.2}
               textAlign="center"
               className="font-display font-bold tracking-tight leading-[1.06] block"
-              style={{ fontSize: "clamp(42px, 7vw, 76px)", color: "#111111" }}
+              style={{ fontSize: "clamp(42px, 7vw, 76px)", color: "#1c2024" }}
             />
             <SplitText
               text="into interview invites."
@@ -134,7 +134,7 @@ export default function HeroSection() {
               className="font-display font-bold tracking-tight leading-[1.06] block text-transparent bg-clip-text"
               style={{
                 fontSize: "clamp(42px, 7vw, 76px)",
-                backgroundImage: "linear-gradient(135deg, #0891b2 0%, #06b6d4 50%, #22d3ee 100%)",
+                backgroundImage: "linear-gradient(135deg, #008573 0%, #12a594 50%, #53b9ab 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -147,7 +147,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.38, ease: EASE }}
             className="mb-10 max-w-md text-[17px] leading-[1.65]"
-            style={{ color: "#6B6860" }}
+            style={{ color: "#60646c" }}
           >
             Know your ATS score in 60 seconds. Get specific rewrites, fill keyword gaps, and walk into every interview prepared.
           </motion.p>
@@ -166,7 +166,7 @@ export default function HeroSection() {
                     whileHover={{ y: -1 }}
                     whileTap={{ scale: 0.98 }}
                     className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
-                    style={{ background: "#06b6d4", boxShadow: "0 4px 24px rgba(6,182,212,0.32)" }}
+                    style={{ background: "#12a594", boxShadow: "0 4px 24px rgba(18,165,148,0.32)" }}
                   >
                     <Sparkles size={14} aria-hidden />
                     Analyze My Resume
@@ -178,7 +178,7 @@ export default function HeroSection() {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     className="inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-medium cursor-pointer"
-                    style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#6B6860" }}
+                    style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", color: "#60646c" }}
                   >
                     <LayoutDashboard size={14} aria-hidden />
                     Dashboard
@@ -192,7 +192,7 @@ export default function HeroSection() {
                     whileHover={{ y: -1 }}
                     whileTap={{ scale: 0.98 }}
                     className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
-                    style={{ background: "#06b6d4", boxShadow: "0 4px 24px rgba(6,182,212,0.32)" }}
+                    style={{ background: "#12a594", boxShadow: "0 4px 24px rgba(18,165,148,0.32)" }}
                   >
                     <Sparkles size={14} aria-hidden />
                     Analyze My Resume Free
@@ -204,7 +204,7 @@ export default function HeroSection() {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     className="inline-flex items-center h-12 px-7 rounded-xl text-sm font-medium cursor-pointer"
-                    style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#6B6860" }}
+                    style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", color: "#60646c" }}
                   >
                     Create Account
                   </motion.span>
@@ -222,7 +222,7 @@ export default function HeroSection() {
             <div
               className="inline-flex items-stretch rounded-2xl overflow-hidden"
               style={{
-                border: "1px solid #E5E3DC",
+                border: "1px solid #d9d9e0",
                 background: "#FFFFFF",
                 boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
               }}
@@ -231,17 +231,17 @@ export default function HeroSection() {
                 <div
                   key={label}
                   className="flex flex-col items-center px-8 py-5"
-                  style={i < STATS.length - 1 ? { borderRight: "1px solid #E5E3DC" } : undefined}
+                  style={i < STATS.length - 1 ? { borderRight: "1px solid #d9d9e0" } : undefined}
                 >
                   <span
                     className="text-xl font-bold font-mono tabular-nums leading-none"
-                    style={{ color: "#111111" }}
+                    style={{ color: "#1c2024" }}
                   >
                     {stat}
                   </span>
                   <span
                     className="mt-1.5 text-[11px] whitespace-nowrap"
-                    style={{ color: "#9B9890" }}
+                    style={{ color: "#80838d" }}
                   >
                     {label}
                   </span>
@@ -267,14 +267,14 @@ export default function HeroSection() {
             className="overflow-hidden rounded-2xl"
             style={{
               background: "#FFFFFF",
-              border: "1px solid #E5E3DC",
+              border: "1px solid #d9d9e0",
               boxShadow: "0 24px 60px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04)",
             }}
           >
             {/* Window chrome */}
             <div
               className="flex items-center gap-3 px-4 py-3"
-              style={{ background: "#F7F6F2", borderBottom: "1px solid #E5E3DC" }}
+              style={{ background: "#f9f9fb", borderBottom: "1px solid #d9d9e0" }}
             >
               <div className="flex gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-full" style={{ background: "#FECACA" }} />
@@ -286,7 +286,7 @@ export default function HeroSection() {
                   className="h-5 w-48 rounded-md flex items-center justify-center"
                   style={{ background: "#EBEBEB" }}
                 >
-                  <span className="text-[9px] font-mono" style={{ color: "#9B9890" }}>
+                  <span className="text-[9px] font-mono" style={{ color: "#80838d" }}>
                     column8.io/dashboard/report
                   </span>
                 </div>
@@ -296,26 +296,26 @@ export default function HeroSection() {
             {/* Report content */}
             <div
               className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 text-left"
-              style={{ background: "#FAFAF8" }}
+              style={{ background: "#fcfcfd" }}
             >
               {/* ATS Score */}
               <div
                 className="col-span-1 flex flex-col items-center justify-center rounded-xl p-6"
-                style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
+                style={{ background: "#FFFFFF", border: "1px solid #d9d9e0" }}
               >
                 <div
                   className="mb-3 text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: "#9B9890" }}
+                  style={{ color: "#80838d" }}
                 >
                   ATS Match Score
                 </div>
                 <div className="relative flex h-24 w-24 items-center justify-center">
                   <svg className="h-full w-full -rotate-90">
-                    <circle cx="48" cy="48" r="44" fill="none" stroke="#F0EFE9" strokeWidth="5" />
+                    <circle cx="48" cy="48" r="44" fill="none" stroke="#f0f0f3" strokeWidth="5" />
                     <motion.circle
                       cx="48" cy="48" r="44"
                       fill="none"
-                      stroke="#06b6d4"
+                      stroke="#12a594"
                       strokeWidth="5"
                       strokeLinecap="round"
                       strokeDasharray="276"
@@ -328,16 +328,16 @@ export default function HeroSection() {
                   <div className="absolute flex flex-col items-center">
                     <span
                       className="text-3xl font-bold font-mono leading-none"
-                      style={{ color: "#111111" }}
+                      style={{ color: "#1c2024" }}
                     >
                       92
                     </span>
-                    <span className="text-[9px] mt-0.5" style={{ color: "#9B9890" }}>/ 100</span>
+                    <span className="text-[9px] mt-0.5" style={{ color: "#80838d" }}>/ 100</span>
                   </div>
                 </div>
                 <div
                   className="mt-4 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold"
-                  style={{ background: "rgba(6,182,212,0.1)", color: "#0891b2" }}
+                  style={{ background: "rgba(18,165,148,0.1)", color: "#008573" }}
                 >
                   <TrendingUp className="h-3 w-3" aria-hidden />
                   +24 pts after optimize
@@ -347,13 +347,13 @@ export default function HeroSection() {
               {/* AI Suggestions */}
               <div
                 className="col-span-1 flex flex-col justify-center rounded-xl p-6 md:col-span-2"
-                style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
+                style={{ background: "#FFFFFF", border: "1px solid #d9d9e0" }}
               >
                 <div className="mb-4 flex items-center gap-2">
-                  <Zap size={12} style={{ color: "#06b6d4" }} aria-hidden />
+                  <Zap size={12} style={{ color: "#12a594" }} aria-hidden />
                   <span
                     className="text-[10px] font-bold uppercase tracking-widest"
-                    style={{ color: "#9B9890" }}
+                    style={{ color: "#80838d" }}
                   >
                     AI Suggestions
                   </span>
@@ -361,8 +361,8 @@ export default function HeroSection() {
                 <div className="space-y-3">
                   {[
                     {
-                      bg: "rgba(6,182,212,0.08)",
-                      iconColor: "#06b6d4",
+                      bg: "rgba(18,165,148,0.08)",
+                      iconColor: "#12a594",
                       title: "Quantify impact",
                       text: 'Changed "managed team" → "led 12-person team, increasing output by 34%"',
                     },
@@ -382,7 +382,7 @@ export default function HeroSection() {
                     <div
                       key={item.title}
                       className="flex items-start gap-3 rounded-lg p-3"
-                      style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+                      style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
                     >
                       <div
                         className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md"
@@ -396,9 +396,9 @@ export default function HeroSection() {
                       </div>
                       <div
                         className="text-[12.5px] leading-snug"
-                        style={{ color: "#6B6860" }}
+                        style={{ color: "#60646c" }}
                       >
-                        <strong className="font-semibold" style={{ color: "#111111" }}>
+                        <strong className="font-semibold" style={{ color: "#1c2024" }}>
                           {item.title}
                         </strong>{" "}
                         — {item.text}

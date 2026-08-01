@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Dialog as DialogPrimitive } from "radix-ui";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Mic, Zap, Check, Loader2 } from "lucide-react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
@@ -70,7 +71,7 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
             toast.error("Verification failed — contact support with your payment ID.");
           }
         },
-        theme: { color: "#06b6d4" },
+        theme: { color: "#12a594" },
       });
       rzp.open();
     } catch {
@@ -84,38 +85,42 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-          >
-            {/* Backdrop */}
-            <motion.div
-              className="absolute inset-0"
-              style={{ background: "rgba(17,17,17,0.35)", backdropFilter: "blur(4px)" }}
-              onClick={onClose}
-            />
+      <DialogPrimitive.Root open={open} onOpenChange={(next) => { if (!next) onClose(); }}>
+        <AnimatePresence>
+          {open && (
+            <DialogPrimitive.Portal forceMount>
+              {/* Backdrop */}
+              <DialogPrimitive.Overlay asChild forceMount>
+                <motion.div
+                  className="fixed inset-0 z-50"
+                  style={{ background: "rgba(17,17,17,0.35)", backdropFilter: "blur(4px)" }}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  transition={{ duration: 0.18 }}
+                />
+              </DialogPrimitive.Overlay>
 
-            {/* Modal */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.94, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.94, y: 16 }}
-              transition={SPRING}
-              className="relative w-full max-w-md rounded-2xl overflow-hidden"
-              style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 32px 80px rgba(0,0,0,0.12)" }}
-            >
-              {/* Cyan accent stripe */}
-              <div style={{ height: 3, background: "linear-gradient(90deg,#06b6d4,#0891b2)" }} />
+              {/* Modal */}
+              <DialogPrimitive.Content asChild forceMount>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.94, y: 16 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.94, y: 16 }}
+                  transition={SPRING}
+                  className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md rounded-2xl overflow-hidden outline-none"
+                  style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 32px 80px rgba(0,0,0,0.12)" }}
+                >
+                <DialogPrimitive.Title className="sr-only">
+                  {reason === "voice" ? "Unlock Voice Interviews" : "Interview Limit Reached"}
+                </DialogPrimitive.Title>
+              {/* Teal accent stripe */}
+              <div style={{ height: 3, background: "linear-gradient(90deg,#12a594,#008573)" }} />
 
               {/* Close */}
               <motion.button
                 onClick={onClose}
                 whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} transition={SPRING}
                 className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: "#F7F6F2", color: "#9B9890" }}
+                style={{ background: "#f9f9fb", color: "#80838d" }}
               >
                 <X size={14} />
               </motion.button>
@@ -124,18 +129,18 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                 {/* Icon + heading */}
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.18)" }}
+                  style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.18)" }}
                 >
                   {reason === "voice"
-                    ? <Mic size={18} style={{ color: "#06b6d4" }} />
-                    : <Zap size={18} style={{ color: "#06b6d4" }} />
+                    ? <Mic size={18} style={{ color: "#12a594" }} />
+                    : <Zap size={18} style={{ color: "#12a594" }} />
                   }
                 </div>
 
-                <h2 className="font-display text-xl font-semibold mb-1.5" style={{ color: "#111111" }}>
+                <h2 className="font-display text-xl font-semibold mb-1.5" style={{ color: "#1c2024" }}>
                   {reason === "voice" ? "Unlock Voice Interviews" : "Interview Limit Reached"}
                 </h2>
-                <p className="text-[13px] leading-relaxed mb-6" style={{ color: "#6B6860" }}>
+                <p className="text-[13px] leading-relaxed mb-6" style={{ color: "#60646c" }}>
                   {reason === "voice"
                     ? "Voice AI interviewer is available on Pro and Premium plans."
                     : "You've used all 3 free interviews this month. Upgrade to practice without limits."
@@ -151,32 +156,32 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                       transition={{ delay: pi * 0.07, type: "spring", stiffness: 280, damping: 26 }}
                       className="rounded-xl p-4 relative"
                       style={plan.popular
-                        ? { background: "#F0FDFE", border: "2px solid #06b6d4" }
-                        : { background: "#F7F6F2", border: "1px solid #E5E3DC" }
+                        ? { background: "#F0FDFE", border: "2px solid #12a594" }
+                        : { background: "#f9f9fb", border: "1px solid #d9d9e0" }
                       }
                     >
                       {/* Popular badge */}
                       {plan.popular && (
                         <span className="absolute -top-2.5 left-4 text-[9px] font-bold uppercase tracking-[0.14em] px-2.5 py-0.5 rounded-full"
-                          style={{ background: "#06b6d4", color: "#FFFFFF" }}>
+                          style={{ background: "#12a594", color: "#FFFFFF" }}>
                           Recommended
                         </span>
                       )}
 
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-[14px] font-bold" style={{ color: "#111111" }}>{plan.name}</span>
+                        <span className="text-[14px] font-bold" style={{ color: "#1c2024" }}>{plan.name}</span>
                         <div className="text-right">
-                          <span className="text-[20px] font-black tabular-nums" style={{ color: "#111111", letterSpacing: "-0.03em" }}>
+                          <span className="text-[20px] font-black tabular-nums" style={{ color: "#1c2024", letterSpacing: "-0.03em" }}>
                             ₹{plan.price}
                           </span>
-                          <span className="text-[10px] ml-1" style={{ color: "#9B9890" }}>one-time</span>
+                          <span className="text-[10px] ml-1" style={{ color: "#80838d" }}>one-time</span>
                         </div>
                       </div>
 
                       <ul className="space-y-2 mb-4">
                         {plan.features.map((f) => (
-                          <li key={f} className="flex items-start gap-2 text-[12px]" style={{ color: "#6B6860" }}>
-                            <Check size={10} style={{ color: "#06b6d4", marginTop: 2 }} strokeWidth={3} className="shrink-0" />
+                          <li key={f} className="flex items-start gap-2 text-[12px]" style={{ color: "#60646c" }}>
+                            <Check size={10} style={{ color: "#12a594", marginTop: 2 }} strokeWidth={3} className="shrink-0" />
                             {f}
                           </li>
                         ))}
@@ -185,11 +190,11 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                       <motion.button
                         onClick={() => handlePurchase(plan)}
                         disabled={!!loadingId}
-                        whileHover={!loadingId ? { y: -1, boxShadow: "0 10px 24px rgba(6,182,212,0.28)" } : {}}
+                        whileHover={!loadingId ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.28)" } : {}}
                         whileTap={!loadingId ? { scale: 0.98 } : {}}
                         transition={SPRING}
                         className="w-full h-9 rounded-xl text-[12px] font-bold flex items-center justify-center gap-1.5 disabled:opacity-50"
-                        style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", color: "#FFFFFF", boxShadow: "0 4px 14px rgba(6,182,212,0.2)" }}
+                        style={{ background: "linear-gradient(135deg,#12a594,#008573)", color: "#FFFFFF", boxShadow: "0 4px 14px rgba(18,165,148,0.2)" }}
                       >
                         {loadingId === plan.id
                           ? <><Loader2 size={12} className="animate-spin" />Processing…</>
@@ -200,14 +205,16 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                   ))}
                 </div>
 
-                <p className="text-center text-[11px] mt-4" style={{ color: "#C8C4BB" }}>
+                <p className="text-center text-[11px] mt-4" style={{ color: "#b9bbc6" }}>
                   One-time · Credits never expire · Secure via Razorpay
                 </p>
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                </motion.div>
+              </DialogPrimitive.Content>
+            </DialogPrimitive.Portal>
+          )}
+        </AnimatePresence>
+      </DialogPrimitive.Root>
     </>
   );
 }

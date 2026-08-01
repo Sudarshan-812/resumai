@@ -57,64 +57,64 @@
   --color-success: oklch(0.696 0.17 162.48);
 }
 
-/* ── Cream + Cyan theme — applied to both :root and .dark ── */
+/* ── Slate + Teal theme (Radix Colors) — applied to both :root and .dark ── */
 :root,
 .dark {
   --font-display: var(--font-sans);  /* Outfit handles both display & body */
   --radius: 0.625rem;
 
-  /* Page background: warm cream #F7F6F2 */
-  --background: oklch(0.972 0.005 75);
-  /* Primary text: near-black #111111 */
-  --foreground: oklch(0.145 0 0);
+  /* Page background: Slate-2 #f9f9fb */
+  --background: #f9f9fb;
+  /* Primary text: Slate-12 #1c2024 */
+  --foreground: #1c2024;
 
   /* Cards/surfaces: white */
-  --card:            oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover:            oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --card:            #ffffff;
+  --card-foreground: #1c2024;
+  --popover:            #ffffff;
+  --popover-foreground: #1c2024;
 
-  /* Primary: Cyan-500 #06b6d4 */
-  --primary:            oklch(0.715 0.143 215);
-  --primary-foreground: oklch(1 0 0);
+  /* Primary: Teal-9 #12a594 */
+  --primary:            #12a594;
+  --primary-foreground: #fafefd;
 
-  /* Secondary: slightly darker cream #F0EFE9 */
-  --secondary:            oklch(0.943 0.008 75);
-  --secondary-foreground: oklch(0.145 0 0);
+  /* Secondary: Slate-3 #f0f0f3 */
+  --secondary:            #f0f0f3;
+  --secondary-foreground: #1c2024;
 
-  /* Muted: same as secondary */
-  --muted:            oklch(0.943 0.008 75);
-  --muted-foreground: oklch(0.46 0.010 75);
+  /* Muted: same as secondary, Slate-11 text */
+  --muted:            #f0f0f3;
+  --muted-foreground: #60646c;
 
-  /* Accent: cyan-50 tint */
-  --accent:            oklch(0.984 0.019 200);
-  --accent-foreground: oklch(0.483 0.104 228);
+  /* Accent: Teal-3 tint */
+  --accent:            #e0f8f3;
+  --accent-foreground: #008573;
 
-  /* Danger */
-  --destructive:            oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(1 0 0);
+  /* Danger: Radix Red */
+  --destructive:            #e5484d;
+  --destructive-foreground: #fffcfc;
 
-  /* Borders & inputs: warm #E5E3DC */
-  --border: oklch(0.901 0.009 75);
-  --input:  oklch(0.901 0.009 75);
-  --ring:   oklch(0.715 0.143 215);
+  /* Borders & inputs: Slate-6 #d9d9e0 */
+  --border: #d9d9e0;
+  --input:  #d9d9e0;
+  --ring:   #12a594;
 
   /* Charts */
-  --chart-1: oklch(0.715 0.143 215);
-  --chart-2: oklch(0.609 0.126 221);
-  --chart-3: oklch(0.46 0.010 75);
+  --chart-1: #12a594;
+  --chart-2: #83cdc1;
+  --chart-3: #8b8d98;
   --chart-4: oklch(0.696 0.17 162.48);
-  --chart-5: oklch(0.901 0.009 75);
+  --chart-5: #d9d9e0;
 
   /* Sidebar */
-  --sidebar:                     oklch(0.943 0.008 75);
-  --sidebar-foreground:          oklch(0.145 0 0);
-  --sidebar-primary:             oklch(0.715 0.143 215);
-  --sidebar-primary-foreground:  oklch(1 0 0);
-  --sidebar-accent:              oklch(0.984 0.019 200);
-  --sidebar-accent-foreground:   oklch(0.483 0.104 228);
-  --sidebar-border:              oklch(0.901 0.009 75);
-  --sidebar-ring:                oklch(0.715 0.143 215);
+  --sidebar:                     #f0f0f3;
+  --sidebar-foreground:          #1c2024;
+  --sidebar-primary:             #12a594;
+  --sidebar-primary-foreground:  #fafefd;
+  --sidebar-accent:              #e0f8f3;
+  --sidebar-accent-foreground:   #008573;
+  --sidebar-border:              #d9d9e0;
+  --sidebar-ring:                #12a594;
 }
 
 @layer base {

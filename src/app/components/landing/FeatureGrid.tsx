@@ -45,18 +45,18 @@ const rowVariants: Variants = {
 };
 
 const numVariants: Variants = {
-  rest: { color: "#C8C4BB" },
-  hover: { color: "#06b6d4", transition: { duration: 0.18 } },
+  rest: { color: "#b9bbc6" },
+  hover: { color: "#12a594", transition: { duration: 0.18 } },
 };
 
 const iconBgVariants: Variants = {
-  rest: { scale: 1, background: "rgba(6,182,212,0.08)" },
-  hover: { scale: 1.14, background: "rgba(6,182,212,0.18)", transition: SPRING },
+  rest: { scale: 1, background: "rgba(18,165,148,0.08)" },
+  hover: { scale: 1.14, background: "rgba(18,165,148,0.18)", transition: SPRING },
 };
 
 const titleVariants: Variants = {
-  rest: { color: "#111111" },
-  hover: { color: "#0891b2", transition: { duration: 0.18 } },
+  rest: { color: "#1c2024" },
+  hover: { color: "#008573", transition: { duration: 0.18 } },
 };
 
 export default function FeatureGrid() {
@@ -64,7 +64,7 @@ export default function FeatureGrid() {
     <section
       id="features"
       className="py-24 md:py-32"
-      style={{ background: "#FFFFFF", borderTop: "1px solid #E5E3DC" }}
+      style={{ background: "#FFFFFF", borderTop: "1px solid #d9d9e0" }}
     >
       <div className="max-w-5xl mx-auto px-6">
 
@@ -72,18 +72,18 @@ export default function FeatureGrid() {
         <div className="mb-16">
           <p
             className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono"
-            style={{ color: "#06b6d4" }}
+            style={{ color: "#12a594" }}
           >
             Platform Capabilities
           </p>
           <h2
             className="font-display font-bold tracking-tight leading-tight max-w-lg"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
             Five tools. One goal:{" "}
             <span
               className="text-transparent bg-clip-text"
-              style={{ backgroundImage: "linear-gradient(90deg, #0891b2, #06b6d4)" }}
+              style={{ backgroundImage: "linear-gradient(90deg, #008573, #12a594)" }}
             >
               get the interview.
             </span>
@@ -91,7 +91,7 @@ export default function FeatureGrid() {
         </div>
 
         {/* Numbered list — Framer Motion parent variant hover propagation */}
-        <div style={{ borderTop: "1px solid #E5E3DC" }}>
+        <div style={{ borderTop: "1px solid #d9d9e0" }}>
           {FEATURES.map((f, i) => (
             <motion.div
               key={f.num}
@@ -103,7 +103,7 @@ export default function FeatureGrid() {
               animate="rest"
               variants={rowVariants}
               className="flex items-start gap-6 md:gap-10 py-7 cursor-default"
-              style={{ borderBottom: "1px solid #E5E3DC" }}
+              style={{ borderBottom: "1px solid #d9d9e0" }}
             >
               {/* Number */}
               <motion.span
@@ -117,9 +117,9 @@ export default function FeatureGrid() {
               <motion.div
                 variants={iconBgVariants}
                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                style={{ border: "1px solid rgba(6,182,212,0.2)" }}
+                style={{ border: "1px solid rgba(18,165,148,0.2)" }}
               >
-                <f.icon size={15} style={{ color: "#06b6d4" }} strokeWidth={1.5} aria-hidden />
+                <f.icon size={15} style={{ color: "#12a594" }} strokeWidth={1.5} aria-hidden />
               </motion.div>
 
               {/* Content */}
@@ -130,7 +130,7 @@ export default function FeatureGrid() {
                 >
                   {f.title}
                 </motion.h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#6B6860" }}>
+                <p className="text-sm leading-relaxed" style={{ color: "#60646c" }}>
                   {f.desc}
                 </p>
               </div>

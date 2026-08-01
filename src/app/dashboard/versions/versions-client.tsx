@@ -16,7 +16,7 @@ interface Version {
 }
 
 const CHUNK_COLOR: Record<ChunkType, string> = {
-  summary:    "#06b6d4",
+  summary:    "#12a594",
   experience: "#059669",
   education:  "#7c3aed",
   skills:     "#d97706",
@@ -32,7 +32,7 @@ const EASE   = [0.16, 1, 0.3, 1] as const;
 function UField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#6B6860" }}>{label}</p>
+      <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#60646c" }}>{label}</p>
       {children}
     </div>
   );
@@ -137,20 +137,20 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
 
   return (
     <DashboardShell>
-      <div className="h-full flex flex-col" style={{ background: "#F7F6F2" }}>
+      <div className="h-full flex flex-col" style={{ background: "#f9f9fb" }}>
 
         {/* ── Page header (white) ── */}
         <div className="shrink-0 flex items-end justify-between px-6 md:px-8 pt-8 pb-5"
-          style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E3DC" }}>
+          style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
           <div>
-            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2" style={{ color: "#9B9890" }}>AI Tools</p>
-            <h1 className="font-display font-semibold tracking-tight" style={{ color: "#111111", fontSize: "clamp(22px,4vw,30px)", lineHeight: 1.15 }}>
+            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2" style={{ color: "#80838d" }}>AI Tools</p>
+            <h1 className="font-display font-semibold tracking-tight" style={{ color: "#1c2024", fontSize: "clamp(22px,4vw,30px)", lineHeight: 1.15 }}>
               Resume Versions
             </h1>
           </div>
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING}
-            className="text-[10px] font-mono mb-1" style={{ color: "#9B9890" }}>
+            className="text-[10px] font-mono mb-1" style={{ color: "#80838d" }}>
             {savedVersions.length} version{savedVersions.length !== 1 ? "s" : ""} saved
           </motion.span>
         </div>
@@ -160,23 +160,23 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
 
           {/* ── Left: Controls ── */}
           <div className="flex flex-col overflow-y-auto shrink-0"
-            style={{ width: 260, borderRight: "1px solid #E5E3DC", background: "#FFFFFF" }}>
+            style={{ width: 260, borderRight: "1px solid #d9d9e0", background: "#FFFFFF" }}>
             <div className="p-5 space-y-6">
 
               {/* Resume selector */}
               <UField label="Master Resume">
                 {resumes.length === 0 ? (
-                  <p className="text-[12px]" style={{ color: "#9B9890" }}>No resumes yet — upload one first.</p>
+                  <p className="text-[12px]" style={{ color: "#80838d" }}>No resumes yet — upload one first.</p>
                 ) : (
                   <div className="relative">
                     <select value={selectedResumeId} onChange={e => setSelectedResumeId(e.target.value)}
                       className="w-full text-[13px] py-1.5 pr-6 appearance-none outline-none bg-transparent"
-                      style={{ color: "#111111", borderBottom: "1px solid #C8C4BB" }}>
+                      style={{ color: "#1c2024", borderBottom: "1px solid #b9bbc6" }}>
                       {resumes.map(r => (
                         <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
                       ))}
                     </select>
-                    <ChevronDown size={11} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#9B9890" }} />
+                    <ChevronDown size={11} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#80838d" }} />
                   </div>
                 )}
               </UField>
@@ -188,8 +188,8 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   onChange={e => setJobDescription(e.target.value)}
                   placeholder="Paste the job description to surface the most relevant resume sections…"
                   rows={10}
-                  className="w-full text-[12px] leading-relaxed bg-transparent resize-none outline-none placeholder:text-[#C8C4BB] pt-1"
-                  style={{ color: "#111111", borderBottom: "1px solid #C8C4BB" }}
+                  className="w-full text-[12px] leading-relaxed bg-transparent resize-none outline-none placeholder:text-[#b9bbc6] pt-1"
+                  style={{ color: "#1c2024", borderBottom: "1px solid #b9bbc6" }}
                 />
               </UField>
 
@@ -197,10 +197,10 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               <div className="space-y-2">
                 <motion.button onClick={searchChunks}
                   disabled={searchLoading || !jobDescription.trim() || !selectedResumeId}
-                  whileHover={!searchLoading ? { y: -1, boxShadow: "0 10px 24px rgba(6,182,212,0.24)" } : {}}
+                  whileHover={!searchLoading ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                   whileTap={{ scale: 0.97 }} transition={SPRING}
                   className="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12px] font-bold text-white disabled:opacity-40"
-                  style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 14px rgba(6,182,212,0.18)" }}>
+                  style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.18)" }}>
                   {searchLoading ? <><Loader2 size={12} className="animate-spin" />Searching…</> : <><Search size={12} strokeWidth={2.2} />Find Relevant</>}
                 </motion.button>
 
@@ -210,7 +210,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                       initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                       onClick={() => { setRelevantChunkIds(new Set()); setSelectedChunkIds(new Set()); setAllChunks(p => p.map(c => ({ ...c, similarity: undefined }))); }}
                       className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-[11px] font-medium"
-                      style={{ color: "#9B9890", border: "1px solid #E5E3DC" }}>
+                      style={{ color: "#80838d", border: "1px solid #d9d9e0" }}>
                       <RotateCcw size={10} /> Clear search
                     </motion.button>
                   )}
@@ -220,7 +220,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Saved versions in sidebar */}
               {savedVersions.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-3" style={{ color: "#9B9890" }}>Saved</p>
+                  <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-3" style={{ color: "#80838d" }}>Saved</p>
                   <div className="space-y-0">
                     {savedVersions.map((v, i) => {
                       const parent = resumes.find(r => r.id === v.parent_resume_id);
@@ -229,11 +229,11 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                           initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.05, type: "spring", stiffness: 280, damping: 26 }}
                           className="flex items-center gap-3 py-3"
-                          style={{ borderBottom: i < savedVersions.length - 1 ? "1px solid #F0EFE9" : "none" }}>
-                          <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#06b6d4" }} />
+                          style={{ borderBottom: i < savedVersions.length - 1 ? "1px solid #f0f0f3" : "none" }}>
+                          <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#12a594" }} />
                           <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-semibold truncate" style={{ color: "#111111" }}>{v.version_name}</p>
-                            <p className="text-[10px] font-mono" style={{ color: "#C8C4BB" }}>
+                            <p className="text-[12px] font-semibold truncate" style={{ color: "#1c2024" }}>{v.version_name}</p>
+                            <p className="text-[10px] font-mono" style={{ color: "#b9bbc6" }}>
                               {parent?.file_name?.replace(/\.pdf$/i, "") ?? "—"}
                             </p>
                           </div>
@@ -250,12 +250,12 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
           </div>
 
           {/* ── Middle: Chunks ── */}
-          <div className="flex-1 overflow-y-auto" style={{ background: "#F7F6F2" }}>
+          <div className="flex-1 overflow-y-auto" style={{ background: "#f9f9fb" }}>
             <div className="p-5">
 
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
-                <p className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#9B9890" }}>
+                <p className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#80838d" }}>
                   {relevantChunkIds.size > 0
                     ? `${relevantChunkIds.size} relevant · ${allChunks.length} total`
                     : `${allChunks.length} section${allChunks.length !== 1 ? "s" : ""}`}
@@ -266,7 +266,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                       initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
                       transition={SPRING}
                       className="text-[9px] font-bold px-2.5 py-1 rounded-full text-white"
-                      style={{ background: "#06b6d4" }}>
+                      style={{ background: "#12a594" }}>
                       {selectedChunkIds.size} selected
                     </motion.span>
                   )}
@@ -276,7 +276,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Content */}
               {chunksLoading ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 size={18} className="animate-spin" style={{ color: "#06b6d4" }} />
+                  <Loader2 size={18} className="animate-spin" style={{ color: "#12a594" }} />
                 </div>
               ) : allChunks.length === 0 ? (
                 <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
@@ -284,19 +284,19 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   className="flex flex-col items-center justify-center py-20 text-center">
                   <motion.div animate={{ y: [0, -4, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                     className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 4px 16px rgba(0,0,0,0.04)" }}>
-                    <Layers size={18} style={{ color: "#C8C4BB" }} strokeWidth={1.5} />
+                    style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 4px 16px rgba(0,0,0,0.04)" }}>
+                    <Layers size={18} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
                   </motion.div>
-                  <p className="text-[14px] font-semibold mb-1.5" style={{ color: "#111111" }}>No sections yet</p>
-                  <p className="text-[12px] max-w-[200px] leading-relaxed mb-5" style={{ color: "#9B9890" }}>
+                  <p className="text-[14px] font-semibold mb-1.5" style={{ color: "#1c2024" }}>No sections yet</p>
+                  <p className="text-[12px] max-w-[200px] leading-relaxed mb-5" style={{ color: "#80838d" }}>
                     {selectedResume ? "Generate semantic sections from this resume to start building versions." : "Select a resume to get started."}
                   </p>
                   {selectedResume && (
                     <motion.button onClick={generateChunks} disabled={generatingChunks}
-                      whileHover={!generatingChunks ? { y: -1, boxShadow: "0 10px 24px rgba(6,182,212,0.24)" } : {}}
+                      whileHover={!generatingChunks ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                       whileTap={{ scale: 0.97 }} transition={SPRING}
                       className="inline-flex items-center gap-2 h-9 px-5 rounded-xl text-[12px] font-bold text-white disabled:opacity-50"
-                      style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 14px rgba(6,182,212,0.18)" }}>
+                      style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.18)" }}>
                       {generatingChunks && <Loader2 size={12} className="animate-spin" />}
                       {generatingChunks ? "Generating…" : "Generate Sections"}
                     </motion.button>
@@ -307,7 +307,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   {sortedChunks.map((chunk, i) => {
                     const isSelected = selectedChunkIds.has(chunk.id);
                     const isRelevant = relevantChunkIds.has(chunk.id);
-                    const dotColor   = CHUNK_COLOR[chunk.chunk_type] ?? "#06b6d4";
+                    const dotColor   = CHUNK_COLOR[chunk.chunk_type] ?? "#12a594";
 
                     return (
                       <motion.div key={chunk.id}
@@ -316,7 +316,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                         onClick={() => toggleChunk(chunk.id)}
                         className="flex items-start gap-3 py-4 cursor-pointer group"
                         style={{
-                          borderBottom: "1px solid #E5E3DC",
+                          borderBottom: "1px solid #d9d9e0",
                           borderLeft: isSelected ? `3px solid ${dotColor}` : "3px solid transparent",
                           paddingLeft: 12,
                           background: isSelected ? `${dotColor}08` : "transparent",
@@ -350,12 +350,12 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                             </span>
                             {isRelevant && (
                               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                                style={{ background: "rgba(6,182,212,0.1)", color: "#06b6d4", border: "1px solid rgba(6,182,212,0.2)" }}>
+                                style={{ background: "rgba(18,165,148,0.1)", color: "#12a594", border: "1px solid rgba(18,165,148,0.2)" }}>
                                 Relevant
                               </span>
                             )}
                             {chunk.similarity !== undefined && (
-                              <span className="text-[9px] font-mono ml-auto" style={{ color: "#9B9890" }}>
+                              <span className="text-[9px] font-mono ml-auto" style={{ color: "#80838d" }}>
                                 {Math.round(chunk.similarity * 100)}%
                               </span>
                             )}
@@ -374,13 +374,13 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
 
           {/* ── Right: Preview + Save ── */}
           <div className="flex flex-col overflow-hidden shrink-0"
-            style={{ width: 300, borderLeft: "1px solid #E5E3DC", background: "#FFFFFF" }}>
+            style={{ width: 300, borderLeft: "1px solid #d9d9e0", background: "#FFFFFF" }}>
 
             {/* Preview header */}
-            <div className="px-5 py-4 shrink-0" style={{ borderBottom: "1px solid #E5E3DC" }}>
-              <p className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#6B6860" }}>Preview</p>
+            <div className="px-5 py-4 shrink-0" style={{ borderBottom: "1px solid #d9d9e0" }}>
+              <p className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#60646c" }}>Preview</p>
               {selectedChunkIds.size > 0 && (
-                <p className="text-[10px] mt-0.5" style={{ color: "#9B9890" }}>
+                <p className="text-[10px] mt-0.5" style={{ color: "#80838d" }}>
                   {selectedChunkIds.size} section{selectedChunkIds.size !== 1 ? "s" : ""} selected
                 </p>
               )}
@@ -400,7 +400,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2.2, repeat: Infinity }}>
                     <FileText size={22} style={{ color: "#D4D0C8" }} strokeWidth={1.5} />
                   </motion.div>
-                  <p className="text-[11px] mt-3 max-w-[160px] leading-relaxed" style={{ color: "#C8C4BB" }}>
+                  <p className="text-[11px] mt-3 max-w-[160px] leading-relaxed" style={{ color: "#b9bbc6" }}>
                     Select sections to preview your assembled resume
                   </p>
                 </div>
@@ -408,9 +408,9 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
             </div>
 
             {/* Save */}
-            <div className="p-5 space-y-4 shrink-0" style={{ borderTop: "1px solid #E5E3DC" }}>
+            <div className="p-5 space-y-4 shrink-0" style={{ borderTop: "1px solid #d9d9e0" }}>
               <div>
-                <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#6B6860" }}>Version Name</p>
+                <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#60646c" }}>Version Name</p>
                 <div className="relative">
                   <input
                     type="text"
@@ -418,8 +418,8 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                     onChange={e => setVersionName(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && saveVersion()}
                     placeholder="e.g. Frontend Role v2"
-                    className="w-full text-[13px] py-1.5 bg-transparent outline-none placeholder:text-[#C8C4BB]"
-                    style={{ color: "#111111", borderBottom: "1px solid #C8C4BB" }}
+                    className="w-full text-[13px] py-1.5 bg-transparent outline-none placeholder:text-[#b9bbc6]"
+                    style={{ color: "#1c2024", borderBottom: "1px solid #b9bbc6" }}
                   />
                 </div>
               </div>
@@ -428,10 +428,10 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                 onClick={saveVersion}
                 disabled={saveLoading || !versionName.trim() || selectedChunkIds.size === 0}
                 whileHover={!saveLoading && versionName.trim() && selectedChunkIds.size > 0
-                  ? { y: -1, boxShadow: "0 10px 24px rgba(6,182,212,0.24)" } : {}}
+                  ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                 whileTap={{ scale: 0.97 }} transition={SPRING}
                 className="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12px] font-bold text-white disabled:opacity-40"
-                style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 14px rgba(6,182,212,0.16)" }}>
+                style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.16)" }}>
                 {saveLoading
                   ? <><Loader2 size={12} className="animate-spin" />Saving…</>
                   : <><Save size={12} strokeWidth={2.2} />Save Version</>
@@ -444,20 +444,20 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
                     transition={SPRING}
                     className="flex items-center justify-between py-2"
-                    style={{ borderTop: "1px solid #F0EFE9" }}>
-                    <span className="text-[10px] font-mono uppercase tracking-[0.12em]" style={{ color: "#9B9890" }}>ATS Score</span>
+                    style={{ borderTop: "1px solid #f0f0f3" }}>
+                    <span className="text-[10px] font-mono uppercase tracking-[0.12em]" style={{ color: "#80838d" }}>ATS Score</span>
                     <div className="flex items-baseline gap-1">
                       <span className="text-[18px] font-black font-mono" style={{ color: scoreColor(lastAtsScore), letterSpacing: "-0.03em" }}>
                         {lastAtsScore}
                       </span>
-                      <span className="text-[10px]" style={{ color: "#C8C4BB" }}>/100</span>
+                      <span className="text-[10px]" style={{ color: "#b9bbc6" }}>/100</span>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {selectedChunkIds.size > 0 && !saveLoading && !lastAtsScore && (
-                <p className="text-[10px] text-center" style={{ color: "#C8C4BB" }}>ATS score calculated on save</p>
+                <p className="text-[10px] text-center" style={{ color: "#b9bbc6" }}>ATS score calculated on save</p>
               )}
             </div>
           </div>

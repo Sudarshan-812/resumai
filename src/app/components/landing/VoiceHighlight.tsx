@@ -8,7 +8,7 @@ export default function VoiceHighlight() {
   return (
     <section
       className="py-0"
-      style={{ background: "#0E7490" }}
+      style={{ background: "#008573" }}
     >
       <div className="max-w-5xl mx-auto px-6 py-24 md:py-32">
         <div className="relative overflow-hidden">
@@ -84,7 +84,7 @@ export default function VoiceHighlight() {
               <Link
                 href="/login"
                 className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
-                style={{ background: "#FFFFFF", color: "#0E7490" }}
+                style={{ background: "#FFFFFF", color: "#008573" }}
               >
                 Start Practice Interview
                 <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />

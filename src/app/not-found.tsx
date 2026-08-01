@@ -6,13 +6,13 @@ export default function NotFound() {
     <div className="min-h-screen bg-white flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center space-y-8">
         <div className="flex justify-center">
-          <div className="w-20 h-20 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center">
-            <FileQuestion className="w-10 h-10 text-cyan-500" strokeWidth={1.5} />
+          <div className="w-20 h-20 rounded-3xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center">
+            <FileQuestion className="w-10 h-10 text-teal-500" strokeWidth={1.5} />
           </div>
         </div>
 
         <div>
-          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-cyan-600 mb-3">
+          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-teal-600 mb-3">
             404 — Not Found
           </p>
           <h1 className="font-display text-3xl font-bold text-zinc-900 mb-3 tracking-tight">
@@ -26,7 +26,7 @@ export default function NotFound() {
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link
             href="/dashboard"
-            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white text-sm font-semibold transition-colors shadow-lg shadow-cyan-500/20"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-white text-sm font-semibold transition-colors shadow-lg shadow-teal-500/20"
           >
             <Home className="w-4 h-4" />
             Go to Dashboard

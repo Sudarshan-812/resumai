@@ -37,29 +37,29 @@ export default function FAQ() {
   return (
     <section
       className="py-24 md:py-32"
-      style={{ background: "#F7F6F2", borderTop: "1px solid #E5E3DC" }}
+      style={{ background: "#f9f9fb", borderTop: "1px solid #d9d9e0" }}
       aria-labelledby="faq-heading"
     >
       <div className="max-w-2xl mx-auto px-6">
 
         {/* Header */}
         <div className="text-center mb-14">
-          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#06b6d4" }}>
+          <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#12a594" }}>
             FAQ
           </p>
           <h2
             id="faq-heading"
             className="font-display font-bold tracking-tight mb-4"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
             Everything you need to know.
           </h2>
-          <p className="text-sm leading-relaxed" style={{ color: "#9B9890" }}>
+          <p className="text-sm leading-relaxed" style={{ color: "#80838d" }}>
             Still have questions?{" "}
             <a
               href="mailto:support@column8.io"
-              className="transition-colors hover:text-cyan-600"
-              style={{ color: "#06b6d4" }}
+              className="transition-colors hover:text-teal-600"
+              style={{ color: "#12a594" }}
             >
               support@column8.io
             </a>
@@ -67,17 +67,17 @@ export default function FAQ() {
         </div>
 
         {/* Accordion */}
-        <div style={{ borderTop: "1px solid #E5E3DC" }}>
+        <div style={{ borderTop: "1px solid #d9d9e0" }}>
           {FAQS.map((faq, i) => (
-            <div key={i} style={{ borderBottom: "1px solid #E5E3DC" }}>
+            <div key={i} style={{ borderBottom: "1px solid #d9d9e0" }}>
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
                 className="w-full flex items-center justify-between gap-4 py-5 text-left group"
               >
                 <span
-                  className="text-sm font-medium leading-snug transition-colors duration-150 group-hover:text-cyan-600"
-                  style={{ color: "#111111" }}
+                  className="text-sm font-medium leading-snug transition-colors duration-150 group-hover:text-teal-600"
+                  style={{ color: "#1c2024" }}
                 >
                   {faq.q}
                 </span>
@@ -85,7 +85,7 @@ export default function FAQ() {
                   animate={{ rotate: open === i ? 45 : 0 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <Plus size={14} style={{ color: open === i ? "#06b6d4" : "#C8C4BB", flexShrink: 0 }} aria-hidden />
+                  <Plus size={14} style={{ color: open === i ? "#12a594" : "#b9bbc6", flexShrink: 0 }} aria-hidden />
                 </motion.div>
               </button>
 
@@ -98,7 +98,7 @@ export default function FAQ() {
                     transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     className="overflow-hidden"
                   >
-                    <p className="pb-5 text-sm leading-relaxed" style={{ color: "#6B6860" }}>
+                    <p className="pb-5 text-sm leading-relaxed" style={{ color: "#60646c" }}>
                       {faq.a}
                     </p>
                   </motion.div>

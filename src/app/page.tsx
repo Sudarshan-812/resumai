@@ -9,7 +9,7 @@ import Footer from "@/app/components/landing/Footer";
 
 export default function Home() {
   return (
-    <main style={{ background: "#F7F6F2", minHeight: "100vh" }}>
+    <main style={{ background: "#f9f9fb", minHeight: "100vh" }}>
       <Navbar />
       <HeroSection />
       <FeatureGrid />

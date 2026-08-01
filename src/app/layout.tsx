@@ -46,7 +46,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NextTopLoader
-            color="#06b6d4"
+            color="#12a594"
             initialPosition={0.08}
             crawlSpeed={200}
             height={3}
@@ -54,7 +54,7 @@ export default function RootLayout({
             showSpinner={false}
             easing="ease"
             speed={200}
-            shadow="0 0 10px #06b6d4,0 0 5px #06b6d4"
+            shadow="0 0 10px #12a594,0 0 5px #12a594"
           />
 {children}
           <Toaster richColors />

@@ -21,7 +21,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
   className = "",
 }) => {
   const skip = !animate;
-  const ink  = onDark ? "#FAFAFA" : "#111111";   // right col, bottom bar, wordmark
+  const ink  = onDark ? "#FAFAFA" : "#1c2024";   // right col, bottom bar, wordmark
 
   return (
     <motion.svg
@@ -35,12 +35,12 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
     >
       <defs>
         <linearGradient id="c8-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#22D3EE" />
-          <stop offset="100%" stopColor="#0D9488" />
+          <stop offset="0%" stopColor="#53b9ab" />
+          <stop offset="100%" stopColor="#008573" />
         </linearGradient>
       </defs>
 
-      {/* ── Left column — cyan/teal gradient, grows from bottom ── */}
+      {/* ── Left column — teal gradient, grows from bottom ── */}
       <motion.rect
         id="col-left"
         x={40} y={45} width={15} height={150} rx={7}
@@ -62,7 +62,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         transition={skip ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 24, delay: 0.13 }}
       />
 
-      {/* ── Top bar — cyan/teal gradient, draws left to right ── */}
+      {/* ── Top bar — teal gradient, draws left to right ── */}
       <motion.path
         id="bar-top"
         d="M 30,93 L 130,80"
@@ -101,7 +101,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
           fontSize="56" fontWeight="600"
           fill={ink} letterSpacing="-2"
         >
-          Column<tspan fill="#22D3EE">8</tspan>
+          Column<tspan fill="#12a594">8</tspan>
         </text>
       </motion.g>
 

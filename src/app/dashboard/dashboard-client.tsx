@@ -41,7 +41,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
 
   return (
     <DashboardShell>
-      <div className="min-h-full" style={{ background: "#F7F6F2" }}>
+      <div className="min-h-full" style={{ background: "#f9f9fb" }}>
         <div className="max-w-5xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
           {/* ── Header ── */}
@@ -52,10 +52,10 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-10"
           >
             <div>
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1.5" style={{ color: "#9B9890" }}>
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1.5" style={{ color: "#80838d" }}>
                 {today}
               </p>
-              <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#111111" }}>
+              <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight" style={{ color: "#1c2024" }}>
                 Good to see you, {userName}.
               </h1>
             </div>
@@ -66,7 +66,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                 whileTap={{ scale: 0.97 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 className="inline-flex items-center gap-2 h-10 px-5 rounded-lg text-sm font-semibold text-white shrink-0"
-                style={{ background: "#06b6d4" }}
+                style={{ background: "#12a594" }}
               >
                 <Plus size={15} strokeWidth={2.5} />
                 New Analysis
@@ -80,7 +80,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.45, ease: EASE }}
             className="grid grid-cols-3 mb-10 rounded-xl overflow-hidden"
-            style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}
+            style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
           >
             {(
             [
@@ -89,7 +89,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                 label: "Avg Score",
                 value: avgScore > 0 ? `${avgScore}` : "—",
                 note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
-                valueColor: avgScore >= 70 ? "#059669" : avgScore > 0 ? "#d97706" : "#9B9890",
+                valueColor: avgScore >= 70 ? "#059669" : avgScore > 0 ? "#d97706" : "#80838d",
                 noteColor: undefined,
                 action: undefined,
               },
@@ -103,7 +103,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   <Link
                     href="/billing"
                     className="text-[10px] font-bold tracking-wide transition-colors"
-                    style={{ color: "#06b6d4" }}
+                    style={{ color: "#12a594" }}
                   >
                     Top up →
                   </Link>
@@ -121,21 +121,21 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               <motion.div
                 key={i}
                 className="relative px-6 py-5 cursor-default"
-                style={{ borderRight: i < 2 ? "1px solid #E5E3DC" : undefined }}
-                whileHover={{ backgroundColor: "#F0EFE9" }}
+                style={{ borderRight: i < 2 ? "1px solid #d9d9e0" : undefined }}
+                whileHover={{ backgroundColor: "#f0f0f3" }}
                 transition={{ duration: 0.15 }}
               >
-                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#9B9890" }}>
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#80838d" }}>
                   {m.label}
                 </p>
                 <p
                   className="text-3xl font-bold tracking-tight tabular-nums leading-none mb-1.5"
-                  style={{ color: m.valueColor ?? "#111111" }}
+                  style={{ color: m.valueColor ?? "#1c2024" }}
                 >
                   {m.value}
                 </p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px]" style={{ color: m.noteColor ?? "#9B9890" }}>
+                  <p className="text-[11px]" style={{ color: m.noteColor ?? "#80838d" }}>
                     {m.note}
                   </p>
                   {m.action}
@@ -154,16 +154,16 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               transition={{ delay: 0.16, duration: 0.45, ease: EASE }}
             >
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-[11px] font-mono uppercase tracking-[0.15em]" style={{ color: "#9B9890" }}>
+                <h2 className="text-[11px] font-mono uppercase tracking-[0.15em]" style={{ color: "#80838d" }}>
                   Recent Analyses
                 </h2>
                 {recentResumes.length > 0 && (
                   <Link
                     href="/resumes"
                     className="group flex items-center gap-1 text-[11px] font-medium transition-colors"
-                    style={{ color: "#9B9890" }}
-                    onMouseEnter={e => (e.currentTarget.style.color = "#111111")}
-                    onMouseLeave={e => (e.currentTarget.style.color = "#9B9890")}
+                    style={{ color: "#80838d" }}
+                    onMouseEnter={e => (e.currentTarget.style.color = "#1c2024")}
+                    onMouseLeave={e => (e.currentTarget.style.color = "#80838d")}
                   >
                     View all
                     <ChevronRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
@@ -174,14 +174,14 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               {recentResumes.length === 0 ? (
                 <EmptyState />
               ) : (
-                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}>
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}>
                   {recentResumes.map((r, i) => {
                     const score = r.ats_score ?? 0;
                     const scoreColor =
                       score >= 75 ? "#059669"
                       : score >= 55 ? "#d97706"
                       : score > 0  ? "#e11d48"
-                      : "#C8C4BB";
+                      : "#b9bbc6";
 
                     return (
                       <motion.div
@@ -189,29 +189,29 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.2 + i * 0.05, duration: 0.3 }}
-                        style={{ borderBottom: i < recentResumes.length - 1 ? "1px solid #E5E3DC" : undefined }}
+                        style={{ borderBottom: i < recentResumes.length - 1 ? "1px solid #d9d9e0" : undefined }}
                       >
                         <Link
                           href={`/dashboard/${r.id}`}
                           className="group flex items-center gap-4 px-5 py-4 transition-colors"
                           style={{ background: "transparent" }}
-                          onMouseEnter={e => (e.currentTarget.style.background = "#F7F6F2")}
+                          onMouseEnter={e => (e.currentTarget.style.background = "#f9f9fb")}
                           onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                         >
                           {/* File icon */}
                           <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors"
-                            style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+                            style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
                           >
-                            <FileText size={14} style={{ color: "#9B9890" }} strokeWidth={1.5} />
+                            <FileText size={14} style={{ color: "#80838d" }} strokeWidth={1.5} />
                           </div>
 
                           {/* Name + date */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate leading-none mb-1 transition-colors" style={{ color: "#111111" }} title={r.file_name}>
+                            <p className="text-sm font-medium truncate leading-none mb-1 transition-colors" style={{ color: "#1c2024" }} title={r.file_name}>
                               {r.file_name.replace(/\.pdf$/i, "")}
                             </p>
-                            <p className="text-[11px] font-mono" style={{ color: "#C8C4BB" }}>
+                            <p className="text-[11px] font-mono" style={{ color: "#b9bbc6" }}>
                               {fmt(r.created_at)}
                             </p>
                           </div>
@@ -220,12 +220,12 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                           <div className="flex items-center gap-3 shrink-0">
                             <span className="text-sm font-bold tabular-nums" style={{ color: scoreColor }}>
                               {score > 0 ? score : "—"}
-                              {score > 0 && <span className="text-[11px] font-normal ml-0.5" style={{ color: "#C8C4BB" }}>/100</span>}
+                              {score > 0 && <span className="text-[11px] font-normal ml-0.5" style={{ color: "#b9bbc6" }}>/100</span>}
                             </span>
                             <ArrowUpRight
                               size={13}
                               className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                              style={{ color: "#C8C4BB" }}
+                              style={{ color: "#b9bbc6" }}
                             />
                           </div>
                         </Link>
@@ -245,10 +245,10 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             >
               {/* AI Tools */}
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#9B9890" }}>
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#80838d" }}>
                   AI Tools
                 </p>
-                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}>
+                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}>
                   {[
                     { icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
                     { icon: Mic,     label: "Interview Prep", sub: "Practice with AI feedback", href: "/dashboard/interview" },
@@ -259,25 +259,25 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                       className="group flex items-center gap-3.5 px-4 py-3.5 transition-colors"
                       style={{
                         background: "transparent",
-                        borderBottom: i === 0 ? "1px solid #E5E3DC" : undefined,
+                        borderBottom: i === 0 ? "1px solid #d9d9e0" : undefined,
                       }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#F7F6F2")}
+                      onMouseEnter={e => (e.currentTarget.style.background = "#f9f9fb")}
                       onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
                     >
                       <div
                         className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.15)" }}
+                        style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
                       >
-                        <Icon size={13} style={{ color: "#06b6d4" }} strokeWidth={1.75} />
+                        <Icon size={13} style={{ color: "#12a594" }} strokeWidth={1.75} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium leading-none mb-0.5" style={{ color: "#111111" }}>{label}</p>
-                        <p className="text-[11px]" style={{ color: "#9B9890" }}>{sub}</p>
+                        <p className="text-[13px] font-medium leading-none mb-0.5" style={{ color: "#1c2024" }}>{label}</p>
+                        <p className="text-[11px]" style={{ color: "#80838d" }}>{sub}</p>
                       </div>
                       <ArrowUpRight
                         size={12}
                         className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0"
-                        style={{ color: "#C8C4BB" }}
+                        style={{ color: "#b9bbc6" }}
                       />
                     </Link>
                   ))}
@@ -286,7 +286,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
 
               {/* Upload CTA */}
               <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#9B9890" }}>
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#80838d" }}>
                   Quick Upload
                 </p>
                 <Link href="/upload">
@@ -295,7 +295,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                     whileTap={{ scale: 0.99 }}
                     transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     className="relative overflow-hidden rounded-xl p-5 cursor-pointer"
-                    style={{ background: "#111111" }}
+                    style={{ background: "#1c2024" }}
                   >
                     {/* subtle grid texture */}
                     <div
@@ -306,12 +306,12 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                       }}
                     />
                     <div className="relative">
-                      <UploadCloud size={18} style={{ color: "#06b6d4" }} strokeWidth={1.5} className="mb-3" />
+                      <UploadCloud size={18} style={{ color: "#12a594" }} strokeWidth={1.5} className="mb-3" />
                       <p className="text-sm font-semibold mb-1" style={{ color: "#FFFFFF" }}>Analyze a resume</p>
                       <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
                         Upload a PDF + job description for an instant ATS match report.
                       </p>
-                      <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "#06b6d4" }}>
+                      <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: "#12a594" }}>
                         Upload PDF <ArrowUpRight size={11} />
                       </div>
                     </div>
@@ -333,16 +333,16 @@ function EmptyState() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
       className="rounded-xl py-16 flex flex-col items-center text-center"
-      style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}
+      style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
     >
       <div
         className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-        style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+        style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
       >
-        <FileText size={18} style={{ color: "#C8C4BB" }} strokeWidth={1.5} />
+        <FileText size={18} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
       </div>
-      <p className="text-sm font-medium mb-1" style={{ color: "#111111" }}>No analyses yet</p>
-      <p className="text-[12px] mb-6 max-w-[200px] leading-relaxed" style={{ color: "#9B9890" }}>
+      <p className="text-sm font-medium mb-1" style={{ color: "#1c2024" }}>No analyses yet</p>
+      <p className="text-[12px] mb-6 max-w-[200px] leading-relaxed" style={{ color: "#80838d" }}>
         Upload your first resume to get your ATS score.
       </p>
       <Link href="/upload">
@@ -350,7 +350,7 @@ function EmptyState() {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.97 }}
           className="inline-flex items-center gap-2 h-9 px-5 rounded-lg text-sm font-semibold text-white"
-          style={{ background: "#06b6d4" }}
+          style={{ background: "#12a594" }}
         >
           <UploadCloud size={13} strokeWidth={2} />
           Upload Resume

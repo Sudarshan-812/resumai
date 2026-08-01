@@ -20,7 +20,7 @@ function scoreCfg(s: number) {
   if (s >= 75) return { color: "#059669", bg: "rgba(5,150,105,0.09)",  label: "Strong" };
   if (s >= 55) return { color: "#d97706", bg: "rgba(217,119,6,0.09)",  label: "Good"   };
   if (s  >  0) return { color: "#e11d48", bg: "rgba(225,29,72,0.09)",  label: "Weak"   };
-  return             { color: "#C8C4BB", bg: "rgba(200,196,187,0.09)", label: "—"      };
+  return             { color: "#b9bbc6", bg: "rgba(200,196,187,0.09)", label: "—"      };
 }
 
 function timeAgo(iso: string, mounted: boolean) {
@@ -50,8 +50,8 @@ function ScorePill({ score, index }: { score: number; index: number }) {
       </motion.span>
       {score > 0 && (
         <>
-          <span className="text-[9px] font-mono" style={{ color: "#C8C4BB" }}>/100</span>
-          <div className="w-12 h-[2px] rounded-full overflow-hidden" style={{ background: "#E5E3DC" }}>
+          <span className="text-[9px] font-mono" style={{ color: "#b9bbc6" }}>/100</span>
+          <div className="w-12 h-[2px] rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
             <motion.div
               className="h-full rounded-full"
               initial={{ width: 0 }}
@@ -109,25 +109,25 @@ function ResumeRow({ resume, index, prev }: { resume: Resume; index: number; pre
           <motion.div
             animate={{
               background: hovered ? cfg.bg : "#FFFFFF",
-              borderColor: hovered ? cfg.color + "44" : "#E5E3DC",
+              borderColor: hovered ? cfg.color + "44" : "#d9d9e0",
             }}
             transition={SPRING}
             className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-            style={{ border: "1px solid #E5E3DC", background: "#FFFFFF" }}
+            style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
           >
-            <FileText size={15} style={{ color: hovered ? cfg.color : "#9B9890" }} strokeWidth={1.5} />
+            <FileText size={15} style={{ color: hovered ? cfg.color : "#80838d" }} strokeWidth={1.5} />
           </motion.div>
 
           {/* Name + date */}
           <div className="flex-1 min-w-0">
             <p
               className="text-[13px] font-semibold truncate leading-tight mb-1"
-              style={{ color: hovered ? "#111111" : "#2D2C2A" }}
+              style={{ color: hovered ? "#1c2024" : "#2D2C2A" }}
             >
               {resume.file_name.replace(/\.pdf$/i, "")}
             </p>
             <div className="flex items-center gap-2">
-              <p className="text-[11px] font-mono" style={{ color: "#C8C4BB" }}>
+              <p className="text-[11px] font-mono" style={{ color: "#b9bbc6" }}>
                 {timeAgo(resume.created_at, mounted)}
               </p>
               {/* Score delta vs previous upload */}
@@ -174,7 +174,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
 
   return (
     <DashboardShell>
-      <div style={{ background: "#F7F6F2", minHeight: "100%" }}>
+      <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
         <div className="max-w-2xl mx-auto px-5 md:px-8 py-10 md:py-14">
 
           {/* Header */}
@@ -186,21 +186,21 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
           >
             <div className="flex items-start justify-between gap-4 mb-6">
               <div>
-                <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2.5" style={{ color: "#C8C4BB" }}>
+                <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2.5" style={{ color: "#b9bbc6" }}>
                   Resume Library
                 </p>
-                <h1 className="font-display font-semibold tracking-tight" style={{ color: "#111111", fontSize: "clamp(24px, 5vw, 36px)", lineHeight: 1.15 }}>
+                <h1 className="font-display font-semibold tracking-tight" style={{ color: "#1c2024", fontSize: "clamp(24px, 5vw, 36px)", lineHeight: 1.15 }}>
                   My Resumes
                 </h1>
               </div>
 
               <Link href="/upload">
                 <motion.button
-                  whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(6,182,212,0.28)" }}
+                  whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(18,165,148,0.28)" }}
                   whileTap={{ scale: 0.96 }}
                   transition={SPRING}
                   className="inline-flex items-center gap-2 h-9 px-4 rounded-xl text-[12px] font-bold text-white shrink-0 mt-1"
-                  style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 16px rgba(6,182,212,0.2)" }}
+                  style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 16px rgba(18,165,148,0.2)" }}
                 >
                   <UploadCloud size={13} strokeWidth={2.2} />
                   New scan
@@ -217,9 +217,9 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                 className="flex items-center gap-2 flex-wrap"
               >
                 {[
-                  { label: "Scans",        val: resumes.length.toString(),  c: "#6B6860" },
+                  { label: "Scans",        val: resumes.length.toString(),  c: "#60646c" },
                   { label: "Avg score",    val: avgScore > 0 ? `${avgScore}` : "—",  c: cfg.color    },
-                  { label: "Best",         val: bestScore > 0 ? `${bestScore}` : "—", c: "#06b6d4"  },
+                  { label: "Best",         val: bestScore > 0 ? `${bestScore}` : "—", c: "#12a594"  },
                 ].map((s, i) => (
                   <motion.div
                     key={i}
@@ -227,9 +227,9 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.14 + i * 0.07, type: "spring", stiffness: 320, damping: 22 }}
                     className="flex items-center gap-2 px-3 py-1.5 rounded-xl"
-                    style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
+                    style={{ background: "#FFFFFF", border: "1px solid #d9d9e0" }}
                   >
-                    <span className="text-[10px]" style={{ color: "#9B9890" }}>{s.label}</span>
+                    <span className="text-[10px]" style={{ color: "#80838d" }}>{s.label}</span>
                     <span className="text-[13px] font-black font-mono" style={{ color: s.c }}>{s.val}</span>
                   </motion.div>
                 ))}
@@ -252,21 +252,21 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
                   className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
-                  style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
+                  style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
                 >
-                  <FileText size={22} style={{ color: "#C8C4BB" }} strokeWidth={1.5} />
+                  <FileText size={22} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
                 </motion.div>
-                <p className="text-[15px] font-semibold mb-1.5" style={{ color: "#111111" }}>No resumes yet</p>
-                <p className="text-[13px] max-w-[200px] leading-relaxed mb-6" style={{ color: "#9B9890" }}>
+                <p className="text-[15px] font-semibold mb-1.5" style={{ color: "#1c2024" }}>No resumes yet</p>
+                <p className="text-[13px] max-w-[200px] leading-relaxed mb-6" style={{ color: "#80838d" }}>
                   Upload your first resume and get an instant ATS score.
                 </p>
                 <Link href="/upload">
                   <motion.button
-                    whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(6,182,212,0.28)" }}
+                    whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(18,165,148,0.28)" }}
                     whileTap={{ scale: 0.96 }}
                     transition={SPRING}
                     className="inline-flex items-center gap-2 h-9 px-5 rounded-xl text-[12px] font-bold text-white"
-                    style={{ background: "linear-gradient(135deg,#06b6d4,#0891b2)", boxShadow: "0 4px 16px rgba(6,182,212,0.18)" }}
+                    style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 16px rgba(18,165,148,0.18)" }}
                   >
                     <UploadCloud size={13} strokeWidth={2.2} />
                     Upload Resume
@@ -297,7 +297,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                       whileTap={{ scale: 0.96 }}
                       transition={SPRING}
                       className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-4 py-2 rounded-xl"
-                      style={{ border: "1px solid #E5E3DC", color: "#9B9890", background: "#FFFFFF" }}
+                      style={{ border: "1px solid #d9d9e0", color: "#80838d", background: "#FFFFFF" }}
                     >
                       <UploadCloud size={11} strokeWidth={2} />
                       Upload another

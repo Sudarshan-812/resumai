@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -53,7 +53,7 @@ function UserAvatar({ profile, size = "sm" }: { profile: UserProfile | null; siz
   return (
     <div
       className={cn("rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0 select-none text-white", dim)}
-      style={{ background: !profile?.avatarUrl ? "#06b6d4" : undefined }}
+      style={{ background: !profile?.avatarUrl ? "#12a594" : undefined }}
     >
       {profile?.avatarUrl
         ? <img src={profile.avatarUrl} alt={profile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -150,7 +150,7 @@ function SidebarContent({
                       "flex items-center rounded-xl text-[13px] font-medium transition-all group",
                       collapsed ? "justify-center px-2.5 py-2.5" : "gap-3 px-3 py-2.5",
                       isActive
-                        ? "bg-cyan-500 text-white shadow-sm shadow-cyan-500/20"
+                        ? "bg-teal-500 text-white shadow-sm shadow-teal-500/20"
                         : "text-muted-foreground hover:text-foreground hover:bg-border/60"
                     )}
                   >
@@ -174,7 +174,7 @@ function SidebarContent({
             className="flex items-center justify-between px-3 py-2 rounded-xl border border-border bg-background hover:bg-border/40 transition-all text-[12px]"
           >
             <div className="flex items-center gap-2">
-              <Zap size={12} className="text-cyan-500" />
+              <Zap size={12} className="text-teal-500" />
               <span className="font-medium text-foreground">Credits</span>
             </div>
             <span className={cn("font-bold tabular-nums", lowCredits ? "text-amber-500" : "text-foreground")}>
@@ -186,7 +186,7 @@ function SidebarContent({
         {collapsed && (
           <Link href="/billing" onClick={onNavigate} title="Credits & Billing"
             className="w-9 h-9 flex items-center justify-center rounded-xl transition-colors text-muted-foreground hover:text-foreground hover:bg-border/60">
-            <Zap size={15} className="text-cyan-500" />
+            <Zap size={15} className="text-teal-500" />
           </Link>
         )}
 
@@ -401,7 +401,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 href="/billing"
                 className="md:hidden flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[11px] font-bold border border-border bg-background text-muted-foreground"
               >
-                <Zap size={10} className="text-cyan-500" />
+                <Zap size={10} className="text-teal-500" />
                 {profile?.credits ?? "—"}
               </Link>
             </div>

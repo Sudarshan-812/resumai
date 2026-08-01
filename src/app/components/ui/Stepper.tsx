@@ -130,7 +130,7 @@ export default function Stepper({
                 <button
                   onClick={handleBack}
                   className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-                  style={{ color: '#9B9890', background: 'transparent' }}
+                  style={{ color: '#80838d', background: 'transparent' }}
                   {...backButtonProps}
                 >
                   {backButtonText}
@@ -139,7 +139,7 @@ export default function Stepper({
               <button
                 onClick={isLastStep ? handleComplete : handleNext}
                 className="h-10 px-6 rounded-xl text-sm font-semibold text-white transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: '#06b6d4', boxShadow: '0 4px 16px rgba(6,182,212,0.25)' }}
+                style={{ background: '#12a594', boxShadow: '0 4px 16px rgba(18,165,148,0.25)' }}
                 {...nextButtonProps}
               >
                 {isLastStep ? 'Analyze Resume' : nextButtonText}
@@ -257,13 +257,13 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
     >
       <motion.div
         variants={{
-          inactive: { scale: 1, backgroundColor: '#F0EFE9', color: '#C8C4BB', border: '1.5px solid #E5E3DC' },
-          active:   { scale: 1, backgroundColor: '#06b6d4', color: '#FFFFFF', border: '1.5px solid #06b6d4' },
-          complete: { scale: 1, backgroundColor: '#06b6d4', color: '#FFFFFF', border: '1.5px solid #06b6d4' },
+          inactive: { scale: 1, backgroundColor: '#f0f0f3', color: '#b9bbc6', border: '1.5px solid #d9d9e0' },
+          active:   { scale: 1, backgroundColor: '#12a594', color: '#FFFFFF', border: '1.5px solid #12a594' },
+          complete: { scale: 1, backgroundColor: '#12a594', color: '#FFFFFF', border: '1.5px solid #12a594' },
         }}
         transition={{ duration: 0.3 }}
         className="flex h-8 w-8 items-center justify-center rounded-full font-semibold"
-        style={{ border: '1.5px solid #E5E3DC' }}
+        style={{ border: '1.5px solid #d9d9e0' }}
       >
         {status === 'complete' ? (
           <CheckIcon className="h-4 w-4 text-white" />
@@ -284,11 +284,11 @@ interface StepConnectorProps {
 function StepConnector({ isComplete }: StepConnectorProps) {
   const lineVariants: Variants = {
     incomplete: { width: 0, backgroundColor: 'transparent' },
-    complete: { width: '100%', backgroundColor: '#06b6d4' }
+    complete: { width: '100%', backgroundColor: '#12a594' }
   };
 
   return (
-    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded-full" style={{ background: '#E5E3DC' }}>
+    <div className="relative mx-2 h-0.5 flex-1 overflow-hidden rounded-full" style={{ background: '#d9d9e0' }}>
       <motion.div
         className="absolute left-0 top-0 h-full"
         variants={lineVariants}

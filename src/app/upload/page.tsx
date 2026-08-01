@@ -26,12 +26,12 @@ const JobDescriptionInput = memo(function JobDescriptionInput({
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlignLeft className="w-4 h-4" style={{ color: "#06b6d4" }} />
-          <span className="text-sm font-medium" style={{ color: "#111111" }}>Paste the Job Description</span>
+          <AlignLeft className="w-4 h-4" style={{ color: "#12a594" }} />
+          <span className="text-sm font-medium" style={{ color: "#1c2024" }}>Paste the Job Description</span>
         </div>
         <span
           className="text-[11px] font-mono px-2 py-0.5 rounded-full"
-          style={{ background: value.length > 50 ? "rgba(6,182,212,0.08)" : "#F0EFE9", color: value.length > 50 ? "#06b6d4" : "#9B9890" }}
+          style={{ background: value.length > 50 ? "rgba(18,165,148,0.08)" : "#f0f0f3", color: value.length > 50 ? "#12a594" : "#80838d" }}
         >
           {value.length > 0 ? `${value.length} chars` : "Required"}
         </span>
@@ -43,15 +43,15 @@ const JobDescriptionInput = memo(function JobDescriptionInput({
         rows={10}
         className="w-full px-4 py-4 rounded-2xl text-sm leading-relaxed resize-none focus:outline-none transition-all"
         style={{
-          background: "#FAFAF8",
-          border: "1.5px solid #E5E3DC",
-          color: "#111111",
+          background: "#fcfcfd",
+          border: "1.5px solid #d9d9e0",
+          color: "#1c2024",
           lineHeight: "1.7",
         }}
-        onFocus={e => { e.currentTarget.style.border = "1.5px solid #06b6d4"; }}
-        onBlur={e => { e.currentTarget.style.border = "1.5px solid #E5E3DC"; }}
+        onFocus={e => { e.currentTarget.style.border = "1.5px solid #12a594"; }}
+        onBlur={e => { e.currentTarget.style.border = "1.5px solid #d9d9e0"; }}
       />
-      <p className="text-xs" style={{ color: "#9B9890" }}>
+      <p className="text-xs" style={{ color: "#80838d" }}>
         Include the full description for the most accurate ATS match score.
       </p>
     </div>
@@ -85,18 +85,18 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
       >
         <div
           className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6"
-          style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.15)" }}
+          style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
         >
-          <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#06b6d4" }} />
+          <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#12a594" }} />
         </div>
-        <h2 className="font-display text-2xl font-semibold mb-2" style={{ color: "#111111" }}>
+        <h2 className="font-display text-2xl font-semibold mb-2" style={{ color: "#1c2024" }}>
           Analyzing resume
         </h2>
-        <p className="text-sm mb-8" style={{ color: "#9B9890" }}>
+        <p className="text-sm mb-8" style={{ color: "#80838d" }}>
           &ldquo;{fileName}&rdquo;
         </p>
 
-        <div className="rounded-2xl p-6 text-left space-y-4" style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}>
+        <div className="rounded-2xl p-6 text-left space-y-4" style={{ background: "#FFFFFF", border: "1px solid #d9d9e0" }}>
           {PROCESS_STEPS.map((step, index) => {
             const isCompleted = index < currentStep;
             const isCurrent = index === currentStep;
@@ -109,17 +109,17 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ type: "spring", stiffness: 500, damping: 22 }}
                     >
-                      <CheckCircle2 className="w-5 h-5" style={{ color: "#06b6d4" }} />
+                      <CheckCircle2 className="w-5 h-5" style={{ color: "#12a594" }} />
                     </motion.div>
                   ) : isCurrent ? (
-                    <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#06b6d4" }} />
+                    <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#12a594" }} />
                   ) : (
-                    <div className="w-2 h-2 rounded-full" style={{ background: "#E5E3DC" }} />
+                    <div className="w-2 h-2 rounded-full" style={{ background: "#d9d9e0" }} />
                   )}
                 </div>
                 <span
                   className="text-sm font-medium transition-colors duration-300"
-                  style={{ color: isCompleted || isCurrent ? "#111111" : "#C8C4BB" }}
+                  style={{ color: isCompleted || isCurrent ? "#1c2024" : "#b9bbc6" }}
                 >
                   {step}
                 </span>
@@ -205,18 +205,18 @@ const UploadPage: FC = (): JSX.Element => {
     false;
 
   return (
-    <div className="min-h-screen font-sans" style={{ background: "#F7F6F2" }}>
+    <div className="min-h-screen font-sans" style={{ background: "#f9f9fb" }}>
       <input ref={fileInputRef} type="file" accept=".pdf" hidden onChange={handleFileSelect} />
 
       {/* Header */}
       <header
         className="flex items-center justify-between px-6 md:px-10 h-16"
-        style={{ background: "#FFFFFF", borderBottom: "1px solid #E5E3DC" }}
+        style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}
       >
         <Link
           href="/dashboard"
           className="inline-flex items-center gap-2 text-sm font-medium transition-colors"
-          style={{ color: "#9B9890" }}
+          style={{ color: "#80838d" }}
         >
           <ArrowLeft className="h-4 w-4" />
           Dashboard
@@ -237,13 +237,13 @@ const UploadPage: FC = (): JSX.Element => {
             >
               {/* Page heading */}
               <div className="text-center mb-10">
-                <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#9B9890" }}>
+                <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#80838d" }}>
                   Resume Analyzer
                 </p>
-                <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight mb-2" style={{ color: "#111111" }}>
+                <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight mb-2" style={{ color: "#1c2024" }}>
                   Evaluate Your Fit
                 </h1>
-                <p className="text-sm" style={{ color: "#6B6860" }}>
+                <p className="text-sm" style={{ color: "#60646c" }}>
                   Upload your resume and paste a job description for an instant ATS match report.
                 </p>
               </div>
@@ -280,10 +280,10 @@ const UploadPage: FC = (): JSX.Element => {
                 <Step>
                   <div className="py-2 space-y-4">
                     <div>
-                      <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#9B9890" }}>
+                      <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
                         Step 1 — Upload Resume
                       </p>
-                      <p className="text-xs" style={{ color: "#C8C4BB" }}>PDF format, maximum 5 MB</p>
+                      <p className="text-xs" style={{ color: "#b9bbc6" }}>PDF format, maximum 5 MB</p>
                     </div>
 
                     {!file ? (
@@ -295,8 +295,8 @@ const UploadPage: FC = (): JSX.Element => {
                         onClick={() => fileInputRef.current?.click()}
                         className="relative flex flex-col items-center justify-center py-14 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-200 text-center"
                         style={{
-                          borderColor: isDragging ? "#06b6d4" : "#E5E3DC",
-                          background: isDragging ? "rgba(6,182,212,0.04)" : "#FAFAF8",
+                          borderColor: isDragging ? "#12a594" : "#d9d9e0",
+                          background: isDragging ? "rgba(18,165,148,0.04)" : "#fcfcfd",
                         }}
                       >
                         <motion.div
@@ -306,17 +306,17 @@ const UploadPage: FC = (): JSX.Element => {
                         >
                           <div
                             className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                            style={{ background: "rgba(6,182,212,0.08)", border: "1px solid rgba(6,182,212,0.15)" }}
+                            style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
                           >
-                            <UploadCloud className="w-6 h-6" style={{ color: "#06b6d4" }} strokeWidth={1.5} />
+                            <UploadCloud className="w-6 h-6" style={{ color: "#12a594" }} strokeWidth={1.5} />
                           </div>
-                          <p className="text-sm font-medium mb-1" style={{ color: "#111111" }}>
+                          <p className="text-sm font-medium mb-1" style={{ color: "#1c2024" }}>
                             Drop your resume here
                           </p>
-                          <p className="text-xs mb-4" style={{ color: "#9B9890" }}>or click to browse files</p>
+                          <p className="text-xs mb-4" style={{ color: "#80838d" }}>or click to browse files</p>
                           <span
                             className="inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg transition-colors"
-                            style={{ background: "#FFFFFF", border: "1px solid #E5E3DC", color: "#6B6860" }}
+                            style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", color: "#60646c" }}
                           >
                             Browse Files
                           </span>
@@ -327,23 +327,23 @@ const UploadPage: FC = (): JSX.Element => {
                         initial={{ opacity: 0, scale: 0.97 }}
                         animate={{ opacity: 1, scale: 1 }}
                         className="flex items-center gap-4 p-5 rounded-2xl"
-                        style={{ background: "#FFFFFF", border: "1px solid #E5E3DC" }}
+                        style={{ background: "#FFFFFF", border: "1px solid #d9d9e0" }}
                       >
                         <div
                           className="w-12 h-14 rounded-xl flex items-center justify-center shrink-0 relative"
-                          style={{ background: "rgba(6,182,212,0.06)", border: "1px solid rgba(6,182,212,0.15)" }}
+                          style={{ background: "rgba(18,165,148,0.06)", border: "1px solid rgba(18,165,148,0.15)" }}
                         >
-                          <div className="absolute top-0 right-0 w-4 h-4 rounded-bl-lg rounded-tr-xl" style={{ background: "rgba(6,182,212,0.12)" }} />
-                          <FileText className="w-5 h-5" style={{ color: "#06b6d4" }} strokeWidth={1.5} />
+                          <div className="absolute top-0 right-0 w-4 h-4 rounded-bl-lg rounded-tr-xl" style={{ background: "rgba(18,165,148,0.12)" }} />
+                          <FileText className="w-5 h-5" style={{ color: "#12a594" }} strokeWidth={1.5} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate" style={{ color: "#111111" }}>{file.name}</p>
-                          <p className="text-xs mt-0.5" style={{ color: "#9B9890" }}>{(file.size / 1024).toFixed(0)} KB · PDF</p>
+                          <p className="text-sm font-medium truncate" style={{ color: "#1c2024" }}>{file.name}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "#80838d" }}>{(file.size / 1024).toFixed(0)} KB · PDF</p>
                         </div>
                         <motion.button
                           onClick={e => { e.stopPropagation(); handleRemoveFile(); }}
                           className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ background: "#F7F6F2", color: "#9B9890" }}
+                          style={{ background: "#f9f9fb", color: "#80838d" }}
                           whileHover={{ scale: 1.15, rotate: 90 }}
                           whileTap={{ scale: 0.9 }}
                           transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -359,7 +359,7 @@ const UploadPage: FC = (): JSX.Element => {
                 <Step>
                   <div className="py-2">
                     <div className="mb-4">
-                      <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#9B9890" }}>
+                      <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
                         Step 2 — Job Description
                       </p>
                     </div>
@@ -371,47 +371,47 @@ const UploadPage: FC = (): JSX.Element => {
                 <Step>
                   <div className="py-2 space-y-4">
                     <div>
-                      <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#9B9890" }}>
+                      <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
                         Step 3 — Confirm & Analyze
                       </p>
-                      <p className="text-xs" style={{ color: "#C8C4BB" }}>Review your inputs before generating the report</p>
+                      <p className="text-xs" style={{ color: "#b9bbc6" }}>Review your inputs before generating the report</p>
                     </div>
 
                     <div className="space-y-3">
                       {/* File card */}
                       <div
                         className="flex items-center gap-3 p-4 rounded-xl"
-                        style={{ background: "#FAFAF8", border: "1px solid #E5E3DC" }}
+                        style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
                       >
                         <div
                           className="w-9 h-10 rounded-lg flex items-center justify-center shrink-0"
-                          style={{ background: "rgba(6,182,212,0.08)" }}
+                          style={{ background: "rgba(18,165,148,0.08)" }}
                         >
-                          <FileText className="w-4 h-4" style={{ color: "#06b6d4" }} strokeWidth={1.5} />
+                          <FileText className="w-4 h-4" style={{ color: "#12a594" }} strokeWidth={1.5} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[10px] font-mono uppercase tracking-[0.12em] mb-0.5" style={{ color: "#9B9890" }}>Resume</p>
-                          <p className="text-sm font-medium truncate" style={{ color: "#111111" }}>{file?.name}</p>
+                          <p className="text-[10px] font-mono uppercase tracking-[0.12em] mb-0.5" style={{ color: "#80838d" }}>Resume</p>
+                          <p className="text-sm font-medium truncate" style={{ color: "#1c2024" }}>{file?.name}</p>
                         </div>
-                        <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#06b6d4" }} />
+                        <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#12a594" }} />
                       </div>
 
                       {/* JD preview */}
-                      <div className="p-4 rounded-xl" style={{ background: "#FAFAF8", border: "1px solid #E5E3DC" }}>
-                        <p className="text-[10px] font-mono uppercase tracking-[0.12em] mb-2" style={{ color: "#9B9890" }}>Job Description</p>
-                        <p className="text-sm leading-relaxed line-clamp-3" style={{ color: "#6B6860" }}>
+                      <div className="p-4 rounded-xl" style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}>
+                        <p className="text-[10px] font-mono uppercase tracking-[0.12em] mb-2" style={{ color: "#80838d" }}>Job Description</p>
+                        <p className="text-sm leading-relaxed line-clamp-3" style={{ color: "#60646c" }}>
                           {jobDescription.slice(0, 200)}{jobDescription.length > 200 ? "…" : ""}
                         </p>
-                        <p className="text-xs mt-2" style={{ color: "#C8C4BB" }}>{jobDescription.length} characters</p>
+                        <p className="text-xs mt-2" style={{ color: "#b9bbc6" }}>{jobDescription.length} characters</p>
                       </div>
                     </div>
 
                     <div
                       className="flex items-center gap-2.5 p-3.5 rounded-xl"
-                      style={{ background: "rgba(6,182,212,0.05)", border: "1px solid rgba(6,182,212,0.15)" }}
+                      style={{ background: "rgba(18,165,148,0.05)", border: "1px solid rgba(18,165,148,0.15)" }}
                     >
-                      <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#06b6d4" }} />
-                      <p className="text-xs" style={{ color: "#0891b2" }}>
+                      <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: "#12a594" }} />
+                      <p className="text-xs" style={{ color: "#008573" }}>
                         Ready to analyze. Click <strong>Analyze Resume</strong> to get your ATS report.
                       </p>
                     </div>

@@ -17,21 +17,21 @@ const TESTIMONIALS: readonly Testimonial[] = [
     author: "Arjun K.",
     role: "Frontend Developer",
     initial: "A",
-    accentColor: "#06b6d4",
+    accentColor: "#12a594",
   },
   {
     quote: "The cover letter generator is magic. It actually sounds like me, but professional.",
     author: "Sarah J.",
     role: "Product Manager",
     initial: "S",
-    accentColor: "#0891b2",
+    accentColor: "#008573",
   },
   {
     quote: "Simple, fast, and effective. The ATS scoring feature is a game changer.",
     author: "David R.",
     role: "Data Scientist",
     initial: "D",
-    accentColor: "#22d3ee",
+    accentColor: "#53b9ab",
   },
 ];
 
@@ -58,7 +58,7 @@ const Testimonials: FC = (): JSX.Element => {
   return (
     <section
       className="py-24 md:py-32"
-      style={{ background: "#FFFFFF", borderTop: "1px solid #E5E3DC" }}
+      style={{ background: "#FFFFFF", borderTop: "1px solid #d9d9e0" }}
     >
       <div className="max-w-5xl mx-auto px-6">
 
@@ -70,7 +70,7 @@ const Testimonials: FC = (): JSX.Element => {
             viewport={{ once: true }}
             transition={{ duration: 0.5, ease: EASE }}
             className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono"
-            style={{ color: "#06b6d4" }}
+            style={{ color: "#12a594" }}
           >
             What People Say
           </motion.p>
@@ -80,10 +80,10 @@ const Testimonials: FC = (): JSX.Element => {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.08, ease: EASE }}
             className="font-display font-bold tracking-tight"
-            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#111111" }}
+            style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
             Trusted by{" "}
-            <span style={{ color: "#06b6d4" }}>10,000+</span> job seekers
+            <span style={{ color: "#12a594" }}>10,000+</span> job seekers
           </motion.h2>
         </div>
 
@@ -99,7 +99,7 @@ const Testimonials: FC = (): JSX.Element => {
               whileHover={{ y: -6, boxShadow: "0 20px 44px rgba(0,0,0,0.07)" }}
               transition={SPRING}
               className="flex flex-col p-7 rounded-2xl"
-              style={{ background: "#F7F6F2", border: "1px solid #E5E3DC" }}
+              style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
               aria-label={`Testimonial from ${t.author}`}
             >
               {/* Stars — staggered spring entrance */}
@@ -121,7 +121,7 @@ const Testimonials: FC = (): JSX.Element => {
               </div>
 
               {/* Quote */}
-              <p className="flex-1 text-sm leading-relaxed mb-6" style={{ color: "#6B6860" }}>
+              <p className="flex-1 text-sm leading-relaxed mb-6" style={{ color: "#60646c" }}>
                 &ldquo;{t.quote}&rdquo;
               </p>
 
@@ -135,10 +135,10 @@ const Testimonials: FC = (): JSX.Element => {
                   {t.initial}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold leading-none" style={{ color: "#111111" }}>
+                  <p className="text-sm font-semibold leading-none" style={{ color: "#1c2024" }}>
                     {t.author}
                   </p>
-                  <p className="text-xs mt-0.5" style={{ color: "#9B9890" }}>
+                  <p className="text-xs mt-0.5" style={{ color: "#80838d" }}>
                     {t.role}
                   </p>
                 </div>
