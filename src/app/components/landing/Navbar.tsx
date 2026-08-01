@@ -182,7 +182,7 @@ export default function Navbar() {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-x-0 top-16 z-40 md:hidden overflow-hidden"
-            style={{ background: "#FDFCF9", borderBottom: "1px solid #d9d9e0" }}
+            style={{ background: "#fcfcfd", borderBottom: "1px solid #d9d9e0" }}
           >
             <nav className="max-w-6xl mx-auto px-6 py-5 flex flex-col gap-1">
               {NAV_LINKS.map(({ label, href, hash }, i) => (

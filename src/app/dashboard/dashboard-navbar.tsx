@@ -5,9 +5,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, AlignJustify, ArrowUpRight, LogOut, CreditCard } from "lucide-react";
+import { X, AlignJustify, ArrowUpRight, LogOut, CreditCard, Settings, ChevronDown } from "lucide-react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const EASE_LIQUID = [0.16, 1, 0.3, 1] as const;
 const LENS_SPRING = { type: "spring" as const, stiffness: 350, damping: 28, mass: 0.5 };
@@ -134,16 +142,66 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
               {userProfile.credits} cr
             </Link>
 
+            {/* Mobile nav trigger */}
             <button
               onClick={() => setOpen(true)}
-              aria-label="Open menu"
-              className="w-9 h-9 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold transition-all ring-2 ring-transparent hover:ring-teal-400/30 text-white"
-              style={{ background: !userProfile.avatarUrl ? "#12a594" : undefined }}
+              aria-label="Open navigation menu"
+              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center transition-colors border border-border text-muted-foreground hover:text-foreground"
             >
-              {userProfile.avatarUrl
-                ? <img src={userProfile.avatarUrl} alt={userProfile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                : userProfile.initial}
+              <AlignJustify size={16} />
             </button>
+
+            {/* Account menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  aria-label="Account menu"
+                  className="flex items-center gap-1 pl-0.5 pr-1.5 h-9 rounded-full transition-all outline-none group"
+                >
+                  <span
+                    className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center text-xs font-bold shrink-0 ring-2 ring-transparent group-hover:ring-teal-400/30 group-data-[state=open]:ring-teal-400/40 text-white transition-all"
+                    style={{ background: !userProfile.avatarUrl ? "#12a594" : undefined }}
+                  >
+                    {userProfile.avatarUrl
+                      ? <img src={userProfile.avatarUrl} alt={userProfile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      : userProfile.initial}
+                  </span>
+                  <ChevronDown size={12} className="hidden sm:block text-muted-foreground group-data-[state=open]:rotate-180 transition-transform" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={10} className="w-56 rounded-2xl p-1.5">
+                <DropdownMenuLabel className="px-2.5 py-2">
+                  <p className="text-sm font-semibold text-foreground truncate">{userProfile.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{userProfile.email}</p>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="rounded-lg px-2.5 py-2 cursor-pointer">
+                  <Link href="/billing" className="flex items-center justify-between w-full">
+                    <span className="flex items-center gap-2">
+                      <CreditCard size={14} className="text-muted-foreground" />
+                      Credits
+                    </span>
+                    <span className="text-xs font-bold tabular-nums text-teal-600">{userProfile.credits}</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="rounded-lg px-2.5 py-2 cursor-pointer">
+                  <Link href="/settings" className="flex items-center gap-2 w-full">
+                    <Settings size={14} className="text-muted-foreground" />
+                    Settings
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  variant="destructive"
+                  disabled={signingOut}
+                  onClick={handleSignOut}
+                  className="rounded-lg px-2.5 py-2 cursor-pointer"
+                >
+                  <LogOut size={14} />
+                  {signingOut ? "Signing out…" : "Sign Out"}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </motion.div>
       </motion.header>

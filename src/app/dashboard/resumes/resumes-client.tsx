@@ -51,7 +51,7 @@ function ScorePill({ score, index }: { score: number; index: number }) {
       {score > 0 && (
         <>
           <span className="text-[9px] font-mono" style={{ color: "#b9bbc6" }}>/100</span>
-          <div className="w-12 h-[2px] rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
+          <div className="w-12 h-0.5 rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
             <motion.div
               className="h-full rounded-full"
               initial={{ width: 0 }}
@@ -66,8 +66,8 @@ function ScorePill({ score, index }: { score: number; index: number }) {
   );
 }
 
-/* ── Row item ───────────────────────────────────────────────── */
-function ResumeRow({ resume, index, prev }: { resume: Resume; index: number; prev?: Resume }) {
+/* ── Application card ──────────────────────────────────────── */
+function ResumeCard({ resume, index, prev }: { resume: Resume; index: number; prev?: Resume }) {
   const [hovered, setHovered] = useState(false);
   const score     = resume.analyses?.[0]?.ats_score ?? 0;
   const prevScore = prev?.analyses?.[0]?.ats_score ?? 0;
@@ -87,50 +87,49 @@ function ResumeRow({ resume, index, prev }: { resume: Resume; index: number; pre
         href={`/dashboard/${resume.id}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
+        className="block h-full"
       >
         <motion.div
           animate={{
-            background: hovered ? "#FFFFFF" : "transparent",
-            boxShadow: hovered ? "0 4px 24px rgba(0,0,0,0.06)" : "0 0px 0px rgba(0,0,0,0)",
-            x: hovered ? 2 : 0,
+            y: hovered ? -3 : 0,
+            boxShadow: hovered ? "0 12px 32px rgba(0,0,0,0.08)" : "0 1px 2px rgba(0,0,0,0.02)",
+            borderColor: hovered ? cfg.color + "55" : "#d9d9e0",
           }}
           transition={SPRING}
-          className="flex items-center gap-4 px-5 py-4 rounded-xl"
+          className="flex flex-col h-full rounded-2xl overflow-hidden"
+          style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
         >
-          {/* Left: colored score accent dot */}
-          <motion.div
-            animate={{ scale: hovered ? 1.15 : 1, background: hovered ? cfg.color : cfg.bg }}
-            transition={SPRING}
-            className="w-2 h-2 rounded-full shrink-0"
-            style={{ background: cfg.bg }}
-          />
+          {/* Top accent stripe, colored by score band */}
+          <div className="h-[3px] shrink-0" style={{ background: cfg.color }} />
 
-          {/* Icon */}
-          <motion.div
-            animate={{
-              background: hovered ? cfg.bg : "#FFFFFF",
-              borderColor: hovered ? cfg.color + "44" : "#d9d9e0",
-            }}
-            transition={SPRING}
-            className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-            style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
-          >
-            <FileText size={15} style={{ color: hovered ? cfg.color : "#80838d" }} strokeWidth={1.5} />
-          </motion.div>
+          <div className="flex-1 flex flex-col p-5">
+            {/* Header row: icon + score pill */}
+            <div className="flex items-start justify-between mb-4">
+              <motion.div
+                animate={{ background: hovered ? cfg.bg : "#f9f9fb", borderColor: hovered ? cfg.color + "44" : "#d9d9e0" }}
+                transition={SPRING}
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                style={{ border: "1px solid #d9d9e0" }}
+              >
+                <FileText size={17} style={{ color: hovered ? cfg.color : "#80838d" }} strokeWidth={1.5} />
+              </motion.div>
+              <ScorePill score={score} index={index} />
+            </div>
 
-          {/* Name + date */}
-          <div className="flex-1 min-w-0">
+            {/* Title */}
             <p
-              className="text-[13px] font-semibold truncate leading-tight mb-1"
-              style={{ color: hovered ? "#1c2024" : "#2D2C2A" }}
+              className="text-[14px] font-semibold leading-snug mb-2 line-clamp-2"
+              style={{ color: "#1c2024" }}
+              title={resume.file_name}
             >
               {resume.file_name.replace(/\.pdf$/i, "")}
             </p>
-            <div className="flex items-center gap-2">
+
+            {/* Meta row */}
+            <div className="flex items-center gap-2 mt-auto pt-3">
               <p className="text-[11px] font-mono" style={{ color: "#b9bbc6" }}>
                 {timeAgo(resume.created_at, mounted)}
               </p>
-              {/* Score delta vs previous upload */}
               {delta !== null && (
                 <motion.span
                   initial={{ opacity: 0, scale: 0.7 }}
@@ -149,16 +148,16 @@ function ResumeRow({ resume, index, prev }: { resume: Resume; index: number; pre
             </div>
           </div>
 
-          {/* Score */}
-          <ScorePill score={score} index={index} />
-
-          {/* Arrow */}
-          <motion.div
-            animate={{ x: hovered ? 3 : 0, opacity: hovered ? 1 : 0.3 }}
-            transition={SPRING}
+          {/* Footer */}
+          <div
+            className="flex items-center justify-between px-5 py-3 text-[11px] font-semibold"
+            style={{ borderTop: "1px solid #d9d9e0", color: cfg.color }}
           >
-            <ArrowRight size={14} style={{ color: cfg.color }} />
-          </motion.div>
+            View report
+            <motion.div animate={{ x: hovered ? 3 : 0 }} transition={SPRING}>
+              <ArrowRight size={13} />
+            </motion.div>
+          </div>
         </motion.div>
       </Link>
     </motion.div>
@@ -175,7 +174,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
   return (
     <DashboardShell>
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
-        <div className="max-w-2xl mx-auto px-5 md:px-8 py-10 md:py-14">
+        <div className="max-w-4xl mx-auto px-5 md:px-8 py-10 md:py-14">
 
           {/* Header */}
           <motion.div
@@ -274,15 +273,17 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                 </Link>
               </motion.div>
             ) : (
-              <motion.div key="list" className="space-y-1">
-                {resumes.map((r, i) => (
-                  <ResumeRow
-                    key={r.id}
-                    resume={r}
-                    index={i}
-                    prev={resumes[i + 1]}
-                  />
-                ))}
+              <motion.div key="list">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {resumes.map((r, i) => (
+                    <ResumeCard
+                      key={r.id}
+                      resume={r}
+                      index={i}
+                      prev={resumes[i + 1]}
+                    />
+                  ))}
+                </div>
 
                 {/* Bottom upload nudge */}
                 <motion.div

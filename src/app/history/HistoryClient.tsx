@@ -29,8 +29,12 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
   const fmt = (d: string) =>
     new Date(d).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
-  const scoreColor = (s: number) =>
-    s >= 75 ? "#059669" : s >= 55 ? "#d97706" : s > 0 ? "#e11d48" : "#b9bbc6";
+  const scoreCfg = (s: number) => {
+    if (s >= 75) return { color: "#059669", bg: "rgba(5,150,105,0.09)", label: "Strong" };
+    if (s >= 55) return { color: "#d97706", bg: "rgba(217,119,6,0.09)", label: "Good" };
+    if (s > 0)   return { color: "#e11d48", bg: "rgba(225,29,72,0.09)", label: "Weak" };
+    return             { color: "#b9bbc6", bg: "rgba(200,196,187,0.09)", label: "—" };
+  };
 
   return (
     <DashboardShell>
@@ -137,58 +141,89 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                 className="rounded-xl overflow-hidden"
                 style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
               >
-                {filtered.map((r, i) => (
-                  <motion.div
-                    key={r.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    whileHover={{ x: 3 }}
-                    transition={{ delay: i * 0.03, duration: 0.3 }}
-                    style={{ borderBottom: i < filtered.length - 1 ? "1px solid #d9d9e0" : undefined }}
-                  >
-                    <Link
-                      href={`/dashboard/${r.id}`}
-                      className="group flex items-center gap-4 px-5 py-4 transition-colors"
-                      style={{ background: "transparent" }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#f9f9fb")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                    >
-                      <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
-                      >
-                        <FileText size={14} style={{ color: "#80838d" }} strokeWidth={1.5} />
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <p
-                          className="text-sm font-medium truncate leading-none mb-1"
-                          style={{ color: "#1c2024" }}
-                          title={r.file_name}
-                        >
-                          {r.file_name.replace(/\.pdf$/i, "")}
-                        </p>
-                        <p className="text-[11px] font-mono" style={{ color: "#b9bbc6" }}>
-                          {fmt(r.created_at)}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-sm font-bold tabular-nums" style={{ color: scoreColor(r.ats_score) }}>
-                          {r.ats_score > 0 ? r.ats_score : "—"}
-                          {r.ats_score > 0 && (
-                            <span className="text-[11px] font-normal ml-0.5" style={{ color: "#b9bbc6" }}>/100</span>
-                          )}
-                        </span>
-                        <ArrowUpRight
-                          size={13}
-                          className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                          style={{ color: "#b9bbc6" }}
-                        />
-                      </div>
-                    </Link>
-                  </motion.div>
-                ))}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid #d9d9e0" }}>
+                        <th className="text-left font-mono text-[10px] uppercase tracking-[0.12em] px-5 py-3" style={{ color: "#80838d" }}>
+                          File
+                        </th>
+                        <th className="text-left font-mono text-[10px] uppercase tracking-[0.12em] px-5 py-3 whitespace-nowrap" style={{ color: "#80838d" }}>
+                          Date
+                        </th>
+                        <th className="text-left font-mono text-[10px] uppercase tracking-[0.12em] px-5 py-3 whitespace-nowrap" style={{ color: "#80838d" }}>
+                          Status
+                        </th>
+                        <th className="text-right font-mono text-[10px] uppercase tracking-[0.12em] px-5 py-3 whitespace-nowrap" style={{ color: "#80838d" }}>
+                          Score
+                        </th>
+                        <th className="px-5 py-3 w-8" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((r, i) => {
+                        const cfg = scoreCfg(r.ats_score);
+                        return (
+                          <motion.tr
+                            key={r.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: i * 0.03, duration: 0.3 }}
+                            className="group cursor-pointer transition-colors"
+                            style={{ borderBottom: i < filtered.length - 1 ? "1px solid #d9d9e0" : undefined }}
+                            onClick={() => router.push(`/dashboard/${r.id}`)}
+                            onMouseEnter={e => (e.currentTarget.style.background = "#f9f9fb")}
+                            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                          >
+                            <td className="px-5 py-3.5 max-w-0">
+                              <div className="flex items-center gap-3 min-w-0">
+                                <div
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                                  style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
+                                >
+                                  <FileText size={14} style={{ color: "#80838d" }} strokeWidth={1.5} />
+                                </div>
+                                <span
+                                  className="font-medium truncate"
+                                  style={{ color: "#1c2024" }}
+                                  title={r.file_name}
+                                >
+                                  {r.file_name.replace(/\.pdf$/i, "")}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-5 py-3.5 font-mono text-[12px] whitespace-nowrap" style={{ color: "#80838d" }}>
+                              {fmt(r.created_at)}
+                            </td>
+                            <td className="px-5 py-3.5 whitespace-nowrap">
+                              <span
+                                className="inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                style={{ background: cfg.bg, color: cfg.color }}
+                              >
+                                {cfg.label}
+                              </span>
+                            </td>
+                            <td className="px-5 py-3.5 text-right whitespace-nowrap">
+                              <span className="font-bold tabular-nums" style={{ color: cfg.color }}>
+                                {r.ats_score > 0 ? r.ats_score : "—"}
+                                {r.ats_score > 0 && (
+                                  <span className="text-[11px] font-normal ml-0.5" style={{ color: "#b9bbc6" }}>/100</span>
+                                )}
+                              </span>
+                            </td>
+                            <td className="px-5 py-3.5">
+                              <ArrowUpRight
+                                size={13}
+                                className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                                style={{ color: "#b9bbc6" }}
+                              />
+                            </td>
+                          </motion.tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>

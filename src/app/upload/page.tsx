@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
   FileText, Loader2, ArrowLeft, AlertCircle, X,
-  UploadCloud, CheckCircle2, AlignLeft, ArrowRight,
+  UploadCloud, CheckCircle2, AlignLeft, ArrowRight, FileWarning,
 } from "lucide-react";
 import { processResume } from "@/app/actions/upload-resume";
 import { cn } from "@/lib/utils";
@@ -137,7 +137,7 @@ const UploadPage: FC = (): JSX.Element => {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [isDragging, setIsDragging] = useState(false);
+  const [dragStatus, setDragStatus] = useState<"idle" | "accept" | "reject">("idle");
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -160,13 +160,20 @@ const UploadPage: FC = (): JSX.Element => {
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault(); e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") setIsDragging(true);
-    else setIsDragging(false);
+    if (e.type === "dragenter" || e.type === "dragover") {
+      const items = Array.from(e.dataTransfer.items ?? []);
+      const fileItem = items.find(item => item.kind === "file");
+      // Some browsers withhold the MIME type until drop — treat unknown as accept.
+      const isReject = !!fileItem && !!fileItem.type && fileItem.type !== "application/pdf";
+      setDragStatus(isReject ? "reject" : "accept");
+    } else {
+      setDragStatus("idle");
+    }
   }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault(); e.stopPropagation();
-    setIsDragging(false); setErrorMsg(null);
+    setDragStatus("idle"); setErrorMsg(null);
     const f = e.dataTransfer.files?.[0];
     if (f?.type === "application/pdf") setFile(f);
     else setErrorMsg("Invalid format. Please upload a PDF file.");
@@ -294,24 +301,35 @@ const UploadPage: FC = (): JSX.Element => {
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
                         className="relative flex flex-col items-center justify-center py-14 rounded-2xl border-2 border-dashed cursor-pointer transition-all duration-200 text-center"
-                        style={{
-                          borderColor: isDragging ? "#12a594" : "#d9d9e0",
-                          background: isDragging ? "rgba(18,165,148,0.04)" : "#fcfcfd",
-                        }}
+                        style={
+                          dragStatus === "reject"
+                            ? { borderColor: "#e5484d", background: "rgba(229,72,77,0.05)" }
+                            : dragStatus === "accept"
+                            ? { borderColor: "#12a594", background: "rgba(18,165,148,0.06)" }
+                            : { borderColor: "#d9d9e0", background: "#fcfcfd" }
+                        }
                       >
                         <motion.div
-                          animate={isDragging ? { scale: 1.08 } : { scale: 1 }}
+                          animate={dragStatus !== "idle" ? { scale: 1.08 } : { scale: 1 }}
                           transition={{ duration: 0.2 }}
                           className="flex flex-col items-center"
                         >
                           <div
                             className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-                            style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
+                            style={
+                              dragStatus === "reject"
+                                ? { background: "rgba(229,72,77,0.1)", border: "1px solid rgba(229,72,77,0.25)" }
+                                : { background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }
+                            }
                           >
-                            <UploadCloud className="w-6 h-6" style={{ color: "#12a594" }} strokeWidth={1.5} />
+                            {dragStatus === "reject" ? (
+                              <FileWarning className="w-6 h-6" style={{ color: "#e5484d" }} strokeWidth={1.5} />
+                            ) : (
+                              <UploadCloud className="w-6 h-6" style={{ color: "#12a594" }} strokeWidth={1.5} />
+                            )}
                           </div>
-                          <p className="text-sm font-medium mb-1" style={{ color: "#1c2024" }}>
-                            Drop your resume here
+                          <p className="text-sm font-medium mb-1" style={{ color: dragStatus === "reject" ? "#e5484d" : "#1c2024" }}>
+                            {dragStatus === "reject" ? "Only PDF files are supported" : "Drop your resume here"}
                           </p>
                           <p className="text-xs mb-4" style={{ color: "#80838d" }}>or click to browse files</p>
                           <span

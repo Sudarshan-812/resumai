@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FileText, ArrowUpRight, Plus, ChevronRight, UploadCloud, Mic, PenLine } from "lucide-react";
+import { FileText, ArrowUpRight, Plus, ChevronRight, UploadCloud, Mic, PenLine, ScanLine, Target, Coins, TrendingUp, TrendingDown, GripVertical } from "lucide-react";
 import { motion } from "framer-motion";
 import DashboardShell from "./DashboardShell";
 
@@ -22,6 +22,13 @@ interface DashboardClientProps {
 }
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+const AI_TOOLS = [
+  { key: "cover-letter", icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
+  { key: "interview", icon: Mic, label: "Interview Prep", sub: "Practice with AI feedback", href: "/dashboard/interview" },
+] as const;
+
+const AI_TOOLS_ORDER_KEY = "c8-ai-tools-order";
 
 export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
   const [mounted, setMounted] = useState(false);
@@ -74,31 +81,40 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             </Link>
           </motion.div>
 
-          {/* ── Metric strip ── */}
+          {/* ── Stats grid ── */}
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.45, ease: EASE }}
-            className="grid grid-cols-3 mb-10 rounded-xl overflow-hidden"
-            style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"
           >
             {(
             [
-              { label: "Analyses", value: totalScans.toString(), note: "total scans", valueColor: undefined, noteColor: undefined, action: undefined },
               {
-                label: "Avg Score",
-                value: avgScore > 0 ? `${avgScore}` : "—",
-                note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
-                valueColor: avgScore >= 70 ? "#059669" : avgScore > 0 ? "#d97706" : "#80838d",
-                noteColor: undefined,
+                icon: ScanLine,
+                label: "Analyses",
+                value: totalScans.toString(),
+                diff: null,
+                note: "total scans",
+                valueColor: undefined,
                 action: undefined,
               },
               {
+                icon: Target,
+                label: "Avg Score",
+                value: avgScore > 0 ? `${avgScore}` : "—",
+                diff: avgScore >= 70 ? "up" : avgScore > 0 ? "down" : null,
+                note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
+                valueColor: avgScore >= 70 ? "#059669" : avgScore > 0 ? "#d97706" : "#1c2024",
+                action: undefined,
+              },
+              {
+                icon: Coins,
                 label: "Credits",
                 value: credits.toString(),
+                diff: credits <= 1 ? "down" : null,
                 note: credits <= 1 ? "top up soon" : "remaining",
                 valueColor: undefined,
-                noteColor: credits <= 1 ? "#d97706" : undefined,
                 action: (
                   <Link
                     href="/billing"
@@ -110,22 +126,42 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                 ),
               },
             ] satisfies Array<{
+              icon: React.ElementType;
               label: string;
               value: string;
+              diff: "up" | "down" | null;
               note: string;
               valueColor: string | undefined;
-              noteColor: string | undefined;
               action: React.ReactNode;
             }>
           ).map((m, i) => (
               <motion.div
                 key={i}
-                className="relative px-6 py-5 cursor-default"
-                style={{ borderRight: i < 2 ? "1px solid #d9d9e0" : undefined }}
-                whileHover={{ backgroundColor: "#f0f0f3" }}
+                className="relative px-5 py-4 rounded-xl cursor-default"
+                style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}
+                whileHover={{ y: -2, boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}
                 transition={{ duration: 0.15 }}
               >
-                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#80838d" }}>
+                <div className="flex items-start justify-between mb-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center"
+                    style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
+                  >
+                    <m.icon size={14} style={{ color: "#12a594" }} strokeWidth={1.75} />
+                  </div>
+                  {m.diff && (
+                    <span
+                      className="inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                      style={m.diff === "up"
+                        ? { background: "rgba(5,150,105,0.10)", color: "#059669" }
+                        : { background: "rgba(217,119,6,0.10)", color: "#d97706" }
+                      }
+                    >
+                      {m.diff === "up" ? <TrendingUp size={9} /> : <TrendingDown size={9} />}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
                   {m.label}
                 </p>
                 <p
@@ -135,7 +171,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   {m.value}
                 </p>
                 <div className="flex items-center justify-between gap-2">
-                  <p className="text-[11px]" style={{ color: m.noteColor ?? "#80838d" }}>
+                  <p className="text-[11px]" style={{ color: "#80838d" }}>
                     {m.note}
                   </p>
                   {m.action}
@@ -243,46 +279,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               transition={{ delay: 0.22, duration: 0.45, ease: EASE }}
               className="space-y-6"
             >
-              {/* AI Tools */}
-              <div>
-                <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#80838d" }}>
-                  AI Tools
-                </p>
-                <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}>
-                  {[
-                    { icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
-                    { icon: Mic,     label: "Interview Prep", sub: "Practice with AI feedback", href: "/dashboard/interview" },
-                  ].map(({ icon: Icon, label, sub, href }, i) => (
-                    <Link
-                      key={label}
-                      href={href}
-                      className="group flex items-center gap-3.5 px-4 py-3.5 transition-colors"
-                      style={{
-                        background: "transparent",
-                        borderBottom: i === 0 ? "1px solid #d9d9e0" : undefined,
-                      }}
-                      onMouseEnter={e => (e.currentTarget.style.background = "#f9f9fb")}
-                      onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                    >
-                      <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
-                      >
-                        <Icon size={13} style={{ color: "#12a594" }} strokeWidth={1.75} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-medium leading-none mb-0.5" style={{ color: "#1c2024" }}>{label}</p>
-                        <p className="text-[11px]" style={{ color: "#80838d" }}>{sub}</p>
-                      </div>
-                      <ArrowUpRight
-                        size={12}
-                        className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0"
-                        style={{ color: "#b9bbc6" }}
-                      />
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              <AiToolsPanel />
 
               {/* Upload CTA */}
               <div>
@@ -323,6 +320,92 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
         </div>
       </div>
     </DashboardShell>
+  );
+}
+
+function AiToolsPanel() {
+  const [order, setOrder] = useState<string[]>(AI_TOOLS.map(t => t.key));
+  const [dragKey, setDragKey] = useState<string | null>(null);
+  const [overKey, setOverKey] = useState<string | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(AI_TOOLS_ORDER_KEY);
+    if (!saved) return;
+    try {
+      const parsed: string[] = JSON.parse(saved);
+      const valid = parsed.length === AI_TOOLS.length && parsed.every(k => AI_TOOLS.some(t => t.key === k));
+      if (valid) setOrder(parsed);
+    } catch {
+      // ignore malformed local storage value
+    }
+  }, []);
+
+  const items = order.map(key => AI_TOOLS.find(t => t.key === key)!).filter(Boolean);
+
+  const handleDrop = (targetKey: string) => {
+    setOverKey(null);
+    if (!dragKey || dragKey === targetKey) { setDragKey(null); return; }
+    setOrder(prev => {
+      const next = [...prev];
+      next.splice(next.indexOf(dragKey), 1);
+      next.splice(next.indexOf(targetKey), 0, dragKey);
+      localStorage.setItem(AI_TOOLS_ORDER_KEY, JSON.stringify(next));
+      return next;
+    });
+    setDragKey(null);
+  };
+
+  return (
+    <div>
+      <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3" style={{ color: "#80838d" }}>
+        AI Tools
+      </p>
+      <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #d9d9e0", background: "#FFFFFF" }}>
+        {items.map(({ key, icon: Icon, label, sub, href }, i) => (
+          <div
+            key={key}
+            onDragOver={e => { e.preventDefault(); if (dragKey && dragKey !== key) setOverKey(key); }}
+            onDragLeave={() => setOverKey(prev => (prev === key ? null : prev))}
+            onDrop={() => handleDrop(key)}
+            className="group flex items-center gap-2 pl-2 pr-4 py-3.5 transition-colors"
+            style={{
+              background: overKey === key ? "#f0f0f3" : "transparent",
+              borderBottom: i < items.length - 1 ? "1px solid #d9d9e0" : undefined,
+              opacity: dragKey === key ? 0.5 : 1,
+            }}
+            onMouseEnter={e => { if (!dragKey) e.currentTarget.style.background = "#f9f9fb"; }}
+            onMouseLeave={e => { if (!dragKey) e.currentTarget.style.background = "transparent"; }}
+          >
+            <span
+              draggable
+              onDragStart={() => setDragKey(key)}
+              onDragEnd={() => { setDragKey(null); setOverKey(null); }}
+              className="shrink-0 cursor-grab active:cursor-grabbing p-1 -m-1 touch-none"
+              aria-label={`Drag to reorder ${label}`}
+            >
+              <GripVertical size={13} style={{ color: "#d9d9e0" }} />
+            </span>
+            <Link href={href} className="group/link flex items-center gap-3 flex-1 min-w-0">
+              <div
+                className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
+                style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
+              >
+                <Icon size={13} style={{ color: "#12a594" }} strokeWidth={1.75} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] font-medium leading-none mb-0.5" style={{ color: "#1c2024" }}>{label}</p>
+                <p className="text-[11px]" style={{ color: "#80838d" }}>{sub}</p>
+              </div>
+              <ArrowUpRight
+                size={12}
+                className="transition-all group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 shrink-0"
+                style={{ color: "#b9bbc6" }}
+              />
+            </Link>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
