@@ -53,7 +53,30 @@
       "Bash(npm list *)",
       "PowerShell(head *)",
       "Bash(Select-Object Name)",
-      "Bash(Select-String \"ClientReport\")"
+      "Bash(Select-String \"ClientReport\")",
+      "Bash(git checkout *)",
+      "Bash(npm i *)",
+      "Bash(npm view *)",
+      "Bash(npm ls *)",
+      "Bash(powershell -Command \"Get-Process -Id 5408 -ErrorAction SilentlyContinue | Select-Object Id,ProcessName\")",
+      "Bash(powershell -Command \"Stop-Process -Id 5408 -Force -ErrorAction SilentlyContinue\")",
+      "Bash(rm -f .next/dev/lock)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,ProcessName,StartTime\" 2>&1)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP:%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,StartTime\")",
+      "Read(//c/Users/mrsud/AppData/Local/Temp/**)",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,CPU,WorkingSet,StartTime\")",
+      "Bash(powershell -Command \"Get-Process node -ErrorAction SilentlyContinue | Select-Object Id,CPU,WorkingSet\")",
+      "Bash(curl *)",
+      "Bash(mkdir -p \"/c/Users/mrsud/AppData/Local/Temp/claude/C--Users-mrsud-OneDrive-Desktop-AI-RESUME-PROJ/e77c1b3d-7422-4d3d-b50d-acd746742e9b/scratchpad/refs\")",
+      "Bash(gh repo *)",
+      "Bash(gh --version)",
+      "Bash(git *)",
+      "Bash(mkdir -p /c/Users/mrsud/AppData/Local/Temp/claude/C--Users-mrsud-OneDrive-Desktop-AI-RESUME-PROJ/e77c1b3d-7422-4d3d-b50d-acd746742e9b/scratchpad/colors)",
+      "Bash(npm pack *)",
+      "Bash(tar -xzf radix-ui-colors-*.tgz)",
+      "Artifact"
     ]
   }
 }
