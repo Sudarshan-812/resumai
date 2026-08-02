@@ -49,10 +49,10 @@ const NAV_SECTIONS = [
 ];
 
 function UserAvatar({ profile, size = "sm" }: { profile: UserProfile | null; size?: "sm" | "md" }) {
-  const dim = size === "md" ? "w-8 h-8 text-sm" : "w-7 h-7 text-xs";
+  const dim = size === "md" ? "w-9 h-9 text-sm" : "w-8 h-8 text-xs";
   return (
     <div
-      className={cn("rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0 select-none text-white", dim)}
+      className={cn("rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0 select-none text-white ring-2 ring-white/60", dim)}
       style={{ background: !profile?.avatarUrl ? "#12a594" : undefined }}
     >
       {profile?.avatarUrl
@@ -80,7 +80,7 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className={cn(
-        "flex items-center h-14 border-b border-border shrink-0",
+        "flex items-center h-14 shrink-0",
         collapsed ? "justify-center px-2" : "gap-2.5 px-4"
       )}>
         {collapsed ? (
@@ -103,9 +103,9 @@ function SidebarContent({
             <button
               onClick={onToggleCollapse}
               title="Collapse sidebar"
-              className="w-7 h-7 rounded-lg flex items-center justify-center transition-colors shrink-0 text-muted-foreground hover:text-foreground hover:bg-border"
+              className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors shrink-0 text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
             >
-              <PanelLeftClose size={14} />
+              <PanelLeftClose size={18} />
             </button>
           </>
         )}
@@ -113,8 +113,8 @@ function SidebarContent({
 
       {/* Low credits warning */}
       {lowCredits && !collapsed && (
-        <div className="mx-3 mt-3 px-3 py-2.5 rounded-xl border border-amber-400/40 bg-amber-50 flex items-start gap-2">
-          <AlertTriangle size={13} className="text-amber-500 mt-0.5 shrink-0" />
+        <div className="mx-3 mb-1 px-3 py-2.5 rounded-2xl border border-amber-400/40 bg-amber-50 flex items-start gap-2">
+          <AlertTriangle size={16} className="text-amber-500 mt-0.5 shrink-0" />
           <div>
             <p className="text-[11px] font-bold text-amber-700">
               {profile?.credits === 0 ? "No credits left" : "1 credit remaining"}
@@ -127,15 +127,15 @@ function SidebarContent({
       )}
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-3.5">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             {!collapsed && (
-              <p className="px-2 mb-2 text-[9.5px] font-bold uppercase tracking-[0.12em] text-muted-foreground/50">
+              <p className="px-2.5 mb-1.5 text-[9.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground/50">
                 {section.label}
               </p>
             )}
-            {collapsed && <div className="h-px bg-border/50 mb-3 mx-1" />}
+            {collapsed && <div className="h-px bg-border/60 mb-2.5 mx-1" />}
             <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
@@ -147,16 +147,21 @@ function SidebarContent({
                     onClick={onNavigate}
                     title={collapsed ? item.label : undefined}
                     className={cn(
-                      "flex items-center rounded-xl text-[13px] font-medium transition-all group",
-                      collapsed ? "justify-center px-2.5 py-2.5" : "gap-3 px-3 py-2.5",
-                      isActive
-                        ? "bg-teal-500 text-white shadow-sm shadow-teal-500/20"
-                        : "text-muted-foreground hover:text-foreground hover:bg-border/60"
+                      "relative flex items-center rounded-2xl text-[13px] font-medium transition-colors group",
+                      collapsed ? "justify-center px-2.5 py-2" : "gap-3 px-3 py-2",
+                      isActive ? "text-white" : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
                     )}
                   >
-                    <Icon size={15} className={cn("shrink-0", isActive ? "text-white" : "text-muted-foreground group-hover:text-foreground")} />
-                    {!collapsed && <span className="leading-none flex-1">{item.label}</span>}
-                    {!collapsed && isActive && <ChevronRight size={11} className="text-white/60" />}
+                    {isActive && (
+                      <motion.div
+                        layoutId="dashboard-active-nav-pill"
+                        className="absolute inset-0 rounded-2xl bg-teal-500 shadow-md shadow-teal-500/25"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                    <Icon size={20} weight={isActive ? "fill" : "regular"} className="relative z-10 shrink-0" />
+                    {!collapsed && <span className="relative z-10 leading-none flex-1">{item.label}</span>}
+                    {!collapsed && isActive && <ChevronRight size={14} className="relative z-10 text-white/70" />}
                   </Link>
                 );
               })}
@@ -166,15 +171,15 @@ function SidebarContent({
       </nav>
 
       {/* Footer */}
-      <div className={cn("border-t border-border shrink-0", collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3 space-y-2")}>
+      <div className={cn("shrink-0", collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3 space-y-2")}>
         {!collapsed && (
           <Link
             href="/billing"
             onClick={onNavigate}
-            className="flex items-center justify-between px-3 py-2 rounded-xl border border-border bg-background hover:bg-border/40 transition-all text-[12px]"
+            className="flex items-center justify-between px-3 py-2.5 rounded-2xl border border-border/70 bg-secondary hover:bg-border/40 transition-all text-[12px]"
           >
             <div className="flex items-center gap-2">
-              <Zap size={12} className="text-teal-500" />
+              <Zap size={16} weight="fill" className="text-teal-500" />
               <span className="font-medium text-foreground">Credits</span>
             </div>
             <span className={cn("font-bold tabular-nums", lowCredits ? "text-amber-500" : "text-foreground")}>
@@ -185,8 +190,8 @@ function SidebarContent({
 
         {collapsed && (
           <Link href="/billing" onClick={onNavigate} title="Credits & Billing"
-            className="w-9 h-9 flex items-center justify-center rounded-xl transition-colors text-muted-foreground hover:text-foreground hover:bg-border/60">
-            <Zap size={15} className="text-teal-500" />
+            className="w-10 h-10 flex items-center justify-center rounded-2xl transition-colors text-muted-foreground hover:text-foreground hover:bg-black/[0.04]">
+            <Zap size={18} weight="fill" className="text-teal-500" />
           </Link>
         )}
 
@@ -195,11 +200,11 @@ function SidebarContent({
           disabled={signingOut}
           title="Sign out"
           className={cn(
-            "flex items-center justify-center rounded-xl transition-colors disabled:opacity-50 text-muted-foreground hover:text-rose-600 hover:bg-rose-50",
-            collapsed ? "w-9 h-9" : "w-full h-8 gap-2 text-[12px] font-medium"
+            "flex items-center justify-center rounded-2xl transition-colors disabled:opacity-50 text-muted-foreground hover:text-rose-600 hover:bg-rose-50",
+            collapsed ? "w-10 h-10" : "w-full h-9 gap-2 text-[12px] font-medium"
           )}
         >
-          <LogOut size={13} />
+          <LogOut size={16} />
           {!collapsed && <span>Sign out</span>}
         </button>
       </div>
@@ -221,10 +226,10 @@ function SignOutConfirmDialog({ open, onConfirm, onCancel }: { open: boolean; on
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 8 }}
         transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed z-[201] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm rounded-2xl border border-border bg-card p-6 shadow-xl"
+        className="fixed z-[201] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm rounded-3xl border border-border bg-card p-6 shadow-2xl"
       >
-        <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center mb-4">
-          <LogOut size={18} className="text-rose-500" />
+        <div className="w-11 h-11 rounded-2xl bg-rose-50 flex items-center justify-center mb-4">
+          <LogOut size={22} className="text-rose-500" />
         </div>
         <h3 className="text-[15px] font-semibold text-foreground mb-1">Sign out?</h3>
         <p className="text-sm text-muted-foreground mb-5">You'll need to sign in again to access your account.</p>
@@ -331,11 +336,11 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         )}
       </AnimatePresence>
 
-      <div className="flex h-screen bg-background overflow-hidden">
-        {/* Desktop sidebar */}
+      <div className="flex h-screen bg-background overflow-hidden p-3 gap-3">
+        {/* Desktop floating glass sidebar */}
         <aside className={cn(
-          "hidden md:flex flex-col shrink-0 border-r border-border bg-secondary transition-[width] duration-200 ease-in-out overflow-hidden",
-          collapsed ? "w-[60px]" : "w-60"
+          "hidden md:flex flex-col shrink-0 rounded-[28px] border border-border bg-white shadow-[0_8px_32px_rgba(18,20,24,0.08)] transition-[width] duration-300 ease-in-out overflow-hidden",
+          collapsed ? "w-[76px]" : "w-[248px]"
         )}>
           <SidebarContent {...sidebarProps} />
         </aside>
@@ -350,9 +355,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
               />
               <motion.aside
-                initial={{ x: -260 }} animate={{ x: 0 }} exit={{ x: -260 }}
+                initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
                 transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                className="fixed inset-y-0 left-0 z-50 w-60 flex flex-col border-r border-border bg-secondary md:hidden"
+                className="fixed inset-y-3 left-3 z-50 w-64 flex flex-col rounded-[28px] border border-border/70 bg-white/90 backdrop-blur-2xl shadow-2xl md:hidden"
               >
                 <SidebarContent {...sidebarProps} collapsed={false} onNavigate={() => setMobileOpen(false)} />
               </motion.aside>
@@ -361,16 +366,16 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         </AnimatePresence>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0 rounded-[28px] border border-border/70 bg-card">
           {/* Top bar */}
-          <header className="h-14 shrink-0 flex items-center justify-between px-5 border-b border-border bg-card">
+          <header className="h-16 shrink-0 flex items-center justify-between px-5 border-b border-border/70">
             <div className="flex items-center gap-3 md:hidden">
               <button
                 onClick={() => setMobileOpen((v) => !v)}
                 aria-label="Toggle sidebar"
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
+                className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
               >
-                <Menu size={17} />
+                <Menu size={22} />
               </button>
               <Link href="/dashboard" className="flex items-center">
                 <Image
@@ -384,11 +389,11 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               </Link>
             </div>
 
-            <div className="hidden md:flex items-center gap-1.5 text-[12px] text-muted-foreground">
+            <div className="hidden md:flex items-center gap-1.5 text-[13px] text-muted-foreground">
               <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
               {pathname !== "/dashboard" && (
                 <>
-                  <ChevronRight size={12} />
+                  <ChevronRight size={14} />
                   <span className="text-foreground font-medium capitalize">
                     {pathname.split("/").filter(Boolean).slice(-1)[0]?.replace(/-/g, " ") ?? ""}
                   </span>
@@ -399,9 +404,9 @@ export default function DashboardShell({ children }: { children: React.ReactNode
             <div className="flex items-center gap-2">
               <Link
                 href="/billing"
-                className="md:hidden flex items-center gap-1.5 h-7 px-2.5 rounded-full text-[11px] font-bold border border-border bg-background text-muted-foreground"
+                className="md:hidden flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-bold border border-border bg-background text-muted-foreground"
               >
-                <Zap size={10} className="text-teal-500" />
+                <Zap size={14} weight="fill" className="text-teal-500" />
                 {profile?.credits ?? "—"}
               </Link>
             </div>

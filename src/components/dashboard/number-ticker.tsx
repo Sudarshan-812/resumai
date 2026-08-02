@@ -32,7 +32,7 @@ export function NumberTicker({
       ease: "outExpo",
       onUpdate: () => setDisplay(state.val),
     });
-    return () => anim.revert();
+    return () => { anim.revert(); };
   }, [value, duration, delay]);
 
   return (

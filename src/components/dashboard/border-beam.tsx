@@ -25,15 +25,17 @@ export function BorderBeam({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const state = { angle: 0 };
-    const anim = animate(state, {
-      angle: 360,
+    el.style.setProperty("--border-beam-angle", "0deg");
+    const anim = animate(el, {
+      "--border-beam-angle": "360deg",
       duration,
       loop: true,
       ease: "linear",
-      onUpdate: () => el.style.setProperty("--border-beam-angle", `${state.angle}deg`),
     });
-    return () => anim.revert();
+    (window as any).__beamDebug = (window as any).__beamDebug || [];
+    (window as any).__beamDebug.push(anim);
+    console.log("[BorderBeam] created anim", anim, "paused:", anim.paused, "engine:", (globalThis as any).engine);
+    return () => { anim.revert(); };
   }, [duration]);
 
   return (
