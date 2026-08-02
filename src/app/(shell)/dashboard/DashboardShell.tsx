@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -76,6 +76,32 @@ function SidebarContent({
 }) {
   const lowCredits = (profile?.credits ?? 0) < 2;
 
+  // Measured-position active pill (instead of Framer's layoutId shared-element
+  // transition, which can miss its FLIP measurement across route-level Suspense
+  // boundaries on dynamic routes in production).
+  const navRef = useRef<HTMLElement>(null);
+  const [pillRect, setPillRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+
+  useLayoutEffect(() => {
+    const recompute = () => {
+      const nav = navRef.current;
+      const activeEl = nav?.querySelector<HTMLElement>(`[data-nav-id="${activeId}"]`);
+      if (activeEl) {
+        setPillRect({
+          top: activeEl.offsetTop,
+          left: activeEl.offsetLeft,
+          width: activeEl.offsetWidth,
+          height: activeEl.offsetHeight,
+        });
+      }
+    };
+    recompute();
+    // Re-measure after the sidebar's own width transition (collapse/expand) settles.
+    const t = setTimeout(recompute, 320);
+    window.addEventListener("resize", recompute);
+    return () => { clearTimeout(t); window.removeEventListener("resize", recompute); };
+  }, [activeId, collapsed]);
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -127,7 +153,19 @@ function SidebarContent({
       )}
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-3.5">
+      <nav ref={navRef} className="relative flex-1 overflow-y-auto px-3 py-2 space-y-3.5">
+        {pillRect && (
+          <div
+            aria-hidden
+            className="absolute z-0 top-0 left-0 rounded-2xl bg-teal-500 shadow-md shadow-teal-500/25 pointer-events-none transition-[transform,width,height] duration-300 ease-out"
+            style={{
+              width: pillRect.width,
+              height: pillRect.height,
+              transform: `translate(${pillRect.left}px, ${pillRect.top}px)`,
+              willChange: "transform",
+            }}
+          />
+        )}
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             {!collapsed && (
@@ -146,22 +184,16 @@ function SidebarContent({
                     href={item.href}
                     onClick={onNavigate}
                     title={collapsed ? item.label : undefined}
+                    data-nav-id={item.id}
                     className={cn(
-                      "relative flex items-center rounded-2xl text-[13px] font-medium transition-colors group",
+                      "relative z-10 flex items-center rounded-2xl text-[13px] font-medium transition-colors group",
                       collapsed ? "justify-center px-2.5 py-2" : "gap-3 px-3 py-2",
                       isActive ? "text-white" : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
                     )}
                   >
-                    {isActive && (
-                      <motion.div
-                        layoutId="dashboard-active-nav-pill"
-                        className="absolute inset-0 rounded-2xl bg-teal-500 shadow-md shadow-teal-500/25"
-                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      />
-                    )}
-                    <Icon size={20} weight={isActive ? "fill" : "regular"} className="relative z-10 shrink-0" />
-                    {!collapsed && <span className="relative z-10 leading-none flex-1">{item.label}</span>}
-                    {!collapsed && isActive && <ChevronRight size={14} className="relative z-10 text-white/70" />}
+                    <Icon size={20} weight={isActive ? "fill" : "regular"} className="shrink-0" />
+                    {!collapsed && <span className="leading-none flex-1">{item.label}</span>}
+                    {!collapsed && isActive && <ChevronRight size={14} className="text-white/70" />}
                   </Link>
                 );
               })}
