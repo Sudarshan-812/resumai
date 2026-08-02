@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Stray nested duplicate project, not part of the app:
+    "resumai/**",
   ]),
 ]);
 
