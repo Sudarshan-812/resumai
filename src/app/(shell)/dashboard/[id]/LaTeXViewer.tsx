@@ -434,7 +434,7 @@ function LaTeXCodeView({ code }: { code: string }) {
         onClick={handleCopy}
         className="absolute top-3 right-3 z-10 flex items-center gap-1.5 h-7 px-3 rounded-md bg-muted border border-border text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
-        {copied ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+        {copied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
         {copied ? "Copied!" : "Copy"}
       </button>
       <div className="flex-1 overflow-auto p-4 font-mono text-[11px] leading-6">
@@ -494,7 +494,7 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Eye size={11} />
+            <Eye size={14} />
             Preview
           </button>
           <button
@@ -506,7 +506,7 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Code2 size={11} />
+            <Code2 size={14} />
             LaTeX
           </button>
         </div>

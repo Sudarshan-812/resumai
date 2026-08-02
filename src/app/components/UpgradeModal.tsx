@@ -105,8 +105,8 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.94, y: 16 }}
                   transition={SPRING}
-                  className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md rounded-2xl overflow-hidden outline-none"
-                  style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 32px 80px rgba(0,0,0,0.12)" }}
+                  className="fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 w-full max-w-md rounded-3xl overflow-hidden outline-none bg-card border border-border"
+                  style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.12)" }}
                 >
                 <DialogPrimitive.Title className="sr-only">
                   Interview Limit Reached
@@ -118,25 +118,21 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
               <motion.button
                 onClick={onClose}
                 whileHover={{ scale: 1.1, rotate: 90 }} whileTap={{ scale: 0.9 }} transition={SPRING}
-                className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: "#f9f9fb", color: "#80838d" }}
+                className="absolute top-4 right-4 w-9 h-9 rounded-xl flex items-center justify-center bg-muted text-muted-foreground"
               >
-                <X size={14} />
+                <X size={16} />
               </motion.button>
 
               <div className="p-6 pt-5">
                 {/* Icon + heading */}
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.18)" }}
-                >
-                  <Zap size={18} style={{ color: "#12a594" }} />
+                <div className="w-11 h-11 rounded-2xl flex items-center justify-center mb-4 bg-primary/10 border border-primary/20">
+                  <Zap size={22} className="text-primary" />
                 </div>
 
-                <h2 className="font-display text-xl font-semibold mb-1.5" style={{ color: "#1c2024" }}>
+                <h2 className="font-display text-xl font-semibold mb-1.5 text-foreground">
                   Interview Limit Reached
                 </h2>
-                <p className="text-[13px] leading-relaxed mb-6" style={{ color: "#60646c" }}>
+                <p className="text-[13px] leading-relaxed mb-6 text-muted-foreground">
                   You've used all 3 free interviews this month. Upgrade to practice without limits.
                 </p>
 
@@ -147,34 +143,29 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
                       key={plan.id}
                       initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: pi * 0.07, type: "spring", stiffness: 280, damping: 26 }}
-                      className="rounded-xl p-4 relative"
-                      style={plan.popular
-                        ? { background: "#F0FDFE", border: "2px solid #12a594" }
-                        : { background: "#f9f9fb", border: "1px solid #d9d9e0" }
-                      }
+                      className={`rounded-2xl p-4 relative bg-card ${plan.popular ? "border-2 border-primary" : "border border-border"}`}
                     >
                       {/* Popular badge */}
                       {plan.popular && (
-                        <span className="absolute -top-2.5 left-4 text-[9px] font-bold uppercase tracking-[0.14em] px-2.5 py-0.5 rounded-full"
-                          style={{ background: "#12a594", color: "#FFFFFF" }}>
+                        <span className="absolute -top-2.5 left-4 text-[9px] font-bold uppercase tracking-[0.14em] px-2.5 py-0.5 rounded-full bg-primary text-white">
                           Recommended
                         </span>
                       )}
 
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-[14px] font-bold" style={{ color: "#1c2024" }}>{plan.name}</span>
+                        <span className="text-[14px] font-bold text-foreground">{plan.name}</span>
                         <div className="text-right">
-                          <span className="text-[20px] font-black tabular-nums" style={{ color: "#1c2024", letterSpacing: "-0.03em" }}>
+                          <span className="text-[20px] font-black tabular-nums text-foreground" style={{ letterSpacing: "-0.03em" }}>
                             ₹{plan.price}
                           </span>
-                          <span className="text-[10px] ml-1" style={{ color: "#80838d" }}>one-time</span>
+                          <span className="text-[10px] ml-1 text-muted-foreground">one-time</span>
                         </div>
                       </div>
 
                       <ul className="space-y-2 mb-4">
                         {plan.features.map((f) => (
-                          <li key={f} className="flex items-start gap-2 text-[12px]" style={{ color: "#60646c" }}>
-                            <Check size={10} style={{ color: "#12a594", marginTop: 2 }} weight="bold" className="shrink-0" />
+                          <li key={f} className="flex items-start gap-2 text-[12px] text-muted-foreground">
+                            <Check size={14} weight="bold" className="shrink-0 text-primary mt-0.5" />
                             {f}
                           </li>
                         ))}
@@ -190,7 +181,7 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
                         style={{ background: "linear-gradient(135deg,#12a594,#008573)", color: "#FFFFFF", boxShadow: "0 4px 14px rgba(18,165,148,0.2)" }}
                       >
                         {loadingId === plan.id
-                          ? <><Loader2 size={12} className="animate-spin" />Processing…</>
+                          ? <><Loader2 size={16} className="animate-spin" />Processing…</>
                           : `Upgrade to ${plan.name} — ₹${plan.price}`
                         }
                       </motion.button>
@@ -198,7 +189,7 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
                   ))}
                 </div>
 
-                <p className="text-center text-[11px] mt-4" style={{ color: "#b9bbc6" }}>
+                <p className="text-center text-[11px] mt-4 text-muted-foreground/60">
                   One-time · Credits never expire · Secure via Razorpay
                 </p>
               </div>

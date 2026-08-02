@@ -2,49 +2,37 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, CircleNotch as Loader2, DownloadSimple as Download, ArrowRight, FileText } from "@phosphor-icons/react";
+import { Copy, Check, CircleNotch as Loader2, DownloadSimple as Download, ArrowRight, FileText, PencilLine } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import { SpotlightCard } from "@/components/dashboard/spotlight-card";
 
 const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
 const TONES  = ["Professional", "Enthusiastic", "Concise"] as const;
 type Tone = Lowercase<typeof TONES[number]>;
 
-/* ── Underline input ─────────────────────────────────────────── */
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#60646c" }}>
-        {label}{hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#80838d" }}>— {hint}</span>}
-      </p>
-      {children}
-    </div>
-  );
-}
-
-function TextInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+/* ── Floating-label input ────────────────────────────────────── */
+function FloatingInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) {
   const [focused, setFocused] = useState(false);
+  const active = focused || value.length > 0;
   return (
     <div className="relative">
+      <motion.label
+        animate={active ? { y: -22, scale: 0.82, color: "#12a594" } : { y: 0, scale: 1, color: "#60646c" }}
+        transition={{ duration: 0.18, ease: EASE }}
+        className="absolute left-0 top-3 text-sm font-medium origin-left pointer-events-none"
+      >
+        {label}
+      </motion.label>
       <input
         value={value}
         onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
+        placeholder={active ? placeholder : ""}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
-        className="w-full py-2 text-[14px] bg-transparent focus:outline-none placeholder:text-[#B8B4AA]"
-        style={{ color: "#1c2024", borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`, transition: "border-color 0.2s" }}
+        className="w-full h-11 pt-3 text-[14px] bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground/40 border-b-2 transition-colors"
+        style={{ borderColor: focused ? "var(--primary)" : "var(--border)" }}
       />
-      {focused && (
-        <motion.div
-          layoutId="input-focus"
-          className="absolute bottom-0 left-0 h-[2px] rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          style={{ background: "#12a594" }}
-          transition={{ duration: 0.25, ease: EASE }}
-        />
-      )}
     </div>
   );
 }
@@ -106,52 +94,48 @@ export default function CoverLetterPage() {
   };
 
   return (
-      <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
+      <div className="bg-background min-h-full">
         <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: EASE }}
-            className="mb-12"
+            className="mb-8 flex items-center gap-4"
           >
-            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3" style={{ color: "#80838d" }}>
-              AI Tool
-            </p>
-            <h1 className="font-display font-semibold tracking-tight mb-2"
-              style={{ color: "#1c2024", fontSize: "clamp(24px, 5vw, 38px)", lineHeight: 1.15 }}>
-              Cover Letter
-            </h1>
-            <p className="text-[14px] leading-relaxed" style={{ color: "#60646c" }}>
-              Fill in the details — get a tailored, job-specific letter in seconds.
-            </p>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/15">
+              <PencilLine size={24} className="text-primary" />
+            </div>
+            <div>
+              <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-1 text-muted-foreground">
+                AI Tool
+              </p>
+              <h1 className="font-display font-semibold tracking-tight text-foreground" style={{ fontSize: "clamp(22px, 4vw, 32px)", lineHeight: 1.15 }}>
+                Cover Letter
+              </h1>
+            </div>
           </motion.div>
 
           {/* ── Form ── */}
           <motion.div
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, type: "spring", stiffness: 220, damping: 26 }}
-            className="space-y-8 mb-10"
+            className="rounded-3xl border border-border bg-card p-7 md:p-8 space-y-8 mb-10"
           >
             {/* Company + Role */}
             <div className="grid grid-cols-2 gap-8">
-              <Field label="Company">
-                <TextInput value={company} onChange={setCompany} placeholder="Google" />
-              </Field>
-              <Field label="Role">
-                <TextInput value={role} onChange={setRole} placeholder="Software Engineer" />
-              </Field>
+              <FloatingInput label="Company" value={company} onChange={setCompany} placeholder="Google" />
+              <FloatingInput label="Role" value={role} onChange={setRole} placeholder="Software Engineer" />
             </div>
 
             {/* Job description */}
-            <Field label="Job Description" hint="paste the key requirements">
-              <JobDescArea value={jobDesc} onChange={setJobDesc} />
-            </Field>
+            <JobDescArea value={jobDesc} onChange={setJobDesc} />
 
             {/* Tone */}
-            <Field label="Tone">
-              <div className="flex items-center gap-2 pt-1">
-                {TONES.map((t, i) => {
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">Tone</p>
+              <div className="flex items-center gap-2">
+                {TONES.map((t) => {
                   const val = t.toLowerCase() as Tone;
                   const active = tone === val;
                   return (
@@ -160,31 +144,16 @@ export default function CoverLetterPage() {
                       onClick={() => setTone(val)}
                       whileHover={{ y: -1 }} whileTap={{ scale: 0.95 }}
                       transition={SPRING}
-                      initial={{ opacity: 0, y: 6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      style={{
-                        transitionProperty: "background, color, border-color",
-                        transitionDuration: "0.18s",
-                      }}
-                      className="h-8 px-4 rounded-full text-[11px] font-semibold"
+                      className={`h-9 px-4 rounded-full text-[12px] font-semibold border transition-colors ${
+                        active ? "bg-primary text-white border-primary" : "bg-transparent text-muted-foreground border-border hover:border-foreground/20"
+                      }`}
                     >
-                      <motion.span
-                        animate={{
-                          background: active ? "#1c2024" : "#FFFFFF",
-                          color: active ? "#FFFFFF" : "#60646c",
-                          border: active ? "1px solid #1c2024" : "1px solid #d9d9e0",
-                        }}
-                        transition={{ duration: 0.18 }}
-                        className="flex items-center h-full px-4 rounded-full text-[11px] font-semibold"
-                        style={{ border: "1px solid #d9d9e0" }}
-                      >
-                        {t}
-                      </motion.span>
+                      {t}
                     </motion.button>
                   );
                 })}
               </div>
-            </Field>
+            </div>
 
             {/* Generate */}
             <motion.button
@@ -193,19 +162,18 @@ export default function CoverLetterPage() {
               whileHover={ready && !loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
               whileTap={ready && !loading ? { scale: 0.98 } : {}}
               transition={SPRING}
-              className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed"
-              style={{ background: "linear-gradient(135deg,#12a594 0%,#008573 100%)", boxShadow: "0 4px 20px rgba(18,165,148,0.18)" }}
+              className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed bg-primary shadow-lg shadow-primary/20"
             >
               <AnimatePresence mode="wait">
                 {loading ? (
                   <motion.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="flex items-center gap-2">
-                    <Loader2 size={14} className="animate-spin" /> Generating…
+                    <Loader2 size={18} className="animate-spin" /> Generating…
                   </motion.span>
                 ) : (
                   <motion.span key="g" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="flex items-center gap-2">
-                    Generate Cover Letter <ArrowRight size={14} />
+                    Generate Cover Letter <ArrowRight size={18} />
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -222,83 +190,73 @@ export default function CoverLetterPage() {
                 exit={{ opacity: 0, y: 8 }}
                 transition={{ type: "spring", stiffness: 240, damping: 26 }}
               >
-                {/* Divider */}
-                <div className="mb-8" style={{ height: 1, background: "#d9d9e0" }} />
-
-                {/* Output header */}
-                <div className="flex items-center justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <motion.div
-                      animate={loading ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    >
-                      <FileText size={13} style={{ color: loading ? "#12a594" : "#b9bbc6" }} />
-                    </motion.div>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em]" style={{ color: "#60646c" }}>
-                      {loading ? "Writing…" : "Cover Letter"}
-                    </p>
-                    {loading && (
-                      <motion.span
-                        animate={{ opacity: [1, 0, 1] }}
-                        transition={{ duration: 0.7, repeat: Infinity }}
-                        className="text-[9px] font-mono"
-                        style={{ color: "#12a594" }}
-                      >▋</motion.span>
+                <SpotlightCard className="p-7 md:p-8">
+                  {/* Output header */}
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-2">
+                      <motion.div
+                        animate={loading ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        <FileText size={18} className={loading ? "text-primary" : "text-muted-foreground/50"} />
+                      </motion.div>
+                      <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
+                        {loading ? "Writing…" : "Cover Letter"}
+                      </p>
+                      {loading && (
+                        <motion.span
+                          animate={{ opacity: [1, 0, 1] }}
+                          transition={{ duration: 0.7, repeat: Infinity }}
+                          className="text-[9px] font-mono text-primary"
+                        >▋</motion.span>
+                      )}
+                    </div>
+                    {result && !loading && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
+                        transition={SPRING}
+                        className="flex items-center gap-2"
+                      >
+                        <motion.button
+                          onClick={download}
+                          whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
+                          className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-medium border border-border text-muted-foreground bg-card"
+                        >
+                          <Download size={14} /> Save
+                        </motion.button>
+                        <motion.button
+                          onClick={copy}
+                          whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
+                          className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-medium transition-colors border ${
+                            copied ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-border text-muted-foreground bg-card"
+                          }`}
+                        >
+                          <motion.span key={copied ? "y" : "n"} initial={{ scale: 0.6, rotate: -15 }} animate={{ scale: 1, rotate: 0 }} transition={SPRING}>
+                            {copied ? <Check size={14} /> : <Copy size={14} />}
+                          </motion.span>
+                          {copied ? "Copied!" : "Copy"}
+                        </motion.button>
+                      </motion.div>
                     )}
                   </div>
-                  {result && !loading && (
-                    <motion.div
-                      initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
-                      transition={SPRING}
-                      className="flex items-center gap-2"
-                    >
-                      <motion.button
-                        onClick={download}
-                        whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
-                        className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-medium"
-                        style={{ border: "1px solid #d9d9e0", color: "#80838d", background: "#FFFFFF" }}
-                      >
-                        <Download size={10} /> Save
-                      </motion.button>
-                      <motion.button
-                        onClick={copy}
-                        whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
-                        className="flex items-center gap-1.5 h-7 px-3 rounded-lg text-[11px] font-medium transition-colors"
-                        style={copied
-                          ? { border: "1px solid rgba(5,150,105,0.3)", background: "rgba(5,150,105,0.07)", color: "#059669" }
-                          : { border: "1px solid #d9d9e0", color: "#80838d", background: "#FFFFFF" }
-                        }
-                      >
-                        <motion.span key={copied ? "y" : "n"} initial={{ scale: 0.6, rotate: -15 }} animate={{ scale: 1, rotate: 0 }} transition={SPRING}>
-                          {copied ? <Check size={10} /> : <Copy size={10} />}
-                        </motion.span>
-                        {copied ? "Copied!" : "Copy"}
-                      </motion.button>
-                    </motion.div>
-                  )}
-                </div>
 
-                {/* Letter text */}
-                <motion.div
-                  initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1, duration: 0.3 }}
-                >
-                  <p
-                    className="text-[14px] leading-[1.95] whitespace-pre-wrap"
-                    style={{ color: "#1c2024", fontFamily: "inherit" }}
+                  {/* Letter text */}
+                  <motion.div
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1, duration: 0.3 }}
                   >
-                    {result}
-                    {loading && (
-                      <motion.span
-                        animate={{ opacity: [1, 0, 1] }}
-                        transition={{ duration: 0.6, repeat: Infinity }}
-                        style={{ color: "#12a594", fontWeight: 700 }}
-                      >▋</motion.span>
-                    )}
-                  </p>
-                </motion.div>
-
-                <div className="h-12" />
+                    <p className="text-[14px] leading-[1.95] whitespace-pre-wrap text-foreground">
+                      {result}
+                      {loading && (
+                        <motion.span
+                          animate={{ opacity: [1, 0, 1] }}
+                          transition={{ duration: 0.6, repeat: Infinity }}
+                          className="text-primary font-bold"
+                        >▋</motion.span>
+                      )}
+                    </p>
+                  </motion.div>
+                </SpotlightCard>
               </motion.div>
             )}
           </AnimatePresence>
@@ -312,42 +270,37 @@ export default function CoverLetterPage() {
 function JobDescArea({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [focused, setFocused] = useState(false);
   const charOk = value.trim().length >= 50;
+  const active = focused || value.length > 0;
   return (
     <div>
-      <div className="relative pt-2">
+      <div className="relative">
+        <motion.label
+          animate={active ? { y: 0, scale: 0.82, color: "#12a594" } : { y: 26, scale: 1, color: "#60646c" }}
+          transition={{ duration: 0.18, ease: EASE }}
+          className="absolute left-0 top-0 text-sm font-medium origin-left pointer-events-none"
+        >
+          Job Description <span className="normal-case font-normal opacity-60">— paste the key requirements</span>
+        </motion.label>
         <textarea
           value={value}
           onChange={e => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="Paste the job description here — at least 50 characters for best results…"
+          placeholder={active ? "Paste the job description here — at least 50 characters for best results…" : ""}
           rows={7}
-          className="w-full bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none placeholder:text-[#B8B4AA] pb-3"
-          style={{
-            color: "#1c2024",
-            borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`,
-            transition: "border-color 0.2s",
-          }}
+          className="w-full pt-7 bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/40 pb-3 border-b-2 transition-colors"
+          style={{ borderColor: focused ? "var(--primary)" : "var(--border)" }}
         />
-        {focused && (
-          <motion.div
-            className="absolute bottom-0 left-0 h-[2px] rounded-full"
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            style={{ background: "#12a594" }}
-            transition={{ duration: 0.28, ease: EASE }}
-          />
-        )}
       </div>
       <div className="flex items-center justify-between mt-2">
-        <span className="text-[10px]" style={{ color: charOk ? "#059669" : "#80838d" }}>
+        <span className={`text-[10px] ${charOk ? "text-emerald-600" : "text-muted-foreground"}`}>
           {value.trim().length} chars{charOk ? " ✓" : " (min 50)"}
         </span>
         {value.length > 0 && (
           <motion.button
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}
             onClick={() => onChange("")}
-            className="text-[10px]" style={{ color: "#b9bbc6" }}
+            className="text-[10px] text-muted-foreground/60 hover:text-muted-foreground"
           >
             Clear
           </motion.button>

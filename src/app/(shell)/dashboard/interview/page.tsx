@@ -9,6 +9,8 @@ import {
 import VoiceInterview from "./VoiceInterview";
 import UpgradeModal from "@/app/components/UpgradeModal";
 import { useInterviewState } from "./useInterviewState";
+import { NumberTicker } from "@/components/dashboard/number-ticker";
+import { AuroraBackground } from "@/components/dashboard/aurora-background";
 
 const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -18,40 +20,14 @@ function fmt(s: number) {
 }
 const scoreColor = (s: number) => s >= 70 ? "#059669" : s >= 50 ? "#d97706" : "#e11d48";
 
-/* ── Count-up ────────────────────────────────────────────────── */
-function CountUp({ value, size = 48 }: { value: number; size?: number }) {
-  const [n, setN] = useState(0);
-  useEffect(() => {
-    let f: number;
-    const t0 = performance.now(), dur = 900;
-    const tick = (now: number) => {
-      const p = Math.min((now - t0) / dur, 1);
-      setN(Math.round((1 - Math.pow(1 - p, 3)) * value));
-      if (p < 1) f = requestAnimationFrame(tick);
-    };
-    f = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(f);
-  }, [value]);
-  return (
-    <motion.span
-      animate={{ scale: [1, 1.07, 0.97, 1] }}
-      transition={{ delay: 0.85, duration: 0.4, ease: EASE }}
-      style={{ fontSize: size, fontWeight: 900, fontFamily: "monospace", color: scoreColor(value), letterSpacing: "-0.04em", lineHeight: 1, display: "inline-block" }}
-    >
-      {n}
-    </motion.span>
-  );
-}
-
-/* ── Step indicator (white layer) ───────────────────────────── */
+/* ── Step indicator ─────────────────────────────────────────── */
 const STEPS = ["Setup", "Interview", "Results"] as const;
 
 function StepBar({ phase, currentIdx, total }: { phase: string; currentIdx: number; total: number }) {
   const active = phase === "setup" ? 0 : phase === "complete" ? 2 : 1;
 
   return (
-    <div className="flex items-start justify-center gap-0 py-5 px-6"
-      style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
+    <div className="relative z-10 flex items-start justify-center gap-0 pt-2 pb-1">
       {STEPS.map((label, i) => {
         const done    = i < active;
         const current = i === active;
@@ -98,7 +74,7 @@ function StepBar({ phase, currentIdx, total }: { phase: string; currentIdx: numb
             {/* Connector line */}
             {i < STEPS.length - 1 && (
               <div className="flex items-center" style={{ paddingTop: 13, marginLeft: 4, marginRight: 4 }}>
-                <div className="relative overflow-hidden" style={{ width: 56, height: 1.5, background: "#d9d9e0", borderRadius: 99 }}>
+                <div className="relative overflow-hidden rounded-full bg-border" style={{ width: 56, height: 1.5 }}>
                   <motion.div
                     className="absolute inset-y-0 left-0 rounded-full"
                     animate={{ width: done ? "100%" : "0%" }}
@@ -123,9 +99,9 @@ function UInput({ value, onChange, placeholder, label, hint }: {
   const [focused, setFocused] = useState(false);
   return (
     <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#60646c" }}>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
         {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#80838d" }}>— {hint}</span>}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">— {hint}</span>}
       </p>
       <div className="relative">
         <input
@@ -134,14 +110,9 @@ function UInput({ value, onChange, placeholder, label, hint }: {
           placeholder={placeholder}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="w-full py-2 text-[14px] bg-transparent focus:outline-none placeholder:text-[#B8B4AA]"
-          style={{ color: "#1c2024", borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`, transition: "border-color 0.2s" }}
+          className="w-full py-2 text-[14px] bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground/40 border-b-2 transition-colors"
+          style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
         />
-        {focused && (
-          <motion.div className="absolute bottom-0 left-0 h-[2px] rounded-full"
-            initial={{ width: 0 }} animate={{ width: "100%" }}
-            style={{ background: "#12a594" }} transition={{ duration: 0.25, ease: EASE }} />
-        )}
       </div>
     </div>
   );
@@ -154,9 +125,9 @@ function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
   const [focused, setFocused] = useState(false);
   return (
     <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5" style={{ color: "#60646c" }}>
+      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
         {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal" style={{ color: "#80838d" }}>— {hint}</span>}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">— {hint}</span>}
       </p>
       <div className="relative">
         <textarea
@@ -166,14 +137,9 @@ function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
           rows={rows}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="w-full bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none placeholder:text-[#B8B4AA] pb-2"
-          style={{ color: "#1c2024", borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`, transition: "border-color 0.2s" }}
+          className="w-full bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/40 pb-2 border-b-2 transition-colors"
+          style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
         />
-        {focused && (
-          <motion.div className="absolute bottom-0 left-0 h-[2px] rounded-full"
-            initial={{ width: 0 }} animate={{ width: "100%" }}
-            style={{ background: "#12a594" }} transition={{ duration: 0.28, ease: EASE }} />
-        )}
       </div>
     </div>
   );
@@ -203,50 +169,39 @@ export default function InterviewPage() {
 
   return (
     <>
-      <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
+      <div className="bg-background min-h-full">
+        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
-        {/* ── White header ── */}
-        <div style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
-          <div className="max-w-3xl mx-auto px-6 md:px-10 pt-10 pb-0">
-            <motion.div
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <motion.span
-                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.15em]"
-                  style={{ background: "rgba(18,165,148,0.1)", color: "#12a594", border: "1px solid rgba(18,165,148,0.2)" }}
-                >
-                  <motion.span className="w-1.5 h-1.5 rounded-full"
-                    style={{ background: "#12a594", display: "inline-block" }}
-                    animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
-                    transition={{ duration: 1.6, repeat: Infinity }} />
-                  Live AI
-                </motion.span>
-                <span className="px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em]"
-                  style={{ background: "#f0f0f3", color: "#80838d", border: "1px solid #d9d9e0" }}>
-                  Signature Feature
-                </span>
-              </div>
+          {/* ── Header ── */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="relative mb-8 rounded-3xl overflow-hidden border border-border px-6 pt-7"
+          >
+            <AuroraBackground className="opacity-60" />
+            <div className="relative z-10 flex items-center gap-2 mb-3">
+              <motion.span
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-[0.15em] bg-primary/10 text-primary border border-primary/20"
+              >
+                <motion.span className="w-1.5 h-1.5 rounded-full bg-primary inline-block"
+                  animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
+                  transition={{ duration: 1.6, repeat: Infinity }} />
+                Live AI
+              </motion.span>
+              <span className="px-2.5 py-1 rounded-full text-[9px] font-semibold uppercase tracking-[0.12em] bg-secondary text-muted-foreground border border-border">
+                Signature Feature · Free
+              </span>
+            </div>
 
-              <h1 className="font-display font-semibold tracking-tight mb-2"
-                style={{ color: "#1c2024", fontSize: "clamp(24px, 5vw, 36px)", lineHeight: 1.15 }}>
-                AI Interview
-              </h1>
-              <p className="text-[14px] leading-relaxed pb-7" style={{ color: "#60646c" }}>
-                Real-time AI interviewer — speak naturally or practice with text.
-              </p>
-            </motion.div>
-          </div>
+            <h1 className="relative z-10 font-display font-semibold tracking-tight mb-2 text-foreground" style={{ fontSize: "clamp(24px, 5vw, 36px)", lineHeight: 1.15 }}>
+              AI Interview
+            </h1>
+            <p className="relative z-10 text-[14px] leading-relaxed pb-5 text-muted-foreground">
+              Real-time AI interviewer — speak naturally or practice with text.
+            </p>
 
-          {/* Step bar lives in the white section */}
-          <div className="max-w-3xl mx-auto px-6 md:px-10">
             <StepBar phase={phase} currentIdx={currentIdx} total={questions.length} />
-          </div>
-        </div>
-
-        {/* ── Cream content ── */}
-        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10">
+          </motion.div>
 
           {/* ── Voice section ── */}
           <motion.div
@@ -254,23 +209,22 @@ export default function InterviewPage() {
             transition={{ duration: 0.45, ease: EASE }}
             className="mb-10"
           >
-            {/* Live session strip (no box, floating on cream) */}
+            {/* Live session strip (no box, floating on background) */}
             <AnimatePresence>
               {isVoiceActive && (
                 <motion.div
                   key="live-strip"
                   initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
                   transition={SPRING}
-                  className="flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl"
-                  style={{ background: "rgba(225,29,72,0.05)", border: "1px solid rgba(225,29,72,0.15)" }}
+                  className="flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl bg-rose-500/5 border border-rose-500/15"
                 >
                   <div className="flex items-center gap-2.5">
-                    <motion.div className="w-2 h-2 rounded-full" style={{ background: "#e11d48" }}
+                    <motion.div className="w-2 h-2 rounded-full bg-rose-600"
                       animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
                       transition={{ duration: 1.4, repeat: Infinity }} />
-                    <span className="text-[11px] font-semibold" style={{ color: "#e11d48" }}>Recording</span>
+                    <span className="text-[11px] font-semibold text-rose-600">Recording</span>
                   </div>
-                  <span className="text-[13px] font-mono tabular-nums font-bold" style={{ color: "#e11d48" }}>
+                  <span className="text-[13px] font-mono tabular-nums font-bold text-rose-600">
                     {fmt(elapsed)}
                   </span>
                 </motion.div>
@@ -284,11 +238,11 @@ export default function InterviewPage() {
 
           {/* Divider */}
           <div className="flex items-center gap-4 mb-10">
-            <div className="flex-1 h-px" style={{ background: "#d9d9e0" }} />
-            <span className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#b9bbc6" }}>
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground/60">
               or practice with text
             </span>
-            <div className="flex-1 h-px" style={{ background: "#d9d9e0" }} />
+            <div className="flex-1 h-px bg-border" />
           </div>
 
           {/* ── Text mode ── */}
@@ -315,12 +269,11 @@ export default function InterviewPage() {
                     whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}
                     transition={SPRING}
-                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35"
-                    style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 20px rgba(18,165,148,0.18)" }}
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 bg-primary shadow-lg shadow-primary/20"
                   >
                     {loading
-                      ? <><Loader2 size={14} className="animate-spin" />Generating questions…</>
-                      : <><Mic size={14} />Start Interview</>
+                      ? <><Loader2 size={18} className="animate-spin" />Generating questions…</>
+                      : <><Mic size={18} />Start Interview</>
                     }
                   </motion.button>
                 </motion.div>
@@ -336,19 +289,18 @@ export default function InterviewPage() {
                   {/* Progress bar + meta */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-[10px] font-mono" style={{ color: "#80838d" }}>
+                      <span className="text-[10px] font-mono text-muted-foreground">
                         Question {currentIdx + 1} of {questions.length}
                       </span>
                       <motion.span
                         initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING}
-                        className="text-[9px] font-bold px-2.5 py-1 rounded-full"
-                        style={{ background: "rgba(18,165,148,0.08)", color: "#12a594", border: "1px solid rgba(18,165,148,0.18)" }}
+                        className="text-[9px] font-bold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20"
                       >
                         {questions[currentIdx].category}
                       </motion.span>
                     </div>
-                    <div className="h-[2px] rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
-                      <motion.div className="h-full rounded-full" style={{ background: "#12a594" }}
+                    <div className="h-[2px] rounded-full overflow-hidden bg-border">
+                      <motion.div className="h-full rounded-full bg-primary"
                         animate={{ width: `${((currentIdx + 1) / questions.length) * 100}%` }}
                         transition={{ duration: 0.6, ease: EASE }} />
                     </div>
@@ -358,10 +310,9 @@ export default function InterviewPage() {
                   <motion.div
                     initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 26 }}
-                    className="pl-4"
-                    style={{ borderLeft: "3px solid #12a594" }}
+                    className="pl-4 border-l-[3px] border-primary"
                   >
-                    <p className="text-[15px] font-medium leading-[1.75]" style={{ color: "#1c2024" }}>
+                    <p className="text-[15px] font-medium leading-[1.75] text-foreground">
                       {questions[currentIdx].question}
                     </p>
                   </motion.div>
@@ -376,12 +327,11 @@ export default function InterviewPage() {
                     whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}
                     transition={SPRING}
-                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35"
-                    style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 20px rgba(18,165,148,0.18)" }}
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 bg-primary shadow-lg shadow-primary/20"
                   >
                     {loading
-                      ? <><Loader2 size={14} className="animate-spin" />Evaluating…</>
-                      : <><Send size={13} />Submit Answer</>
+                      ? <><Loader2 size={18} className="animate-spin" />Evaluating…</>
+                      : <><Send size={16} />Submit Answer</>
                     }
                   </motion.button>
                 </motion.div>
@@ -396,12 +346,16 @@ export default function InterviewPage() {
                 >
                   {/* Score */}
                   <div>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "#b9bbc6" }}>Answer Score</p>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3 text-muted-foreground/60">Answer Score</p>
                     <div className="flex items-baseline gap-2">
-                      <CountUp value={feedbacks[currentIdx].score} size={56} />
-                      <span className="text-[14px] font-semibold pb-1" style={{ color: "#b9bbc6" }}>/100</span>
+                      <NumberTicker
+                        value={feedbacks[currentIdx].score}
+                        className="font-black leading-none"
+                        style={{ fontSize: 56, fontFamily: "monospace", letterSpacing: "-0.04em", color: scoreColor(feedbacks[currentIdx].score) } as React.CSSProperties}
+                      />
+                      <span className="text-[14px] font-semibold pb-1 text-muted-foreground/60">/100</span>
                     </div>
-                    <div className="mt-3 h-[2px] rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
+                    <div className="mt-3 h-[2px] rounded-full overflow-hidden bg-border">
                       <motion.div className="h-full rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${feedbacks[currentIdx].score}%` }}
@@ -413,20 +367,19 @@ export default function InterviewPage() {
                   {/* Strengths */}
                   {feedbacks[currentIdx].strengths.length > 0 && (
                     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-                      <div style={{ height: 1, background: "#d9d9e0", marginBottom: 20 }} />
+                      <div className="h-px bg-border mb-5" />
                       <div className="flex items-center gap-2 mb-4">
-                        <CheckCircle2 size={13} style={{ color: "#059669" }} />
-                        <span className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#059669" }}>What worked</span>
+                        <CheckCircle2 size={16} className="text-emerald-600" />
+                        <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-emerald-600">What worked</span>
                       </div>
                       <ul className="space-y-3">
                         {feedbacks[currentIdx].strengths.map((s, i) => (
                           <motion.li key={i}
                             initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.14 + i * 0.06, type: "spring", stiffness: 280, damping: 26 }}
-                            className="flex items-start gap-3 text-[13.5px] leading-relaxed"
-                            style={{ color: "#2D2C2A" }}
+                            className="flex items-start gap-3 text-[13.5px] leading-relaxed text-foreground/90"
                           >
-                            <ChevronRight size={12} style={{ color: "#059669", marginTop: 3 }} className="shrink-0" />
+                            <ChevronRight size={16} className="text-emerald-600 mt-0.5 shrink-0" />
                             {s}
                           </motion.li>
                         ))}
@@ -437,20 +390,19 @@ export default function InterviewPage() {
                   {/* Improvements */}
                   {feedbacks[currentIdx].improvements.length > 0 && (
                     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
-                      <div style={{ height: 1, background: "#d9d9e0", marginBottom: 20 }} />
+                      <div className="h-px bg-border mb-5" />
                       <div className="flex items-center gap-2 mb-4">
-                        <AlertCircle size={13} style={{ color: "#d97706" }} />
-                        <span className="text-[10px] font-mono uppercase tracking-[0.16em]" style={{ color: "#d97706" }}>To improve</span>
+                        <AlertCircle size={16} className="text-amber-600" />
+                        <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-amber-600">To improve</span>
                       </div>
                       <ul className="space-y-3">
                         {feedbacks[currentIdx].improvements.map((s, i) => (
                           <motion.li key={i}
                             initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.2 + i * 0.06, type: "spring", stiffness: 280, damping: 26 }}
-                            className="flex items-start gap-3 text-[13.5px] leading-relaxed"
-                            style={{ color: "#2D2C2A" }}
+                            className="flex items-start gap-3 text-[13.5px] leading-relaxed text-foreground/90"
                           >
-                            <ChevronRight size={12} style={{ color: "#d97706", marginTop: 3 }} className="shrink-0" />
+                            <ChevronRight size={16} className="text-amber-600 mt-0.5 shrink-0" />
                             {s}
                           </motion.li>
                         ))}
@@ -461,10 +413,9 @@ export default function InterviewPage() {
                   {/* Model answer hint */}
                   {feedbacks[currentIdx].model_answer_hint && (
                     <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.24 }}>
-                      <div style={{ height: 1, background: "#d9d9e0", marginBottom: 20 }} />
-                      <p className="text-[10px] font-mono uppercase tracking-[0.16em] mb-3" style={{ color: "#12a594" }}>Strong approach</p>
-                      <p className="text-[13.5px] leading-[1.85] pl-4"
-                        style={{ color: "#2D2C2A", borderLeft: "3px solid rgba(18,165,148,0.35)" }}>
+                      <div className="h-px bg-border mb-5" />
+                      <p className="text-[10px] font-mono uppercase tracking-[0.16em] mb-3 text-primary">Strong approach</p>
+                      <p className="text-[13.5px] leading-[1.85] pl-4 text-foreground/90 border-l-[3px] border-primary/35">
                         {feedbacks[currentIdx].model_answer_hint}
                       </p>
                     </motion.div>
@@ -475,13 +426,12 @@ export default function InterviewPage() {
                     whileHover={{ y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" }}
                     whileTap={{ scale: 0.98 }}
                     transition={SPRING}
-                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 20px rgba(18,165,148,0.18)" }}
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 bg-primary shadow-lg shadow-primary/20"
                   >
                     {currentIdx < questions.length - 1 ? (
-                      <>Next Question <ArrowRight size={14} /></>
+                      <>Next Question <ArrowRight size={16} /></>
                     ) : (
-                      <>See Results <ArrowRight size={14} /></>
+                      <>See Results <ArrowRight size={16} /></>
                     )}
                   </motion.button>
                 </motion.div>
@@ -496,15 +446,19 @@ export default function InterviewPage() {
                 >
                   {/* Overall score */}
                   <div>
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3" style={{ color: "#b9bbc6" }}>
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-3 text-muted-foreground/60">
                       Final Score
                     </p>
                     <div className="flex items-baseline gap-2 mb-1">
-                      <CountUp value={avgScore} size={64} />
-                      <span className="text-[16px] font-semibold pb-1.5" style={{ color: "#b9bbc6" }}>/100</span>
+                      <NumberTicker
+                        value={avgScore}
+                        className="font-black leading-none"
+                        style={{ fontSize: 64, fontFamily: "monospace", letterSpacing: "-0.04em", color: scoreColor(avgScore) } as React.CSSProperties}
+                      />
+                      <span className="text-[16px] font-semibold pb-1.5 text-muted-foreground/60">/100</span>
                     </div>
-                    <p className="text-[12px]" style={{ color: "#80838d" }}>{questions.length} questions answered</p>
-                    <div className="mt-4 h-[2px] rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
+                    <p className="text-[12px] text-muted-foreground">{questions.length} questions answered</p>
+                    <div className="mt-4 h-[2px] rounded-full overflow-hidden bg-border">
                       <motion.div className="h-full rounded-full"
                         initial={{ width: 0 }}
                         animate={{ width: `${avgScore}%` }}
@@ -515,22 +469,21 @@ export default function InterviewPage() {
 
                   {/* Per-question breakdown */}
                   <div>
-                    <div style={{ height: 1, background: "#d9d9e0", marginBottom: 20 }} />
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-5" style={{ color: "#b9bbc6" }}>Breakdown</p>
+                    <div className="h-px bg-border mb-5" />
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-5 text-muted-foreground/60">Breakdown</p>
                     <div className="space-y-0">
                       {feedbacks.map((fb, i) => (
                         <motion.div key={i}
                           initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.07, type: "spring", stiffness: 280, damping: 26 }}
-                          className="flex items-center justify-between py-4"
-                          style={{ borderBottom: i < feedbacks.length - 1 ? "1px solid #d9d9e0" : "none" }}
+                          className={`flex items-center justify-between py-4 ${i < feedbacks.length - 1 ? "border-b border-border" : ""}`}
                         >
                           <div>
-                            <p className="text-[12px] font-semibold" style={{ color: "#1c2024" }}>Q{i + 1}</p>
-                            <p className="text-[11px]" style={{ color: "#80838d" }}>{questions[i]?.category}</p>
+                            <p className="text-[12px] font-semibold text-foreground">Q{i + 1}</p>
+                            <p className="text-[11px] text-muted-foreground">{questions[i]?.category}</p>
                           </div>
                           <div className="flex items-center gap-3">
-                            <div className="w-20 h-[2px] rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
+                            <div className="w-20 h-[2px] rounded-full overflow-hidden bg-border">
                               <motion.div className="h-full rounded-full"
                                 initial={{ width: 0 }}
                                 animate={{ width: `${fb.score}%` }}
@@ -551,14 +504,12 @@ export default function InterviewPage() {
                   <div className="flex gap-3">
                     <motion.button onClick={reset}
                       whileHover={{ y: -1 }} whileTap={{ scale: 0.96 }} transition={SPRING}
-                      className="flex-1 h-11 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-2"
-                      style={{ border: "1px solid #d9d9e0", color: "#60646c", background: "#FFFFFF" }}>
-                      <RotateCcw size={13} /> Try again
+                      className="flex-1 h-11 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-2 border border-border text-muted-foreground bg-card">
+                      <RotateCcw size={16} /> Try again
                     </motion.button>
                     <motion.button onClick={() => { window.location.href = "/dashboard"; }}
                       whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(18,165,148,0.24)" }} whileTap={{ scale: 0.97 }} transition={SPRING}
-                      className="flex-1 h-11 rounded-xl text-[12px] font-bold text-white flex items-center justify-center"
-                      style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 16px rgba(18,165,148,0.18)" }}>
+                      className="flex-1 h-11 rounded-xl text-[12px] font-bold text-white flex items-center justify-center bg-primary shadow-md shadow-primary/20">
                       Dashboard
                     </motion.button>
                   </div>

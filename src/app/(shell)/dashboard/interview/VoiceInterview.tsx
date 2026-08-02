@@ -14,6 +14,7 @@ import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneDisconnect as PhoneO
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { AuroraBackground } from "@/components/dashboard/aurora-background";
 
 const LIVEKIT_URL = process.env.NEXT_PUBLIC_LIVEKIT_URL ?? "";
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -120,14 +121,13 @@ function StatusPill({ state, connectionState }: { state: AgentState; connectionS
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: -4, scale: 0.94 }}
       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
-      style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
+      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border"
     >
       <span
         className={cn("w-1.5 h-1.5 rounded-full shrink-0", cfg.pulse && "animate-pulse")}
         style={{ background: cfg.dotColor }}
       />
-      <span className="text-[11px] font-medium" style={{ color: "#60646c" }}>
+      <span className="text-[11px] font-medium text-muted-foreground">
         {cfg.label}
       </span>
     </motion.div>
@@ -149,10 +149,9 @@ function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-h-40 overflow-y-auto rounded-xl p-4 space-y-2.5 scrollbar-none"
-      style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
+      className="w-full max-h-40 overflow-y-auto rounded-xl p-4 space-y-2.5 scrollbar-none bg-muted/50 border border-border"
     >
-      <p className="text-[9px] font-mono uppercase tracking-widest mb-2.5" style={{ color: "#b9bbc6" }}>
+      <p className="text-[9px] font-mono uppercase tracking-widest mb-2.5 text-muted-foreground/60">
         Transcript
       </p>
       <AnimatePresence initial={false}>
@@ -164,8 +163,8 @@ function TranscriptArea({ segments }: { segments: TranscriptSegment[] }) {
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
             className="flex gap-2.5"
           >
-            <div className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#12a594" }} />
-            <p className="text-[13px] leading-relaxed" style={{ color: "#60646c" }}>{seg.text}</p>
+            <div className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-primary" />
+            <p className="text-[13px] leading-relaxed text-muted-foreground">{seg.text}</p>
           </motion.div>
         ))}
       </AnimatePresence>
@@ -208,17 +207,10 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: EASE }}
-          className="flex-1 relative rounded-2xl flex flex-col items-center justify-center gap-4 overflow-hidden"
-          style={{
-            background: "#fcfcfd",
-            border: "1px solid #d9d9e0",
-            minHeight: 260,
-          }}
+          className="flex-1 relative rounded-2xl flex flex-col items-center justify-center gap-4 overflow-hidden bg-muted/30 border border-border"
+          style={{ minHeight: 260 }}
         >
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(ellipse at 50% 10%, rgba(18,165,148,0.06) 0%, transparent 65%)" }}
-          />
+          <AuroraBackground className="opacity-50" />
 
           <div className="absolute top-4 left-4">
             <AnimatePresence mode="wait">
@@ -231,8 +223,8 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           </div>
 
           <div className="relative text-center pb-2">
-            <p className="text-[13px] font-semibold" style={{ color: "#1c2024" }}>Column8 AI</p>
-            <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5" style={{ color: "#80838d" }}>Interviewer</p>
+            <p className="text-[13px] font-semibold text-foreground">Column8 AI</p>
+            <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5 text-muted-foreground">Interviewer</p>
           </div>
         </motion.div>
 
@@ -241,8 +233,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.1, duration: 0.45, ease: EASE }}
-          className="w-[108px] rounded-2xl flex flex-col items-center justify-center gap-3 py-6"
-          style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
+          className="w-[108px] rounded-2xl flex flex-col items-center justify-center gap-3 py-6 bg-muted/50 border border-border"
         >
           <motion.div
             className="w-12 h-12 rounded-full flex items-center justify-center"
@@ -258,14 +249,14 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
             transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
           >
             {isMicrophoneEnabled
-              ? <Mic size={17} style={{ color: "#10b981" }} />
-              : <MicOff size={17} style={{ color: "#f43f5e" }} />
+              ? <Mic size={20} className="text-emerald-600" />
+              : <MicOff size={20} className="text-rose-600" />
             }
           </motion.div>
 
           <div className="text-center">
-            <p className="text-[12px] font-semibold" style={{ color: "#1c2024" }}>You</p>
-            <p className="text-[10px] font-mono mt-0.5" style={{ color: isMicrophoneEnabled ? "#10b981" : "#f43f5e" }}>
+            <p className="text-[12px] font-semibold text-foreground">You</p>
+            <p className={`text-[10px] font-mono mt-0.5 ${isMicrophoneEnabled ? "text-emerald-600" : "text-rose-600"}`}>
               {isMicrophoneEnabled ? "Live" : "Muted"}
             </p>
           </div>
@@ -274,7 +265,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
 
       <TranscriptArea segments={agentTranscriptions} />
 
-      <p className="text-center text-[11px]" style={{ color: "#b9bbc6" }}>
+      <p className="text-center text-[11px] text-muted-foreground/60">
         Speak naturally — the AI handles turn-taking
       </p>
 
@@ -285,24 +276,21 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           whileHover={{ scale: 1.07 }}
           whileTap={{ scale: 0.92 }}
           title={isMicrophoneEnabled ? "Mute" : "Unmute"}
-          className="w-12 h-12 rounded-full flex items-center justify-center transition-colors"
-          style={
-            isMicrophoneEnabled
-              ? { background: "#f9f9fb", border: "1px solid #d9d9e0", color: "#60646c" }
-              : { background: "rgba(244,63,94,0.09)", border: "1.5px solid rgba(244,63,94,0.28)", color: "#f43f5e" }
-          }
+          className={cn(
+            "w-12 h-12 rounded-full flex items-center justify-center transition-colors border",
+            isMicrophoneEnabled ? "bg-muted border-border text-muted-foreground" : "bg-rose-500/10 border-rose-500/30 text-rose-600"
+          )}
         >
-          {isMicrophoneEnabled ? <Mic size={16} /> : <MicOff size={16} />}
+          {isMicrophoneEnabled ? <Mic size={20} /> : <MicOff size={20} />}
         </motion.button>
 
         <motion.button
           onClick={onEnd}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.95 }}
-          className="h-12 px-8 rounded-full flex items-center gap-2 text-sm font-semibold text-white"
-          style={{ background: "#e11d48", boxShadow: "0 4px 20px rgba(225,29,72,0.24)" }}
+          className="h-12 px-8 rounded-full flex items-center gap-2 text-sm font-semibold text-white bg-rose-600 shadow-lg shadow-rose-600/25"
         >
-          <PhoneOff size={15} />
+          <PhoneOff size={18} />
           End Interview
         </motion.button>
       </div>
@@ -310,7 +298,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
   );
 }
 
-// ── Setup View (light theme) ──────────────────────────────────────────────────
+// ── Setup View ───────────────────────────────────────────────────────────────
 
 function SetupView({
   resumes, resumesLoading, selectedId, onSelect, onStart, loading,
@@ -330,56 +318,45 @@ function SetupView({
     >
       {/* Resume picker */}
       <div>
-        <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2" style={{ color: "#80838d" }}>
+        <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2 text-muted-foreground">
           Select Resume
         </label>
         {resumesLoading ? (
-          <div
-            className="h-11 rounded-xl flex items-center px-4 gap-2"
-            style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
-          >
-            <Loader2 size={13} className="animate-spin" style={{ color: "#b9bbc6" }} />
-            <span className="text-sm" style={{ color: "#b9bbc6" }}>Loading resumes…</span>
+          <div className="h-11 rounded-xl flex items-center px-4 gap-2 bg-muted/30 border border-border">
+            <Loader2 size={16} className="animate-spin text-muted-foreground/60" />
+            <span className="text-sm text-muted-foreground/60">Loading resumes…</span>
           </div>
         ) : resumes.length === 0 ? (
-          <div
-            className="h-11 rounded-xl flex items-center px-4"
-            style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
-          >
-            <span className="text-sm" style={{ color: "#80838d" }}>
+          <div className="h-11 rounded-xl flex items-center px-4 bg-muted/30 border border-border">
+            <span className="text-sm text-muted-foreground">
               No resumes found —{" "}
-              <a href="/upload" className="underline" style={{ color: "#12a594" }}>upload one first</a>
+              <a href="/upload" className="underline text-primary">upload one first</a>
             </span>
           </div>
         ) : (
           <div className="relative">
-            <FileText size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#b9bbc6" }} />
+            <FileText size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60" />
             <select
               value={selectedId}
               onChange={e => onSelect(e.target.value)}
-              className="w-full h-11 pl-9 pr-9 rounded-xl text-sm appearance-none cursor-pointer focus:outline-none transition-all"
-              style={{
-                background: "#FFFFFF",
-                border: "1.5px solid #d9d9e0",
-                color: selectedId ? "#1c2024" : "#80838d",
-              }}
+              className={cn(
+                "w-full h-11 pl-11 pr-9 rounded-xl text-sm appearance-none cursor-pointer focus:outline-none transition-all bg-card border-[1.5px] border-border",
+                selectedId ? "text-foreground" : "text-muted-foreground"
+              )}
             >
               <option value="" disabled>Choose a resume…</option>
               {resumes.map(r => (
                 <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
               ))}
             </select>
-            <ChevronDown size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#b9bbc6" }} />
+            <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60" />
           </div>
         )}
       </div>
 
       {/* Checklist */}
-      <div
-        className="rounded-xl p-4 space-y-3"
-        style={{ background: "#fcfcfd", border: "1px solid #d9d9e0" }}
-      >
-        <p className="text-[9px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#b9bbc6" }}>
+      <div className="rounded-xl p-4 space-y-3 bg-muted/30 border border-border">
+        <p className="text-[9px] font-mono uppercase tracking-[0.15em] mb-1 text-muted-foreground/60">
           Before you begin
         </p>
         {[
@@ -388,27 +365,21 @@ function SetupView({
           "Speak at a natural pace — the AI handles turn-taking",
         ].map((item, i) => (
           <div key={i} className="flex items-start gap-3">
-            <span
-              className="w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5"
-              style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)", color: "#12a594" }}
-            >
+            <span className="w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5 bg-primary/10 border border-primary/15 text-primary">
               {i + 1}
             </span>
-            <p className="text-[12px] leading-relaxed" style={{ color: "#60646c" }}>{item}</p>
+            <p className="text-[12px] leading-relaxed text-muted-foreground">{item}</p>
           </div>
         ))}
       </div>
 
       {!LIVEKIT_URL && (
-        <div
-          className="flex items-start gap-2.5 px-4 py-3 rounded-xl"
-          style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.18)" }}
-        >
-          <span className="text-sm leading-none mt-0.5" style={{ color: "#f59e0b" }}>⚠</span>
-          <p className="text-[12px] leading-relaxed" style={{ color: "#92400e" }}>
+        <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-amber-500/5 border border-amber-500/20">
+          <span className="text-sm leading-none mt-0.5 text-amber-500">⚠</span>
+          <p className="text-[12px] leading-relaxed text-amber-800">
             <span className="font-semibold">Not configured.</span>{" "}
-            Add <code className="font-mono px-1 rounded text-[11px]" style={{ background: "rgba(245,158,11,0.08)" }}>NEXT_PUBLIC_LIVEKIT_URL</code> to
-            your <code className="font-mono px-1 rounded text-[11px]" style={{ background: "rgba(245,158,11,0.08)" }}>.env.local</code> and restart.
+            Add <code className="font-mono px-1 rounded text-[11px] bg-amber-500/10">NEXT_PUBLIC_LIVEKIT_URL</code> to
+            your <code className="font-mono px-1 rounded text-[11px] bg-amber-500/10">.env.local</code> and restart.
           </p>
         </div>
       )}
@@ -418,12 +389,11 @@ function SetupView({
         disabled={!selectedId || loading || !LIVEKIT_URL}
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        style={{ background: "#12a594", color: "#FFFFFF", boxShadow: "0 4px 20px rgba(18,165,148,0.25)" }}
+        className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed text-white bg-primary shadow-lg shadow-primary/25"
       >
         {loading
-          ? <><Loader2 size={15} className="animate-spin" />Connecting…</>
-          : <><Mic size={15} />Start Voice Interview</>
+          ? <><Loader2 size={18} className="animate-spin" />Connecting…</>
+          : <><Mic size={18} />Start Voice Interview</>
         }
       </motion.button>
     </motion.div>
@@ -439,22 +409,18 @@ function EndedView({ onRestart }: { onRestart: () => void }) {
       animate={{ opacity: 1, scale: 1 }}
       className="flex flex-col items-center gap-5 py-8 text-center"
     >
-      <div
-        className="w-14 h-14 rounded-2xl flex items-center justify-center"
-        style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.18)" }}
-      >
-        <Mic size={20} style={{ color: "#10b981" }} />
+      <div className="w-14 h-14 rounded-2xl flex items-center justify-center bg-emerald-500/10 border border-emerald-500/20">
+        <Mic size={24} className="text-emerald-600" />
       </div>
       <div>
-        <p className="text-[15px] font-semibold mb-1" style={{ color: "#1c2024" }}>Session ended</p>
-        <p className="text-sm" style={{ color: "#60646c" }}>Your voice interview session has concluded.</p>
+        <p className="text-[15px] font-semibold mb-1 text-foreground">Session ended</p>
+        <p className="text-sm text-muted-foreground">Your voice interview session has concluded.</p>
       </div>
       <motion.button
         onClick={onRestart}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.97 }}
-        className="h-10 px-6 rounded-xl text-sm font-semibold transition-colors"
-        style={{ background: "#12a594", color: "#FFFFFF", boxShadow: "0 4px 16px rgba(18,165,148,0.22)" }}
+        className="h-10 px-6 rounded-xl text-sm font-semibold transition-colors text-white bg-primary shadow-md shadow-primary/20"
       >
         Start New Session
       </motion.button>
@@ -537,10 +503,9 @@ function VoiceInterview({
     if (!LIVEKIT_URL) {
       return (
         <div className="flex flex-col items-center gap-3 py-10 text-center">
-          <p className="text-sm font-semibold" style={{ color: "#60646c" }}>Voice interview not configured</p>
+          <p className="text-sm font-semibold text-muted-foreground">Voice interview not configured</p>
           <motion.button onClick={handleEnd} whileTap={{ scale: 0.97 }}
-            className="h-9 px-5 rounded-xl text-xs font-semibold"
-            style={{ border: "1px solid #d9d9e0", color: "#80838d" }}
+            className="h-9 px-5 rounded-xl text-xs font-semibold border border-border text-muted-foreground"
           >
             Back
           </motion.button>

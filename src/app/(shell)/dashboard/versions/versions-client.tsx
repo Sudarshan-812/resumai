@@ -25,13 +25,12 @@ const CHUNK_COLOR: Record<ChunkType, string> = {
 const SECTION_ORDER: ChunkType[] = ["summary", "experience", "education", "skills", "project"];
 const scoreColor = (s: number) => s >= 75 ? "#059669" : s >= 55 ? "#d97706" : "#e11d48";
 const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
-const EASE   = [0.16, 1, 0.3, 1] as const;
 
 /* ── Underline input ─────────────────────────────────────────── */
 function UField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#60646c" }}>{label}</p>
+      <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2 text-muted-foreground">{label}</p>
       {children}
     </div>
   );
@@ -135,20 +134,19 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
   const selectedResume = resumes.find((r) => r.id === selectedResumeId);
 
   return (
-      <div className="h-full flex flex-col" style={{ background: "#f9f9fb" }}>
+      <div className="h-full flex flex-col bg-background">
 
-        {/* ── Page header (white) ── */}
-        <div className="shrink-0 flex items-end justify-between px-6 md:px-8 pt-8 pb-5"
-          style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
+        {/* ── Page header ── */}
+        <div className="shrink-0 flex items-end justify-between px-6 md:px-8 pt-8 pb-5 bg-card border-b border-border">
           <div>
-            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2" style={{ color: "#80838d" }}>AI Tools</p>
-            <h1 className="font-display font-semibold tracking-tight" style={{ color: "#1c2024", fontSize: "clamp(22px,4vw,30px)", lineHeight: 1.15 }}>
+            <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2 text-muted-foreground">AI Tools</p>
+            <h1 className="font-display font-semibold tracking-tight text-foreground" style={{ fontSize: "clamp(22px,4vw,30px)", lineHeight: 1.15 }}>
               Resume Versions
             </h1>
           </div>
           <motion.span
             initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={SPRING}
-            className="text-[10px] font-mono mb-1" style={{ color: "#80838d" }}>
+            className="text-[10px] font-mono mb-1 text-muted-foreground">
             {savedVersions.length} version{savedVersions.length !== 1 ? "s" : ""} saved
           </motion.span>
         </div>
@@ -157,24 +155,22 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
         <div className="flex-1 flex overflow-hidden">
 
           {/* ── Left: Controls ── */}
-          <div className="flex flex-col overflow-y-auto shrink-0"
-            style={{ width: 260, borderRight: "1px solid #d9d9e0", background: "#FFFFFF" }}>
+          <div className="flex flex-col overflow-y-auto shrink-0 bg-card border-r border-border" style={{ width: 260 }}>
             <div className="p-5 space-y-6">
 
               {/* Resume selector */}
               <UField label="Master Resume">
                 {resumes.length === 0 ? (
-                  <p className="text-[12px]" style={{ color: "#80838d" }}>No resumes yet — upload one first.</p>
+                  <p className="text-[12px] text-muted-foreground">No resumes yet — upload one first.</p>
                 ) : (
                   <div className="relative">
                     <select value={selectedResumeId} onChange={e => setSelectedResumeId(e.target.value)}
-                      className="w-full text-[13px] py-1.5 pr-6 appearance-none outline-none bg-transparent"
-                      style={{ color: "#1c2024", borderBottom: "1px solid #b9bbc6" }}>
+                      className="w-full text-[13px] py-1.5 pr-6 appearance-none outline-none bg-transparent text-foreground border-b border-border/80">
                       {resumes.map(r => (
                         <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
                       ))}
                     </select>
-                    <ChevronDown size={11} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: "#80838d" }} />
+                    <ChevronDown size={16} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
                   </div>
                 )}
               </UField>
@@ -186,8 +182,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   onChange={e => setJobDescription(e.target.value)}
                   placeholder="Paste the job description to surface the most relevant resume sections…"
                   rows={10}
-                  className="w-full text-[12px] leading-relaxed bg-transparent resize-none outline-none placeholder:text-[#b9bbc6] pt-1"
-                  style={{ color: "#1c2024", borderBottom: "1px solid #b9bbc6" }}
+                  className="w-full text-[12px] leading-relaxed bg-transparent resize-none outline-none placeholder:text-muted-foreground/40 pt-1 text-foreground border-b border-border/80"
                 />
               </UField>
 
@@ -197,9 +192,8 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   disabled={searchLoading || !jobDescription.trim() || !selectedResumeId}
                   whileHover={!searchLoading ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                   whileTap={{ scale: 0.97 }} transition={SPRING}
-                  className="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12px] font-bold text-white disabled:opacity-40"
-                  style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.18)" }}>
-                  {searchLoading ? <><Loader2 size={12} className="animate-spin" />Searching…</> : <><Search size={12} weight="bold" />Find Relevant</>}
+                  className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-[12px] font-bold text-white disabled:opacity-40 bg-primary shadow-md shadow-primary/20">
+                  {searchLoading ? <><Loader2 size={16} className="animate-spin" />Searching…</> : <><Search size={16} weight="bold" />Find Relevant</>}
                 </motion.button>
 
                 <AnimatePresence>
@@ -207,9 +201,8 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                     <motion.button
                       initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
                       onClick={() => { setRelevantChunkIds(new Set()); setSelectedChunkIds(new Set()); setAllChunks(p => p.map(c => ({ ...c, similarity: undefined }))); }}
-                      className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-[11px] font-medium"
-                      style={{ color: "#80838d", border: "1px solid #d9d9e0" }}>
-                      <RotateCcw size={10} /> Clear search
+                      className="w-full flex items-center justify-center gap-1.5 h-8 rounded-lg text-[11px] font-medium border border-border text-muted-foreground">
+                      <RotateCcw size={14} /> Clear search
                     </motion.button>
                   )}
                 </AnimatePresence>
@@ -218,7 +211,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Saved versions in sidebar */}
               {savedVersions.length > 0 && (
                 <div>
-                  <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-3" style={{ color: "#80838d" }}>Saved</p>
+                  <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-3 text-muted-foreground">Saved</p>
                   <div className="space-y-0">
                     {savedVersions.map((v, i) => {
                       const parent = resumes.find(r => r.id === v.parent_resume_id);
@@ -226,12 +219,11 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                         <motion.div key={v.id}
                           initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.05, type: "spring", stiffness: 280, damping: 26 }}
-                          className="flex items-center gap-3 py-3"
-                          style={{ borderBottom: i < savedVersions.length - 1 ? "1px solid #f0f0f3" : "none" }}>
-                          <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#12a594" }} />
+                          className={`flex items-center gap-3 py-3 ${i < savedVersions.length - 1 ? "border-b border-border/60" : ""}`}>
+                          <div className="w-1.5 h-1.5 rounded-full shrink-0 bg-primary" />
                           <div className="flex-1 min-w-0">
-                            <p className="text-[12px] font-semibold truncate" style={{ color: "#1c2024" }}>{v.version_name}</p>
-                            <p className="text-[10px] font-mono" style={{ color: "#b9bbc6" }}>
+                            <p className="text-[12px] font-semibold truncate text-foreground">{v.version_name}</p>
+                            <p className="text-[10px] font-mono text-muted-foreground/60">
                               {parent?.file_name?.replace(/\.pdf$/i, "") ?? "—"}
                             </p>
                           </div>
@@ -248,12 +240,12 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
           </div>
 
           {/* ── Middle: Chunks ── */}
-          <div className="flex-1 overflow-y-auto" style={{ background: "#f9f9fb" }}>
+          <div className="flex-1 overflow-y-auto bg-background">
             <div className="p-5">
 
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
-                <p className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#80838d" }}>
+                <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
                   {relevantChunkIds.size > 0
                     ? `${relevantChunkIds.size} relevant · ${allChunks.length} total`
                     : `${allChunks.length} section${allChunks.length !== 1 ? "s" : ""}`}
@@ -263,8 +255,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                     <motion.span
                       initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.7 }}
                       transition={SPRING}
-                      className="text-[9px] font-bold px-2.5 py-1 rounded-full text-white"
-                      style={{ background: "#12a594" }}>
+                      className="text-[9px] font-bold px-2.5 py-1 rounded-full text-white bg-primary">
                       {selectedChunkIds.size} selected
                     </motion.span>
                   )}
@@ -274,28 +265,26 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Content */}
               {chunksLoading ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 size={18} className="animate-spin" style={{ color: "#12a594" }} />
+                  <Loader2 size={20} className="animate-spin text-primary" />
                 </div>
               ) : allChunks.length === 0 ? (
                 <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
                   transition={SPRING}
                   className="flex flex-col items-center justify-center py-20 text-center">
                   <motion.div animate={{ y: [0, -4, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
-                    style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 4px 16px rgba(0,0,0,0.04)" }}>
-                    <Layers size={18} style={{ color: "#b9bbc6" }} />
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 bg-card border border-border shadow-sm">
+                    <Layers size={24} className="text-muted-foreground/60" />
                   </motion.div>
-                  <p className="text-[14px] font-semibold mb-1.5" style={{ color: "#1c2024" }}>No sections yet</p>
-                  <p className="text-[12px] max-w-[200px] leading-relaxed mb-5" style={{ color: "#80838d" }}>
+                  <p className="text-[14px] font-semibold mb-1.5 text-foreground">No sections yet</p>
+                  <p className="text-[12px] max-w-[200px] leading-relaxed mb-5 text-muted-foreground">
                     {selectedResume ? "Generate semantic sections from this resume to start building versions." : "Select a resume to get started."}
                   </p>
                   {selectedResume && (
                     <motion.button onClick={generateChunks} disabled={generatingChunks}
                       whileHover={!generatingChunks ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                       whileTap={{ scale: 0.97 }} transition={SPRING}
-                      className="inline-flex items-center gap-2 h-9 px-5 rounded-xl text-[12px] font-bold text-white disabled:opacity-50"
-                      style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.18)" }}>
-                      {generatingChunks && <Loader2 size={12} className="animate-spin" />}
+                      className="inline-flex items-center gap-2 h-10 px-5 rounded-xl text-[12px] font-bold text-white disabled:opacity-50 bg-primary shadow-md shadow-primary/20">
+                      {generatingChunks && <Loader2 size={16} className="animate-spin" />}
                       {generatingChunks ? "Generating…" : "Generate Sections"}
                     </motion.button>
                   )}
@@ -312,9 +301,8 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                         initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.03, type: "spring", stiffness: 260, damping: 26 }}
                         onClick={() => toggleChunk(chunk.id)}
-                        className="flex items-start gap-3 py-4 cursor-pointer group"
+                        className="flex items-start gap-3 py-4 cursor-pointer group border-b border-border"
                         style={{
-                          borderBottom: "1px solid #d9d9e0",
                           borderLeft: isSelected ? `3px solid ${dotColor}` : "3px solid transparent",
                           paddingLeft: 12,
                           background: isSelected ? `${dotColor}08` : "transparent",
@@ -347,18 +335,17 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                               {chunk.chunk_type}
                             </span>
                             {isRelevant && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                                style={{ background: "rgba(18,165,148,0.1)", color: "#12a594", border: "1px solid rgba(18,165,148,0.2)" }}>
+                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                                 Relevant
                               </span>
                             )}
                             {chunk.similarity !== undefined && (
-                              <span className="text-[9px] font-mono ml-auto" style={{ color: "#80838d" }}>
+                              <span className="text-[9px] font-mono ml-auto text-muted-foreground">
                                 {Math.round(chunk.similarity * 100)}%
                               </span>
                             )}
                           </div>
-                          <p className="text-[12px] leading-relaxed line-clamp-3" style={{ color: "#2D2C2A" }}>
+                          <p className="text-[12px] leading-relaxed line-clamp-3 text-foreground/80">
                             {chunk.content}
                           </p>
                         </div>
@@ -371,14 +358,13 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
           </div>
 
           {/* ── Right: Preview + Save ── */}
-          <div className="flex flex-col overflow-hidden shrink-0"
-            style={{ width: 300, borderLeft: "1px solid #d9d9e0", background: "#FFFFFF" }}>
+          <div className="flex flex-col overflow-hidden shrink-0 bg-card border-l border-border" style={{ width: 300 }}>
 
             {/* Preview header */}
-            <div className="px-5 py-4 shrink-0" style={{ borderBottom: "1px solid #d9d9e0" }}>
-              <p className="text-[9px] font-mono uppercase tracking-[0.18em]" style={{ color: "#60646c" }}>Preview</p>
+            <div className="px-5 py-4 shrink-0 border-b border-border">
+              <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground">Preview</p>
               {selectedChunkIds.size > 0 && (
-                <p className="text-[10px] mt-0.5" style={{ color: "#80838d" }}>
+                <p className="text-[10px] mt-0.5 text-muted-foreground">
                   {selectedChunkIds.size} section{selectedChunkIds.size !== 1 ? "s" : ""} selected
                 </p>
               )}
@@ -389,16 +375,15 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {previewContent ? (
                 <motion.pre
                   initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
-                  className="text-[11px] leading-relaxed whitespace-pre-wrap"
-                  style={{ color: "#2D2C2A", fontFamily: "inherit" }}>
+                  className="text-[11px] leading-relaxed whitespace-pre-wrap text-foreground/80" style={{ fontFamily: "inherit" }}>
                   {previewContent}
                 </motion.pre>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center py-8">
                   <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2.2, repeat: Infinity }}>
-                    <FileText size={22} style={{ color: "#D4D0C8" }} />
+                    <FileText size={28} className="text-muted-foreground/40" />
                   </motion.div>
-                  <p className="text-[11px] mt-3 max-w-[160px] leading-relaxed" style={{ color: "#b9bbc6" }}>
+                  <p className="text-[11px] mt-3 max-w-[160px] leading-relaxed text-muted-foreground">
                     Select sections to preview your assembled resume
                   </p>
                 </div>
@@ -406,9 +391,9 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
             </div>
 
             {/* Save */}
-            <div className="p-5 space-y-4 shrink-0" style={{ borderTop: "1px solid #d9d9e0" }}>
+            <div className="p-5 space-y-4 shrink-0 border-t border-border">
               <div>
-                <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2" style={{ color: "#60646c" }}>Version Name</p>
+                <p className="text-[9px] font-mono uppercase tracking-[0.18em] mb-2 text-muted-foreground">Version Name</p>
                 <div className="relative">
                   <input
                     type="text"
@@ -416,8 +401,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                     onChange={e => setVersionName(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && saveVersion()}
                     placeholder="e.g. Frontend Role v2"
-                    className="w-full text-[13px] py-1.5 bg-transparent outline-none placeholder:text-[#b9bbc6]"
-                    style={{ color: "#1c2024", borderBottom: "1px solid #b9bbc6" }}
+                    className="w-full text-[13px] py-1.5 bg-transparent outline-none placeholder:text-muted-foreground/40 text-foreground border-b border-border/80"
                   />
                 </div>
               </div>
@@ -428,11 +412,10 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                 whileHover={!saveLoading && versionName.trim() && selectedChunkIds.size > 0
                   ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                 whileTap={{ scale: 0.97 }} transition={SPRING}
-                className="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12px] font-bold text-white disabled:opacity-40"
-                style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.16)" }}>
+                className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-[12px] font-bold text-white disabled:opacity-40 bg-primary shadow-md shadow-primary/20">
                 {saveLoading
-                  ? <><Loader2 size={12} className="animate-spin" />Saving…</>
-                  : <><Save size={12} weight="bold" />Save Version</>
+                  ? <><Loader2 size={16} className="animate-spin" />Saving…</>
+                  : <><Save size={16} weight="bold" />Save Version</>
                 }
               </motion.button>
 
@@ -441,21 +424,20 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   <motion.div
                     initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
                     transition={SPRING}
-                    className="flex items-center justify-between py-2"
-                    style={{ borderTop: "1px solid #f0f0f3" }}>
-                    <span className="text-[10px] font-mono uppercase tracking-[0.12em]" style={{ color: "#80838d" }}>ATS Score</span>
+                    className="flex items-center justify-between py-2 border-t border-border/60">
+                    <span className="text-[10px] font-mono uppercase tracking-[0.12em] text-muted-foreground">ATS Score</span>
                     <div className="flex items-baseline gap-1">
                       <span className="text-[18px] font-black font-mono" style={{ color: scoreColor(lastAtsScore), letterSpacing: "-0.03em" }}>
                         {lastAtsScore}
                       </span>
-                      <span className="text-[10px]" style={{ color: "#b9bbc6" }}>/100</span>
+                      <span className="text-[10px] text-muted-foreground/60">/100</span>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
 
               {selectedChunkIds.size > 0 && !saveLoading && !lastAtsScore && (
-                <p className="text-[10px] text-center" style={{ color: "#b9bbc6" }}>ATS score calculated on save</p>
+                <p className="text-[10px] text-center text-muted-foreground/60">ATS score calculated on save</p>
               )}
             </div>
           </div>

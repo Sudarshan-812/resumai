@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { BorderBeam } from "@/components/dashboard/border-beam";
+import { AuroraBackground } from "@/components/dashboard/aurora-background";
 
 declare global { interface Window { Razorpay: any } }
 
@@ -110,42 +112,41 @@ export default function BillingPage() {
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
-      <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
+      <div className="bg-background min-h-full">
+        <div className="max-w-4xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
-        {/* ── White header ── */}
-        <div style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
-          <div className="max-w-4xl mx-auto px-6 md:px-10 pt-10 pb-8">
-            <motion.div
-              initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: EASE }}
-            >
-              <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3" style={{ color: "#80838d" }}>
-                Credits & Billing
-              </p>
-              <h1 className="font-display font-semibold tracking-tight mb-2"
-                style={{ color: "#1c2024", fontSize: "clamp(26px, 5vw, 40px)", lineHeight: 1.15 }}>
-                Pay once. Keep forever.
-              </h1>
-              <p className="text-[14px]" style={{ color: "#60646c" }}>
-                No subscriptions. No monthly fees. Credits never expire.
-              </p>
-            </motion.div>
-          </div>
-        </div>
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: EASE }}
+            className="relative mb-10 rounded-3xl overflow-hidden border border-border px-6 py-8"
+          >
+            <AuroraBackground className="opacity-60" />
+            <p className="relative z-10 text-[9px] font-mono uppercase tracking-[0.22em] mb-3 text-muted-foreground">
+              Credits & Billing
+            </p>
+            <h1 className="relative z-10 font-display font-semibold tracking-tight mb-2 text-foreground"
+              style={{ fontSize: "clamp(26px, 5vw, 40px)", lineHeight: 1.15 }}>
+              Pay once. Keep forever.
+            </h1>
+            <p className="relative z-10 text-[14px] text-muted-foreground">
+              No subscriptions. No monthly fees. Credits never expire.
+            </p>
+          </motion.div>
 
-        {/* ── Plans ── */}
-        <div className="max-w-4xl mx-auto px-6 md:px-10 py-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-px"
-            style={{ background: "#d9d9e0", borderRadius: 0 }}>
+          {/* ── Plans ── */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {PLANS.map((plan, i) => (
               <motion.div
                 key={plan.id}
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08, type: "spring", stiffness: 240, damping: 26 }}
-                className="relative flex flex-col"
-                style={{ background: plan.popular ? "#FFFFFF" : "#f9f9fb" }}
+                className="relative flex flex-col rounded-3xl border overflow-hidden bg-card"
+                style={{ borderColor: plan.popular ? plan.accentColor : "var(--border)", borderWidth: plan.popular ? 2 : 1 }}
               >
+                {plan.popular && <BorderBeam colorFrom={plan.accentColor} colorTo="#53b9ab" borderWidth={2} />}
+
                 {/* Accent top stripe */}
                 <motion.div
                   initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
@@ -167,27 +168,27 @@ export default function BillingPage() {
                         transition={{ delay: 0.4, type: "spring", stiffness: 400, damping: 20 }}
                         className="inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full"
                         style={{ background: `${plan.accentColor}15`, color: plan.accentColor, border: `1px solid ${plan.accentColor}30` }}>
-                        <Star size={7} weight="fill" /> Popular
+                        <Star size={9} weight="fill" /> Popular
                       </motion.span>
                     )}
                   </div>
 
-                  <p className="text-[12px] leading-relaxed mb-6" style={{ color: "#80838d" }}>
+                  <p className="text-[12px] leading-relaxed mb-6 text-muted-foreground">
                     {plan.description}
                   </p>
 
                   {/* Price */}
                   <div className="mb-2">
-                    <span className="font-black tabular-nums"
-                      style={{ fontSize: 44, color: "#1c2024", letterSpacing: "-0.04em", lineHeight: 1 }}>
+                    <span className="font-black tabular-nums text-foreground"
+                      style={{ fontSize: 44, letterSpacing: "-0.04em", lineHeight: 1 }}>
                       ₹{plan.price}
                     </span>
                   </div>
-                  <p className="text-[10px] font-mono mb-6" style={{ color: "#b9bbc6" }}>
+                  <p className="text-[10px] font-mono mb-6 text-muted-foreground/60">
                     one-time · {plan.credits} credits
                   </p>
 
-                  <div style={{ height: 1, background: "#d9d9e0", marginBottom: 20 }} />
+                  <div className="h-px bg-border mb-5" />
 
                   {/* Features */}
                   <ul className="space-y-3 flex-1 mb-8">
@@ -195,9 +196,8 @@ export default function BillingPage() {
                       <motion.li key={fi}
                         initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.25 + i * 0.07 + fi * 0.04, type: "spring", stiffness: 280, damping: 26 }}
-                        className="flex items-start gap-2.5 text-[12.5px]"
-                        style={{ color: "#60646c" }}>
-                        <Check size={11} weight="bold" className="shrink-0 mt-0.5"
+                        className="flex items-start gap-2.5 text-[12.5px] text-muted-foreground">
+                        <Check size={14} weight="bold" className="shrink-0 mt-0.5"
                           style={{ color: plan.accentColor }} />
                         {f}
                       </motion.li>
@@ -221,13 +221,13 @@ export default function BillingPage() {
                       {loadingId === plan.id ? (
                         <motion.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                           className="flex items-center gap-2">
-                          <Loader2 size={13} className="animate-spin" /> Processing…
+                          <Loader2 size={16} className="animate-spin" /> Processing…
                         </motion.span>
                       ) : (
                         <motion.span key="g" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                           className="flex items-center gap-2">
                           Get {plan.name}
-                          <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                          <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
                         </motion.span>
                       )}
                     </AnimatePresence>
@@ -242,8 +242,7 @@ export default function BillingPage() {
           <motion.div
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.4 }}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-6"
-            style={{ borderTop: "1px solid #d9d9e0" }}
+            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-6 border-t border-border"
           >
             {[
               { icon: ShieldCheck, text: "Secure via Razorpay" },
@@ -254,8 +253,8 @@ export default function BillingPage() {
                 initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.45 + i * 0.07 }}
                 className="flex items-center gap-2">
-                <Icon size={13} style={{ color: "#b9bbc6" }} />
-                <span className="text-[11px] font-medium" style={{ color: "#80838d" }}>{text}</span>
+                <Icon size={18} className="text-muted-foreground/50" />
+                <span className="text-[11px] font-medium text-muted-foreground">{text}</span>
               </motion.div>
             ))}
           </motion.div>

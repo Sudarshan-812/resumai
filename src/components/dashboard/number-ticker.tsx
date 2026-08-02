@@ -8,8 +8,10 @@ interface NumberTickerProps {
   duration?: number;
   delay?: number;
   className?: string;
+  style?: React.CSSProperties;
   suffix?: string;
   decimals?: number;
+  onComplete?: () => void;
 }
 
 function easeOutExpo(t: number) {
@@ -21,8 +23,10 @@ export function NumberTicker({
   duration = 1100,
   delay = 0,
   className,
+  style,
   suffix = "",
   decimals = 0,
+  onComplete,
 }: NumberTickerProps) {
   const [display, setDisplay] = useState(0);
 
@@ -34,14 +38,16 @@ export function NumberTicker({
         const p = Math.min((now - start) / duration, 1);
         setDisplay(easeOutExpo(p) * value);
         if (p < 1) raf = requestAnimationFrame(tick);
+        else onComplete?.();
       };
       raf = requestAnimationFrame(tick);
     }, delay);
     return () => { clearTimeout(timeout); cancelAnimationFrame(raf); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, duration, delay]);
 
   return (
-    <span className={cn("tabular-nums", className)}>
+    <span className={cn("tabular-nums", className)} style={style}>
       {display.toFixed(decimals)}
       {suffix}
     </span>

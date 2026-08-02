@@ -10,6 +10,8 @@ import {
 } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
+import { AuroraBackground } from "@/components/dashboard/aurora-background";
+import { NumberTicker } from "@/components/dashboard/number-ticker";
 
 const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -35,18 +37,9 @@ function UInput({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         placeholder={placeholder}
-        className="w-full py-1.5 text-[14px] bg-transparent focus:outline-none placeholder:text-[#b9bbc6]"
-        style={{ color: "#1c2024", borderBottom: `1px solid ${focused ? "#12a594" : "#b9bbc6"}`, transition: "border-color 0.2s" }}
+        className="w-full py-1.5 text-[14px] bg-transparent focus:outline-none placeholder:text-muted-foreground/40 text-foreground border-b-2 transition-colors"
+        style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
       />
-      {focused && (
-        <motion.div
-          className="absolute bottom-0 left-0 h-[2px] rounded-full"
-          initial={{ width: 0 }}
-          animate={{ width: "100%" }}
-          style={{ background: "#12a594" }}
-          transition={{ duration: 0.22, ease: EASE }}
-        />
-      )}
     </div>
   );
 }
@@ -54,7 +47,7 @@ function UInput({
 /* ─── Section label ───────────────────────────────────────────── */
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-5" style={{ color: "#80838d" }}>
+    <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-5 text-muted-foreground">
       {children}
     </p>
   );
@@ -63,7 +56,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 /* ─── Row ─────────────────────────────────────────────────────── */
 function Row({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-4" style={{ borderBottom: "1px solid #d9d9e0" }}>
+    <div className="flex items-center justify-between gap-4 py-4 border-b border-border">
       {children}
     </div>
   );
@@ -72,33 +65,9 @@ function Row({ children }: { children: React.ReactNode }) {
 function RowLabel({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
     <div className="flex items-center gap-2.5 shrink-0">
-      <Icon size={13} style={{ color: "#b9bbc6" }} />
-      <span className="text-[13px] font-medium" style={{ color: "#60646c" }}>{label}</span>
+      <Icon size={17} className="text-muted-foreground/60" />
+      <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
     </div>
-  );
-}
-
-/* ─── Count-up ────────────────────────────────────────────────── */
-function CountUp({ to, color = "#1c2024" }: { to: number; color?: string }) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    const start = performance.now();
-    const dur = 900;
-    const tick = (now: number) => {
-      const p = Math.min((now - start) / dur, 1);
-      const e = 1 - Math.pow(1 - p, 3);
-      setVal(Math.round(e * to));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [to]);
-  return (
-    <span
-      className="tabular-nums font-bold"
-      style={{ color, fontSize: 24, letterSpacing: "-0.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums" } as React.CSSProperties}
-    >
-      {val}
-    </span>
   );
 }
 
@@ -201,19 +170,19 @@ export default function SettingsPage() {
   /* ── Loading skeleton ── */
   if (loading) {
     return (
-        <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
-          <div style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
+        <div className="bg-background min-h-full">
+          <div className="bg-card border-b border-border">
             <div className="max-w-xl mx-auto px-6 md:px-10 pt-10 pb-8">
-              <div className="h-3 w-16 rounded mb-4" style={{ background: "#d9d9e0" }} />
-              <div className="h-8 w-32 rounded mb-3" style={{ background: "#d9d9e0" }} />
-              <div className="h-4 w-48 rounded" style={{ background: "#d9d9e0" }} />
+              <div className="h-3 w-16 rounded mb-4 bg-muted" />
+              <div className="h-8 w-32 rounded mb-3 bg-muted" />
+              <div className="h-4 w-48 rounded bg-muted" />
             </div>
           </div>
           <div className="max-w-xl mx-auto px-6 md:px-10 py-10 space-y-4">
             {[1, 2, 3, 4].map(i => (
-              <div key={i} className="py-4 flex items-center justify-between" style={{ borderBottom: "1px solid #d9d9e0" }}>
-                <div className="h-3 w-24 rounded" style={{ background: "#d9d9e0" }} />
-                <div className="h-3 w-32 rounded" style={{ background: "#d9d9e0" }} />
+              <div key={i} className="py-4 flex items-center justify-between border-b border-border">
+                <div className="h-3 w-24 rounded bg-muted" />
+                <div className="h-3 w-32 rounded bg-muted" />
               </div>
             ))}
           </div>
@@ -235,32 +204,28 @@ export default function SettingsPage() {
   });
 
   return (
-      <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
+      <div className="bg-background min-h-full">
 
-        {/* ── White header ── */}
-        <div style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
-
-          {/* Teal accent stripe */}
-          <motion.div
-            initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-            transition={{ duration: 0.55, ease: EASE }}
-            style={{ height: 3, background: "linear-gradient(90deg,#12a594,#008573)", transformOrigin: "left" }}
-          />
-
-          <div className="max-w-xl mx-auto px-6 md:px-10 pt-8 pb-8">
-            <motion.div {...stagger(0)}>
-              <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3" style={{ color: "#80838d" }}>
+        {/* ── Header ── */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
+          className="max-w-xl mx-auto px-6 md:px-10 pt-8"
+        >
+          <div className="relative rounded-3xl overflow-hidden border border-border px-6 py-7 mb-10">
+            <AuroraBackground className="opacity-60" />
+            <motion.div {...stagger(0)} className="relative z-10">
+              <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3 text-muted-foreground">
                 Account
               </p>
             </motion.div>
 
             {/* Avatar + name */}
-            <motion.div {...stagger(1)} className="flex items-center gap-5">
+            <motion.div {...stagger(1)} className="relative z-10 flex items-center gap-5">
               <motion.div
                 whileHover={{ scale: 1.06 }}
                 transition={SPRING}
-                className="shrink-0 w-14 h-14 rounded-full overflow-hidden flex items-center justify-center font-bold text-xl"
-                style={{ background: "linear-gradient(135deg,rgba(18,165,148,0.12),rgba(0,133,115,0.08))", border: "2px solid rgba(18,165,148,0.22)", color: "#12a594" }}
+                className="shrink-0 w-14 h-14 rounded-full overflow-hidden flex items-center justify-center font-bold text-xl text-primary"
+                style={{ background: "linear-gradient(135deg,rgba(18,165,148,0.12),rgba(0,133,115,0.08))", border: "2px solid rgba(18,165,148,0.22)" }}
               >
                 {avatarUrl
                   ? <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
@@ -268,32 +233,28 @@ export default function SettingsPage() {
                 }
               </motion.div>
               <div>
-                <h1 className="font-display font-semibold tracking-tight"
-                  style={{ color: "#1c2024", fontSize: "clamp(22px, 4vw, 32px)", lineHeight: 1.2 }}>
+                <h1 className="font-display font-semibold tracking-tight text-foreground"
+                  style={{ fontSize: "clamp(22px, 4vw, 32px)", lineHeight: 1.2 }}>
                   {displayName}
                 </h1>
-                <p className="text-[13px] mt-0.5" style={{ color: "#80838d" }}>{user?.email}</p>
+                <p className="text-[13px] mt-0.5 text-muted-foreground">{user?.email}</p>
               </div>
 
               {/* Active badge */}
-              <motion.div
-                {...stagger(2)}
-                className="ml-auto flex items-center gap-1.5 shrink-0"
-              >
+              <motion.div {...stagger(2)} className="ml-auto flex items-center gap-1.5 shrink-0">
                 <motion.span
                   animate={{ opacity: [1, 0.4, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="w-1.5 h-1.5 rounded-full"
-                  style={{ background: "#10b981" }}
+                  className="w-1.5 h-1.5 rounded-full bg-emerald-500"
                 />
-                <span className="text-[11px] font-mono" style={{ color: "#10b981" }}>Active</span>
+                <span className="text-[11px] font-mono text-emerald-600">Active</span>
               </motion.div>
             </motion.div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* ── Cream content ── */}
-        <div className="max-w-xl mx-auto px-6 md:px-10 py-10">
+        {/* ── Content ── */}
+        <div className="max-w-xl mx-auto px-6 md:px-10">
 
           {/* ── Section: Account ── */}
           <motion.div {...stagger(2)} className="mb-10">
@@ -302,13 +263,13 @@ export default function SettingsPage() {
             {/* Email */}
             <Row>
               <RowLabel icon={Mail} label="Email" />
-              <span className="text-[13px] truncate max-w-[220px]" style={{ color: "#80838d" }}>
+              <span className="text-[13px] truncate max-w-[220px] text-muted-foreground">
                 {user?.email}
               </span>
             </Row>
 
             {/* Display name */}
-            <div className="py-4" style={{ borderBottom: "1px solid #d9d9e0" }}>
+            <div className="py-4 border-b border-border">
               <div className="flex items-center justify-between gap-4">
                 <RowLabel icon={User} label="Display name" />
 
@@ -336,21 +297,19 @@ export default function SettingsPage() {
                         onClick={handleSaveName}
                         disabled={savingName || !nameInput.trim()}
                         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} transition={SPRING}
-                        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center disabled:opacity-40"
-                        style={{ background: "linear-gradient(135deg,#12a594,#008573)" }}
+                        className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center disabled:opacity-40 bg-primary"
                       >
                         {savingName
-                          ? <Loader2 size={11} className="animate-spin" style={{ color: "#FFF" }} />
-                          : <Check size={11} weight="bold" style={{ color: "#FFF" }} />
+                          ? <Loader2 size={14} className="animate-spin text-white" />
+                          : <Check size={14} weight="bold" className="text-white" />
                         }
                       </motion.button>
                       <motion.button
                         onClick={() => setEditingName(false)}
                         whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} transition={SPRING}
-                        className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center"
-                        style={{ background: "#f0f0f3", color: "#80838d" }}
+                        className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted text-muted-foreground"
                       >
-                        <X size={11} />
+                        <X size={14} />
                       </motion.button>
                     </motion.div>
                   ) : (
@@ -360,7 +319,7 @@ export default function SettingsPage() {
                       transition={{ duration: 0.15 }}
                       className="flex items-center gap-2"
                     >
-                      <span className="text-[13px]" style={{ color: "#1c2024" }}>{displayName}</span>
+                      <span className="text-[13px] text-foreground">{displayName}</span>
                       <motion.button
                         onClick={() => {
                           setNameInput(profile?.full_name || "");
@@ -368,11 +327,10 @@ export default function SettingsPage() {
                         }}
                         whileHover={{ rotate: 18, scale: 1.12 }} whileTap={{ scale: 0.88 }}
                         transition={SPRING}
-                        className="w-6 h-6 rounded-lg flex items-center justify-center"
-                        style={{ border: "1px solid #d9d9e0", color: "#b9bbc6", background: "#FFFFFF" }}
+                        className="w-7 h-7 rounded-lg flex items-center justify-center border border-border text-muted-foreground/60 bg-card"
                         aria-label="Edit display name"
                       >
-                        <Pencil size={10} />
+                        <Pencil size={13} />
                       </motion.button>
                     </motion.div>
                   )}
@@ -384,8 +342,8 @@ export default function SettingsPage() {
             <Row>
               <RowLabel icon={ShieldCheck} label="Account status" />
               <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full" style={{ background: "#10b981" }} />
-                <span className="text-[13px] font-medium" style={{ color: "#10b981" }}>Active</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[13px] font-medium text-emerald-600">Active</span>
               </div>
             </Row>
           </motion.div>
@@ -397,14 +355,18 @@ export default function SettingsPage() {
             <Row>
               <RowLabel icon={CreditCard} label="Credits remaining" />
               <div className="flex items-center gap-4">
-                <CountUp to={credits} color={credits <= 2 ? "#d97706" : "#12a594"} />
+                <NumberTicker
+                  value={credits}
+                  duration={800}
+                  className="font-bold tabular-nums"
+                  style={{ color: credits <= 2 ? "#d97706" : "#12a594", fontSize: 24, letterSpacing: "-0.04em", lineHeight: 1 } as React.CSSProperties}
+                />
                 <Link href="/billing">
                   <motion.span
                     whileHover={{ x: 2 }} transition={SPRING}
-                    className="flex items-center gap-0.5 text-[11px] font-semibold"
-                    style={{ color: "#12a594" }}
+                    className="flex items-center gap-0.5 text-[11px] font-semibold text-primary"
                   >
-                    Buy more <ChevronRight size={10} />
+                    Buy more <ChevronRight size={13} />
                   </motion.span>
                 </Link>
               </div>
@@ -412,7 +374,7 @@ export default function SettingsPage() {
 
             {/* Mini credit bar */}
             <div className="pt-2 pb-5">
-              <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: "#d9d9e0" }}>
+              <div className="w-full h-1 rounded-full overflow-hidden bg-border">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${Math.min((credits / 30) * 100, 100)}%` }}
@@ -421,7 +383,7 @@ export default function SettingsPage() {
                   style={{ background: credits <= 2 ? "#d97706" : "linear-gradient(90deg,#12a594,#008573)" }}
                 />
               </div>
-              <p className="text-[10px] mt-1.5" style={{ color: "#b9bbc6" }}>
+              <p className="text-[10px] mt-1.5 text-muted-foreground/60">
                 {credits} of 30 maximum credits
               </p>
             </div>
@@ -440,10 +402,9 @@ export default function SettingsPage() {
                       key="sent"
                       initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
                       transition={SPRING}
-                      className="flex items-center gap-1.5 text-[12px] font-medium"
-                      style={{ color: "#10b981" }}
+                      className="flex items-center gap-1.5 text-[12px] font-medium text-emerald-600"
                     >
-                      <Check size={12} weight="bold" /> Reset email sent
+                      <Check size={15} weight="bold" /> Reset email sent
                     </motion.div>
                   ) : (
                     <motion.button
@@ -451,11 +412,10 @@ export default function SettingsPage() {
                       onClick={handleResetPassword}
                       disabled={sendingReset}
                       whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                      className="text-[12px] font-medium flex items-center gap-1.5 disabled:opacity-50"
-                      style={{ color: "#60646c" }}
+                      className="text-[12px] font-medium flex items-center gap-1.5 disabled:opacity-50 text-muted-foreground"
                     >
                       {sendingReset
-                        ? <><Loader2 size={11} className="animate-spin" /> Sending…</>
+                        ? <><Loader2 size={14} className="animate-spin" /> Sending…</>
                         : "Send reset email"
                       }
                     </motion.button>
@@ -466,7 +426,7 @@ export default function SettingsPage() {
           )}
 
           {/* ── Section: Danger zone ── */}
-          <motion.div {...stagger(5)}>
+          <motion.div {...stagger(5)} className="mb-10">
             <SectionLabel>Account actions</SectionLabel>
 
             {/* Sign out */}
@@ -476,25 +436,27 @@ export default function SettingsPage() {
                 onClick={handleSignOut}
                 disabled={signingOut}
                 whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                className="text-[12px] font-semibold flex items-center gap-1.5 disabled:opacity-50"
-                style={{ color: "#dc2626" }}
+                className="text-[12px] font-semibold flex items-center gap-1.5 disabled:opacity-50 text-muted-foreground"
               >
                 {signingOut
-                  ? <><Loader2 size={11} className="animate-spin" /> Signing out…</>
-                  : <><LogOut size={11} /> Sign out</>
+                  ? <><Loader2 size={14} className="animate-spin" /> Signing out…</>
+                  : <><LogOut size={14} /> Sign out</>
                 }
               </motion.button>
             </Row>
 
-            {/* Delete account */}
-            <div className="py-4">
-              <div className="flex items-center justify-between gap-4" style={showDelete ? {} : { borderBottom: "1px solid #d9d9e0" }}>
-                <RowLabel icon={Trash2} label="Delete account" />
+            {/* Delete account — distinct danger card */}
+            <div className="mt-5 rounded-2xl border border-rose-500/25 bg-rose-500/[0.03] p-5">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-2.5">
+                  <Trash2 size={17} className="text-rose-600/70" />
+                  <span className="text-[13px] font-semibold text-rose-700">Delete account</span>
+                </div>
                 <motion.button
                   onClick={() => setShowDelete(true)}
                   whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                  className="text-[12px] font-medium"
-                  style={{ color: showDelete ? "#80838d" : "#dc2626", display: showDelete ? "none" : "block" }}
+                  className="text-[12px] font-medium text-rose-600"
+                  style={{ display: showDelete ? "none" : "block" }}
                 >
                   Delete my account
                 </motion.button>
@@ -507,22 +469,22 @@ export default function SettingsPage() {
                     exit={{ opacity: 0, height: 0 }}
                     transition={{ type: "spring", stiffness: 260, damping: 28 }}
                     className="overflow-hidden"
-                    style={{ borderBottom: "1px solid #d9d9e0" }}
                   >
-                    <div className="pt-4 pb-5 space-y-4">
-                      <p className="text-[12px] leading-relaxed" style={{ color: "#80838d" }}>
+                    <div className="pt-4 space-y-4">
+                      <p className="text-[12px] leading-relaxed text-rose-700/80">
                         This permanently deletes all your resumes, analyses, and account data.
-                        This action <strong style={{ color: "#60646c" }}>cannot be undone</strong>.
+                        This action <strong className="text-rose-700">cannot be undone</strong>.
                       </p>
-                      <p className="text-[11px] font-mono uppercase tracking-[0.14em]" style={{ color: "#b9bbc6" }}>
+                      <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-rose-600/60">
                         Type DELETE to confirm
                       </p>
                       <div style={{ maxWidth: 240 }}>
-                        <UInput
+                        <input
                           value={deleteConfirm}
-                          onChange={setDeleteConfirm}
-                          placeholder="DELETE"
+                          onChange={e => setDeleteConfirm(e.target.value)}
                           onKeyDown={e => { if (e.key === "Escape") { setShowDelete(false); setDeleteConfirm(""); } }}
+                          placeholder="DELETE"
+                          className="w-full py-1.5 text-[14px] bg-transparent focus:outline-none placeholder:text-rose-400/50 text-rose-700 border-b-2 border-rose-500/30 focus:border-rose-500 transition-colors"
                         />
                       </div>
                       <div className="flex items-center gap-3 pt-1">
@@ -532,19 +494,17 @@ export default function SettingsPage() {
                           whileHover={deleteConfirm === "DELETE" && !deleting ? { scale: 1.02 } : {}}
                           whileTap={deleteConfirm === "DELETE" && !deleting ? { scale: 0.97 } : {}}
                           transition={SPRING}
-                          className="h-8 px-4 rounded-xl text-[12px] font-bold flex items-center gap-1.5 disabled:opacity-30"
-                          style={{ background: "#dc2626", color: "#FFFFFF" }}
+                          className="h-9 px-4 rounded-xl text-[12px] font-bold flex items-center gap-1.5 disabled:opacity-30 bg-rose-600 text-white"
                         >
                           {deleting
-                            ? <><Loader2 size={11} className="animate-spin" /> Deleting…</>
-                            : <><Trash2 size={11} /> Delete my account</>
+                            ? <><Loader2 size={14} className="animate-spin" /> Deleting…</>
+                            : <><Trash2 size={14} /> Delete my account</>
                           }
                         </motion.button>
                         <motion.button
                           onClick={() => { setShowDelete(false); setDeleteConfirm(""); }}
                           whileHover={{ x: 1 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                          className="text-[12px]"
-                          style={{ color: "#80838d" }}
+                          className="text-[12px] text-rose-600/70"
                         >
                           Cancel
                         </motion.button>
