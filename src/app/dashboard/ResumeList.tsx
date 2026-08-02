@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FileText, ChevronRight, Clock, UploadCloud } from "lucide-react";
+import { FileText, CaretRight as ChevronRight, Clock, CloudArrowUp as UploadCloud } from "@phosphor-icons/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
           transition={{ delay: 0.15, type: "spring", stiffness: 300, damping: 20 }}
           className="w-14 h-14 rounded-2xl bg-muted border border-border flex items-center justify-center mb-4"
         >
-          <FileText size={24} className="text-muted-foreground/50" strokeWidth={1.5} />
+          <FileText size={24} className="text-muted-foreground/50" />
         </motion.div>
         <p className="text-sm font-semibold text-foreground mb-1">No resumes yet</p>
         <p className="text-[12px] text-muted-foreground mb-5 max-w-[220px] leading-relaxed">
@@ -76,7 +76,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
               prefetch={false}
             >
               <div className="w-9 h-9 rounded-lg bg-muted border border-border flex items-center justify-center text-muted-foreground group-hover:text-teal-600 group-hover:border-teal-500/30 transition-all shrink-0">
-                <FileText size={16} strokeWidth={1.5} />
+                <FileText size={16} />
               </div>
 
               <div className="flex-1 min-w-0">

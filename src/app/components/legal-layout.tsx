@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "@phosphor-icons/react";
 import Footer from "@/app/components/landing/Footer";
 
 export function LegalPage({ title, date, children }: { title: string, date: string, children: React.ReactNode }) {

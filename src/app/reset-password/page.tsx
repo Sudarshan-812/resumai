@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Eye, EyeOff, Loader2, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Lock, Eye, EyeSlash as EyeOff, CircleNotch as Loader2, ArrowRight, CheckCircle as CheckCircle2 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
 import { Button } from "@/components/ui/button";

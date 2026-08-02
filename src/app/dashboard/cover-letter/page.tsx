@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, Loader2, Download, ArrowRight, FileText } from "lucide-react";
+import { Copy, Check, CircleNotch as Loader2, DownloadSimple as Download, ArrowRight, FileText } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 
@@ -234,7 +234,7 @@ export default function CoverLetterPage() {
                       animate={loading ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
                       transition={{ duration: 1, repeat: Infinity }}
                     >
-                      <FileText size={13} style={{ color: loading ? "#12a594" : "#b9bbc6" }} strokeWidth={1.5} />
+                      <FileText size={13} style={{ color: loading ? "#12a594" : "#b9bbc6" }} />
                     </motion.div>
                     <p className="text-[9px] font-mono uppercase tracking-[0.2em]" style={{ color: "#60646c" }}>
                       {loading ? "Writing…" : "Cover Letter"}

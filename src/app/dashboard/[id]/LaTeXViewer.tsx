@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Code2, Eye, Copy, Check } from "lucide-react";
+import { Code as Code2, Eye, Copy, Check } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────

@@ -4,11 +4,11 @@ import { useState, useCallback, useRef, useEffect, memo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FileText, UploadCloud, Briefcase, ArrowRight,
-  X, AlertCircle, CheckCircle2, Target, ShieldCheck,
-  Zap, Activity, Lock, ChevronRight, BarChart3, Terminal,
-  RefreshCw, ArrowLeft
-} from "lucide-react";
+  FileText, CloudArrowUp as UploadCloud, Briefcase, ArrowRight,
+  X, WarningCircle as AlertCircle, CheckCircle as CheckCircle2, Target, ShieldCheck,
+  Lightning as Zap, Pulse as Activity, Lock, CaretRight as ChevronRight, ChartBar as BarChart3, Terminal,
+  ArrowClockwise as RefreshCw, ArrowLeft
+} from "@phosphor-icons/react";
 import { analyzeResumeAsGuest } from "@/app/actions/guest-analyze";
 import { cn } from "@/lib/utils";
 

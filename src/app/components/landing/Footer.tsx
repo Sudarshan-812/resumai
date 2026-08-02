@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Twitter, Linkedin, Github } from "lucide-react";
+import { ArrowRight, TwitterLogo as Twitter, LinkedinLogo as Linkedin, GithubLogo as Github } from "@phosphor-icons/react";
 
 const PRODUCT_LINKS = [
   { label: "Capabilities", href: "/#features"      },

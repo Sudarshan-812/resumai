@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mic, ArrowRight, Zap } from "lucide-react";
+import { Microphone as Mic, ArrowRight, Lightning as Zap } from "@phosphor-icons/react";
 
 export default function VoiceHighlight() {
   return (
@@ -56,7 +56,7 @@ export default function VoiceHighlight() {
                   boxShadow: "0 0 40px rgba(255,255,255,0.1)",
                 }}
               >
-                <Mic size={26} color="white" strokeWidth={1.5} aria-hidden />
+                <Mic size={26} color="white" aria-hidden />
               </motion.div>
             </div>
 

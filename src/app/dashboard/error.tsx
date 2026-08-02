@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertTriangle, RefreshCw } from "lucide-react";
+import { Warning as AlertTriangle, ArrowClockwise as RefreshCw } from "@phosphor-icons/react";
 
 export default function DashboardError({
   error,

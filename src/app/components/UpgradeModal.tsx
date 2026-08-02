@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mic, Zap, Check, Loader2 } from "lucide-react";
+import { X, Microphone as Mic, Lightning as Zap, Check, CircleNotch as Loader2 } from "@phosphor-icons/react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
 import { toast } from "sonner";
@@ -181,7 +181,7 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                       <ul className="space-y-2 mb-4">
                         {plan.features.map((f) => (
                           <li key={f} className="flex items-start gap-2 text-[12px]" style={{ color: "#60646c" }}>
-                            <Check size={10} style={{ color: "#12a594", marginTop: 2 }} strokeWidth={3} className="shrink-0" />
+                            <Check size={10} style={{ color: "#12a594", marginTop: 2 }} weight="bold" className="shrink-0" />
                             {f}
                           </li>
                         ))}

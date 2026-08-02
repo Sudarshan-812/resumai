@@ -10,7 +10,7 @@ import {
   useLocalParticipant,
 } from "@livekit/components-react";
 import type { AgentState } from "@livekit/components-react";
-import { Mic, MicOff, PhoneOff, Loader2, FileText, ChevronDown } from "lucide-react";
+import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneDisconnect as PhoneOff, CircleNotch as Loader2, FileText, CaretDown as ChevronDown } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";

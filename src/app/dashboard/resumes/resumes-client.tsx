@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, UploadCloud, ArrowRight, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { FileText, CloudArrowUp as UploadCloud, ArrowRight, TrendUp as TrendingUp, TrendDown as TrendingDown, Minus } from "@phosphor-icons/react";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 
 interface Resume {
@@ -111,7 +111,7 @@ function ResumeCard({ resume, index, prev }: { resume: Resume; index: number; pr
                 className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                 style={{ border: "1px solid #d9d9e0" }}
               >
-                <FileText size={17} style={{ color: hovered ? cfg.color : "#80838d" }} strokeWidth={1.5} />
+                <FileText size={17} style={{ color: hovered ? cfg.color : "#80838d" }} />
               </motion.div>
               <ScorePill score={score} index={index} />
             </div>
@@ -201,7 +201,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                   className="inline-flex items-center gap-2 h-9 px-4 rounded-xl text-[12px] font-bold text-white shrink-0 mt-1"
                   style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 16px rgba(18,165,148,0.2)" }}
                 >
-                  <UploadCloud size={13} strokeWidth={2.2} />
+                  <UploadCloud size={13} weight="bold" />
                   New scan
                 </motion.button>
               </Link>
@@ -253,7 +253,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                   className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5"
                   style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
                 >
-                  <FileText size={22} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
+                  <FileText size={22} style={{ color: "#b9bbc6" }} />
                 </motion.div>
                 <p className="text-[15px] font-semibold mb-1.5" style={{ color: "#1c2024" }}>No resumes yet</p>
                 <p className="text-[13px] max-w-[200px] leading-relaxed mb-6" style={{ color: "#80838d" }}>
@@ -267,7 +267,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                     className="inline-flex items-center gap-2 h-9 px-5 rounded-xl text-[12px] font-bold text-white"
                     style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 16px rgba(18,165,148,0.18)" }}
                   >
-                    <UploadCloud size={13} strokeWidth={2.2} />
+                    <UploadCloud size={13} weight="bold" />
                     Upload Resume
                   </motion.button>
                 </Link>
@@ -300,7 +300,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                       className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-4 py-2 rounded-xl"
                       style={{ border: "1px solid #d9d9e0", color: "#80838d", background: "#FFFFFF" }}
                     >
-                      <UploadCloud size={11} strokeWidth={2} />
+                      <UploadCloud size={11} />
                       Upload another
                     </motion.button>
                   </Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { BarChart3, Wand2, Mic, FileText, History } from "lucide-react";
+import { ChartBar as BarChart3, MagicWand as Wand2, Microphone as Mic, FileText, ClockCounterClockwise as History } from "@phosphor-icons/react";
 
 const FEATURES = [
   {
@@ -119,7 +119,7 @@ export default function FeatureGrid() {
                 className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                 style={{ border: "1px solid rgba(18,165,148,0.2)" }}
               >
-                <f.icon size={15} style={{ color: "#12a594" }} strokeWidth={1.5} aria-hidden />
+                <f.icon size={15} style={{ color: "#12a594" }} aria-hidden />
               </motion.div>
 
               {/* Content */}

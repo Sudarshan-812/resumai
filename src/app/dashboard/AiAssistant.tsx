@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, FormEvent } from "react";
-import { Send, Loader2, Square } from "lucide-react";
+import { PaperPlaneTilt as Send, Square } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";

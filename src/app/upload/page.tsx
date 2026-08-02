@@ -7,9 +7,9 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
-  FileText, Loader2, ArrowLeft, AlertCircle, X,
-  UploadCloud, CheckCircle2, AlignLeft, ArrowRight, FileWarning,
-} from "lucide-react";
+  FileText, CircleNotch as Loader2, ArrowLeft, WarningCircle as AlertCircle, X,
+  CloudArrowUp as UploadCloud, CheckCircle as CheckCircle2, TextAlignLeft as AlignLeft, ArrowRight, FileX as FileWarning,
+} from "@phosphor-icons/react";
 import { processResume } from "@/app/actions/upload-resume";
 import { cn } from "@/lib/utils";
 import Stepper, { Step } from "@/app/components/ui/Stepper";
@@ -323,9 +323,9 @@ const UploadPage: FC = (): JSX.Element => {
                             }
                           >
                             {dragStatus === "reject" ? (
-                              <FileWarning className="w-6 h-6" style={{ color: "#e5484d" }} strokeWidth={1.5} />
+                              <FileWarning className="w-6 h-6" style={{ color: "#e5484d" }} />
                             ) : (
-                              <UploadCloud className="w-6 h-6" style={{ color: "#12a594" }} strokeWidth={1.5} />
+                              <UploadCloud className="w-6 h-6" style={{ color: "#12a594" }} />
                             )}
                           </div>
                           <p className="text-sm font-medium mb-1" style={{ color: dragStatus === "reject" ? "#e5484d" : "#1c2024" }}>
@@ -352,7 +352,7 @@ const UploadPage: FC = (): JSX.Element => {
                           style={{ background: "rgba(18,165,148,0.06)", border: "1px solid rgba(18,165,148,0.15)" }}
                         >
                           <div className="absolute top-0 right-0 w-4 h-4 rounded-bl-lg rounded-tr-xl" style={{ background: "rgba(18,165,148,0.12)" }} />
-                          <FileText className="w-5 h-5" style={{ color: "#12a594" }} strokeWidth={1.5} />
+                          <FileText className="w-5 h-5" style={{ color: "#12a594" }} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate" style={{ color: "#1c2024" }}>{file.name}</p>
@@ -405,7 +405,7 @@ const UploadPage: FC = (): JSX.Element => {
                           className="w-9 h-10 rounded-lg flex items-center justify-center shrink-0"
                           style={{ background: "rgba(18,165,148,0.08)" }}
                         >
-                          <FileText className="w-4 h-4" style={{ color: "#12a594" }} strokeWidth={1.5} />
+                          <FileText className="w-4 h-4" style={{ color: "#12a594" }} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[10px] font-mono uppercase tracking-[0.12em] mb-0.5" style={{ color: "#80838d" }}>Resume</p>

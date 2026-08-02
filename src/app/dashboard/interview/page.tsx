@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Loader2, Send, RotateCcw, CheckCircle2, AlertCircle,
-  ChevronRight, Mic, ArrowRight,
-} from "lucide-react";
+  CircleNotch as Loader2, PaperPlaneTilt as Send, ArrowCounterClockwise as RotateCcw, CheckCircle as CheckCircle2, WarningCircle as AlertCircle,
+  CaretRight as ChevronRight, Microphone as Mic, ArrowRight,
+} from "@phosphor-icons/react";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import VoiceInterview from "./VoiceInterview";
 import UpgradeModal from "@/app/components/UpgradeModal";

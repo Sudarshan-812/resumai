@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ArrowRight, LayoutDashboard } from "lucide-react";
+import { List as Menu, X, ArrowRight, SquaresFour as LayoutDashboard } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 
 const NAV_LINKS = [

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { Upload, Cpu, Download, ArrowRight } from "lucide-react";
+import { UploadSimple as Upload, Cpu, DownloadSimple as Download, ArrowRight } from "@phosphor-icons/react";
 
 const STEPS = [
   {
@@ -83,7 +83,7 @@ export default function HowItWorks() {
                 className="w-10 h-10 rounded-xl flex items-center justify-center mb-6"
                 style={{ border: "1px solid rgba(18,165,148,0.2)" }}
               >
-                <step.icon size={18} style={{ color: "#12a594" }} strokeWidth={1.5} aria-hidden />
+                <step.icon size={18} style={{ color: "#12a594" }} aria-hidden />
               </motion.div>
 
               <div className="text-[10px] font-mono mb-3" style={{ color: "#b9bbc6" }}>

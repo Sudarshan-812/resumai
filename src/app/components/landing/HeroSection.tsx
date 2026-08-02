@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, LayoutDashboard, CheckCircle2, TrendingUp, Zap } from "lucide-react";
+import { ArrowRight, SquaresFour as LayoutDashboard, CheckCircle as CheckCircle2, TrendUp as TrendingUp, Lightning as Zap } from "@phosphor-icons/react";
+import { MaterialIcon } from "@/components/ui/material-icon";
 import { createClient } from "@/app/lib/supabase/client";
 import SplitText from "@/app/components/ui/SplitText";
 import dynamic from "next/dynamic";
@@ -168,7 +169,7 @@ export default function HeroSection() {
                     className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
                     style={{ background: "#12a594", boxShadow: "0 4px 24px rgba(18,165,148,0.32)" }}
                   >
-                    <Sparkles size={14} aria-hidden />
+                    <MaterialIcon name="auto_awesome" size={14} />
                     Analyze My Resume
                     <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
                   </motion.span>
@@ -194,7 +195,7 @@ export default function HeroSection() {
                     className="group inline-flex items-center gap-2 h-12 px-7 rounded-xl text-sm font-semibold text-white cursor-pointer"
                     style={{ background: "#12a594", boxShadow: "0 4px 24px rgba(18,165,148,0.32)" }}
                   >
-                    <Sparkles size={14} aria-hidden />
+                    <MaterialIcon name="auto_awesome" size={14} />
                     Analyze My Resume Free
                     <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
                   </motion.span>

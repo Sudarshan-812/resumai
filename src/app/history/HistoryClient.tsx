@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, ChevronLeft, ChevronRight, ArrowUpRight, Search, UploadCloud } from "lucide-react";
+import { FileText, CaretLeft as ChevronLeft, CaretRight as ChevronRight, ArrowUpRight, MagnifyingGlass as Search, CloudArrowUp as UploadCloud } from "@phosphor-icons/react";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 
 interface Resume { id: string; file_name: string; created_at: string; ats_score: number }
@@ -67,7 +67,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                 className="inline-flex items-center gap-2 h-10 px-5 rounded-lg text-sm font-semibold text-white shrink-0"
                 style={{ background: "#12a594" }}
               >
-                <UploadCloud size={14} strokeWidth={2} />
+                <UploadCloud size={14} />
                 New Analysis
               </motion.button>
             </Link>
@@ -109,7 +109,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
                   style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
                 >
-                  <FileText size={18} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
+                  <FileText size={18} style={{ color: "#b9bbc6" }} />
                 </div>
                 <p className="text-sm font-medium mb-1" style={{ color: "#1c2024" }}>
                   {query ? "No results found" : "No analyses yet"}
@@ -125,7 +125,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                       className="inline-flex items-center gap-2 h-9 px-5 rounded-lg text-sm font-semibold text-white"
                       style={{ background: "#12a594" }}
                     >
-                      <UploadCloud size={13} strokeWidth={2} />
+                      <UploadCloud size={13} />
                       Upload Resume
                     </motion.button>
                   </Link>
@@ -181,7 +181,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                                   className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                                   style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
                                 >
-                                  <FileText size={14} style={{ color: "#80838d" }} strokeWidth={1.5} />
+                                  <FileText size={14} style={{ color: "#80838d" }} />
                                 </div>
                                 <span
                                   className="font-medium truncate"

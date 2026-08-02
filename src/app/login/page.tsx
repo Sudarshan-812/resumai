@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  Loader2, Mail, Lock, ArrowRight, Eye, EyeOff, ShieldCheck, Globe, Command
-} from "lucide-react";
+  CircleNotch as Loader2, EnvelopeSimple as Mail, Lock, ArrowRight, Eye, EyeSlash as EyeOff, ShieldCheck, Globe, Command
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";

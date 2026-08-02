@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Outfit } from "next/font/google";
 import "./globals.css";
+import "material-symbols/outlined.css";
 import NextTopLoader from 'nextjs-toploader';
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/app/components/theme-provider";
+import { IconProvider } from "@/app/components/icon-provider";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -56,7 +58,7 @@ export default function RootLayout({
             speed={200}
             shadow="0 0 10px #12a594,0 0 5px #12a594"
           />
-{children}
+<IconProvider>{children}</IconProvider>
           <Toaster richColors />
           <Analytics />
         </ThemeProvider>

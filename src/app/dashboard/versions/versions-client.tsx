@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Save, FileText, ChevronDown, Layers, RotateCcw, Loader2 } from "lucide-react";
+import { MagnifyingGlass as Search, FloppyDisk as Save, FileText, CaretDown as ChevronDown, Stack as Layers, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2 } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 
@@ -201,7 +201,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   whileTap={{ scale: 0.97 }} transition={SPRING}
                   className="w-full flex items-center justify-center gap-2 h-9 rounded-xl text-[12px] font-bold text-white disabled:opacity-40"
                   style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.18)" }}>
-                  {searchLoading ? <><Loader2 size={12} className="animate-spin" />Searching…</> : <><Search size={12} strokeWidth={2.2} />Find Relevant</>}
+                  {searchLoading ? <><Loader2 size={12} className="animate-spin" />Searching…</> : <><Search size={12} weight="bold" />Find Relevant</>}
                 </motion.button>
 
                 <AnimatePresence>
@@ -285,7 +285,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   <motion.div animate={{ y: [0, -4, 0] }} transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                     className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
                     style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 4px 16px rgba(0,0,0,0.04)" }}>
-                    <Layers size={18} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
+                    <Layers size={18} style={{ color: "#b9bbc6" }} />
                   </motion.div>
                   <p className="text-[14px] font-semibold mb-1.5" style={{ color: "#1c2024" }}>No sections yet</p>
                   <p className="text-[12px] max-w-[200px] leading-relaxed mb-5" style={{ color: "#80838d" }}>
@@ -398,7 +398,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center py-8">
                   <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2.2, repeat: Infinity }}>
-                    <FileText size={22} style={{ color: "#D4D0C8" }} strokeWidth={1.5} />
+                    <FileText size={22} style={{ color: "#D4D0C8" }} />
                   </motion.div>
                   <p className="text-[11px] mt-3 max-w-[160px] leading-relaxed" style={{ color: "#b9bbc6" }}>
                     Select sections to preview your assembled resume
@@ -434,7 +434,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                 style={{ background: "linear-gradient(135deg,#12a594,#008573)", boxShadow: "0 4px 14px rgba(18,165,148,0.16)" }}>
                 {saveLoading
                   ? <><Loader2 size={12} className="animate-spin" />Saving…</>
-                  : <><Save size={12} strokeWidth={2.2} />Save Version</>
+                  : <><Save size={12} weight="bold" />Save Version</>
                 }
               </motion.button>
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FileText, ArrowUpRight, Plus, ChevronRight, UploadCloud, Mic, PenLine, ScanLine, Target, Coins, TrendingUp, TrendingDown, GripVertical } from "lucide-react";
+import { FileText, ArrowUpRight, Plus, CaretRight as ChevronRight, CloudArrowUp as UploadCloud, Microphone as Mic, PencilLine as PenLine, Scan as ScanLine, Target, Coins, TrendUp as TrendingUp, TrendDown as TrendingDown, DotsSixVertical as GripVertical } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import DashboardShell from "./DashboardShell";
 
@@ -75,7 +75,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                 className="inline-flex items-center gap-2 h-10 px-5 rounded-lg text-sm font-semibold text-white shrink-0"
                 style={{ background: "#12a594" }}
               >
-                <Plus size={15} strokeWidth={2.5} />
+                <Plus size={15} weight="bold" />
                 New Analysis
               </motion.button>
             </Link>
@@ -147,7 +147,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                     className="w-8 h-8 rounded-lg flex items-center justify-center"
                     style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
                   >
-                    <m.icon size={14} style={{ color: "#12a594" }} strokeWidth={1.75} />
+                    <m.icon size={14} style={{ color: "#12a594" }} />
                   </div>
                   {m.diff && (
                     <span
@@ -239,7 +239,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors"
                             style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
                           >
-                            <FileText size={14} style={{ color: "#80838d" }} strokeWidth={1.5} />
+                            <FileText size={14} style={{ color: "#80838d" }} />
                           </div>
 
                           {/* Name + date */}
@@ -303,7 +303,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                       }}
                     />
                     <div className="relative">
-                      <UploadCloud size={18} style={{ color: "#12a594" }} strokeWidth={1.5} className="mb-3" />
+                      <UploadCloud size={18} style={{ color: "#12a594" }} className="mb-3" />
                       <p className="text-sm font-semibold mb-1" style={{ color: "#FFFFFF" }}>Analyze a resume</p>
                       <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>
                         Upload a PDF + job description for an instant ATS match report.
@@ -390,7 +390,7 @@ function AiToolsPanel() {
                 className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0"
                 style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
               >
-                <Icon size={13} style={{ color: "#12a594" }} strokeWidth={1.75} />
+                <Icon size={13} style={{ color: "#12a594" }} />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-medium leading-none mb-0.5" style={{ color: "#1c2024" }}>{label}</p>
@@ -422,7 +422,7 @@ function EmptyState() {
         className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
         style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
       >
-        <FileText size={18} style={{ color: "#b9bbc6" }} strokeWidth={1.5} />
+        <FileText size={18} style={{ color: "#b9bbc6" }} />
       </div>
       <p className="text-sm font-medium mb-1" style={{ color: "#1c2024" }}>No analyses yet</p>
       <p className="text-[12px] mb-6 max-w-[200px] leading-relaxed" style={{ color: "#80838d" }}>
@@ -435,7 +435,7 @@ function EmptyState() {
           className="inline-flex items-center gap-2 h-9 px-5 rounded-lg text-sm font-semibold text-white"
           style={{ background: "#12a594" }}
         >
-          <UploadCloud size={13} strokeWidth={2} />
+          <UploadCloud size={13} />
           Upload Resume
         </motion.button>
       </Link>

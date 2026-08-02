@@ -80,7 +80,15 @@
       "Bash(npx shadcn@latest add dialog --yes)",
       "Bash(npx shadcn@latest add dropdown-menu tooltip --yes)",
       "Bash(find /c/Users/mrsud/AppData/Local/Temp/claude/C--Users-mrsud-OneDrive-Desktop-AI-RESUME-PROJ/e77c1b3d-7422-4d3d-b50d-acd746742e9b/scratchpad/refs/mantine/apps/mantine.dev -maxdepth 3 -type d -iname *ui* -o -maxdepth 3 -type d -iname *template*)",
-      "Bash(export MSYS_NO_PATHCONV=1)"
+      "Bash(export MSYS_NO_PATHCONV=1)",
+      "Bash(echo \"EXIT_CODE=$?\")",
+      "Bash(npm uninstall *)",
+      "Bash(tee /tmp/dev.log)",
+      "Read(//tmp/**)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Stop-Process *)",
+      "Bash(rm -rf .next/dev/lock)",
+      "Bash(npm run *)"
     ]
   }
 }

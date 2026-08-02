@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, AlignJustify, ArrowUpRight, LogOut, CreditCard, Settings, ChevronDown } from "lucide-react";
+import { X, List as AlignJustify, ArrowUpRight, SignOut as LogOut, CreditCard, Gear as Settings, CaretDown as ChevronDown } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import {

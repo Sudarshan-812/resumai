@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
+import { Warning as AlertTriangle, ArrowClockwise as RefreshCw, ArrowLeft } from "@phosphor-icons/react";
 import Link from "next/link";
 
 export default function ReportError({

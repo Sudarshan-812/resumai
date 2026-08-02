@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Star } from "lucide-react";
+import { Check, Star } from "@phosphor-icons/react";
 
 const PLANS = [
   {
@@ -129,7 +129,7 @@ export default function Pricing() {
                   <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#60646c" }}>
                     <Check
                       size={14}
-                      strokeWidth={2.5}
+                      weight="bold"
                       style={{ color: plan.popular ? "#12a594" : "#b9bbc6", flexShrink: 0 }}
                       aria-hidden
                     />

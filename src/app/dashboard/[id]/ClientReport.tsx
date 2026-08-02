@@ -6,9 +6,9 @@ import AiAssistant from "@/app/dashboard/AiAssistant";
 import LaTeXViewer from "./LaTeXViewer";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import {
-  Download, X, CheckCircle2, Copy, AlertCircle,
-  ArrowLeft, ChevronRight, MessageSquare,
-} from "lucide-react";
+  DownloadSimple as Download, X, CheckCircle as CheckCircle2, Copy, WarningCircle as AlertCircle,
+  ArrowLeft, CaretRight as ChevronRight, ChatCircle as MessageSquare,
+} from "@phosphor-icons/react";
 import Link from "next/link";
 
 const SPRING = { type: "spring", stiffness: 300, damping: 24 } as const;

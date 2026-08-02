@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { FileQuestion, ArrowLeft, Home } from "lucide-react";
+import { FileDashed as FileQuestion, ArrowLeft, House as Home } from "@phosphor-icons/react";
 
 export default function NotFound() {
   return (
@@ -7,7 +9,7 @@ export default function NotFound() {
       <div className="max-w-md w-full text-center space-y-8">
         <div className="flex justify-center">
           <div className="w-20 h-20 rounded-3xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center">
-            <FileQuestion className="w-10 h-10 text-teal-500" strokeWidth={1.5} />
+            <FileQuestion className="w-10 h-10 text-teal-500" />
           </div>
         </div>
 

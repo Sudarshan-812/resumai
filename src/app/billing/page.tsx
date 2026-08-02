@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Loader2, ShieldCheck, Zap, Star, ArrowRight } from "lucide-react";
+import { Check, CircleNotch as Loader2, ShieldCheck, Lightning as Zap, Star, ArrowRight } from "@phosphor-icons/react";
 import DashboardShell from "@/app/dashboard/DashboardShell";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
@@ -169,7 +169,7 @@ export default function BillingPage() {
                         transition={{ delay: 0.4, type: "spring", stiffness: 400, damping: 20 }}
                         className="inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full"
                         style={{ background: `${plan.accentColor}15`, color: plan.accentColor, border: `1px solid ${plan.accentColor}30` }}>
-                        <Star size={7} fill="currentColor" /> Popular
+                        <Star size={7} weight="fill" /> Popular
                       </motion.span>
                     )}
                   </div>
@@ -199,7 +199,7 @@ export default function BillingPage() {
                         transition={{ delay: 0.25 + i * 0.07 + fi * 0.04, type: "spring", stiffness: 280, damping: 26 }}
                         className="flex items-start gap-2.5 text-[12.5px]"
                         style={{ color: "#60646c" }}>
-                        <Check size={11} strokeWidth={3} className="shrink-0 mt-0.5"
+                        <Check size={11} weight="bold" className="shrink-0 mt-0.5"
                           style={{ color: plan.accentColor }} />
                         {f}
                       </motion.li>

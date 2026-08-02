@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Activity } from "lucide-react";
+import { Pulse as Activity } from "@phosphor-icons/react";
 
 interface ScoreGaugeProps {
   score: number;

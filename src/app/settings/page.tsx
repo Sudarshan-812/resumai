@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LogOut, CreditCard, Mail, User, ShieldCheck, Pencil,
-  Check, X, Loader2, KeyRound, Trash2, ChevronRight,
-} from "lucide-react";
+  SignOut as LogOut, CreditCard, EnvelopeSimple as Mail, User, ShieldCheck, Pencil,
+  Check, X, CircleNotch as Loader2, Key as KeyRound, Trash as Trash2, CaretRight as ChevronRight,
+} from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
 import DashboardShell from "@/app/dashboard/DashboardShell";
@@ -73,7 +73,7 @@ function Row({ children }: { children: React.ReactNode }) {
 function RowLabel({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
     <div className="flex items-center gap-2.5 shrink-0">
-      <Icon size={13} strokeWidth={1.7} style={{ color: "#b9bbc6" }} />
+      <Icon size={13} style={{ color: "#b9bbc6" }} />
       <span className="text-[13px] font-medium" style={{ color: "#60646c" }}>{label}</span>
     </div>
   );
@@ -345,7 +345,7 @@ export default function SettingsPage() {
                       >
                         {savingName
                           ? <Loader2 size={11} className="animate-spin" style={{ color: "#FFF" }} />
-                          : <Check size={11} strokeWidth={3} style={{ color: "#FFF" }} />
+                          : <Check size={11} weight="bold" style={{ color: "#FFF" }} />
                         }
                       </motion.button>
                       <motion.button
@@ -447,7 +447,7 @@ export default function SettingsPage() {
                       className="flex items-center gap-1.5 text-[12px] font-medium"
                       style={{ color: "#10b981" }}
                     >
-                      <Check size={12} strokeWidth={3} /> Reset email sent
+                      <Check size={12} weight="bold" /> Reset email sent
                     </motion.div>
                   ) : (
                     <motion.button

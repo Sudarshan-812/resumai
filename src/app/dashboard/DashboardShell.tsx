@@ -6,11 +6,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, History, FileText, PenLine,
-  BarChart3, CreditCard, Settings, LogOut,
-  Menu, ChevronRight, AlertTriangle, Zap,
-  PanelLeftClose, GitBranch,
-} from "lucide-react";
+  SquaresFour as LayoutDashboard, ClockCounterClockwise as History, FileText, PencilLine as PenLine,
+  ChartBar as BarChart3, CreditCard, Gear as Settings, SignOut as LogOut,
+  List as Menu, CaretRight as ChevronRight, Warning as AlertTriangle, Lightning as Zap,
+  SidebarSimple as PanelLeftClose, GitBranch,
+} from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
