@@ -2,9 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, useSpring, useTransform, useMotionValue } from "framer-motion";
-import AiAssistant from "@/app/dashboard/AiAssistant";
+import AiAssistant from "@/app/(shell)/dashboard/AiAssistant";
 import LaTeXViewer from "./LaTeXViewer";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 import {
   DownloadSimple as Download, X, CheckCircle as CheckCircle2, Copy, WarningCircle as AlertCircle,
   ArrowLeft, CaretRight as ChevronRight, ChatCircle as MessageSquare,
@@ -236,7 +235,7 @@ export default function ClientReport({
   ];
 
   return (
-    <DashboardShell>
+    <>
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
 
         {/* ── Colored accent stripe (score-based) ── */}
@@ -583,6 +582,6 @@ export default function ClientReport({
       <AnimatePresence>
         {aiViewOpen && <AiSplitView onClose={() => setAiViewOpen(false)} resume={resume} />}
       </AnimatePresence>
-    </DashboardShell>
+    </>
   );
 }

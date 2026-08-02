@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Microphone as Mic, Lightning as Zap, Check, CircleNotch as Loader2 } from "@phosphor-icons/react";
+import { X, Lightning as Zap, Check, CircleNotch as Loader2 } from "@phosphor-icons/react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
 import { toast } from "sonner";
@@ -13,7 +13,6 @@ declare global { interface Window { Razorpay: any } }
 
 interface Props {
   open: boolean;
-  reason: "voice" | "limit";
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -27,7 +26,7 @@ const PLANS = [
     price: 99,
     credits: 12,
     popular: true,
-    features: ["Unlimited interviews / month", "Voice AI interview mode", "12 resume scan credits", "Priority support"],
+    features: ["Unlimited interviews / month", "12 resume scan credits", "Priority support"],
   },
   {
     id: "premium",
@@ -39,7 +38,7 @@ const PLANS = [
   },
 ] as const;
 
-export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props) {
+export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handlePurchase = async (plan: typeof PLANS[number]) => {
@@ -110,7 +109,7 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                   style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", boxShadow: "0 32px 80px rgba(0,0,0,0.12)" }}
                 >
                 <DialogPrimitive.Title className="sr-only">
-                  {reason === "voice" ? "Unlock Voice Interviews" : "Interview Limit Reached"}
+                  Interview Limit Reached
                 </DialogPrimitive.Title>
               {/* Teal accent stripe */}
               <div style={{ height: 3, background: "linear-gradient(90deg,#12a594,#008573)" }} />
@@ -131,20 +130,14 @@ export default function UpgradeModal({ open, reason, onClose, onSuccess }: Props
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
                   style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.18)" }}
                 >
-                  {reason === "voice"
-                    ? <Mic size={18} style={{ color: "#12a594" }} />
-                    : <Zap size={18} style={{ color: "#12a594" }} />
-                  }
+                  <Zap size={18} style={{ color: "#12a594" }} />
                 </div>
 
                 <h2 className="font-display text-xl font-semibold mb-1.5" style={{ color: "#1c2024" }}>
-                  {reason === "voice" ? "Unlock Voice Interviews" : "Interview Limit Reached"}
+                  Interview Limit Reached
                 </h2>
                 <p className="text-[13px] leading-relaxed mb-6" style={{ color: "#60646c" }}>
-                  {reason === "voice"
-                    ? "Voice AI interviewer is available on Pro and Premium plans."
-                    : "You've used all 3 free interviews this month. Upgrade to practice without limits."
-                  }
+                  You've used all 3 free interviews this month. Upgrade to practice without limits.
                 </p>
 
                 {/* Plans */}

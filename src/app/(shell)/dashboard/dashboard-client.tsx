@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FileText, ArrowUpRight, Plus, CaretRight as ChevronRight, CloudArrowUp as UploadCloud, Microphone as Mic, PencilLine as PenLine, Scan as ScanLine, Target, Coins, TrendUp as TrendingUp, TrendDown as TrendingDown, DotsSixVertical as GripVertical } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
-import DashboardShell from "./DashboardShell";
 
 interface DashboardClientProps {
   user: {
@@ -47,7 +46,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
     mounted ? new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
 
   return (
-    <DashboardShell>
       <div className="min-h-full" style={{ background: "#f9f9fb" }}>
         <div className="max-w-5xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
@@ -319,7 +317,6 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           </div>
         </div>
       </div>
-    </DashboardShell>
   );
 }
 

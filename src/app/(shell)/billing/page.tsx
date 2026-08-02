@@ -1,7 +1,6 @@
 "use client";
 
 import { Check, CircleNotch as Loader2, ShieldCheck, Lightning as Zap, Star, ArrowRight } from "@phosphor-icons/react";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
@@ -58,7 +57,6 @@ const PLANS = [
     features: [
       "30 AI resume scans",
       "Everything in Pro",
-      "Voice AI interviews",
       "LinkedIn optimization",
       "Lifetime access",
     ],
@@ -109,7 +107,7 @@ export default function BillingPage() {
   };
 
   return (
-    <DashboardShell>
+    <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
@@ -264,6 +262,6 @@ export default function BillingPage() {
         </div>
 
       </div>
-    </DashboardShell>
+    </>
   );
 }

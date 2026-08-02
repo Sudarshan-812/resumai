@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Copy, Check, CircleNotch as Loader2, DownloadSimple as Download, ArrowRight, FileText } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 
 const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -107,7 +106,6 @@ export default function CoverLetterPage() {
   };
 
   return (
-    <DashboardShell>
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
         <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
@@ -307,7 +305,6 @@ export default function CoverLetterPage() {
 
         </div>
       </div>
-    </DashboardShell>
   );
 }
 

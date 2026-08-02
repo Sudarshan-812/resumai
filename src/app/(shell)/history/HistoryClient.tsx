@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, CaretLeft as ChevronLeft, CaretRight as ChevronRight, ArrowUpRight, MagnifyingGlass as Search, CloudArrowUp as UploadCloud } from "@phosphor-icons/react";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 
 interface Resume { id: string; file_name: string; created_at: string; ats_score: number }
 
@@ -37,7 +36,6 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
   };
 
   return (
-    <DashboardShell>
       <div className="min-h-full" style={{ background: "#f9f9fb" }}>
         <div className="max-w-4xl mx-auto px-6 md:px-10 py-10 md:py-14">
 
@@ -266,6 +264,5 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
 
         </div>
       </div>
-    </DashboardShell>
   );
 }

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { FileText, CloudArrowUp as UploadCloud, ArrowRight, TrendUp as TrendingUp, TrendDown as TrendingDown, Minus } from "@phosphor-icons/react";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 
 interface Resume {
   id: string;
@@ -172,7 +171,6 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
   const cfg       = scoreCfg(avgScore);
 
   return (
-    <DashboardShell>
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
         <div className="max-w-4xl mx-auto px-5 md:px-8 py-10 md:py-14">
 
@@ -311,6 +309,5 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
 
         </div>
       </div>
-    </DashboardShell>
   );
 }

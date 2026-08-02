@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MagnifyingGlass as Search, FloppyDisk as Save, FileText, CaretDown as ChevronDown, Stack as Layers, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2 } from "@phosphor-icons/react";
 import { toast } from "sonner";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 
 type ChunkType = "summary" | "experience" | "education" | "skills" | "project";
 
@@ -136,7 +135,6 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
   const selectedResume = resumes.find((r) => r.id === selectedResumeId);
 
   return (
-    <DashboardShell>
       <div className="h-full flex flex-col" style={{ background: "#f9f9fb" }}>
 
         {/* ── Page header (white) ── */}
@@ -464,6 +462,5 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
 
         </div>
       </div>
-    </DashboardShell>
   );
 }

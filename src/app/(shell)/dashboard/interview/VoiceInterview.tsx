@@ -313,7 +313,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
 // ── Setup View (light theme) ──────────────────────────────────────────────────
 
 function SetupView({
-  resumes, resumesLoading, selectedId, onSelect, onStart, loading, isLocked,
+  resumes, resumesLoading, selectedId, onSelect, onStart, loading,
 }: {
   resumes: Resume[];
   resumesLoading: boolean;
@@ -321,7 +321,6 @@ function SetupView({
   onSelect: (id: string) => void;
   onStart: () => void;
   loading: boolean;
-  isLocked: boolean;
 }) {
   return (
     <motion.div
@@ -416,20 +415,15 @@ function SetupView({
 
       <motion.button
         onClick={onStart}
-        disabled={!isLocked && (!selectedId || loading || !LIVEKIT_URL)}
+        disabled={!selectedId || loading || !LIVEKIT_URL}
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
         className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-        style={isLocked
-          ? { background: "rgba(18,165,148,0.08)", border: "1.5px solid rgba(18,165,148,0.2)", color: "#12a594" }
-          : { background: "#12a594", color: "#FFFFFF", boxShadow: "0 4px 20px rgba(18,165,148,0.25)" }
-        }
+        style={{ background: "#12a594", color: "#FFFFFF", boxShadow: "0 4px 20px rgba(18,165,148,0.25)" }}
       >
-        {isLocked
-          ? <><Mic size={15} />Upgrade to Pro — Unlock Voice Interview</>
-          : loading
-            ? <><Loader2 size={15} className="animate-spin" />Connecting…</>
-            : <><Mic size={15} />Start Voice Interview</>
+        {loading
+          ? <><Loader2 size={15} className="animate-spin" />Connecting…</>
+          : <><Mic size={15} />Start Voice Interview</>
         }
       </motion.button>
     </motion.div>
@@ -474,12 +468,8 @@ import React from "react";
 
 function VoiceInterview({
   onActiveChange,
-  userPlan = "free",
-  onUpgradeNeeded,
 }: {
   onActiveChange?: (active: boolean) => void;
-  userPlan?: string;
-  onUpgradeNeeded?: () => void;
 }) {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [resumesLoading, setResumesLoading] = useState(true);
@@ -512,10 +502,6 @@ function VoiceInterview({
   }, []);
 
   const handleStart = async () => {
-    if (userPlan === "free") {
-      onUpgradeNeeded?.();
-      return;
-    }
     if (!selectedId) return;
     if (!LIVEKIT_URL) {
       toast.error("Voice interview is not configured — add NEXT_PUBLIC_LIVEKIT_URL to your .env.local.");
@@ -579,7 +565,6 @@ function VoiceInterview({
       onSelect={setSelectedId}
       onStart={handleStart}
       loading={loading}
-      isLocked={userPlan === "free"}
     />
   );
 }

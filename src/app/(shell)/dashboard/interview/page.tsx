@@ -6,7 +6,6 @@ import {
   CircleNotch as Loader2, PaperPlaneTilt as Send, ArrowCounterClockwise as RotateCcw, CheckCircle as CheckCircle2, WarningCircle as AlertCircle,
   CaretRight as ChevronRight, Microphone as Mic, ArrowRight,
 } from "@phosphor-icons/react";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 import VoiceInterview from "./VoiceInterview";
 import UpgradeModal from "@/app/components/UpgradeModal";
 import { useInterviewState } from "./useInterviewState";
@@ -183,7 +182,7 @@ function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
 /* ── Main ────────────────────────────────────────────────────── */
 export default function InterviewPage() {
   const {
-    userPlan, refreshPlan,
+    refreshPlan,
     jobDesc, setJobDesc, role, setRole,
     questions, currentIdx, answer, setAnswer,
     feedbacks, phase, loading, avgScore,
@@ -192,7 +191,7 @@ export default function InterviewPage() {
 
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [elapsed, setElapsed]             = useState(0);
-  const [upgradeModal, setUpgradeModal]   = useState<{ open: boolean; reason: "voice" | "limit" }>({ open: false, reason: "voice" });
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
   useEffect(() => {
     if (!isVoiceActive) { setElapsed(0); return; }
@@ -203,7 +202,7 @@ export default function InterviewPage() {
   const handleVoiceActiveChange = useCallback((active: boolean) => setIsVoiceActive(active), []);
 
   return (
-    <DashboardShell>
+    <>
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
 
         {/* ── White header ── */}
@@ -280,8 +279,6 @@ export default function InterviewPage() {
 
             <VoiceInterview
               onActiveChange={handleVoiceActiveChange}
-              userPlan={userPlan}
-              onUpgradeNeeded={() => setUpgradeModal({ open: true, reason: "voice" })}
             />
           </motion.div>
 
@@ -313,7 +310,7 @@ export default function InterviewPage() {
                     placeholder="Paste the job description here…"
                     label="Job Description" hint="paste key requirements" rows={6} />
                   <motion.button
-                    onClick={() => generateQuestions(() => setUpgradeModal({ open: true, reason: "limit" }))}
+                    onClick={() => generateQuestions(() => setUpgradeModalOpen(true))}
                     disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
                     whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}
@@ -576,11 +573,10 @@ export default function InterviewPage() {
       </div>
 
       <UpgradeModal
-        open={upgradeModal.open}
-        reason={upgradeModal.reason}
-        onClose={() => setUpgradeModal(m => ({ ...m, open: false }))}
+        open={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
         onSuccess={refreshPlan}
       />
-    </DashboardShell>
+    </>
   );
 }

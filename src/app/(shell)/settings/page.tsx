@@ -10,7 +10,6 @@ import {
 } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
-import DashboardShell from "@/app/dashboard/DashboardShell";
 
 const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -202,7 +201,6 @@ export default function SettingsPage() {
   /* ── Loading skeleton ── */
   if (loading) {
     return (
-      <DashboardShell>
         <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
           <div style={{ background: "#FFFFFF", borderBottom: "1px solid #d9d9e0" }}>
             <div className="max-w-xl mx-auto px-6 md:px-10 pt-10 pb-8">
@@ -220,7 +218,6 @@ export default function SettingsPage() {
             ))}
           </div>
         </div>
-      </DashboardShell>
     );
   }
 
@@ -238,7 +235,6 @@ export default function SettingsPage() {
   });
 
   return (
-    <DashboardShell>
       <div style={{ background: "#f9f9fb", minHeight: "100%" }}>
 
         {/* ── White header ── */}
@@ -565,6 +561,5 @@ export default function SettingsPage() {
         </div>
 
       </div>
-    </DashboardShell>
   );
 }
