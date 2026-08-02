@@ -128,3 +128,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes border-beam-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes aurora-drift {
+  0%, 100% { transform: translate(var(--drift-x-from, -20px), var(--drift-y-from, -15px)); }
+  50% { transform: translate(var(--drift-x-to, 20px), var(--drift-y-to, 15px)); }
+}
