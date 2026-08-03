@@ -198,7 +198,9 @@ const UploadPage: FC = (): JSX.Element => {
         router.push(result.truncated ? `/dashboard/${result.id}?truncated=1` : `/dashboard/${result.id}`);
         return;
       }
-      throw new Error(result.message || "Processing failed.");
+      throw new Error(
+        result.hint ? `${result.message}. ${result.hint}` : (result.message || "Processing failed.")
+      );
     } catch (error) {
       setErrorMsg(error instanceof Error ? error.message : "An unexpected error occurred.");
       setIsProcessing(false);

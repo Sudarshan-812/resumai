@@ -1,11 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, DownloadSimple as Download, ArrowRight, FileText, PencilLine } from "@phosphor-icons/react";
+import { Copy, Check, DownloadSimple as Download, ArrowRight, FileText, PencilLine, CaretDown as ChevronDown } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { SpotlightCard } from "@/components/dashboard/spotlight-card";
 import { CoinLoader } from "@/components/ui/coin-loader";
+import { createClient } from "@/app/lib/supabase/client";
+import { cn } from "@/lib/utils";
+
+interface ResumeOption { id: string; file_name: string }
 
 const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -47,6 +51,29 @@ export default function CoverLetterPage() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied]   = useState(false);
 
+  const [resumes, setResumes] = useState<ResumeOption[]>([]);
+  const [resumesLoading, setResumesLoading] = useState(true);
+  const [resumeId, setResumeId] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+    (async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+        const { data } = await supabase
+          .from("resumes")
+          .select("id, file_name")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10);
+        if (data) setResumes(data);
+      } finally {
+        setResumesLoading(false);
+      }
+    })();
+  }, []);
+
   const ready = company.trim() && role.trim() && jobDesc.trim().length > 50;
 
   const generate = async () => {
@@ -57,7 +84,7 @@ export default function CoverLetterPage() {
       const res = await fetch("/api/cover-letter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company, role, jobDesc, tone }),
+        body: JSON.stringify({ company, role, jobDesc, tone, resumeId: resumeId || undefined }),
       });
       if (!res.ok) throw new Error(await res.text());
       const reader  = res.body?.getReader();
@@ -131,6 +158,37 @@ export default function CoverLetterPage() {
 
             {/* Job description */}
             <JobDescArea value={jobDesc} onChange={setJobDesc} />
+
+            {/* Resume (optional) */}
+            <div>
+              <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
+                Resume <span className="normal-case font-normal opacity-60">- optional, grounds the letter in your real experience</span>
+              </p>
+              {resumesLoading ? (
+                <div className="h-11 rounded-xl flex items-center px-4 gap-2 bg-muted/30 border border-border">
+                  <CoinLoader size={16} className="text-muted-foreground/60" />
+                  <span className="text-sm text-muted-foreground/60">Loading resumes…</span>
+                </div>
+              ) : (
+                <div className="relative">
+                  <FileText size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60" />
+                  <select
+                    value={resumeId}
+                    onChange={e => setResumeId(e.target.value)}
+                    className={cn(
+                      "w-full h-11 pl-11 pr-9 rounded-xl text-sm appearance-none cursor-pointer focus:outline-none transition-all bg-card border-[1.5px] border-border",
+                      resumeId ? "text-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    <option value="">None - write a generic letter</option>
+                    {resumes.map(r => (
+                      <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
+                    ))}
+                  </select>
+                  <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60" />
+                </div>
+              )}
+            </div>
 
             {/* Tone */}
             <div>

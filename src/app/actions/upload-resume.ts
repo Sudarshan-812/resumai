@@ -6,8 +6,12 @@ import { createClient } from '@/app/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { after } from 'next/server';
 import { chunkAndEmbedResume } from '@/app/lib/chunking';
-import { render_page } from '@/app/lib/pdf';
+import { render_page, looksLikeGarbledText } from '@/app/lib/pdf';
 import { sendAnalysisDoneEmail } from '@/app/lib/email';
+
+// Resumes are 1-3 pages; capping parsing here stops a maliciously huge or
+// corrupted "PDF" from burning CPU/memory on thousands of phantom pages.
+const MAX_PDF_PAGES = 12;
 
 export async function processResume(formData: FormData) {
   const file = formData.get('file') as File | null;
@@ -38,10 +42,39 @@ export async function processResume(formData: FormData) {
 
   try {
     const buffer = Buffer.from(await file.arrayBuffer());
-    const data = await pdfParse(buffer, { pagerender: render_page, max: 0 });
+
+    // Magic-byte check: catches non-PDF files renamed with a .pdf extension
+    // before handing them to the parser, which otherwise throws an opaque error.
+    if (buffer.subarray(0, 5).toString("latin1") !== "%PDF-") {
+      return {
+        success: false,
+        message: "This file isn't a valid PDF",
+        hint: "Make sure the file wasn't renamed from another format, and re-export it as a PDF."
+      };
+    }
+
+    let data;
+    try {
+      data = await pdfParse(buffer, { pagerender: render_page, max: MAX_PDF_PAGES });
+    } catch (parseError: unknown) {
+      const msg = parseError instanceof Error ? parseError.message.toLowerCase() : "";
+      if (msg.includes("password") || msg.includes("encrypt")) {
+        return {
+          success: false,
+          message: "This PDF is password-protected",
+          hint: "Remove the password (File > Export/Save As in most PDF viewers) and re-upload."
+        };
+      }
+      return {
+        success: false,
+        message: "This PDF could not be read",
+        hint: "The file may be corrupted. Try re-exporting or re-downloading it, then upload again."
+      };
+    }
+
     const text = data.text.trim();
 
-    if (!text || text.length < 50) {
+    if (looksLikeGarbledText(text)) {
       return {
         success: false,
         message: "No readable text found in PDF",

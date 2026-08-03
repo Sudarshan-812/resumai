@@ -92,7 +92,8 @@
       "Bash(grep -in \"lock\\\\|upgrade\\\\|premium\\\\|\\\\\\\\bpro\\\\\\\\b\" \"src/app/\\(shell\\)/dashboard/interview/VoiceInterview.tsx\")",
       "mcp__ide__getDiagnostics",
       "Bash(echo \"EXIT: $?\")",
-      "Bash(npx eslint *)"
+      "Bash(npx eslint *)",
+      "Bash(echo \"EXIT $?\")"
     ]
   }
 }

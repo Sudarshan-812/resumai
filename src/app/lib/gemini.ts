@@ -76,18 +76,29 @@ export type ATSEvaluation = z.infer<typeof ATSEvaluationSchema>;
 const RESUME_MAX_CHARS = 15_000;
 const JD_MAX_CHARS = 5_000;
 
+// Cut at the last line break before the limit instead of mid-word/mid-date,
+// so a truncated resume doesn't leave a mangled date range or split number
+// that could throw off YOE calculation or keyword matching.
+function truncateAtBoundary(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text;
+  const slice = text.slice(0, maxChars);
+  const lastBreak = slice.lastIndexOf("\n");
+  return lastBreak > maxChars * 0.8 ? slice.slice(0, lastBreak) : slice;
+}
+
 export async function analyzeResume(
   resumeText: string,
   jobDescription: string
 ): Promise<ATSEvaluation> {
   const currentDate = new Date().toISOString().split("T")[0];
-  const safeResume = resumeText.slice(0, RESUME_MAX_CHARS);
-  const safeJD = jobDescription.slice(0, JD_MAX_CHARS);
+  const safeResume = truncateAtBoundary(resumeText, RESUME_MAX_CHARS);
+  const safeJD = truncateAtBoundary(jobDescription, JD_MAX_CHARS);
 
   try {
     const { object } = await generateObject({
       model: google("gemini-2.5-flash"),
       maxRetries: 2,
+      temperature: 0.25,
       schema: ATSEvaluationSchema,
 
       prompt: `
@@ -137,6 +148,8 @@ ${safeResume}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 FIELD-LEVEL INSTRUCTIONS:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EDGE CASES: If the RESUME TEXT above is garbled, mostly non-English, or clearly not a resume (e.g. it's a cover letter, a JD, or extraction noise), you must still return a complete, valid response matching the schema - do not refuse or leave fields empty. Score it low, and use summary_feedback and formatting_issues to explain the specific problem (e.g. "This document does not appear to be a resume" or "Text extraction produced garbled content - re-export the PDF").
 
 ats_score:
   Apply the rubric strictly. 85+ = realistically passes ATS. 60-84 = passes but needs work. Below 60 = likely filtered out.
