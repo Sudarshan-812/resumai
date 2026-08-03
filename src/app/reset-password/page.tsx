@@ -90,8 +90,8 @@ export default function ResetPasswordPage() {
         </div>
 
         {!sessionReady ? (
-          <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <CoinLoader size={24} className="text-muted-foreground" />
+          <div className="flex flex-col items-center gap-4 py-10 text-center">
+            <CoinLoader size={48} />
             <p className="text-sm text-muted-foreground">Verifying reset link…</p>
           </div>
         ) : (

@@ -85,10 +85,10 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
         transition={{ duration: 0.4 }}
       >
         <div
-          className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6"
+          className="inline-flex items-center justify-center w-24 h-24 rounded-2xl mb-6"
           style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
         >
-          <CoinLoader size={24} />
+          <CoinLoader size={52} />
         </div>
         <h2 className="font-display text-2xl font-semibold mb-2" style={{ color: "#1c2024" }}>
           Analyzing resume

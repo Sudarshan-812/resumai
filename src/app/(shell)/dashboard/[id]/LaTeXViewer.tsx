@@ -516,8 +516,8 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
       {/* Content */}
       <div className="flex-1 overflow-auto bg-muted/10">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3 py-12">
-            <CoinLoader size={28} />
+          <div className="flex flex-col items-center justify-center h-full gap-4 py-12">
+            <CoinLoader size={48} />
             <p className="text-xs text-muted-foreground">Generating formatted resume…</p>
           </div>
         ) : !code ? (

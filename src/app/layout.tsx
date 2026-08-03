@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Outfit } from "next/font/google";
 import "./globals.css";
 import "material-symbols/outlined.css";
@@ -6,6 +7,7 @@ import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/app/components/theme-provider";
 import { IconProvider } from "@/app/components/icon-provider";
+import { RouteLoader } from "@/components/ui/route-loader";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -46,6 +48,9 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          <Suspense fallback={null}>
+            <RouteLoader />
+          </Suspense>
           <IconProvider>{children}</IconProvider>
           <Toaster richColors />
           <Analytics />

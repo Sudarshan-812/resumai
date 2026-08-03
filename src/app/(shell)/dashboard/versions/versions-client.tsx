@@ -266,7 +266,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Content */}
               {chunksLoading ? (
                 <div className="flex items-center justify-center py-20">
-                  <CoinLoader size={20} />
+                  <CoinLoader size={44} />
                 </div>
               ) : allChunks.length === 0 ? (
                 <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
