@@ -134,7 +134,7 @@ export default function SettingsPage() {
       });
       if (error) throw error;
       setResetSent(true);
-      toast.success("Reset link sent — check your inbox.");
+      toast.success("Reset link sent - check your inbox.");
     } catch {
       toast.error("Failed to send reset email.");
     } finally {
@@ -445,7 +445,7 @@ export default function SettingsPage() {
               </motion.button>
             </Row>
 
-            {/* Delete account — distinct danger card */}
+            {/* Delete account - distinct danger card */}
             <div className="mt-5 rounded-2xl border border-rose-500/25 bg-rose-500/[0.03] p-5">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2.5">

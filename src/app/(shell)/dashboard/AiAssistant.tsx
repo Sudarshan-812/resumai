@@ -20,7 +20,7 @@ interface Props {
 const SUGGESTIONS = [
   {
     label: "Rewrite my summary",
-    prompt: "Rewrite my professional summary. Show the BEFORE version, then write a stronger AFTER version — metric-driven, specific, and tailored to the job description.",
+    prompt: "Rewrite my professional summary. Show the BEFORE version, then write a stronger AFTER version - metric-driven, specific, and tailored to the job description.",
   },
   {
     label: "Fix my weakest bullets",
@@ -135,7 +135,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
                 {userName ? `How can I help, ${userName}?` : "How can I help with your resume?"}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Ask me anything — I have your full resume in front of me.
+                Ask me anything - I have your full resume in front of me.
               </p>
             </motion.div>
 

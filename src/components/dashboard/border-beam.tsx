@@ -8,7 +8,7 @@ interface BorderBeamProps {
   borderWidth?: number;
 }
 
-/** Continuously animated gradient border ring — place as a sibling inside a `relative` parent. */
+/** Continuously animated gradient border ring - place as a sibling inside a `relative` parent. */
 export function BorderBeam({
   className,
   colorFrom = "#12a594",

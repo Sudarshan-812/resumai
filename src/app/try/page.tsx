@@ -36,7 +36,7 @@ const JDInput = memo(function JDInput({
       <textarea
         value={value}
         onChange={handleChange}
-        placeholder="Paste the full job description here — including requirements, responsibilities, and preferred qualifications..."
+        placeholder="Paste the full job description here - including requirements, responsibilities, and preferred qualifications..."
         className="flex-1 w-full bg-transparent border-none p-5 text-sm text-foreground leading-relaxed placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-0"
         style={{ minHeight: 220 }}
       />
@@ -355,7 +355,7 @@ export default function TryPage() {
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary mb-5"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Free Trial — {remaining} scan{remaining !== 1 ? "s" : ""} remaining
+                  Free Trial - {remaining} scan{remaining !== 1 ? "s" : ""} remaining
                 </motion.div>
                 <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
                   Try Column8 Free
@@ -537,7 +537,7 @@ export default function TryPage() {
                     <Link href="/login">
                       <button className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        Save Report — Sign Up Free
+                        Save Report - Sign Up Free
                       </button>
                     </Link>
                   </div>

@@ -161,7 +161,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Resume selector */}
               <UField label="Master Resume">
                 {resumes.length === 0 ? (
-                  <p className="text-[12px] text-muted-foreground">No resumes yet — upload one first.</p>
+                  <p className="text-[12px] text-muted-foreground">No resumes yet - upload one first.</p>
                 ) : (
                   <div className="relative">
                     <select value={selectedResumeId} onChange={e => setSelectedResumeId(e.target.value)}
@@ -224,7 +224,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                           <div className="flex-1 min-w-0">
                             <p className="text-[12px] font-semibold truncate text-foreground">{v.version_name}</p>
                             <p className="text-[10px] font-mono text-muted-foreground/60">
-                              {parent?.file_name?.replace(/\.pdf$/i, "") ?? "—"}
+                              {parent?.file_name?.replace(/\.pdf$/i, "") ?? "-"}
                             </p>
                           </div>
                           {v.ats_score !== null && v.ats_score > 0 && (

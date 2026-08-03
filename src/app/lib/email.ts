@@ -23,7 +23,7 @@ export async function sendPaymentReceiptEmail(params: {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Column8 — ${creditsAdded} credits added`,
+    subject: `Column8 - ${creditsAdded} credits added`,
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1c2024">
         <h2 style="font-size:20px;margin-bottom:8px">Payment confirmed</h2>
@@ -52,7 +52,7 @@ export async function sendAnalysisDoneEmail(params: {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Column8 — ATS Score: ${atsScore}/100 for ${fileName}`,
+    subject: `Column8 - ATS Score: ${atsScore}/100 for ${fileName}`,
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1c2024">
         <h2 style="font-size:20px;margin-bottom:8px">Resume analysis complete</h2>

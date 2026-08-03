@@ -47,7 +47,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
     : "";
 
   const fmt = (ds: string) =>
-    mounted ? new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+    mounted ? new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "-";
 
   return (
     <div className="min-h-full bg-background">
@@ -165,7 +165,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
         {/* ── Main grid ── */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 lg:gap-10 items-start">
 
-          {/* Left — Recent analyses */}
+          {/* Left - Recent analyses */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -228,7 +228,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                         {/* Score */}
                         <div className="flex items-center gap-3 shrink-0">
                           <span className={`text-sm font-bold tabular-nums ${scoreColor}`}>
-                            {score > 0 ? score : "—"}
+                            {score > 0 ? score : "-"}
                             {score > 0 && <span className="text-[11px] font-normal ml-0.5 text-muted-foreground/70">/100</span>}
                           </span>
                           <ArrowUpRight
@@ -244,7 +244,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             )}
           </motion.div>
 
-          {/* Right — sidebar panel */}
+          {/* Right - sidebar panel */}
           <motion.aside
             initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 1, x: 0 }}

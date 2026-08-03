@@ -30,7 +30,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
       viewBox="0 0 620 240"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Column8 — From Apply to Offer"
+      aria-label="Column8 - From Apply to Offer"
       role="img"
     >
       <defs>
@@ -40,7 +40,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         </linearGradient>
       </defs>
 
-      {/* ── Left column — teal gradient, grows from bottom ── */}
+      {/* ── Left column - teal gradient, grows from bottom ── */}
       <motion.rect
         id="col-left"
         x={40} y={45} width={15} height={150} rx={7}
@@ -51,7 +51,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         transition={skip ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 24, delay: 0 }}
       />
 
-      {/* ── Right column — ink colour, slight stagger ── */}
+      {/* ── Right column - ink colour, slight stagger ── */}
       <motion.rect
         id="col-right"
         x={105} y={45} width={15} height={150} rx={7}
@@ -62,7 +62,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         transition={skip ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 24, delay: 0.13 }}
       />
 
-      {/* ── Top bar — teal gradient, draws left to right ── */}
+      {/* ── Top bar - teal gradient, draws left to right ── */}
       <motion.path
         id="bar-top"
         d="M 30,93 L 130,80"
@@ -75,7 +75,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         }}
       />
 
-      {/* ── Bottom bar — ink colour, slight delay ── */}
+      {/* ── Bottom bar - ink colour, slight delay ── */}
       <motion.path
         id="bar-bottom"
         d="M 30,157 L 130,170"
@@ -88,7 +88,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         }}
       />
 
-      {/* ── Wordmark — slides up + fades in ── */}
+      {/* ── Wordmark - slides up + fades in ── */}
       <motion.g
         id="wordmark"
         initial={skip ? false : { opacity: 0, y: 14 }}
@@ -105,7 +105,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
         </text>
       </motion.g>
 
-      {/* ── Tagline — last to appear ── */}
+      {/* ── Tagline - last to appear ── */}
       {showTagline && (
         <motion.g
           id="tagline"

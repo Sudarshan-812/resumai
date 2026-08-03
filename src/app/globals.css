@@ -57,7 +57,7 @@
   --color-success: oklch(0.696 0.17 162.48);
 }
 
-/* ── Slate + Teal theme (Radix Colors) — applied to both :root and .dark ── */
+/* ── Slate + Teal theme (Radix Colors) - applied to both :root and .dark ── */
 :root,
 .dark {
   --font-display: var(--font-sans);  /* Outfit handles both display & body */

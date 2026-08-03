@@ -101,7 +101,7 @@ function UInput({ value, onChange, placeholder, label, hint }: {
     <div>
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
         {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">— {hint}</span>}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">- {hint}</span>}
       </p>
       <div className="relative">
         <input
@@ -127,7 +127,7 @@ function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
     <div>
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
         {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">— {hint}</span>}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">- {hint}</span>}
       </p>
       <div className="relative">
         <textarea
@@ -197,7 +197,7 @@ export default function InterviewPage() {
               AI Interview
             </h1>
             <p className="relative z-10 text-[14px] leading-relaxed pb-5 text-muted-foreground">
-              Real-time AI interviewer — speak naturally or practice with text.
+              Real-time AI interviewer - speak naturally or practice with text.
             </p>
 
             <StepBar phase={phase} currentIdx={currentIdx} total={questions.length} />
@@ -306,7 +306,7 @@ export default function InterviewPage() {
                     </div>
                   </div>
 
-                  {/* Question text — left accent line, no box */}
+                  {/* Question text - left accent line, no box */}
                   <motion.div
                     initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.06, type: "spring", stiffness: 260, damping: 26 }}

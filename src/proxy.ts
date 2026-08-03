@@ -3,7 +3,7 @@ import { Redis } from "@upstash/redis";
 import { Ratelimit } from "@upstash/ratelimit";
 import { createServerClient } from "@supabase/ssr";
 
-// Issue 8: Initialise Redis only when env vars are present — crashes are prevented
+// Issue 8: Initialise Redis only when env vars are present - crashes are prevented
 const redis =
   process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
     ? new Redis({
@@ -86,7 +86,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // Issue 2: Expanded auth guard — covers all sensitive API routes
+  // Issue 2: Expanded auth guard - covers all sensitive API routes
   const isProtected =
     isDashboardRoute ||
     pathname.startsWith("/api/interview/") ||

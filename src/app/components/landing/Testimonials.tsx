@@ -102,7 +102,7 @@ const Testimonials: FC = (): JSX.Element => {
               style={{ background: "#f9f9fb", border: "1px solid #d9d9e0" }}
               aria-label={`Testimonial from ${t.author}`}
             >
-              {/* Stars — staggered spring entrance */}
+              {/* Stars - staggered spring entrance */}
               <div className="flex gap-1 mb-5">
                 {Array.from({ length: 5 }).map((_, si) => (
                   <motion.svg

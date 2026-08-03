@@ -26,7 +26,7 @@ This application is architected for scalability, utilizing modern server-side re
 
 ## 🛡️ FinOps & DDoS Protection
 
-Voice interviews are the most expensive request path in the app — each session spins up a LiveKit room, a Python worker (`agent.py`), and a live LLM/STT pipeline. To stop bots or abusive clients from draining cloud credits, the `/api/interview/get-token` route (where LiveKit access tokens are minted) is protected by an **Upstash Redis sliding-window rate limiter** (`@upstash/ratelimit` + `@upstash/redis`):
+Voice interviews are the most expensive request path in the app - each session spins up a LiveKit room, a Python worker (`agent.py`), and a live LLM/STT pipeline. To stop bots or abusive clients from draining cloud credits, the `/api/interview/get-token` route (where LiveKit access tokens are minted) is protected by an **Upstash Redis sliding-window rate limiter** (`@upstash/ratelimit` + `@upstash/redis`):
 
 * **Limit:** 3 token requests per IP address per 10-minute window.
 * **Enforcement point:** checked first, before any Supabase/auth calls, so abusive traffic is rejected as cheaply as possible.

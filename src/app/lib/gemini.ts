@@ -35,7 +35,7 @@ export const ATSEvaluationSchema = z.object({
   critical_missing_keywords: z
     .array(z.string())
     .describe(
-      "JD requirements absent from the resume — prefix must-haves with [REQUIRED] and nice-to-haves with [PREFERRED]"
+      "JD requirements absent from the resume - prefix must-haves with [REQUIRED] and nice-to-haves with [PREFERRED]"
     ),
 
   formatting_issues: z
@@ -92,11 +92,11 @@ export async function analyzeResume(
 
       prompt: `
 You are a defensive, highly precise B2B ATS evaluation engine combined with a Senior Technical Recruiter who has reviewed 10,000+ resumes at FAANG-tier companies.
-Your output is consumed programmatically — every field must be accurate, grounded in the actual resume text, and free of hallucination.
+Your output is consumed programmatically - every field must be accurate, grounded in the actual resume text, and free of hallucination.
 Today's date is ${currentDate}. Use it for all date arithmetic.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SCORING RUBRIC — Compute ats_score / 100 with these exact weights:
+SCORING RUBRIC - Compute ats_score / 100 with these exact weights:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 [40 pts] KEYWORD MATCH
@@ -110,7 +110,7 @@ SCORING RUBRIC — Compute ats_score / 100 with these exact weights:
   - Also assess seniority trajectory (IC → Lead → Manager) against the JD's level.
 
 [20 pts] SKILLS & DOMAIN DEPTH
-  - Are matched skills demonstrated in experience bullets with real context, projects, or metrics — rather than just listed?
+  - Are matched skills demonstrated in experience bullets with real context, projects, or metrics - rather than just listed?
   - Penalise keyword stuffing (listed but never used in bullets). Award full 20 pts if ≥ 70% of matched skills appear with demonstrable context.
 
 [15 pts] FORMATTING & ATS COMPATIBILITY
@@ -151,13 +151,13 @@ domain_skills:
   List ONLY skills/tools/technologies that appear in BOTH the JD AND the resume. Use the JD's exact terminology. Short items only (1-4 words). Exclude soft skills unless the JD explicitly requires them.
 
 critical_missing_keywords:
-  Prefix must-haves with [REQUIRED] and nice-to-haves with [PREFERRED]. Be specific — do not emit vague terms like "communication skills". Example: "[REQUIRED] Kubernetes", "[PREFERRED] GraphQL".
+  Prefix must-haves with [REQUIRED] and nice-to-haves with [PREFERRED]. Be specific - do not emit vague terms like "communication skills". Example: "[REQUIRED] Kubernetes", "[PREFERRED] GraphQL".
 
 formatting_issues:
   Each item must be a complete, actionable sentence naming the issue and the fix. Return an empty array if the resume is ATS-clean.
 
 bullet_evaluations:
-  Identify up to 5 of the weakest experience bullets — those that use passive voice, are responsibility-only, lack numbers, or are too vague to survive ATS keyword scanning.
+  Identify up to 5 of the weakest experience bullets - those that use passive voice, are responsibility-only, lack numbers, or are too vague to survive ATS keyword scanning.
   For each:
     - original_bullet: copy the bullet verbatim from the resume
     - weakness_reason: one sentence on why it fails

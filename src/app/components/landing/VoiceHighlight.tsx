@@ -77,7 +77,7 @@ export default function VoiceHighlight() {
               </h2>
 
               <p className="text-base leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(255,255,255,0.65)" }}>
-                Your AI interviewer reads your actual resume and the target job description — then asks
+                Your AI interviewer reads your actual resume and the target job description - then asks
                 real, challenging questions. Powered by LiveKit WebRTC, Groq Llama 3.3, and Deepgram TTS.
               </p>
 

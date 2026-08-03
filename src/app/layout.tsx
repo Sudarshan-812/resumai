@@ -16,11 +16,11 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Column8 — AI Resume Optimizer",
+  title: "Column8 - AI Resume Optimizer",
   description: "Beat the ATS filter and land more interviews. Column8 uses Gemini 2.5 Flash to score, rewrite, and optimize your resume against any job description.",
   metadataBase: new URL("https://column8.io"),
   openGraph: {
-    title: "Column8 — AI Resume Optimizer",
+    title: "Column8 - AI Resume Optimizer",
     description: "Beat the ATS filter and land more interviews. Get your ATS score in 10 seconds.",
     url: "https://column8.io",
     siteName: "Column8",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Column8 — AI Resume Optimizer",
+    title: "Column8 - AI Resume Optimizer",
     description: "Beat the ATS filter and land more interviews.",
     images: ["/og.png"],
   },

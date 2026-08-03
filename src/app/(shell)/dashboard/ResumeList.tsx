@@ -15,7 +15,7 @@ export default function ResumeList({ resumes }: { resumes: ResumeItem[] }) {
   useEffect(() => { setMounted(true); }, []);
 
   const formatDate = (ds: string) => {
-    if (!mounted) return "—";
+    if (!mounted) return "-";
     return new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
   };
 

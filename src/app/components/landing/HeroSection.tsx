@@ -35,7 +35,7 @@ export default function HeroSection() {
       style={{ background: "#f9f9fb" }}
       aria-labelledby="hero-heading"
     >
-      {/* SideRays — subtle teal from top-right */}
+      {/* SideRays - subtle teal from top-right */}
       <div className="absolute inset-0 pointer-events-none z-0" aria-hidden>
         <SideRays
           speed={1.2}
@@ -142,7 +142,7 @@ export default function HeroSection() {
             />
           </div>
 
-          {/* Subhead — static, confident */}
+          {/* Subhead - static, confident */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -214,7 +214,7 @@ export default function HeroSection() {
             )}
           </motion.div>
 
-          {/* Stats — unified card */}
+          {/* Stats - unified card */}
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
@@ -371,13 +371,13 @@ export default function HeroSection() {
                       bg: "rgba(34,197,94,0.08)",
                       iconColor: "#16a34a",
                       title: "Add Keywords",
-                      text: 'Injected "React Native" and "CI/CD" — present in 94% of matching JDs',
+                      text: 'Injected "React Native" and "CI/CD" - present in 94% of matching JDs',
                     },
                     {
                       bg: "rgba(245,158,11,0.08)",
                       iconColor: "#d97706",
                       title: "Remove columns",
-                      text: "Multi-column layout detected — ATS reads it as garbled text",
+                      text: "Multi-column layout detected - ATS reads it as garbled text",
                     },
                   ].map((item) => (
                     <div
@@ -402,7 +402,7 @@ export default function HeroSection() {
                         <strong className="font-semibold" style={{ color: "#1c2024" }}>
                           {item.title}
                         </strong>{" "}
-                        — {item.text}
+                        - {item.text}
                       </div>
                     </div>
                   ))}

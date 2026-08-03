@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       return Response.json({ error: "Job description too long (max 10000 chars)" }, { status: 400 });
     }
 
-    // Cache hit — return without generating or incrementing the counter
+    // Cache hit - return without generating or incrementing the counter
     const key = cacheKey(role, jobDesc);
     const cached = await redis.get(key).catch(() => null);
     if (cached) return Response.json(cached);
@@ -65,7 +65,7 @@ Job Description:
 ${jobDesc.slice(0, 2000)}
 
 REQUIREMENTS:
-- 2 behavioral questions: Use "Tell me about a time..." or "Describe a situation where..." — focus on skills directly mentioned in the JD
+- 2 behavioral questions: Use "Tell me about a time..." or "Describe a situation where..." - focus on skills directly mentioned in the JD
 - 2 technical questions: Test specific technologies/methodologies listed in the JD, not generic knowledge
 - 1 situational or culture-fit question: Scenario-based or values alignment
 

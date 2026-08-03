@@ -20,7 +20,7 @@ export async function DELETE() {
     // Sign the user out of all sessions before deleting the auth record
     await supabase.auth.signOut();
 
-    // Requires service-role key — call admin API to delete the auth.users row
+    // Requires service-role key - call admin API to delete the auth.users row
     const adminUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users/${user.id}`;
     await fetch(adminUrl, {
       method: "DELETE",

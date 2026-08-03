@@ -34,7 +34,7 @@ export const POST = async (req: Request) => {
     // 🚨 FIX: Extract jobDescription from the incoming form data
     const jobDescription = (formData.get("jobDescription") as string) || "";
 
-    // ——— File Validation ———
+    // --- File Validation ---
     if (!file || !(file instanceof File)) {
       return NextResponse.json(
         { success: false, message: "No file uploaded" },
@@ -51,7 +51,7 @@ export const POST = async (req: Request) => {
 
     if (file.size > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { success: false, message: "File too large — max 10MB" },
+        { success: false, message: "File too large - max 10MB" },
         { status: 413 }
       );
     }
@@ -63,7 +63,7 @@ export const POST = async (req: Request) => {
       );
     }
 
-    // ——— Extract Text ———
+    // --- Extract Text ---
     const buffer = Buffer.from(await file.arrayBuffer());
     let extractedText: string;
 
@@ -103,7 +103,7 @@ export const POST = async (req: Request) => {
       );
     }
 
-    // ——— AI Analysis ———
+    // --- AI Analysis ---
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let analysis: any;
     try {
@@ -125,7 +125,7 @@ export const POST = async (req: Request) => {
       );
     }
 
-    // ——— SAVE TO SUPABASE (Now with clear logging) ———
+    // --- SAVE TO SUPABASE (Now with clear logging) ---
     try {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
@@ -151,7 +151,7 @@ export const POST = async (req: Request) => {
       console.error("Database error:", error);
     }
 
-    // ——— SUCCESS ———
+    // --- SUCCESS ---
     return NextResponse.json(
       { success: true, data: analysis },
       { status: 200 }

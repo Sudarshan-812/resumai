@@ -57,7 +57,7 @@ export default function Footer() {
               className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
               style={{ background: "#12a594" }}
             >
-              Try Free — No Login
+              Try Free - No Login
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
             </Link>
             <Link

@@ -90,7 +90,7 @@ STRICT REQUIREMENTS:
 4. For skills: use \\section{Technical Skills} then \\small{\\textbf{Category:} items \\\\}
 5. For experience/projects: use \\resumeSubHeadingListStart with \\resumeSubheading or \\resumeProjectHeading followed by \\resumeItemListStart
 6. Header: \\begin{center} with {\\Huge \\bfseries Name} and contact info using $|$ separators
-7. Return ONLY the complete LaTeX document — no markdown, no explanation, no code fences
+7. Return ONLY the complete LaTeX document - no markdown, no explanation, no code fences
 8. Make it look professional and well-formatted`,
     });
 

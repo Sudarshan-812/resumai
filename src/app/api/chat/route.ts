@@ -75,7 +75,7 @@ ${latexCode.slice(0, 6000)}
 
   const systemPrompt = `You are an elite resume coach who has helped 500+ candidates land jobs at top companies. You have the candidate's FULL resume text, detailed ATS analysis, and the current LaTeX source in front of you.
 
-${context ? context : "No resume context provided — give sharp, general resume advice."}
+${context ? context : "No resume context provided - give sharp, general resume advice."}
 ${latexContext}
 
 COACHING RULES:
@@ -84,7 +84,7 @@ COACHING RULES:
 3. Use action verbs: Led, Built, Increased, Reduced, Delivered, Architected, Drove
 4. Add metrics wherever possible (%, $, users, team size, time saved)
 5. Mirror the exact language from the job description when applicable
-6. Be direct and honest — if something is weak, say so clearly
+6. Be direct and honest - if something is weak, say so clearly
 7. Keep responses focused. Use bullet points for lists.
 8. When rewriting bullets, use STAR format: Action + Situation + Impact (with number)
 
@@ -95,7 +95,7 @@ LATEX UPDATE RULES (only when the user asks you to change/fix/rewrite the resume
   [full document here]
   \`\`\`
 - The code block MUST contain the entire document from \\documentclass to \\end{document}
-- Do NOT return partial LaTeX — always the full document
+- Do NOT return partial LaTeX - always the full document
 - If the user is just asking a question (not requesting a change), do NOT return a LaTeX block
 
 Example rewrite format:

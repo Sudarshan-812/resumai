@@ -186,7 +186,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.toLowerCase().includes("permission") || msg.toLowerCase().includes("denied") || msg.toLowerCase().includes("notallowed")) {
-        toast.error("Microphone access denied — check your browser permissions and reload.");
+        toast.error("Microphone access denied - check your browser permissions and reload.");
       } else {
         toast.error("Could not toggle microphone.");
       }
@@ -266,7 +266,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
       <TranscriptArea segments={agentTranscriptions} />
 
       <p className="text-center text-[11px] text-muted-foreground/60">
-        Speak naturally — the AI handles turn-taking
+        Speak naturally - the AI handles turn-taking
       </p>
 
       {/* Controls */}
@@ -329,7 +329,7 @@ function SetupView({
         ) : resumes.length === 0 ? (
           <div className="h-11 rounded-xl flex items-center px-4 bg-muted/30 border border-border">
             <span className="text-sm text-muted-foreground">
-              No resumes found —{" "}
+              No resumes found -{" "}
               <a href="/upload" className="underline text-primary">upload one first</a>
             </span>
           </div>
@@ -362,7 +362,7 @@ function SetupView({
         {[
           "Allow microphone access when prompted",
           "Use headphones to prevent echo",
-          "Speak at a natural pace — the AI handles turn-taking",
+          "Speak at a natural pace - the AI handles turn-taking",
         ].map((item, i) => (
           <div key={i} className="flex items-start gap-3">
             <span className="w-5 h-5 rounded-full text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5 bg-primary/10 border border-primary/15 text-primary">
@@ -470,7 +470,7 @@ function VoiceInterview({
   const handleStart = async () => {
     if (!selectedId) return;
     if (!LIVEKIT_URL) {
-      toast.error("Voice interview is not configured — add NEXT_PUBLIC_LIVEKIT_URL to your .env.local.");
+      toast.error("Voice interview is not configured - add NEXT_PUBLIC_LIVEKIT_URL to your .env.local.");
       return;
     }
     setLoading(true);

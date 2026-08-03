@@ -3,7 +3,7 @@ import { AccessToken } from "livekit-server-sdk";
 import { createClient } from "@/app/lib/supabase/server";
 import { tokenRateLimit, getClientIp } from "@/app/lib/rateLimit";
 
-// Must run in Node.js runtime — livekit-server-sdk depends on Node crypto
+// Must run in Node.js runtime - livekit-server-sdk depends on Node crypto
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 3. Fetch resume content + job description from Supabase ──────────────
-  // The .eq("user_id") clause enforces ownership — no cross-user leakage.
+  // The .eq("user_id") clause enforces ownership - no cross-user leakage.
   const { data: resume, error: resumeError } = await supabase
     .from("resumes")
     .select("content, analyses(job_description)")

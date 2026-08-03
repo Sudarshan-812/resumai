@@ -279,14 +279,14 @@ function JobDescArea({ value, onChange }: { value: string; onChange: (v: string)
           transition={{ duration: 0.18, ease: EASE }}
           className="absolute left-0 top-0 text-sm font-medium origin-left pointer-events-none"
         >
-          Job Description <span className="normal-case font-normal opacity-60">— paste the key requirements</span>
+          Job Description <span className="normal-case font-normal opacity-60">- paste the key requirements</span>
         </motion.label>
         <textarea
           value={value}
           onChange={e => onChange(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder={active ? "Paste the job description here — at least 50 characters for best results…" : ""}
+          placeholder={active ? "Paste the job description here - at least 50 characters for best results…" : ""}
           rows={7}
           className="w-full pt-7 bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/40 pb-3 border-b-2 transition-colors"
           style={{ borderColor: focused ? "var(--primary)" : "var(--border)" }}

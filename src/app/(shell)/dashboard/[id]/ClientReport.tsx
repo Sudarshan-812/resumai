@@ -258,7 +258,7 @@ export default function ClientReport({
                   className="flex items-start gap-3 rounded-xl px-4 py-3 text-sm overflow-hidden bg-amber-500/5 border border-amber-500/20 text-amber-700"
                 >
                   <AlertCircle size={18} className="mt-0.5 shrink-0" />
-                  <span className="flex-1 text-[13px]">Resume was too long — only first 150,000 characters were analysed.</span>
+                  <span className="flex-1 text-[13px]">Resume was too long - only first 150,000 characters were analysed.</span>
                   <motion.button whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}
                     onClick={() => setTruncWarn(false)} className="opacity-50">
                     <X size={16} />
@@ -302,7 +302,7 @@ export default function ClientReport({
                     <span className="text-[14px] font-semibold pb-1.5 text-muted-foreground/40">/100</span>
                   </div>
 
-                  {/* Badge — pops in after score settles */}
+                  {/* Badge - pops in after score settles */}
                   <AnimatePresence>
                     {scoreDone && (
                       <motion.span
@@ -426,7 +426,7 @@ export default function ClientReport({
                       <motion.span className="w-2 h-2 rounded-full bg-emerald-500"
                         animate={{ scale: [1, 1.3, 1] }} transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 1 }} />
                       <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-muted-foreground">
-                        Matched — {skills.length}
+                        Matched - {skills.length}
                       </span>
                     </div>
                     {skills.length > 0
@@ -440,12 +440,12 @@ export default function ClientReport({
                       <motion.span className="w-2 h-2 rounded-full bg-rose-600"
                         animate={{ opacity: [1, 0.25, 1] }} transition={{ duration: 1.4, repeat: Infinity }} />
                       <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-muted-foreground">
-                        Missing — {missing.length}
+                        Missing - {missing.length}
                       </span>
                     </div>
                     {missing.length > 0
                       ? <div className="flex flex-wrap gap-2">{missing.map((k, i) => <Chip key={i} label={k} variant="missing" index={i} />)}</div>
-                      : <p className="text-[13px] text-muted-foreground">Nothing missing — great coverage.</p>
+                      : <p className="text-[13px] text-muted-foreground">Nothing missing - great coverage.</p>
                     }
                   </div>
                 </motion.div>

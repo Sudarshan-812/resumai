@@ -215,7 +215,7 @@ function SidebarContent({
               <span className="font-medium text-foreground">Credits</span>
             </div>
             <span className={cn("font-bold tabular-nums", lowCredits ? "text-amber-500" : "text-foreground")}>
-              {profile?.credits ?? "—"}
+              {profile?.credits ?? "-"}
             </span>
           </Link>
         )}
@@ -439,7 +439,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 className="md:hidden flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-bold border border-border bg-background text-muted-foreground"
               >
                 <Zap size={14} weight="fill" className="text-teal-500" />
-                {profile?.credits ?? "—"}
+                {profile?.credits ?? "-"}
               </Link>
             </div>
           </header>

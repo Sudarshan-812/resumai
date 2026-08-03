@@ -9,7 +9,7 @@ const STEPS = [
     num: "01",
     icon: Upload,
     title: "Upload Resume",
-    desc: "Drop your existing PDF. Our parser extracts text and structure in seconds — including complex layouts that ATS systems struggle with.",
+    desc: "Drop your existing PDF. Our parser extracts text and structure in seconds - including complex layouts that ATS systems struggle with.",
   },
   {
     num: "02",

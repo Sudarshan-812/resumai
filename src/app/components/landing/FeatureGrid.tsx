@@ -8,7 +8,7 @@ const FEATURES = [
     num: "01",
     icon: BarChart3,
     title: "ATS Scorer",
-    desc: "Precise keyword match score against any job description — mirroring how Workday and Greenhouse rank candidates before a human ever reads your resume.",
+    desc: "Precise keyword match score against any job description - mirroring how Workday and Greenhouse rank candidates before a human ever reads your resume.",
   },
   {
     num: "02",
@@ -26,7 +26,7 @@ const FEATURES = [
     num: "04",
     icon: FileText,
     title: "Cover Letter Generator",
-    desc: "Generate role-specific cover letters mapped directly to the job description. Not template-generic — each one references your actual experience.",
+    desc: "Generate role-specific cover letters mapped directly to the job description. Not template-generic - each one references your actual experience.",
   },
   {
     num: "05",
@@ -90,7 +90,7 @@ export default function FeatureGrid() {
           </h2>
         </div>
 
-        {/* Numbered list — Framer Motion parent variant hover propagation */}
+        {/* Numbered list - Framer Motion parent variant hover propagation */}
         <div style={{ borderTop: "1px solid #d9d9e0" }}>
           {FEATURES.map((f, i) => (
             <motion.div

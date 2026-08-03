@@ -143,7 +143,7 @@ function renderInline(text: string): React.ReactNode {
     // \~ → ~
     if (rest.startsWith("\\~")) { buf += "~"; i += 2; continue; }
 
-    // Unknown command — skip command name
+    // Unknown command - skip command name
     let j = i + 1;
     while (j < text.length && /[a-zA-Z*]/.test(text[j])) j++;
     i = j;
@@ -241,7 +241,7 @@ function parseLatex(latex: string): DocNode[] {
       if (r) { nodes.push({ t: "item", content: r.content }); i = r.end; continue; }
     }
 
-    // \small{...} — used for skills lines
+    // \small{...} - used for skills lines
     if (rest.startsWith("\\small")) {
       const r = extractBraced(work, i + 6);
       if (r) { nodes.push({ t: "skills", content: r.content }); i = r.end; continue; }

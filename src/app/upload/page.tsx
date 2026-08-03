@@ -39,7 +39,7 @@ const JobDescriptionInput = memo(function JobDescriptionInput({
       <textarea
         value={value}
         onChange={e => onValueChange(e.target.value)}
-        placeholder="Paste the full job description — requirements, responsibilities, qualifications…"
+        placeholder="Paste the full job description - requirements, responsibilities, qualifications…"
         rows={10}
         className="w-full px-4 py-4 rounded-2xl text-sm leading-relaxed resize-none focus:outline-none transition-all"
         style={{
@@ -163,7 +163,7 @@ const UploadPage: FC = (): JSX.Element => {
     if (e.type === "dragenter" || e.type === "dragover") {
       const items = Array.from(e.dataTransfer.items ?? []);
       const fileItem = items.find(item => item.kind === "file");
-      // Some browsers withhold the MIME type until drop — treat unknown as accept.
+      // Some browsers withhold the MIME type until drop - treat unknown as accept.
       const isReject = !!fileItem && !!fileItem.type && fileItem.type !== "application/pdf";
       setDragStatus(isReject ? "reject" : "accept");
     } else {
@@ -288,7 +288,7 @@ const UploadPage: FC = (): JSX.Element => {
                   <div className="py-2 space-y-4">
                     <div>
                       <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
-                        Step 1 — Upload Resume
+                        Step 1 - Upload Resume
                       </p>
                       <p className="text-xs" style={{ color: "#b9bbc6" }}>PDF format, maximum 5 MB</p>
                     </div>
@@ -378,7 +378,7 @@ const UploadPage: FC = (): JSX.Element => {
                   <div className="py-2">
                     <div className="mb-4">
                       <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
-                        Step 2 — Job Description
+                        Step 2 - Job Description
                       </p>
                     </div>
                     <JobDescriptionInput value={jobDescription} onValueChange={handleJobDescriptionChange} />
@@ -390,7 +390,7 @@ const UploadPage: FC = (): JSX.Element => {
                   <div className="py-2 space-y-4">
                     <div>
                       <p className="text-[11px] font-mono uppercase tracking-[0.15em] mb-1" style={{ color: "#80838d" }}>
-                        Step 3 — Confirm & Analyze
+                        Step 3 - Confirm & Analyze
                       </p>
                       <p className="text-xs" style={{ color: "#b9bbc6" }}>Review your inputs before generating the report</p>
                     </div>

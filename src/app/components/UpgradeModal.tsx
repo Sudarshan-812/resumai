@@ -67,7 +67,7 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
             onClose();
             onSuccess();
           } else {
-            toast.error("Verification failed — contact support with your payment ID.");
+            toast.error("Verification failed - contact support with your payment ID.");
           }
         },
         theme: { color: "#12a594" },
@@ -182,7 +182,7 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
                       >
                         {loadingId === plan.id
                           ? <><Loader2 size={16} className="animate-spin" />Processing…</>
-                          : `Upgrade to ${plan.name} — ₹${plan.price}`
+                          : `Upgrade to ${plan.name} - ₹${plan.price}`
                         }
                       </motion.button>
                     </motion.div>

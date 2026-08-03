@@ -33,7 +33,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
     if (s >= 75) return { text: "text-emerald-600", bg: "bg-emerald-500/10", label: "Strong" };
     if (s >= 55) return { text: "text-amber-600",   bg: "bg-amber-500/10",   label: "Good" };
     if (s > 0)   return { text: "text-rose-600",     bg: "bg-rose-500/10",   label: "Weak" };
-    return             { text: "text-muted-foreground", bg: "bg-muted", label: "—" };
+    return             { text: "text-muted-foreground", bg: "bg-muted", label: "-" };
   };
 
   return (
@@ -179,7 +179,7 @@ export default function HistoryClient({ resumes, totalCount, page, totalPages }:
                               </span>
                             </td>
                             <td className={`px-5 py-3.5 text-right whitespace-nowrap font-bold tabular-nums ${cfg.text}`}>
-                              {r.ats_score > 0 ? r.ats_score : "—"}
+                              {r.ats_score > 0 ? r.ats_score : "-"}
                               {r.ats_score > 0 && (
                                 <span className="text-[11px] font-normal ml-0.5 text-muted-foreground/60">/100</span>
                               )}

@@ -220,7 +220,7 @@ export async function chunkAndEmbedResume(
     .filter((row) => row.embedding !== null);
 
   if (rows.length === 0) {
-    return { chunks_stored: 0, error: "All embeddings failed — no chunks stored." };
+    return { chunks_stored: 0, error: "All embeddings failed - no chunks stored." };
   }
 
   // Issue 10: Snapshot old IDs, insert new rows first, then delete old ones.
@@ -240,7 +240,7 @@ export async function chunkAndEmbedResume(
     return { chunks_stored: 0, error: insertError.message };
   }
 
-  // Only delete old chunks after successful insert — preserves data on failure
+  // Only delete old chunks after successful insert - preserves data on failure
   if (oldIds.length > 0) {
     await supabase.from("resume_chunks").delete().in("id", oldIds);
   }

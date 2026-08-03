@@ -11,7 +11,7 @@ const FAQS = [
   },
   {
     q: "Will my resume data be stored?",
-    a: "Guest scans (no login) are not stored — your PDF is parsed in memory and discarded immediately. Signed-in users have their resume text and analysis results stored so they can revisit reports. You can delete your data at any time from the Settings page.",
+    a: "Guest scans (no login) are not stored - your PDF is parsed in memory and discarded immediately. Signed-in users have their resume text and analysis results stored so they can revisit reports. You can delete your data at any time from the Settings page.",
   },
   {
     q: "What types of PDF resumes work best?",
@@ -23,11 +23,11 @@ const FAQS = [
   },
   {
     q: "Are credits one-time or do they expire?",
-    a: "Credits are one-time purchases — they never expire and there are no monthly subscriptions. One credit = one full resume analysis. Cover letters and interview simulations do not consume credits.",
+    a: "Credits are one-time purchases - they never expire and there are no monthly subscriptions. One credit = one full resume analysis. Cover letters and interview simulations do not consume credits.",
   },
   {
     q: "Can I use Column8 for multiple job applications?",
-    a: "Absolutely. Each job application needs a tailored analysis since different roles require different keywords. We recommend running a fresh scan for every unique role you apply to — that's why our credits are designed to be bought in bulk.",
+    a: "Absolutely. Each job application needs a tailored analysis since different roles require different keywords. We recommend running a fresh scan for every unique role you apply to - that's why our credits are designed to be bought in bulk.",
   },
 ] as const;
 

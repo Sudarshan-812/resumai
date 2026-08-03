@@ -84,7 +84,7 @@ export async function verifyPayment(
     revalidatePath("/billing");
     revalidatePath("/dashboard/interview");
 
-    // Fire-and-forget receipt email — never block the payment confirmation
+    // Fire-and-forget receipt email - never block the payment confirmation
     if (user.email) {
       sendPaymentReceiptEmail({
         to: user.email,

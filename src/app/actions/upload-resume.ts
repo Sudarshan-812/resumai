@@ -92,7 +92,7 @@ export async function processResume(formData: FormData) {
 
     revalidatePath('/dashboard');
 
-    // Background tasks: chunking + email notification — run after response is sent
+    // Background tasks: chunking + email notification - run after response is sent
     after(async () => {
       await Promise.allSettled([
         chunkAndEmbedResume(resume.id, text, user.id).catch(err =>

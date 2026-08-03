@@ -15,7 +15,7 @@ export default function NotFound() {
 
         <div>
           <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-teal-600 mb-3">
-            404 — Not Found
+            404 - Not Found
           </p>
           <h1 className="font-display text-3xl font-bold text-zinc-900 mb-3 tracking-tight">
             Page not found

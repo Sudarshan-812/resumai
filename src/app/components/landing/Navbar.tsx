@@ -221,7 +221,7 @@ export default function Navbar() {
                       className="py-3 text-center rounded-xl text-sm font-semibold text-white"
                       style={{ background: "#12a594" }}
                     >
-                      Try Free — No Login
+                      Try Free - No Login
                     </Link>
                     <Link
                       href="/login"

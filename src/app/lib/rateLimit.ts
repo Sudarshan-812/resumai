@@ -9,7 +9,7 @@ const redis =
       })
     : null;
 
-// Stricter than the global per-route limiter in middleware.ts (20/10s) —
+// Stricter than the global per-route limiter in middleware.ts (20/10s) -
 // a LiveKit token request spins up a Python agent + LLM/STT pipeline, making
 // this the most expensive endpoint in the app to leave under-protected.
 export const tokenRateLimit = redis

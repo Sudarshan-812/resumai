@@ -79,7 +79,7 @@ const LoginPage: FC = (): JSX.Element => {
   return (
     <div className="grid h-screen w-screen overflow-hidden bg-background lg:grid-cols-2">
 
-      {/* ── Left panel — brand / animation ── */}
+      {/* ── Left panel - brand / animation ── */}
       <div className="relative hidden h-full flex-col border-r border-border bg-muted/20 p-10 lg:flex">
 
         {/* Top bar */}
@@ -162,7 +162,7 @@ const LoginPage: FC = (): JSX.Element => {
         </div>
       </div>
 
-      {/* ── Right panel — auth form ── */}
+      {/* ── Right panel - auth form ── */}
       <div className="relative flex h-full items-center justify-center p-6 sm:p-12 bg-background">
 
         {/* Mobile: logo top-left */}

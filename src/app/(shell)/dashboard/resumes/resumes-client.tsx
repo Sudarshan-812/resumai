@@ -23,11 +23,11 @@ function scoreCfg(s: number) {
   if (s >= 75) return { color: "#059669", text: "text-emerald-600", bg: "rgba(5,150,105,0.09)",  label: "Strong" };
   if (s >= 55) return { color: "#d97706", text: "text-amber-600",   bg: "rgba(217,119,6,0.09)",  label: "Good"   };
   if (s  >  0) return { color: "#e11d48", text: "text-rose-600",    bg: "rgba(225,29,72,0.09)",  label: "Weak"   };
-  return             { color: "#b9bbc6", text: "text-muted-foreground", bg: "rgba(200,196,187,0.09)", label: "—" };
+  return             { color: "#b9bbc6", text: "text-muted-foreground", bg: "rgba(200,196,187,0.09)", label: "-" };
 }
 
 function timeAgo(iso: string, mounted: boolean) {
-  if (!mounted) return "—";
+  if (!mounted) return "-";
   const diff = Date.now() - new Date(iso).getTime();
   const d = Math.floor(diff / 86400000);
   if (d === 0) return "Today";
@@ -49,7 +49,7 @@ function ScorePill({ score, index }: { score: number; index: number }) {
         className={`font-black font-mono tabular-nums leading-none text-[22px] ${cfg.text}`}
         style={{ letterSpacing: "-0.04em" }}
       >
-        {score > 0 ? score : "—"}
+        {score > 0 ? score : "-"}
       </motion.span>
       {score > 0 && (
         <>
@@ -205,7 +205,7 @@ export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
                   >
                     <span className="text-[10px] text-muted-foreground">{s.label}</span>
                     <span className={`text-[13px] font-black font-mono ${s.c}`}>
-                      {s.val > 0 ? <NumberTicker value={s.val} duration={800} /> : "—"}
+                      {s.val > 0 ? <NumberTicker value={s.val} duration={800} /> : "-"}
                     </span>
                   </motion.div>
                 ))}
