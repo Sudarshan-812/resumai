@@ -3,11 +3,11 @@
 import {
   CheckCircle as CircleCheckIcon,
   Info as InfoIcon,
-  CircleNotch as Loader2Icon,
   XCircle as OctagonXIcon,
   Warning as TriangleAlertIcon,
 } from "@phosphor-icons/react"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
+import { CoinLoader } from "@/components/ui/coin-loader"
 
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
@@ -19,7 +19,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         info: <InfoIcon className="size-4" />,
         warning: <TriangleAlertIcon className="size-4" />,
         error: <OctagonXIcon className="size-4" />,
-        loading: <Loader2Icon className="size-4 animate-spin" />,
+        loading: <CoinLoader size={16} />,
       }}
       style={
         {

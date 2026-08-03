@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Lightning as Zap, Check, CircleNotch as Loader2 } from "@phosphor-icons/react";
+import { X, Lightning as Zap, Check } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
 import { toast } from "sonner";
@@ -181,7 +182,7 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
                         style={{ background: "linear-gradient(135deg,#12a594,#008573)", color: "#FFFFFF", boxShadow: "0 4px 14px rgba(18,165,148,0.2)" }}
                       >
                         {loadingId === plan.id
-                          ? <><Loader2 size={16} className="animate-spin" />Processing…</>
+                          ? <><CoinLoader size={16} className="text-current" />Processing…</>
                           : `Upgrade to ${plan.name} - ₹${plan.price}`
                         }
                       </motion.button>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Code as Code2, Eye, Copy, Check } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { CoinLoader } from "@/components/ui/coin-loader";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────
 
@@ -516,7 +517,7 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
       <div className="flex-1 overflow-auto bg-muted/10">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 py-12">
-            <div className="w-7 h-7 rounded-full border-2 border-border border-t-foreground/60 animate-spin" />
+            <CoinLoader size={28} />
             <p className="text-xs text-muted-foreground">Generating formatted resume…</p>
           </div>
         ) : !code ? (

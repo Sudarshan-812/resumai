@@ -7,9 +7,10 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import {
-  FileText, CircleNotch as Loader2, ArrowLeft, WarningCircle as AlertCircle, X,
+  FileText, ArrowLeft, WarningCircle as AlertCircle, X,
   CloudArrowUp as UploadCloud, CheckCircle as CheckCircle2, TextAlignLeft as AlignLeft, ArrowRight, FileX as FileWarning,
 } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { processResume } from "@/app/actions/upload-resume";
 import { cn } from "@/lib/utils";
 import Stepper, { Step } from "@/app/components/ui/Stepper";
@@ -87,7 +88,7 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
           className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-6"
           style={{ background: "rgba(18,165,148,0.08)", border: "1px solid rgba(18,165,148,0.15)" }}
         >
-          <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#12a594" }} />
+          <CoinLoader size={24} />
         </div>
         <h2 className="font-display text-2xl font-semibold mb-2" style={{ color: "#1c2024" }}>
           Analyzing resume
@@ -112,7 +113,7 @@ function AnalysisLoader({ fileName }: { fileName: string }) {
                       <CheckCircle2 className="w-5 h-5" style={{ color: "#12a594" }} />
                     </motion.div>
                   ) : isCurrent ? (
-                    <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#12a594" }} />
+                    <CoinLoader size={16} />
                   ) : (
                     <div className="w-2 h-2 rounded-full" style={{ background: "#d9d9e0" }} />
                   )}

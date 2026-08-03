@@ -6,8 +6,9 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SignOut as LogOut, CreditCard, EnvelopeSimple as Mail, User, ShieldCheck, Pencil,
-  Check, X, CircleNotch as Loader2, Key as KeyRound, Trash as Trash2, CaretRight as ChevronRight,
+  Check, X, Key as KeyRound, Trash as Trash2, CaretRight as ChevronRight,
 } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
 import { AuroraBackground } from "@/components/dashboard/aurora-background";
@@ -300,7 +301,7 @@ export default function SettingsPage() {
                         className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center disabled:opacity-40 bg-primary"
                       >
                         {savingName
-                          ? <Loader2 size={14} className="animate-spin text-white" />
+                          ? <CoinLoader size={14} className="text-current" />
                           : <Check size={14} weight="bold" className="text-white" />
                         }
                       </motion.button>
@@ -415,7 +416,7 @@ export default function SettingsPage() {
                       className="text-[12px] font-medium flex items-center gap-1.5 disabled:opacity-50 text-muted-foreground"
                     >
                       {sendingReset
-                        ? <><Loader2 size={14} className="animate-spin" /> Sending…</>
+                        ? <><CoinLoader size={14} className="text-current" /> Sending…</>
                         : "Send reset email"
                       }
                     </motion.button>
@@ -439,7 +440,7 @@ export default function SettingsPage() {
                 className="text-[12px] font-semibold flex items-center gap-1.5 disabled:opacity-50 text-muted-foreground"
               >
                 {signingOut
-                  ? <><Loader2 size={14} className="animate-spin" /> Signing out…</>
+                  ? <><CoinLoader size={14} className="text-current" /> Signing out…</>
                   : <><LogOut size={14} /> Sign out</>
                 }
               </motion.button>
@@ -497,7 +498,7 @@ export default function SettingsPage() {
                           className="h-9 px-4 rounded-xl text-[12px] font-bold flex items-center gap-1.5 disabled:opacity-30 bg-rose-600 text-white"
                         >
                           {deleting
-                            ? <><Loader2 size={14} className="animate-spin" /> Deleting…</>
+                            ? <><CoinLoader size={14} className="text-current" /> Deleting…</>
                             : <><Trash2 size={14} /> Delete my account</>
                           }
                         </motion.button>

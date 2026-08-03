@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, CircleNotch as Loader2, DownloadSimple as Download, ArrowRight, FileText, PencilLine } from "@phosphor-icons/react";
+import { Copy, Check, DownloadSimple as Download, ArrowRight, FileText, PencilLine } from "@phosphor-icons/react";
 import { toast } from "sonner";
 import { SpotlightCard } from "@/components/dashboard/spotlight-card";
+import { CoinLoader } from "@/components/ui/coin-loader";
 
 const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -168,7 +169,7 @@ export default function CoverLetterPage() {
                 {loading ? (
                   <motion.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                     className="flex items-center gap-2">
-                    <Loader2 size={18} className="animate-spin" /> Generating…
+                    <CoinLoader size={18} className="text-current" /> Generating…
                   </motion.span>
                 ) : (
                   <motion.span key="g" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}

@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MagnifyingGlass as Search, FloppyDisk as Save, FileText, CaretDown as ChevronDown, Stack as Layers, ArrowCounterClockwise as RotateCcw, CircleNotch as Loader2 } from "@phosphor-icons/react";
+import { MagnifyingGlass as Search, FloppyDisk as Save, FileText, CaretDown as ChevronDown, Stack as Layers, ArrowCounterClockwise as RotateCcw } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { toast } from "sonner";
 
 type ChunkType = "summary" | "experience" | "education" | "skills" | "project";
@@ -193,7 +194,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                   whileHover={!searchLoading ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                   whileTap={{ scale: 0.97 }} transition={SPRING}
                   className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-[12px] font-bold text-white disabled:opacity-40 bg-primary shadow-md shadow-primary/20">
-                  {searchLoading ? <><Loader2 size={16} className="animate-spin" />Searching…</> : <><Search size={16} weight="bold" />Find Relevant</>}
+                  {searchLoading ? <><CoinLoader size={16} className="text-current" />Searching…</> : <><Search size={16} weight="bold" />Find Relevant</>}
                 </motion.button>
 
                 <AnimatePresence>
@@ -265,7 +266,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
               {/* Content */}
               {chunksLoading ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 size={20} className="animate-spin text-primary" />
+                  <CoinLoader size={20} />
                 </div>
               ) : allChunks.length === 0 ? (
                 <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
@@ -284,7 +285,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                       whileHover={!generatingChunks ? { y: -1, boxShadow: "0 10px 24px rgba(18,165,148,0.24)" } : {}}
                       whileTap={{ scale: 0.97 }} transition={SPRING}
                       className="inline-flex items-center gap-2 h-10 px-5 rounded-xl text-[12px] font-bold text-white disabled:opacity-50 bg-primary shadow-md shadow-primary/20">
-                      {generatingChunks && <Loader2 size={16} className="animate-spin" />}
+                      {generatingChunks && <CoinLoader size={16} className="text-current" />}
                       {generatingChunks ? "Generating…" : "Generate Sections"}
                     </motion.button>
                   )}
@@ -414,7 +415,7 @@ export default function VersionsClient({ resumes }: { resumes: Resume[] }) {
                 whileTap={{ scale: 0.97 }} transition={SPRING}
                 className="w-full flex items-center justify-center gap-2 h-10 rounded-xl text-[12px] font-bold text-white disabled:opacity-40 bg-primary shadow-md shadow-primary/20">
                 {saveLoading
-                  ? <><Loader2 size={16} className="animate-spin" />Saving…</>
+                  ? <><CoinLoader size={16} className="text-current" />Saving…</>
                   : <><Save size={16} weight="bold" />Save Version</>
                 }
               </motion.button>

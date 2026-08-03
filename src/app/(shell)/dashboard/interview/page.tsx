@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CircleNotch as Loader2, PaperPlaneTilt as Send, ArrowCounterClockwise as RotateCcw, CheckCircle as CheckCircle2, WarningCircle as AlertCircle,
+  PaperPlaneTilt as Send, ArrowCounterClockwise as RotateCcw, CheckCircle as CheckCircle2, WarningCircle as AlertCircle,
   CaretRight as ChevronRight, Microphone as Mic, ArrowRight,
 } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import VoiceInterview from "./VoiceInterview";
 import UpgradeModal from "@/app/components/UpgradeModal";
 import { useInterviewState } from "./useInterviewState";
@@ -272,7 +273,7 @@ export default function InterviewPage() {
                     className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 bg-primary shadow-lg shadow-primary/20"
                   >
                     {loading
-                      ? <><Loader2 size={18} className="animate-spin" />Generating questions…</>
+                      ? <><CoinLoader size={18} className="text-current" />Generating questions…</>
                       : <><Mic size={18} />Start Interview</>
                     }
                   </motion.button>
@@ -330,7 +331,7 @@ export default function InterviewPage() {
                     className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 bg-primary shadow-lg shadow-primary/20"
                   >
                     {loading
-                      ? <><Loader2 size={18} className="animate-spin" />Evaluating…</>
+                      ? <><CoinLoader size={18} className="text-current" />Evaluating…</>
                       : <><Send size={16} />Submit Answer</>
                     }
                   </motion.button>

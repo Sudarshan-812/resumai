@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect, memo } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import {
   FileText, CloudArrowUp as UploadCloud, Briefcase, ArrowRight,
   X, WarningCircle as AlertCircle, CheckCircle as CheckCircle2, Target, ShieldCheck,
@@ -109,7 +110,7 @@ function AnalysisLoader() {
                   {done.includes(i) ? (
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
                   ) : (
-                    <div className="w-3.5 h-3.5 rounded-full border-2 border-primary border-t-transparent animate-spin shrink-0" />
+                    <CoinLoader size={14} className="shrink-0" />
                   )}
                   <span className={done.includes(i) ? "text-emerald-600" : "text-primary"}>
                     {done.includes(i) ? "✓ " : "→ "}{msg}

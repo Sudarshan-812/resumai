@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Eye, EyeSlash as EyeOff, CircleNotch as Loader2, ArrowRight, CheckCircle as CheckCircle2 } from "@phosphor-icons/react";
+import { Lock, Eye, EyeSlash as EyeOff, ArrowRight, CheckCircle as CheckCircle2 } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -90,7 +91,7 @@ export default function ResetPasswordPage() {
 
         {!sessionReady ? (
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <CoinLoader size={24} className="text-muted-foreground" />
             <p className="text-sm text-muted-foreground">Verifying reset link…</p>
           </div>
         ) : (
@@ -152,7 +153,7 @@ export default function ResetPasswordPage() {
               className="w-full h-11 rounded-lg bg-primary text-primary-foreground font-bold shadow-md hover:bg-primary/90 transition-all active:scale-[0.98]"
             >
               {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <CoinLoader size={16} className="text-current" />
               ) : (
                 <>Update Password <ArrowRight className="ml-2 h-4 w-4" /></>
               )}

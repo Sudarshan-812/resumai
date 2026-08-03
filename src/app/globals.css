@@ -137,3 +137,14 @@
   0%, 100% { transform: translate(var(--drift-x-from, -20px), var(--drift-y-from, -15px)); }
   50% { transform: translate(var(--drift-x-to, 20px), var(--drift-y-to, 15px)); }
 }
+
+@keyframes coin-toss {
+  0%   { transform: translateY(0) rotateY(0deg); animation-timing-function: ease-out; }
+  50%  { transform: translateY(-38%) rotateY(360deg); animation-timing-function: ease-in; }
+  100% { transform: translateY(0) rotateY(720deg); }
+}
+
+@keyframes coin-toss-shadow {
+  0%, 100% { transform: scaleX(1); opacity: 0.3; }
+  50%      { transform: scaleX(0.5); opacity: 0.08; }
+}

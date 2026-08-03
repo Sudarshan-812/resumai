@@ -10,7 +10,8 @@ import {
   useLocalParticipant,
 } from "@livekit/components-react";
 import type { AgentState } from "@livekit/components-react";
-import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneDisconnect as PhoneOff, CircleNotch as Loader2, FileText, CaretDown as ChevronDown } from "@phosphor-icons/react";
+import { Microphone as Mic, MicrophoneSlash as MicOff, PhoneDisconnect as PhoneOff, FileText, CaretDown as ChevronDown } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -323,7 +324,7 @@ function SetupView({
         </label>
         {resumesLoading ? (
           <div className="h-11 rounded-xl flex items-center px-4 gap-2 bg-muted/30 border border-border">
-            <Loader2 size={16} className="animate-spin text-muted-foreground/60" />
+            <CoinLoader size={16} className="text-muted-foreground/60" />
             <span className="text-sm text-muted-foreground/60">Loading resumes…</span>
           </div>
         ) : resumes.length === 0 ? (
@@ -392,7 +393,7 @@ function SetupView({
         className="w-full h-12 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-40 disabled:cursor-not-allowed text-white bg-primary shadow-lg shadow-primary/25"
       >
         {loading
-          ? <><Loader2 size={18} className="animate-spin" />Connecting…</>
+          ? <><CoinLoader size={18} className="text-current" />Connecting…</>
           : <><Mic size={18} />Start Voice Interview</>
         }
       </motion.button>

@@ -1,6 +1,7 @@
 "use client";
 
-import { Check, CircleNotch as Loader2, ShieldCheck, Lightning as Zap, Star, ArrowRight } from "@phosphor-icons/react";
+import { Check, ShieldCheck, Lightning as Zap, Star, ArrowRight } from "@phosphor-icons/react";
+import { CoinLoader } from "@/components/ui/coin-loader";
 import { useState } from "react";
 import { createRazorpayOrder } from "@/app/actions/razorpay";
 import { verifyPayment } from "@/app/actions/verify-payment";
@@ -221,7 +222,7 @@ export default function BillingPage() {
                       {loadingId === plan.id ? (
                         <motion.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                           className="flex items-center gap-2">
-                          <Loader2 size={16} className="animate-spin" /> Processing…
+                          <CoinLoader size={16} className="text-current" /> Processing…
                         </motion.span>
                       ) : (
                         <motion.span key="g" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
