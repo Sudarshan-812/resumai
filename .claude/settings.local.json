@@ -89,7 +89,8 @@
       "PowerShell(Stop-Process *)",
       "Bash(rm -rf .next/dev/lock)",
       "Bash(npm run *)",
-      "Bash(grep -in \"lock\\\\|upgrade\\\\|premium\\\\|\\\\\\\\bpro\\\\\\\\b\" \"src/app/\\(shell\\)/dashboard/interview/VoiceInterview.tsx\")"
+      "Bash(grep -in \"lock\\\\|upgrade\\\\|premium\\\\|\\\\\\\\bpro\\\\\\\\b\" \"src/app/\\(shell\\)/dashboard/interview/VoiceInterview.tsx\")",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }
