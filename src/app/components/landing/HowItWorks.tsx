@@ -10,18 +10,21 @@ const STEPS = [
     icon: Upload,
     title: "Upload Resume",
     desc: "Drop your existing PDF. Our parser extracts text and structure in seconds - including complex layouts that ATS systems struggle with.",
+    tag: "PDF parsing",
   },
   {
     num: "02",
     icon: Cpu,
     title: "AI Analysis",
     desc: "Gemini scores your content against the target job description to surface missing keywords, weak bullets, and formatting issues.",
+    tag: "Gemini 2.5",
   },
   {
     num: "03",
     icon: Download,
     title: "Optimize & Export",
     desc: "Apply one-click AI rewrites to your weakest points and download the ATS-ready version. No manual editing required.",
+    tag: "One-click export",
   },
 ] as const;
 
@@ -64,7 +67,16 @@ export default function HowItWorks() {
         </div>
 
         {/* Steps */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-5 mb-16">
+          {/* Connecting thread between step icons (desktop only) */}
+          <div
+            aria-hidden
+            className="hidden md:block absolute left-10 right-10 top-[3.25rem] h-px"
+            style={{
+              backgroundImage: "repeating-linear-gradient(90deg, rgba(18,165,148,0.35) 0 6px, transparent 6px 12px)",
+            }}
+          />
+
           {STEPS.map((step, i) => (
             <motion.div
               key={step.num}
@@ -80,8 +92,8 @@ export default function HowItWorks() {
             >
               <motion.div
                 variants={iconVariants}
-                className="w-10 h-10 rounded-xl flex items-center justify-center mb-6"
-                style={{ border: "1px solid rgba(18,165,148,0.2)" }}
+                className="relative z-10 w-10 h-10 rounded-xl flex items-center justify-center mb-6"
+                style={{ border: "1px solid rgba(18,165,148,0.2)", background: "#FFFFFF" }}
               >
                 <step.icon size={18} style={{ color: "#12a594" }} aria-hidden />
               </motion.div>
@@ -93,9 +105,20 @@ export default function HowItWorks() {
               <h3 className="text-base font-semibold mb-3" style={{ color: "#1c2024" }}>
                 {step.title}
               </h3>
-              <p className="text-sm leading-relaxed" style={{ color: "#60646c" }}>
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#60646c" }}>
                 {step.desc}
               </p>
+
+              <span
+                className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                style={{
+                  background: "rgba(18,165,148,0.06)",
+                  border: "1px solid rgba(18,165,148,0.18)",
+                  color: "#008573",
+                }}
+              >
+                {step.tag}
+              </span>
             </motion.div>
           ))}
         </div>

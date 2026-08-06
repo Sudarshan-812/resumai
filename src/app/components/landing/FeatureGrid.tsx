@@ -2,6 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import { ChartBar as BarChart3, MagicWand as Wand2, Microphone as Mic, FileText, ClockCounterClockwise as History } from "@phosphor-icons/react";
+import DotGrid from "@/app/components/landing/DotGrid";
 
 const FEATURES = [
   {
@@ -9,30 +10,35 @@ const FEATURES = [
     icon: BarChart3,
     title: "ATS Scorer",
     desc: "Precise keyword match score against any job description - mirroring how Workday and Greenhouse rank candidates before a human ever reads your resume.",
+    tags: ["Keyword match", "ATS simulation"],
   },
   {
     num: "02",
     icon: Wand2,
     title: "Bullet Rewriter",
     desc: "Our AI identifies your 5 weakest bullet points and rewrites each one with action verbs, quantified impact, and the exact language hiring managers look for.",
+    tags: ["Action verbs", "Quantified impact"],
   },
   {
     num: "03",
     icon: Mic,
     title: "Voice Interview",
     desc: "Practice with a real-time AI interviewer trained on your resume and the target JD. Powered by LiveKit WebRTC and Groq Llama 3.3 for sub-second responses.",
+    tags: ["Real-time AI", "LiveKit WebRTC"],
   },
   {
     num: "04",
     icon: FileText,
     title: "Cover Letter Generator",
     desc: "Generate role-specific cover letters mapped directly to the job description. Not template-generic - each one references your actual experience.",
+    tags: ["Role-specific", "JD-mapped"],
   },
   {
     num: "05",
     icon: History,
     title: "Resume Versions",
     desc: "Track every analysis and compare scores across iterations as you optimize for different roles. See your improvement over time.",
+    tags: ["Version tracking", "Score history"],
   },
 ] as const;
 
@@ -63,10 +69,11 @@ export default function FeatureGrid() {
   return (
     <section
       id="features"
-      className="py-24 md:py-32"
+      className="relative py-24 md:py-32 overflow-hidden"
       style={{ background: "#FFFFFF", borderTop: "1px solid #d9d9e0" }}
     >
-      <div className="max-w-5xl mx-auto px-6">
+      <DotGrid size={28} opacity={0.05} />
+      <div className="relative max-w-5xl mx-auto px-6">
 
         {/* Header */}
         <div className="mb-16">
@@ -123,16 +130,33 @@ export default function FeatureGrid() {
               </motion.div>
 
               {/* Content */}
-              <div className="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-12">
+              <div className="flex-1 flex flex-col md:flex-row md:items-start gap-3 md:gap-12">
                 <motion.h3
                   variants={titleVariants}
-                  className="text-sm font-semibold shrink-0 min-w-[160px]"
+                  className="text-sm font-semibold shrink-0 min-w-[160px] md:pt-0.5"
                 >
                   {f.title}
                 </motion.h3>
-                <p className="text-sm leading-relaxed" style={{ color: "#60646c" }}>
-                  {f.desc}
-                </p>
+                <div className="flex-1">
+                  <p className="text-sm leading-relaxed" style={{ color: "#60646c" }}>
+                    {f.desc}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {f.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold"
+                        style={{
+                          background: "rgba(18,165,148,0.06)",
+                          border: "1px solid rgba(18,165,148,0.18)",
+                          color: "#008573",
+                        }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
             </motion.div>
           ))}

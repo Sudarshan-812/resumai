@@ -1,12 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { ArrowRight, SquaresFour as LayoutDashboard, CheckCircle as CheckCircle2, TrendUp as TrendingUp, Lightning as Zap } from "@phosphor-icons/react";
 import { MaterialIcon } from "@/components/ui/material-icon";
 import { createClient } from "@/app/lib/supabase/client";
 import SplitText from "@/app/components/ui/SplitText";
+import DotGrid from "@/app/components/landing/DotGrid";
+import HandDrawnUnderline from "@/app/components/landing/HandDrawnUnderline";
+import { NumberTicker } from "@/components/dashboard/number-ticker";
 import dynamic from "next/dynamic";
 
 const SideRays = dynamic(() => import("@/app/components/ui/SideRays"), { ssr: false });
@@ -14,14 +17,16 @@ const SideRays = dynamic(() => import("@/app/components/ui/SideRays"), { ssr: fa
 const EASE = [0.16, 1, 0.3, 1] as const;
 
 const STATS = [
-  ["10,000+", "Resumes Scored"],
-  ["94%",     "ATS Pass Rate"],
-  ["< 60s",   "Analysis Time"],
+  { value: 10000, formatter: (v: number) => `${Math.round(v).toLocaleString()}+`, label: "Resumes Scored" },
+  { value: 94,    formatter: (v: number) => `${Math.round(v)}%`,                  label: "ATS Pass Rate" },
+  { value: 60,    formatter: (v: number) => `< ${Math.round(v)}s`,                label: "Analysis Time" },
 ] as const;
 
 export default function HeroSection() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const statsInView = useInView(statsRef, { once: true, margin: "-10% 0px" });
 
   useEffect(() => {
     setMounted(true);
@@ -85,29 +90,56 @@ export default function HeroSection() {
         />
       </div>
 
+      {/* Dot-grid texture */}
+      <DotGrid size={28} opacity={0.06} className="z-0" />
+
       {/* ─── Above-fold: fills the viewport ─────────────────────── */}
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-20 pb-16 text-center">
         <div className="w-full max-w-3xl flex flex-col items-center">
 
           {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center gap-3 mb-9"
-          >
-            <span className="block w-7 h-px" style={{ background: "#12a594" }} />
-            <span
-              className="text-[10px] font-semibold uppercase tracking-[0.22em]"
-              style={{ color: "#80838d" }}
+          <div className="relative mb-9">
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-3"
             >
-              AI Resume Optimization
-            </span>
-            <span className="block w-7 h-px" style={{ background: "#12a594" }} />
-          </motion.div>
+              <span className="block w-7 h-px" style={{ background: "#12a594" }} />
+              <span
+                className="text-[10px] font-semibold uppercase tracking-[0.22em]"
+                style={{ color: "#80838d" }}
+              >
+                AI Resume Optimization
+              </span>
+              <span className="block w-7 h-px" style={{ background: "#12a594" }} />
+            </motion.div>
+
+            {/* Hand-drawn arrow annotation pointing at the headline */}
+            <motion.svg
+              aria-hidden
+              width="54"
+              height="46"
+              viewBox="0 0 54 46"
+              fill="none"
+              className="absolute -right-11 top-3 hidden sm:block"
+              initial={{ opacity: 0, pathLength: 0 }}
+              animate={{ opacity: 0.55, pathLength: 1 }}
+              transition={{ duration: 0.8, delay: 1.1, ease: [0.65, 0, 0.35, 1] }}
+            >
+              <motion.path
+                d="M4,4 C20,10 34,16 40,30 C42,34 42,37 41,40"
+                stroke="#12a594"
+                strokeWidth="2"
+                strokeLinecap="round"
+                fill="none"
+              />
+              <path d="M34,38 L41,41 L41,33" stroke="#12a594" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </motion.svg>
+          </div>
 
           {/* Headline */}
-          <div className="mb-7">
+          <div className="mb-9">
             <SplitText
               text="Turn job descriptions"
               tag="h1"
@@ -122,24 +154,31 @@ export default function HeroSection() {
               className="font-display font-bold tracking-tight leading-[1.06] block"
               style={{ fontSize: "clamp(42px, 7vw, 76px)", color: "#1c2024" }}
             />
-            <SplitText
-              text="into interview invites."
-              tag="span"
-              splitType="chars"
-              delay={18}
-              duration={0.52}
-              from={{ opacity: 0, y: 30 }}
-              to={{ opacity: 1, y: 0 }}
-              threshold={0.2}
-              textAlign="center"
-              className="font-display font-bold tracking-tight leading-[1.06] block text-transparent bg-clip-text"
-              style={{
-                fontSize: "clamp(42px, 7vw, 76px)",
-                backgroundImage: "linear-gradient(135deg, #008573 0%, #12a594 50%, #53b9ab 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            />
+            <span className="relative inline-block">
+              <SplitText
+                text="into interview invites."
+                tag="span"
+                splitType="chars"
+                delay={18}
+                duration={0.52}
+                from={{ opacity: 0, y: 30 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.2}
+                textAlign="center"
+                className="font-display font-bold tracking-tight leading-[1.06] block text-transparent bg-clip-text"
+                style={{
+                  fontSize: "clamp(42px, 7vw, 76px)",
+                  backgroundImage: "linear-gradient(135deg, #008573 0%, #12a594 50%, #53b9ab 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              />
+              <HandDrawnUnderline
+                color="#12a594"
+                delay={0.95}
+                className="absolute left-0 right-0 -bottom-3 w-full h-4"
+              />
+            </span>
           </div>
 
           {/* Subhead - static, confident */}
@@ -216,6 +255,7 @@ export default function HeroSection() {
 
           {/* Stats - unified card */}
           <motion.div
+            ref={statsRef}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.62, ease: EASE }}
@@ -228,9 +268,9 @@ export default function HeroSection() {
                 boxShadow: "0 1px 6px rgba(0,0,0,0.04)",
               }}
             >
-              {STATS.map(([stat, label], i) => (
+              {STATS.map((s, i) => (
                 <div
-                  key={label}
+                  key={s.label}
                   className="flex flex-col items-center px-8 py-5"
                   style={i < STATS.length - 1 ? { borderRight: "1px solid #d9d9e0" } : undefined}
                 >
@@ -238,13 +278,17 @@ export default function HeroSection() {
                     className="text-xl font-bold font-mono tabular-nums leading-none"
                     style={{ color: "#1c2024" }}
                   >
-                    {stat}
+                    {statsInView ? (
+                      <NumberTicker value={s.value} formatter={s.formatter} duration={1400} delay={i * 120} />
+                    ) : (
+                      s.formatter(0)
+                    )}
                   </span>
                   <span
                     className="mt-1.5 text-[11px] whitespace-nowrap"
                     style={{ color: "#80838d" }}
                   >
-                    {label}
+                    {s.label}
                   </span>
                 </div>
               ))}
@@ -261,11 +305,38 @@ export default function HeroSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.9, ease: EASE }}
+          className="relative"
         >
+          {/* Peek card - layered depth behind the report mockup */}
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0, y: 20, rotate: 0 }}
+            whileInView={{ opacity: 1, y: 0, rotate: -4 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.9, delay: 0.15, ease: EASE }}
+            className="hidden sm:flex absolute -top-6 -right-4 z-0 items-center gap-2.5 rounded-2xl px-4 py-3"
+            style={{
+              background: "#FFFFFF",
+              border: "1px solid #d9d9e0",
+              boxShadow: "0 16px 40px rgba(0,0,0,0.08)",
+            }}
+          >
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+              style={{ background: "rgba(18,165,148,0.1)" }}
+            >
+              <CheckCircle2 size={16} style={{ color: "#12a594" }} aria-hidden />
+            </div>
+            <div className="text-left">
+              <div className="text-sm font-bold leading-none" style={{ color: "#1c2024" }}>10,000+</div>
+              <div className="text-[10px] mt-0.5" style={{ color: "#80838d" }}>resumes scored</div>
+            </div>
+          </motion.div>
+
           <motion.div
             animate={{ y: [0, -6, 0] }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-            className="overflow-hidden rounded-2xl"
+            className="relative z-10 overflow-hidden rounded-2xl"
             style={{
               background: "#FFFFFF",
               border: "1px solid #d9d9e0",

@@ -93,7 +93,11 @@
       "mcp__ide__getDiagnostics",
       "Bash(echo \"EXIT: $?\")",
       "Bash(npx eslint *)",
-      "Bash(echo \"EXIT $?\")"
+      "Bash(echo \"EXIT $?\")",
+      "WebFetch(domain:www.juicymoney.co)",
+      "WebFetch(domain:snowballapp.ai)",
+      "WebFetch(domain:edufly.dev)",
+      "WebFetch(domain:fylla.app)"
     ]
   }
 }

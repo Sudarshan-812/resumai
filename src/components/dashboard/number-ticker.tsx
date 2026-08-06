@@ -12,6 +12,7 @@ interface NumberTickerProps {
   suffix?: string;
   decimals?: number;
   onComplete?: () => void;
+  formatter?: (value: number) => string;
 }
 
 function easeOutExpo(t: number) {
@@ -27,6 +28,7 @@ export function NumberTicker({
   suffix = "",
   decimals = 0,
   onComplete,
+  formatter,
 }: NumberTickerProps) {
   const [display, setDisplay] = useState(0);
 
@@ -48,8 +50,7 @@ export function NumberTicker({
 
   return (
     <span className={cn("tabular-nums", className)} style={style}>
-      {display.toFixed(decimals)}
-      {suffix}
+      {formatter ? formatter(display) : `${display.toFixed(decimals)}${suffix}`}
     </span>
   );
 }

@@ -124,6 +124,12 @@ export default function Pricing() {
               <div className="h-px mb-6" style={{ background: plan.popular ? "rgba(18,165,148,0.2)" : "#d9d9e0" }} />
 
               {/* Features */}
+              <p
+                className="text-[10px] font-bold uppercase tracking-widest mb-3"
+                style={{ color: "#b9bbc6" }}
+              >
+                What&apos;s included
+              </p>
               <ul className="space-y-3 mb-8 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-center gap-3 text-sm" style={{ color: "#60646c" }}>

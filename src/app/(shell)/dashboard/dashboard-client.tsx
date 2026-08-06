@@ -26,6 +26,51 @@ interface DashboardClientProps {
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+function AvgScoreRing({ score }: { score: number }) {
+  const hasData = score > 0;
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const [dashOffset, setDashOffset] = useState(circumference);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDashOffset(circumference - (score / 100) * circumference);
+    }, 150);
+    return () => clearTimeout(t);
+  }, [score, circumference]);
+
+  const colorClass = !hasData
+    ? "text-muted-foreground/30"
+    : score >= 70 ? "text-emerald-500"
+    : score >= 50 ? "text-amber-500"
+    : "text-rose-500";
+
+  return (
+    <div className="relative shrink-0 flex items-center justify-center" style={{ width: 72, height: 72 }}>
+      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/60" />
+        <circle
+          cx="50" cy="50" r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="8"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={dashOffset}
+          className={colorClass}
+          style={{ transition: "stroke-dashoffset 1.3s cubic-bezier(0.16,1,0.3,1)" }}
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className={`text-lg font-bold tabular-nums leading-none ${hasData ? "text-foreground" : "text-muted-foreground/40"}`}>
+          {hasData ? score : "–"}
+        </span>
+        <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-muted-foreground/60">avg</span>
+      </div>
+    </div>
+  );
+}
+
 const AI_TOOLS = [
   { key: "cover-letter", icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
   { key: "interview", icon: Mic, label: "Interview Prep", sub: "Practice with AI feedback", href: "/dashboard/interview" },
@@ -58,19 +103,27 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: EASE }}
-          className="relative flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-10 rounded-3xl overflow-hidden px-6 py-8 border border-border"
+          className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10 rounded-3xl overflow-hidden px-6 py-8 border border-border"
         >
           <AuroraBackground className="opacity-70" />
-          <div className="relative z-10">
-            <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">
-              {today}
-            </p>
-            <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
-              Good to see you, {userName}.
-            </h1>
+          <div className="relative z-10 flex items-center gap-5">
+            <AvgScoreRing score={avgScore} />
+            <div>
+              <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">
+                {today}
+              </p>
+              <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
+                Good to see you, {userName}.
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {totalScans > 0
+                  ? `Averaging ${avgScore}/100 across ${totalScans} scan${totalScans === 1 ? "" : "s"}.`
+                  : "Run your first scan to see your ATS score here."}
+              </p>
+            </div>
           </div>
 
-          <Link href="/upload" className="relative z-10">
+          <Link href="/upload" className="relative z-10 shrink-0">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
@@ -96,6 +149,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               icon: ScanLine,
               label: "Analyses",
               value: totalScans,
+              suffix: "",
               diff: null,
               note: "total scans",
               valueColor: "text-foreground",
@@ -105,6 +159,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               icon: Target,
               label: "Avg Score",
               value: avgScore,
+              suffix: avgScore > 0 ? " /100" : "",
               diff: avgScore >= 70 ? "up" : avgScore > 0 ? "down" : null,
               note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
               valueColor: avgScore >= 70 ? "text-emerald-600" : avgScore > 0 ? "text-amber-600" : "text-foreground",
@@ -114,6 +169,7 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               icon: Coins,
               label: "Credits",
               value: credits,
+              suffix: "",
               diff: credits <= 1 ? "down" : null,
               note: credits <= 1 ? "top up soon" : "remaining",
               valueColor: "text-foreground",
@@ -127,16 +183,17 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
             icon: React.ElementType;
             label: string;
             value: number;
+            suffix: string;
             diff: "up" | "down" | null;
             note: string;
             valueColor: string;
             action: React.ReactNode;
           }>
         ).map((m, i) => (
-            <SpotlightCard key={i} className="px-5 py-4">
-              <div className="flex items-start justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-primary/10 border border-primary/15">
-                  <m.icon size={22} className="text-primary" />
+            <SpotlightCard key={i} className="px-5 py-5">
+              <div className="flex items-start justify-between mb-4">
+                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 border border-primary/15">
+                  <m.icon size={23} className="text-primary" />
                 </div>
                 {m.diff && (
                   <span
@@ -148,11 +205,12 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                   </span>
                 )}
               </div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1 text-muted-foreground">
+              <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1.5 text-muted-foreground">
                 {m.label}
               </p>
-              <p className={`text-3xl font-bold tracking-tight tabular-nums leading-none mb-1.5 ${m.valueColor}`}>
+              <p className={`text-4xl font-bold tracking-tight tabular-nums leading-none mb-2 ${m.valueColor}`}>
                 <NumberTicker value={m.value} />
+                {m.suffix && <span className="text-base font-semibold text-muted-foreground/60">{m.suffix}</span>}
               </p>
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[11px] text-muted-foreground">{m.note}</p>
