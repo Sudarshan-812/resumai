@@ -13,7 +13,7 @@ interface Testimonial {
 
 const TESTIMONIALS: readonly Testimonial[] = [
   {
-    quote: "I was getting rejected instantly. After Column8 optimized my CV, I got 3 interview calls in a week.",
+    quote: "I was getting rejected instantly. After Viva optimized my CV, I got 3 interview calls in a week.",
     author: "Arjun K.",
     role: "Frontend Developer",
     initial: "A",

@@ -231,7 +231,7 @@ const UploadPage: FC = (): JSX.Element => {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <Image src="/column8_black_transparent.png" alt="Column8" width={560} height={217} className="h-7 w-auto" priority />
+        <Image src="/column8_black_transparent.png" alt="Viva" width={560} height={217} className="h-7 w-auto" priority />
         <div className="w-[88px]" />
       </header>
 

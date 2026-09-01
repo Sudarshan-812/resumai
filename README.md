@@ -1,8 +1,8 @@
-# Column8 🚀
+# Viva 🚀
 
 **An AI-Powered Resume Builder SaaS**
 
-Column8 is a production-grade Software-as-a-Service (SaaS) platform that leverages artificial intelligence to help users generate, format, and optimize professional resumes. Built with a focus on performance, real-time data handling, and seamless user experience.
+Viva is a production-grade Software-as-a-Service (SaaS) platform that leverages artificial intelligence to help users generate, format, and optimize professional resumes. Built with a focus on performance, real-time data handling, and seamless user experience.
 
 🔗 **Live Application:** https://column8.io/
 

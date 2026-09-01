@@ -52,7 +52,7 @@ export default function UpgradeModal({ open, onClose, onSuccess }: Props) {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: plan.price * 100,
         currency: "INR",
-        name: `Column8 ${plan.name}`,
+        name: `Viva ${plan.name}`,
         description: `${plan.credits} Credits + Unlimited Interviews`,
         order_id: result.orderId,
         handler: async (response: any) => {

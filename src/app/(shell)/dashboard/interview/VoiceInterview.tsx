@@ -224,7 +224,7 @@ function ActiveSession({ onEnd }: { onEnd: () => void }) {
           </div>
 
           <div className="relative text-center pb-2">
-            <p className="text-[13px] font-semibold text-foreground">Column8 AI</p>
+            <p className="text-[13px] font-semibold text-foreground">Viva</p>
             <p className="text-[10px] font-mono uppercase tracking-[0.14em] mt-0.5 text-muted-foreground">Interviewer</p>
           </div>
         </motion.div>

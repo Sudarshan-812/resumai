@@ -75,10 +75,10 @@ export default function Navbar() {
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0" aria-label="Column8 home">
+          <Link href="/" className="flex items-center flex-shrink-0" aria-label="Viva home">
             <Image
               src="/column8_black_transparent.png"
-              alt="Column8"
+              alt="Viva"
               width={560}
               height={217}
               className="h-8 w-auto"

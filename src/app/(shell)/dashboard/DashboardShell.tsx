@@ -412,7 +412,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               <Link href="/dashboard" className="flex items-center">
                 <Image
                   src="/column8_black_transparent.png"
-                  alt="Column8"
+                  alt="Viva"
                   width={560}
                   height={217}
                   className="h-7 w-auto"

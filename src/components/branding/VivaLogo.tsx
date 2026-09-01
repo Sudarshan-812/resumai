@@ -3,7 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-interface Column8LogoProps {
+interface VivaLogoProps {
   width?: number;
   height?: number;
   showTagline?: boolean;
@@ -12,7 +12,7 @@ interface Column8LogoProps {
   className?: string;
 }
 
-const Column8Logo: React.FC<Column8LogoProps> = ({
+const VivaLogo: React.FC<VivaLogoProps> = ({
   width = 310,
   height = 120,
   showTagline = true,
@@ -30,7 +30,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
       viewBox="0 0 620 240"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Column8 - From Apply to Offer"
+      aria-label="Viva - From Apply to Offer"
       role="img"
     >
       <defs>
@@ -101,7 +101,7 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
           fontSize="56" fontWeight="600"
           fill={ink} letterSpacing="-2"
         >
-          Column<tspan fill="#12a594">8</tspan>
+          Viv<tspan fill="#12a594">a</tspan>
         </text>
       </motion.g>
 
@@ -127,4 +127,4 @@ const Column8Logo: React.FC<Column8LogoProps> = ({
   );
 };
 
-export default Column8Logo;
+export default VivaLogo;

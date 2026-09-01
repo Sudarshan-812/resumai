@@ -90,7 +90,7 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
           <Link href="/" className="ml-3 flex items-center" aria-label="Home">
             <Image
               src="/column8_black_transparent.png"
-              alt="Column8"
+              alt="Viva"
               width={560}
               height={217}
               className="h-7 w-auto"

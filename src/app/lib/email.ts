@@ -1,6 +1,6 @@
 import { Resend } from "resend";
 
-const FROM = "Column8 <noreply@column8.ai>";
+const FROM = "Viva <noreply@column8.ai>";
 
 function getResend() {
   if (!process.env.RESEND_API_KEY) return null;
@@ -23,15 +23,15 @@ export async function sendPaymentReceiptEmail(params: {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Column8 - ${creditsAdded} credits added`,
+    subject: `Viva - ${creditsAdded} credits added`,
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1c2024">
         <h2 style="font-size:20px;margin-bottom:8px">Payment confirmed</h2>
-        <p>You've received <strong>${creditsAdded} credits</strong> on Column8.</p>
+        <p>You've received <strong>${creditsAdded} credits</strong> on Viva.</p>
         ${planLine}
         <p style="color:#60646c;font-size:13px">Payment ID: ${paymentId}</p>
         <hr style="border:none;border-top:1px solid #d9d9e0;margin:24px 0"/>
-        <p style="font-size:12px;color:#80838d">Column8 · AI Resume Analysis</p>
+        <p style="font-size:12px;color:#80838d">Viva · AI Resume Analysis</p>
       </div>
     `,
   });
@@ -52,7 +52,7 @@ export async function sendAnalysisDoneEmail(params: {
   await resend.emails.send({
     from: FROM,
     to,
-    subject: `Column8 - ATS Score: ${atsScore}/100 for ${fileName}`,
+    subject: `Viva - ATS Score: ${atsScore}/100 for ${fileName}`,
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;color:#1c2024">
         <h2 style="font-size:20px;margin-bottom:8px">Resume analysis complete</h2>
@@ -62,7 +62,7 @@ export async function sendAnalysisDoneEmail(params: {
           View Full Report
         </a>
         <hr style="border:none;border-top:1px solid #d9d9e0;margin:24px 0"/>
-        <p style="font-size:12px;color:#80838d">Column8 · AI Resume Analysis</p>
+        <p style="font-size:12px;color:#80838d">Viva · AI Resume Analysis</p>
       </div>
     `,
   });

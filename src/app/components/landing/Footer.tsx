@@ -20,9 +20,9 @@ const LEGAL_LINKS = [
 ] as const;
 
 const SOCIAL_LINKS = [
-  { icon: Twitter,  href: "#", label: "Column8 Twitter"  },
-  { icon: Linkedin, href: "#", label: "Column8 LinkedIn" },
-  { icon: Github,   href: "#", label: "Column8 GitHub"   },
+  { icon: Twitter,  href: "#", label: "Viva Twitter"  },
+  { icon: Linkedin, href: "#", label: "Viva LinkedIn" },
+  { icon: Github,   href: "#", label: "Viva GitHub"   },
 ] as const;
 
 export default function Footer() {
@@ -79,7 +79,7 @@ export default function Footer() {
           <div className="space-y-5">
             <Image
               src="/column8_black_transparent.png"
-              alt="Column8"
+              alt="Viva"
               width={560}
               height={217}
               className="h-9 w-auto"
@@ -130,7 +130,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs" style={{ color: "#80838d" }}>
-            © 2026 Column8. Made in India 🇮🇳
+            © 2026 Viva. Made in India 🇮🇳
           </p>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (

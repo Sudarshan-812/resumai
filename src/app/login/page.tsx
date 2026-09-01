@@ -88,7 +88,7 @@ const LoginPage: FC = (): JSX.Element => {
           {/* Logo top-left */}
           <Image
             src="/column8_black_transparent.png"
-            alt="Column8"
+            alt="Viva"
             width={560}
             height={217}
             className="h-8 w-auto"
@@ -154,7 +154,7 @@ const LoginPage: FC = (): JSX.Element => {
 
         {/* Footer */}
         <div className="mt-auto pt-10 flex items-center justify-between border-t border-border/50">
-          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">© 2026 // Column8 Platform</span>
+          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">© 2026 // Viva Platform</span>
           <div className="flex items-center gap-4 opacity-50">
             <div className="h-1.5 w-1.5 rounded-full bg-border" />
             <div className="h-1.5 w-1.5 rounded-full bg-border" />
@@ -170,7 +170,7 @@ const LoginPage: FC = (): JSX.Element => {
         <div className="absolute top-6 left-6 lg:hidden">
           <Image
             src="/column8_black_transparent.png"
-            alt="Column8"
+            alt="Viva"
             width={560}
             height={217}
             className="h-7 w-auto"

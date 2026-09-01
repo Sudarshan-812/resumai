@@ -15,7 +15,7 @@ const FAQS = [
   },
   {
     q: "What types of PDF resumes work best?",
-    a: 'Column8 works with any text-based PDF. The most common issue is "scanned" or image-based PDFs (e.g. photographed resumes or locked documents from design tools). If you get a "No readable text" error, export your resume as a text PDF from Google Docs, Word, or Canva.',
+    a: 'Viva works with any text-based PDF. The most common issue is "scanned" or image-based PDFs (e.g. photographed resumes or locked documents from design tools). If you get a "No readable text" error, export your resume as a text PDF from Google Docs, Word, or Canva.',
   },
   {
     q: "How is the score calculated?",
@@ -26,7 +26,7 @@ const FAQS = [
     a: "Credits are one-time purchases - they never expire and there are no monthly subscriptions. One credit = one full resume analysis. Cover letters and interview simulations do not consume credits.",
   },
   {
-    q: "Can I use Column8 for multiple job applications?",
+    q: "Can I use Viva for multiple job applications?",
     a: "Absolutely. Each job application needs a tailored analysis since different roles require different keywords. We recommend running a fresh scan for every unique role you apply to - that's why our credits are designed to be bought in bulk.",
   },
 ] as const;

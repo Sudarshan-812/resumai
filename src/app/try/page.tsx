@@ -95,7 +95,7 @@ function AnalysisLoader() {
             <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/20" />
           </div>
           <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-2">
-            column8_engine.log
+            viva_engine.log
           </span>
         </div>
         <div className="p-4 space-y-2 font-mono text-xs min-h-[240px]">
@@ -328,7 +328,7 @@ export default function TryPage() {
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
                       </div>
-          <span className="font-bold text-sm text-foreground">Column8</span>
+          <span className="font-bold text-sm text-foreground">Viva</span>
         </div>
         <Link href="/login" className="text-xs font-bold text-primary hover:underline">
           Sign In →
@@ -359,7 +359,7 @@ export default function TryPage() {
                   Free Trial - {remaining} scan{remaining !== 1 ? "s" : ""} remaining
                 </motion.div>
                 <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
-                  Try Column8 Free
+                  Try Viva Free
                 </h1>
                 <p className="text-muted-foreground max-w-lg mx-auto text-base">
                   No account needed. Upload your resume and paste a job description to get an instant AI-powered ATS analysis.

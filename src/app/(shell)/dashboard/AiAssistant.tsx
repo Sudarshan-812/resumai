@@ -206,7 +206,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Column8 Copilot…"
+            placeholder="Ask Viva Copilot…"
             disabled={isLoading}
             rows={1}
             className={cn(
@@ -245,7 +245,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
           </div>
         </form>
         <p className="text-center text-[10px] text-muted-foreground/40 mt-3">
-          Column8 Copilot · Enter to send · Shift+Enter for new line
+          Viva Copilot · Enter to send · Shift+Enter for new line
         </p>
       </div>
     </div>
