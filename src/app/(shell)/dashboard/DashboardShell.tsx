@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import VivaLogo from "@/components/branding/VivaLogo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -76,32 +76,6 @@ function SidebarContent({
 }) {
   const lowCredits = (profile?.credits ?? 0) < 2;
 
-  // Measured-position active pill (instead of Framer's layoutId shared-element
-  // transition, which can miss its FLIP measurement across route-level Suspense
-  // boundaries on dynamic routes in production).
-  const navRef = useRef<HTMLElement>(null);
-  const [pillRect, setPillRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
-
-  useLayoutEffect(() => {
-    const recompute = () => {
-      const nav = navRef.current;
-      const activeEl = nav?.querySelector<HTMLElement>(`[data-nav-id="${activeId}"]`);
-      if (activeEl) {
-        setPillRect({
-          top: activeEl.offsetTop,
-          left: activeEl.offsetLeft,
-          width: activeEl.offsetWidth,
-          height: activeEl.offsetHeight,
-        });
-      }
-    };
-    recompute();
-    // Re-measure after the sidebar's own width transition (collapse/expand) settles.
-    const t = setTimeout(recompute, 320);
-    window.addEventListener("resize", recompute);
-    return () => { clearTimeout(t); window.removeEventListener("resize", recompute); };
-  }, [activeId, collapsed]);
-
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -153,23 +127,11 @@ function SidebarContent({
       )}
 
       {/* Nav */}
-      <nav ref={navRef} className="relative flex-1 overflow-y-auto px-3 py-2 space-y-3.5">
-        {pillRect && (
-          <div
-            aria-hidden
-            className="absolute z-0 top-0 left-0 rounded-2xl bg-teal-500 shadow-md shadow-teal-500/25 pointer-events-none transition-[transform,width,height] duration-300 ease-out"
-            style={{
-              width: pillRect.width,
-              height: pillRect.height,
-              transform: `translate(${pillRect.left}px, ${pillRect.top}px)`,
-              willChange: "transform",
-            }}
-          />
-        )}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-3.5">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             {!collapsed && (
-              <p className="px-2.5 mb-1.5 text-[9.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground/50">
+              <p className="px-2.5 mb-1.5 text-[9.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground/50 whitespace-nowrap overflow-hidden">
                 {section.label}
               </p>
             )}
@@ -184,16 +146,17 @@ function SidebarContent({
                     href={item.href}
                     onClick={onNavigate}
                     title={collapsed ? item.label : undefined}
-                    data-nav-id={item.id}
                     className={cn(
-                      "relative z-10 flex items-center rounded-2xl text-[13px] font-medium transition-colors group",
+                      "flex items-center rounded-2xl text-[13px] font-medium transition-colors group overflow-hidden",
                       collapsed ? "justify-center px-2.5 py-2" : "gap-3 px-3 py-2",
-                      isActive ? "text-white" : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
+                      isActive
+                        ? "bg-teal-500 text-white shadow-sm shadow-teal-500/25"
+                        : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
                     )}
                   >
                     <Icon size={20} weight={isActive ? "fill" : "regular"} className="shrink-0" />
-                    {!collapsed && <span className="leading-none flex-1">{item.label}</span>}
-                    {!collapsed && isActive && <ChevronRight size={14} className="text-white/70" />}
+                    {!collapsed && <span className="leading-none flex-1 truncate">{item.label}</span>}
+                    {!collapsed && isActive && <ChevronRight size={14} className="text-white/70 shrink-0" />}
                   </Link>
                 );
               })}
@@ -371,7 +334,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
       <div className="flex h-screen bg-background overflow-hidden p-3 gap-3">
         {/* Desktop floating glass sidebar */}
         <aside className={cn(
-          "hidden md:flex flex-col shrink-0 rounded-[28px] border border-border bg-white shadow-[0_8px_32px_rgba(18,20,24,0.08)] transition-[width] duration-300 ease-in-out overflow-hidden",
+          "hidden md:flex flex-col shrink-0 rounded-[28px] border border-border bg-white shadow-[0_8px_32px_rgba(18,20,24,0.08)] transition-[width] duration-200 ease-out overflow-hidden",
           collapsed ? "w-[76px]" : "w-[248px]"
         )}>
           <SidebarContent {...sidebarProps} />

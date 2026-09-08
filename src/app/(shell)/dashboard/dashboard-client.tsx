@@ -107,7 +107,7 @@ export default function DashboardClient({ user, profile, today, recentResumes, s
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {totalScans > 0
-                  ? `Averaging ${avgScore}/100 across ${totalScans} analysis${totalScans === 1 ? "" : "es"}.`
+                  ? `Averaging ${avgScore}/100 across ${totalScans} ${totalScans === 1 ? "analysis" : "analyses"}.`
                   : "Run your first analysis to see your ATS score here."}
               </p>
             </div>
