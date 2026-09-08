@@ -56,7 +56,7 @@ const rowVariants: Variants = {
 };
 
 const numVariants: Variants = {
-  rest: { color: "#b9bbc6" },
+  rest: { color: "#80838d" },
   hover: { color: "#12a594", transition: { duration: 0.18 } },
 };
 
@@ -74,7 +74,7 @@ export default function FeatureGrid() {
   return (
     <section
       id="features"
-      className="relative py-24 md:py-32 overflow-hidden"
+      className="relative py-24 md:py-32 overflow-hidden scroll-mt-24"
       style={{ background: "#FFFFFF", borderTop: "1px solid #d9d9e0" }}
     >
       <DotGrid size={28} opacity={0.05} />

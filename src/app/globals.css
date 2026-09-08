@@ -57,9 +57,8 @@
   --color-success: oklch(0.696 0.17 162.48);
 }
 
-/* ── Slate + Teal theme (Radix Colors) - applied to both :root and .dark ── */
-:root,
-.dark {
+/* ── Slate + Teal theme (Radix Colors) — light only ── */
+:root {
   --font-display: var(--font-sans);  /* Outfit handles both display & body */
   --radius: 0.625rem;
 
@@ -126,6 +125,24 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* ── Respect the OS "reduce motion" setting ──────────────────────────────
+   Neutralises every CSS animation/transition and smooth scroll for users
+   who ask for it. Framer Motion is handled separately via
+   <MotionConfig reducedMotion="user"> in the root layout. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  html {
+    scroll-behavior: auto;
   }
 }
 

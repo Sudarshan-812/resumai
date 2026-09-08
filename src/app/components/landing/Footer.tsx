@@ -14,7 +14,7 @@ const PRODUCT_LINKS = [
 
 const LEGAL_LINKS = [
   { label: "Privacy",       href: "/privacy-policy"       },
-  { label: "Terms",         href: "/terms-and-conditions" },
+  { label: "Terms",         href: "/terms-conditions" },
   { label: "Refund Policy", href: "/cancellation-refund"  },
   { label: "Contact",       href: "/contact-us"           },
 ] as const;
@@ -133,7 +133,7 @@ export default function Footer() {
                 href={href}
                 aria-label={label}
                 className="transition-colors hover:text-teal-500"
-                style={{ color: "#b9bbc6" }}
+                style={{ color: "#80838d" }}
               >
                 <Icon size={15} aria-hidden />
               </Link>

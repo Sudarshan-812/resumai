@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { List as Menu, X, ArrowRight, SquaresFour as LayoutDashboard } from "@phosphor-icons/react";
-import { createClient } from "@/app/lib/supabase/client";
 import VivaLogo from "@/components/branding/VivaLogo";
 
 const NAV_LINKS = [
@@ -14,23 +13,16 @@ const NAV_LINKS = [
   { label: "Pricing",      href: "/#pricing",       hash: "pricing"      },
 ] as const;
 
-interface NavUser { name: string; initial: string; avatarUrl?: string; }
+export interface NavUser { name: string; initial: string; avatarUrl?: string; }
 
-export default function Navbar() {
+export default function Navbar({ initialUser = null }: { initialUser?: NavUser | null }) {
   const [scrolled, setScrolled]     = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [navUser, setNavUser]       = useState<NavUser | null>(null);
+  // Auth state is resolved on the server and passed in, so there's no
+  // logged-out → logged-in flash and no layout shift on first paint.
+  const navUser = initialUser;
   const pathname  = usePathname();
   const headerRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      const name = user.user_metadata?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "User";
-      setNavUser({ name, initial: name[0]?.toUpperCase() ?? "U", avatarUrl: user.user_metadata?.avatar_url });
-    });
-  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);

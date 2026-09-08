@@ -45,7 +45,7 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="py-24 md:py-32"
+      className="py-24 md:py-32 scroll-mt-24"
       style={{ background: "#f9f9fb", borderTop: "1px solid #d9d9e0" }}
       aria-labelledby="hiw-heading"
     >
@@ -98,7 +98,7 @@ export default function HowItWorks() {
                 <step.icon size={18} style={{ color: "#12a594" }} aria-hidden />
               </motion.div>
 
-              <div className="text-[10px] font-mono mb-3" style={{ color: "#b9bbc6" }}>
+              <div className="text-[10px] font-mono mb-3" style={{ color: "#80838d" }}>
                 Step {step.num}
               </div>
 

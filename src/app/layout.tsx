@@ -5,7 +5,7 @@ import "./globals.css";
 import "material-symbols/outlined.css";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
-import { ThemeProvider } from "@/app/components/theme-provider";
+import { MotionProvider } from "@/app/components/motion-provider";
 import { IconProvider } from "@/app/components/icon-provider";
 import { RouteLoader } from "@/components/ui/route-loader";
 
@@ -47,19 +47,14 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} font-sans antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
+        <MotionProvider>
           <Suspense fallback={null}>
             <RouteLoader />
           </Suspense>
           <IconProvider>{children}</IconProvider>
           <Toaster richColors />
           <Analytics />
-        </ThemeProvider>
+        </MotionProvider>
       </body>
     </html>
   );

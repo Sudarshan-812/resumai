@@ -89,7 +89,7 @@ export default function FAQ() {
                   animate={{ rotate: open === i ? 45 : 0 }}
                   transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  <Plus size={14} style={{ color: open === i ? "#12a594" : "#b9bbc6", flexShrink: 0 }} aria-hidden />
+                  <Plus size={14} style={{ color: open === i ? "#12a594" : "#80838d", flexShrink: 0 }} aria-hidden />
                 </motion.div>
               </button>
 

@@ -9,7 +9,7 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="py-24 md:py-32"
+      className="py-24 md:py-32 scroll-mt-24"
       style={{ background: "#FFFFFF", borderTop: "1px solid #d9d9e0" }}
     >
       <div className="max-w-5xl mx-auto px-6">
@@ -98,7 +98,7 @@ export default function Pricing() {
               {/* Features */}
               <p
                 className="text-[10px] font-bold uppercase tracking-widest mb-3"
-                style={{ color: "#b9bbc6" }}
+                style={{ color: "#80838d" }}
               >
                 What&apos;s included
               </p>
@@ -108,7 +108,7 @@ export default function Pricing() {
                     <Check
                       size={14}
                       weight="bold"
-                      style={{ color: plan.popular ? "#12a594" : "#b9bbc6", flexShrink: 0 }}
+                      style={{ color: plan.popular ? "#12a594" : "#80838d", flexShrink: 0 }}
                       aria-hidden
                     />
                     {feature}

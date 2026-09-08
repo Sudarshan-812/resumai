@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, SquaresFour as LayoutDashboard, CheckCircle as CheckCircle2, TrendUp as TrendingUp, Lightning as Zap, Check } from "@phosphor-icons/react";
 import { MaterialIcon } from "@/components/ui/material-icon";
-import { createClient } from "@/app/lib/supabase/client";
 import SplitText from "@/app/components/ui/SplitText";
 import DotGrid from "@/app/components/landing/DotGrid";
 import HandDrawnUnderline from "@/app/components/landing/HandDrawnUnderline";
@@ -21,15 +19,8 @@ const TRUST = [
   "Credits never expire",
 ] as const;
 
-export default function HeroSection() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => setIsLoggedIn(!!user));
-  }, []);
+export default function HeroSection({ initialLoggedIn = false }: { initialLoggedIn?: boolean }) {
+  const isLoggedIn = initialLoggedIn;
 
   return (
     <section
@@ -198,7 +189,7 @@ export default function HeroSection() {
             transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
             className="flex flex-col sm:flex-row items-center gap-3 mb-14"
           >
-            {mounted && isLoggedIn ? (
+            {isLoggedIn ? (
               <>
                 <Link href="/upload">
                   <motion.span
