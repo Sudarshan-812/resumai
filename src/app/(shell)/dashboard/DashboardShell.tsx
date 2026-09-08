@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   SquaresFour as LayoutDashboard, ClockCounterClockwise as History, FileText, PencilLine as PenLine,
   ChartBar as BarChart3, CreditCard, Gear as Settings, SignOut as LogOut,
-  List as Menu, CaretRight as ChevronRight, Warning as AlertTriangle, Lightning as Zap,
+  List as Menu, CaretRight as ChevronRight, Lightning as Zap,
   SidebarSimple as PanelLeftClose, GitBranch,
 } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
@@ -111,23 +111,8 @@ function SidebarContent({
         )}
       </div>
 
-      {/* Low credits warning */}
-      {lowCredits && !collapsed && (
-        <div className="mx-3 mb-1 px-3 py-2.5 rounded-2xl border border-amber-400/40 bg-amber-50 flex items-start gap-2">
-          <AlertTriangle size={16} className="text-amber-500 mt-0.5 shrink-0" />
-          <div>
-            <p className="text-[11px] font-bold text-amber-700">
-              {profile?.credits === 0 ? "No credits left" : "1 credit remaining"}
-            </p>
-            <Link href="/billing" onClick={onNavigate} className="text-[11px] text-amber-600 hover:underline font-medium">
-              Top up now →
-            </Link>
-          </div>
-        </div>
-      )}
-
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 py-2 space-y-3.5">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 pt-3 pb-2 space-y-3.5">
         {NAV_SECTIONS.map((section) => (
           <div key={section.label}>
             {!collapsed && (
