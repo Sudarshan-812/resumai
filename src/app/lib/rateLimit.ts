@@ -22,7 +22,7 @@ export const tokenRateLimit = redis
   : null;
 
 // Guest ("/try") analysis runs a full LLM pass with no auth. The client-side
-// counter (localStorage) is only a nudge — this is the real backstop so
+// counter (localStorage) is only a nudge - this is the real backstop so
 // clearing storage / incognito can't mint unlimited free AI calls from one IP.
 export const guestAnalyzeRateLimit = redis
   ? new Ratelimit({

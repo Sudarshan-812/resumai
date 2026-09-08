@@ -206,7 +206,7 @@ export default function Navbar({ initialUser = null }: { initialUser?: NavUser |
                       className="py-3 text-center rounded-xl text-sm font-semibold text-white"
                       style={{ background: "#12a594" }}
                     >
-                      Analyze my resume — free
+                      Analyze my resume - free
                     </Link>
                     <Link
                       href="/login"

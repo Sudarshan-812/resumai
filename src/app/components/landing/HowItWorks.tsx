@@ -9,7 +9,7 @@ const STEPS = [
     num: "01",
     icon: Upload,
     title: "Upload & paste the job",
-    desc: "Drop your resume PDF and paste the job description. Viva extracts the text and structure — including the multi-column layouts that trip up ATS parsers.",
+    desc: "Drop your resume PDF and paste the job description. Viva extracts the text and structure - including the multi-column layouts that trip up ATS parsers.",
     tag: "PDF + job description",
   },
   {
@@ -132,7 +132,7 @@ export default function HowItWorks() {
           className="text-center text-sm mb-8"
           style={{ color: "#60646c" }}
         >
-          Then run a spoken AI mock interview built from the same resume and job —{" "}
+          Then run a spoken AI mock interview built from the same resume and job -{" "}
           <span className="font-semibold" style={{ color: "#1c2024" }}>free, no credits</span>.
         </motion.p>
 
@@ -149,7 +149,7 @@ export default function HowItWorks() {
             className="group inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-teal-600"
             style={{ color: "#60646c" }}
           >
-            Analyze my resume — free
+            Analyze my resume - free
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
           </Link>
         </motion.div>

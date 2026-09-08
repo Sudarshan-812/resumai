@@ -18,7 +18,7 @@ const FEATURES = [
     icon: BarChart3,
     title: "ATS Match Score",
     flagship: false,
-    desc: "A precise keyword-match score against the exact job description — the same signals Workday and Greenhouse use to rank you before a person ever reads your resume.",
+    desc: "A precise keyword-match score against the exact job description - the same signals Workday and Greenhouse use to rank you before a person ever reads your resume.",
     tags: ["Keyword match", "Formatting check"],
   },
   {
@@ -34,7 +34,7 @@ const FEATURES = [
     icon: FileText,
     title: "Cover Letter Generator",
     flagship: false,
-    desc: "Role-specific cover letters mapped to the job description — each one references your actual experience instead of reading like a template.",
+    desc: "Role-specific cover letters mapped to the job description - each one references your actual experience instead of reading like a template.",
     tags: ["Role-specific", "Job-mapped"],
   },
   {

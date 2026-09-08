@@ -19,12 +19,12 @@ const outfit = Outfit({
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://column8.io";
 
 export const metadata: Metadata = {
-  title: "Viva — Resume Scoring + AI Mock Interviews",
+  title: "Viva - Resume Scoring + AI Mock Interviews",
   description:
     "Score your resume against any job in seconds, see exactly which keywords you're missing, then rehearse a spoken AI mock interview built from your resume and that job description.",
   metadataBase: new URL(SITE_URL),
   openGraph: {
-    title: "Viva — Beat the ATS, then rehearse the interview",
+    title: "Viva - Beat the ATS, then rehearse the interview",
     description:
       "Get your resume's match score in seconds, fix the keyword gaps, and practice out loud with an AI interviewer that has read your resume and the job.",
     url: SITE_URL,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Viva — Beat the ATS, then rehearse the interview",
+    title: "Viva - Beat the ATS, then rehearse the interview",
     description:
       "Resume match score in seconds, keyword gaps fixed, and a spoken AI mock interview built from your resume and the job.",
     images: ["/og.png"],

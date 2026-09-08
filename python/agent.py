@@ -20,7 +20,7 @@ logger = logging.getLogger("viva-voice-worker")
 
 
 class InterviewAgent(Agent):
-    """Stateless interviewer persona — instructions are baked in at construction."""
+    """Stateless interviewer persona - instructions are baked in at construction."""
 
     def __init__(self, instructions: str) -> None:
         super().__init__(instructions=instructions)

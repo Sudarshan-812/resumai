@@ -200,7 +200,7 @@ function ActiveSession({
       const msg = (err instanceof Error ? err.message : String(err)).toLowerCase();
       toast.error(
         msg.includes("permission") || msg.includes("denied") || msg.includes("notallowed")
-          ? "Microphone access was blocked — check your browser's site permissions and reload."
+          ? "Microphone access was blocked - check your browser's site permissions and reload."
           : "Could not toggle the microphone."
       );
     }
@@ -213,14 +213,14 @@ function ActiveSession({
       transition={{ duration: 0.45, ease: EASE }}
       className="flex flex-col gap-4"
     >
-      {/* Session bar — honest label, timer starts at connect */}
+      {/* Session bar - honest label, timer starts at connect */}
       <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-muted/40 border border-border">
         <span className="flex items-center gap-2 text-[11px] font-medium text-muted-foreground">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           Interview in progress
         </span>
         <span className="text-[12px] font-mono tabular-nums text-muted-foreground">
-          {connectionState === "connected" ? fmtClock(secs) : "—:—"}
+          {connectionState === "connected" ? fmtClock(secs) : "0:00"}
         </span>
       </div>
 
@@ -276,7 +276,7 @@ function ActiveSession({
       <Transcript lines={lines} />
 
       <p className="text-center text-[11px] text-muted-foreground/60">
-        Speak naturally — Viva handles turn-taking. End anytime to get your summary.
+        Speak naturally - Viva handles turn-taking. End anytime to get your summary.
       </p>
 
       {/* Controls */}
@@ -411,7 +411,7 @@ function SetupView({
       {/* Resume picker */}
       <div>
         <label className="block text-[10px] font-mono uppercase tracking-[0.15em] mb-2 text-muted-foreground">
-          Step 1 — Choose a resume
+          Step 1 - Choose a resume
         </label>
         {resumesLoading ? (
           <div className="h-11 rounded-xl flex items-center px-4 gap-2 bg-muted/30 border border-border">
@@ -421,7 +421,7 @@ function SetupView({
         ) : resumes.length === 0 ? (
           <div className="h-11 rounded-xl flex items-center px-4 bg-muted/30 border border-border">
             <span className="text-sm text-muted-foreground">
-              No resumes yet —{" "}
+              No resumes yet -{" "}
               <a href="/upload" className="underline text-primary">upload one first</a>
             </span>
           </div>
@@ -465,7 +465,7 @@ function SetupView({
       {/* Mic check */}
       <div>
         <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-2 text-muted-foreground">
-          Step 2 — Check your microphone
+          Step 2 - Check your microphone
         </p>
         {micState === "ok" ? (
           <div className="rounded-xl p-3.5 bg-emerald-500/5 border border-emerald-500/20 space-y-2">
@@ -475,7 +475,7 @@ function SetupView({
             <div className="h-1.5 rounded-full bg-emerald-500/15 overflow-hidden">
               <div className="h-full bg-emerald-500 transition-[width] duration-100" style={{ width: `${Math.round(level * 100)}%` }} />
             </div>
-            <p className="text-[11px] text-muted-foreground">Say something — the bar should move.</p>
+            <p className="text-[11px] text-muted-foreground">Say something - the bar should move.</p>
           </div>
         ) : micState === "denied" ? (
           <div className="rounded-xl p-3.5 bg-rose-500/5 border border-rose-500/20 text-[12px] leading-relaxed text-rose-700">
@@ -505,7 +505,7 @@ function SetupView({
         <p className="text-[9px] font-mono uppercase tracking-[0.15em] text-muted-foreground/60">Good to know</p>
         {[
           "Use headphones so Viva doesn't hear itself.",
-          "Plan on 5–10 minutes and about 5–8 questions.",
+          "Plan on 5-10 minutes and about 5-8 questions.",
           "You can mute, or end early, at any point.",
         ].map((t, i) => (
           <div key={i} className="flex items-start gap-2.5">
@@ -551,7 +551,7 @@ function Unavailable({ onBack }: { onBack?: () => void }) {
       <WarningCircle size={30} className="text-amber-500" />
       <p className="text-sm font-semibold text-foreground">Voice interview is temporarily unavailable</p>
       <p className="text-xs text-muted-foreground max-w-xs leading-relaxed">
-        Our real-time voice service isn&apos;t responding right now. Please try again shortly — text practice below works as usual.
+        Our real-time voice service isn&apos;t responding right now. Please try again shortly - text practice below works as usual.
       </p>
       {onBack && (
         <button onClick={onBack} className="mt-1 h-9 px-5 rounded-xl text-xs font-semibold border border-border text-muted-foreground">

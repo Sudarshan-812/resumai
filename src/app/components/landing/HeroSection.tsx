@@ -143,7 +143,7 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
           >
             Viva scores your resume against the exact job in under a minute and shows the
             keyword gaps to fix. Then it runs a spoken AI mock interview built from your
-            resume and that job — so you walk in ready.
+            resume and that job - so you walk in ready.
           </motion.p>
 
           {/* CTAs */}
@@ -189,7 +189,7 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
                     style={{ background: "#12a594", boxShadow: "0 4px 24px rgba(18,165,148,0.32)" }}
                   >
                     <MaterialIcon name="auto_awesome" size={14} />
-                    Analyze my resume — free
+                    Analyze my resume - free
                     <ArrowRight size={14} className="transition-transform group-hover:translate-x-0.5" aria-hidden />
                   </motion.span>
                 </Link>
@@ -350,7 +350,7 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
                       bg: "rgba(245,158,11,0.08)",
                       iconColor: "#d97706",
                       title: "Fix layout",
-                      text: "Two-column section detected — many ATS parsers read it as scrambled text",
+                      text: "Two-column section detected - many ATS parsers read it as scrambled text",
                     },
                   ].map((item) => (
                     <div
@@ -375,7 +375,7 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
                         <strong className="font-semibold" style={{ color: "#1c2024" }}>
                           {item.title}
                         </strong>{" "}
-                        — {item.text}
+                        - {item.text}
                       </div>
                     </div>
                   ))}

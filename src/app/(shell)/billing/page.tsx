@@ -13,8 +13,12 @@ import { BorderBeam } from "@/components/dashboard/border-beam";
 import { AuroraBackground } from "@/components/dashboard/aurora-background";
 import { CREDIT_PACKS } from "@/app/lib/plans";
 import type { RazorpayCheckout, RazorpayResponse } from "@/app/lib/razorpay-types";
+import ComingSoonDialog from "@/app/components/ComingSoonDialog";
 
 declare global { interface Window { Razorpay: RazorpayCheckout } }
+
+// Flip to true once real checkout is wired up (Razorpay USD / Stripe).
+const PAYMENTS_ENABLED = false;
 
 const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
@@ -26,9 +30,14 @@ const PLANS = CREDIT_PACKS.map((p) => ({
 
 export default function BillingPage() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
   const router = useRouter();
 
   const handlePurchase = async (plan: typeof PLANS[number]) => {
+    if (!PAYMENTS_ENABLED) {
+      setComingSoon(plan.name);
+      return;
+    }
     setLoadingId(plan.id);
     try {
       const result = await createRazorpayOrder(plan.priceUsd);
@@ -220,6 +229,12 @@ export default function BillingPage() {
         </div>
 
       </div>
+
+      <ComingSoonDialog
+        open={comingSoon !== null}
+        onClose={() => setComingSoon(null)}
+        planName={comingSoon ?? undefined}
+      />
     </>
   );
 }

@@ -95,7 +95,7 @@ function FieldLabel({ label, hint, right }: { label: string; hint?: string; righ
     <div className="flex items-center justify-between mb-2">
       <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
         {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">— {hint}</span>}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">- {hint}</span>}
       </span>
       {right && <span className="text-[10px] font-mono tabular-nums text-muted-foreground/60">{right}</span>}
     </div>
@@ -455,11 +455,11 @@ export default function InterviewPage() {
                     </div>
                   </div>
 
-                  {/* Per-question breakdown — expand for the full feedback */}
+                  {/* Per-question breakdown - expand for the full feedback */}
                   <div>
                     <div className="h-px bg-border mb-5" />
                     <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-4 text-muted-foreground/60">
-                      Breakdown — tap a question for the full feedback
+                      Breakdown - tap a question for the full feedback
                     </p>
                     <div className="rounded-2xl border border-border overflow-hidden">
                       {feedbacks.map((fb, i) => (

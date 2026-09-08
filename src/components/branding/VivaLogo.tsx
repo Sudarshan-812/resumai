@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import Image from "next/image";
 
 /**
- * Viva brand mark — a rounded "V" checkmark built from two capsule strokes
+ * Viva brand mark - a rounded "V" checkmark built from two capsule strokes
  * (teal + lime) with a lime tittle, reading as "vi" and as an approval check.
  *
  * - <VivaLogo />            full horizontal lockup (mark + "Viva" wordmark)

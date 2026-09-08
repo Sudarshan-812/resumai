@@ -77,7 +77,7 @@ export default function VoiceHighlight() {
               </h2>
 
               <p className="text-base leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(255,255,255,0.72)" }}>
-                Viva builds a spoken interview from your actual resume and the exact job — the
+                Viva builds a spoken interview from your actual resume and the exact job - the
                 pointed follow-ups a hiring manager would ask. You answer out loud, then get a
                 written summary of what landed and what to tighten. Free and unlimited.
               </p>

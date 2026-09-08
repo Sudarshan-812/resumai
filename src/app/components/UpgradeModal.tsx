@@ -14,6 +14,9 @@ import type { RazorpayCheckout, RazorpayResponse } from "@/app/lib/razorpay-type
 
 declare global { interface Window { Razorpay: RazorpayCheckout } }
 
+// Flip to true once real checkout is wired up (Razorpay USD / Stripe).
+const PAYMENTS_ENABLED = false;
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -28,6 +31,13 @@ export default function UpgradeModal({ open, onClose, onSuccess, reason }: Props
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   const handlePurchase = async (plan: (typeof CREDIT_PACKS)[number]) => {
+    if (!PAYMENTS_ENABLED) {
+      toast("Checkout is coming soon - paid packs aren't live yet.", {
+        description: "The free trial and AI mock interviews stay free.",
+      });
+      onClose();
+      return;
+    }
     setLoadingId(plan.id);
     try {
       const result = await createRazorpayOrder(plan.priceUsd);
@@ -114,7 +124,7 @@ export default function UpgradeModal({ open, onClose, onSuccess, reason }: Props
                     </h2>
                     <p className="text-[13px] leading-relaxed mb-6 text-muted-foreground">
                       {reason ?? "Each resume analysis uses one credit."}{" "}
-                      Grab a pack — one-time, no subscription, credits never expire. Mock interviews stay free.
+                      Grab a pack - one-time, no subscription, credits never expire. Mock interviews stay free.
                     </p>
 
                     <div className="space-y-3">

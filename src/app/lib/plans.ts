@@ -2,7 +2,7 @@
  * Single source of truth for Viva's pricing.
  *
  * Model: one-time credit packs (no subscription). 1 credit = 1 full resume
- * analysis. AI mock interviews — voice and text — are free and unlimited for
+ * analysis. AI mock interviews - voice and text - are free and unlimited for
  * everyone and never consume credits.
  *
  * Used by the landing pricing section, the in-app billing page, the
@@ -72,7 +72,7 @@ export function packById(id: string): CreditPack | undefined {
   return CREDIT_PACKS.find((p) => p.id === id);
 }
 
-/** Price in cents — the unit payment processors expect. */
+/** Price in cents - the unit payment processors expect. */
 export function centsFor(pack: CreditPack): number {
   return pack.priceUsd * 100;
 }

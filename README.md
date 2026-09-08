@@ -28,24 +28,24 @@ Built for the US job market.
 
 ## Core features
 
-* **ATS Match Score** — weighted rubric (keyword match, experience alignment,
+* **ATS Match Score** - weighted rubric (keyword match, experience alignment,
   demonstrated skills, ATS-safe formatting) against any pasted job description.
-* **Keyword Gap Analysis** — what the resume matches and what it is missing.
-* **Bullet Rewriter** — rewrites the weakest bullet points with action verbs and
+* **Keyword Gap Analysis** - what the resume matches and what it is missing.
+* **Bullet Rewriter** - rewrites the weakest bullet points with action verbs and
   quantified impact.
-* **Voice Mock Interview** — real-time spoken interview generated from the
+* **Voice Mock Interview** - real-time spoken interview generated from the
   candidate's resume and target job, with a post-session summary.
-* **Text Mock Interview** — typed Q&A with per-answer scoring and coaching.
-* **Cover Letter Generator** — role-specific, mapped to the job description.
-* **Version history** — track score changes across resume iterations.
+* **Text Mock Interview** - typed Q&A with per-answer scoring and coaching.
+* **Cover Letter Generator** - role-specific, mapped to the job description.
+* **Version history** - track score changes across resume iterations.
 
 ## FinOps & abuse protection
 
 Voice interviews are the most expensive request path: each session spins up a
 LiveKit room, a Python worker, and a live STT/LLM/TTS pipeline. The
 `/api/interview/get-token` route (where LiveKit access tokens are minted) is
-guarded by an Upstash Redis sliding-window limiter — **3 token requests per IP per
-10 minutes** — checked before any auth/DB calls so abusive traffic is rejected
+guarded by an Upstash Redis sliding-window limiter - **3 token requests per IP per
+10 minutes** - checked before any auth/DB calls so abusive traffic is rejected
 cheaply, returning `HTTP 429` with `Retry-After` / `X-RateLimit-*` headers.
 
 This sits on top of an app-wide limiter in `src/proxy.ts` (20 requests / 10s per

@@ -1,11 +1,14 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Check, Star, Microphone as Mic } from "@phosphor-icons/react";
 import { CREDIT_PACKS } from "@/app/lib/plans";
+import ComingSoonDialog from "@/app/components/ComingSoonDialog";
 
 export default function Pricing() {
+  const [comingSoon, setComingSoon] = useState<string | null>(null);
+
   return (
     <section
       id="pricing"
@@ -117,8 +120,9 @@ export default function Pricing() {
               </ul>
 
               {/* CTA */}
-              <Link
-                href={`/login?next=/billing&plan=${plan.id}`}
+              <button
+                type="button"
+                onClick={() => setComingSoon(plan.name)}
                 className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center transition-opacity hover:opacity-90 mt-auto"
                 style={
                   plan.popular
@@ -127,10 +131,16 @@ export default function Pricing() {
                 }
               >
                 Get {plan.name}
-              </Link>
+              </button>
             </motion.div>
           ))}
         </div>
+
+        <ComingSoonDialog
+          open={comingSoon !== null}
+          onClose={() => setComingSoon(null)}
+          planName={comingSoon ?? undefined}
+        />
 
         {/* Free-forever line */}
         <div className="mt-10 flex items-center justify-center gap-2.5 text-sm" style={{ color: "#60646c" }}>
@@ -140,7 +150,7 @@ export default function Pricing() {
           >
             <Mic size={14} style={{ color: "#12a594" }} aria-hidden />
           </span>
-          Every plan — and the free trial — includes <strong className="font-semibold" style={{ color: "#1c2024" }}>&nbsp;unlimited AI mock interviews</strong>, voice and text. No credits, ever.
+          Every plan - and the free trial - includes <strong className="font-semibold" style={{ color: "#1c2024" }}>&nbsp;unlimited AI mock interviews</strong>, voice and text. No credits, ever.
         </div>
 
       </div>

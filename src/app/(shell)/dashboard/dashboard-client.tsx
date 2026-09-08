@@ -66,7 +66,7 @@ function AvgScoreRing({ score }: { score: number }) {
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className={`text-lg font-bold tabular-nums leading-none ${hasData ? "text-foreground" : "text-muted-foreground/40"}`}>
-          {hasData ? score : "–"}
+          {hasData ? score : "-"}
         </span>
         <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-muted-foreground/60">avg</span>
       </div>
@@ -76,7 +76,7 @@ function AvgScoreRing({ score }: { score: number }) {
 
 const AI_TOOLS = [
   { key: "cover-letter", icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
-  { key: "interview", icon: Mic, label: "Mock Interview", sub: "Voice or text — free", href: "/dashboard/interview" },
+  { key: "interview", icon: Mic, label: "Mock Interview", sub: "Voice or text - free", href: "/dashboard/interview" },
 ] as const;
 
 export default function DashboardClient({ user, profile, today, recentResumes, stats }: DashboardClientProps) {

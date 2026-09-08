@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
     const { resumeId, transcript } = parsed.data;
 
-    // Ownership enforced by the user_id filter — no cross-user access.
+    // Ownership enforced by the user_id filter - no cross-user access.
     const { data: resume } = await supabase
       .from("resumes")
       .select("content, analyses(job_description)")
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         summary: "The interview ended before there was enough spoken to evaluate. Start a new session and give each answer a few sentences.",
         strengths: [],
         improvements: [
-          "Answer in 3–5 sentences using a concrete example.",
+          "Answer in 3-5 sentences using a concrete example.",
           "Structure answers as Situation → Action → Result.",
         ],
         highlight: "",
@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       }),
       prompt: `You are a senior hiring manager who just finished a spoken mock interview with a candidate. Evaluate the CANDIDATE's answers only (lines starting with "Candidate:"). Be honest, specific, and constructive.
 
-${jobDescription ? `TARGET JOB DESCRIPTION:\n${jobDescription}\n` : "No job description was attached — evaluate for general interview quality.\n"}
+${jobDescription ? `TARGET JOB DESCRIPTION:\n${jobDescription}\n` : "No job description was attached - evaluate for general interview quality.\n"}
 ${resumeText ? `CANDIDATE RESUME (context):\n${resumeText}\n` : ""}
 INTERVIEW TRANSCRIPT:
 ${cleaned}

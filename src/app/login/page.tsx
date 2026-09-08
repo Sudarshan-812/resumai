@@ -102,7 +102,7 @@ const LoginPage: FC = (): JSX.Element => {
               </h1>
               <p className="text-muted-foreground leading-relaxed text-base max-w-sm">
                 Score your resume against the job, fix what the ATS flags, and rehearse the
-                interview out loud — all in one place.
+                interview out loud - all in one place.
               </p>
             </motion.div>
 
@@ -163,7 +163,7 @@ const LoginPage: FC = (): JSX.Element => {
               {isSignUp ? "Create an account" : "Welcome back"}
             </h2>
             <p className="text-sm text-muted-foreground">
-              {isSignUp ? "It's free — no credit card." : "Sign in to your reports and mock interviews."}
+              {isSignUp ? "It's free - no credit card." : "Sign in to your reports and mock interviews."}
             </p>
           </div>
 

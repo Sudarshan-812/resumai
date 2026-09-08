@@ -109,7 +109,7 @@ function AnalysisLoader() {
       </AnimatePresence>
       {slow && (
         <p className="mt-4 text-[12px] text-muted-foreground/70">
-          Still working — a detailed job description can take a little longer. Hang tight.
+          Still working - a detailed job description can take a little longer. Hang tight.
         </p>
       )}
     </div>
@@ -345,7 +345,7 @@ export default function TryPage() {
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary mb-5"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  Free trial — {remaining} scan{remaining !== 1 ? "s" : ""} left
+                  Free trial - {remaining} scan{remaining !== 1 ? "s" : ""} left
                 </motion.div>
                 <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
                   Try Viva free
@@ -462,7 +462,7 @@ export default function TryPage() {
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   )}
                 >
-                  Analyze my resume — free
+                  Analyze my resume - free
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
                 <p className="mt-3 text-[11px] text-muted-foreground text-center max-w-xs">
@@ -517,7 +517,7 @@ export default function TryPage() {
                     <Link href="/login">
                       <button className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        Save this report — free
+                        Save this report - free
                       </button>
                     </Link>
                   </div>
@@ -618,7 +618,7 @@ export default function TryPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
                 <div className="relative">
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">
-                    Keep this report — and rehearse the interview
+                    Keep this report - and rehearse the interview
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
                     A free account saves every report, tracks your score across rewrites, and unlocks the spoken AI mock interview built from this resume and job.

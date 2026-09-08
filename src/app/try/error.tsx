@@ -13,7 +13,7 @@ export default function TryError({ reset }: { error: Error; reset: () => void })
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground mb-2">Something went wrong</h1>
           <p className="text-sm text-muted-foreground leading-relaxed">
-            The analysis hit an unexpected error. Your file was not stored — you can try again.
+            The analysis hit an unexpected error. Your file was not stored - you can try again.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
