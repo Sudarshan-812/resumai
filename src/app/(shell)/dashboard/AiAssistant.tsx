@@ -103,9 +103,9 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
         const latexMatch = full.match(/```latex\n?([\s\S]*?)```/);
         if (latexMatch) onLatexChange(latexMatch[1].trim());
       }
-    } catch (err: any) {
-      if (err.name === "AbortError") return;
-      toast.error(err.message || "Something went wrong. Please try again.");
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setMessages(prev => prev.filter(m => m.id !== assistantId));
     } finally {
       setIsLoading(false);
@@ -125,37 +125,27 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
       <div className="flex-1 overflow-y-auto">
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center h-full px-6 pb-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="mb-8"
-            >
-              <h2 className="font-display text-2xl font-semibold text-foreground tracking-tight mb-2">
+            <div className="mb-7">
+              <h2 className="text-[17px] font-semibold text-foreground tracking-tight mb-1.5">
                 {userName ? `How can I help, ${userName}?` : "How can I help with your resume?"}
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[13px] text-muted-foreground">
                 Ask me anything - I have your full resume in front of me.
               </p>
-            </motion.div>
+            </div>
 
             <div className="grid grid-cols-2 gap-2 w-full max-w-md">
-              {SUGGESTIONS.map((s, i) => (
-                <motion.button
+              {SUGGESTIONS.map((s) => (
+                <button
                   key={s.label}
                   onClick={() => sendMessage(s.prompt)}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.07, duration: 0.35 }}
-                  whileHover={{ scale: 1.03, y: -2 }}
-                  whileTap={{ scale: 0.96 }}
                   className={cn(
-                    "text-left p-4 rounded-2xl border text-[12.5px] font-medium leading-snug",
-                    "border-border bg-card hover:bg-muted text-foreground hover:border-foreground/20 transition-colors"
+                    "text-left p-3.5 rounded-lg border text-[12.5px] font-medium leading-snug",
+                    "border-border bg-white hover:bg-[#f8f8f9] text-foreground hover:border-primary/40 transition-colors"
                   )}
                 >
                   <span className="line-clamp-2">{s.label}</span>
-                </motion.button>
+                </button>
               ))}
             </div>
           </div>
@@ -176,7 +166,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       className="flex justify-end"
                     >
-                      <div className="max-w-[80%] bg-muted rounded-3xl px-5 py-3 text-sm text-foreground leading-relaxed">
+                      <div className="max-w-[80%] bg-muted rounded-2xl px-4 py-2.5 text-[13px] text-foreground leading-relaxed">
                         {m.content}
                       </div>
                     </motion.div>
@@ -197,8 +187,8 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
         <form
           onSubmit={handleSubmit}
           className={cn(
-            "relative rounded-3xl border bg-card transition-all",
-            "border-border focus-within:border-foreground/30 focus-within:shadow-md focus-within:shadow-black/5"
+            "relative rounded-xl border bg-white transition-all",
+            "border-border focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/15"
           )}
         >
           <textarea

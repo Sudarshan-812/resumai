@@ -6,58 +6,22 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SignOut as LogOut, CreditCard, EnvelopeSimple as Mail, User, ShieldCheck, Pencil,
-  Check, X, Key as KeyRound, Trash as Trash2, CaretRight as ChevronRight,
+  Check, X, Key as KeyRound, Trash as Trash2, ArrowRight,
 } from "@phosphor-icons/react";
 import { CoinLoader } from "@/components/ui/coin-loader";
 import { createClient } from "@/app/lib/supabase/client";
 import { toast } from "sonner";
-import { AuroraBackground } from "@/components/dashboard/aurora-background";
-import { NumberTicker } from "@/components/dashboard/number-ticker";
 
-const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
-const EASE   = [0.16, 1, 0.3, 1] as const;
-
-/* ─── Underline input ─────────────────────────────────────────── */
-function UInput({
-  autoFocus = false, value, onChange, onKeyDown, placeholder,
-}: {
-  autoFocus?: boolean;
-  value: string;
-  onChange: (v: string) => void;
-  onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
-  placeholder?: string;
-}) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div className="relative">
-      <input
-        autoFocus={autoFocus}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        onKeyDown={onKeyDown}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        placeholder={placeholder}
-        className="w-full py-1.5 text-[14px] bg-transparent focus:outline-none placeholder:text-muted-foreground/40 text-foreground border-b-2 transition-colors"
-        style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
-      />
-    </div>
-  );
-}
-
-/* ─── Section label ───────────────────────────────────────────── */
+/* ─── Building blocks ─────────────────────────────────────────── */
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-5 text-muted-foreground">
-      {children}
-    </p>
+    <h2 className="text-[13px] font-medium text-foreground mb-2">{children}</h2>
   );
 }
 
-/* ─── Row ─────────────────────────────────────────────────────── */
-function Row({ children }: { children: React.ReactNode }) {
+function Row({ children, last = false }: { children: React.ReactNode; last?: boolean }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-4 border-b border-border">
+    <div className={`flex items-center justify-between gap-4 px-4 h-14 ${last ? "" : "border-b border-border"}`}>
       {children}
     </div>
   );
@@ -66,37 +30,34 @@ function Row({ children }: { children: React.ReactNode }) {
 function RowLabel({ icon: Icon, label }: { icon: React.ElementType; label: string }) {
   return (
     <div className="flex items-center gap-2.5 shrink-0">
-      <Icon size={17} className="text-muted-foreground/60" />
-      <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
+      <Icon size={16} className="text-muted-foreground" />
+      <span className="text-[13px] font-medium text-foreground">{label}</span>
     </div>
   );
 }
 
 /* ─── Page ────────────────────────────────────────────────────── */
 export default function SettingsPage() {
-  const router   = useRouter();
+  const router = useRouter();
   const supabase = createClient();
 
-  const [user,    setUser]    = useState<{ id: string; email?: string; app_metadata?: { provider?: string }; user_metadata?: { avatar_url?: string; picture?: string } } | null>(null);
+  const [user, setUser] = useState<{ id: string; email?: string; app_metadata?: { provider?: string }; user_metadata?: { avatar_url?: string; picture?: string } } | null>(null);
   const [profile, setProfile] = useState<{ full_name?: string | null; credits?: number | null } | null>(null);
   const [loading, setLoading] = useState(true);
 
-  /* name editing */
   const [editingName, setEditingName] = useState(false);
-  const [nameInput,   setNameInput]   = useState("");
-  const [savingName,  setSavingName]  = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const [savingName, setSavingName] = useState(false);
 
-  /* password reset */
-  const [sendingReset,  setSendingReset]  = useState(false);
-  const [resetSent,     setResetSent]     = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
-  /* sign out */
   const [signingOut, setSigningOut] = useState(false);
 
-  /* delete account */
-  const [showDelete,      setShowDelete]      = useState(false);
-  const [deleteConfirm,   setDeleteConfirm]   = useState("");
-  const [deleting,        setDeleting]        = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -106,7 +67,7 @@ export default function SettingsPage() {
       setProfile(data);
       setLoading(false);
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const handleSaveName = useCallback(async () => {
@@ -116,7 +77,7 @@ export default function SettingsPage() {
     try {
       const { error } = await supabase.from("profiles").update({ full_name: trimmed }).eq("id", user.id);
       if (error) throw error;
-      setProfile(prev => prev ? { ...prev, full_name: trimmed } : prev);
+      setProfile((prev) => (prev ? { ...prev, full_name: trimmed } : prev));
       setEditingName(false);
       toast.success("Display name updated.");
     } catch {
@@ -160,7 +121,7 @@ export default function SettingsPage() {
     try {
       const res = await fetch("/api/user/delete", { method: "DELETE" });
       if (!res.ok) throw new Error("Deletion failed");
-      toast.success("Account deleted. Goodbye.");
+      toast.success("Account deleted.");
       window.location.href = "/";
     } catch {
       toast.error("Failed to delete account. Contact support.");
@@ -168,359 +129,261 @@ export default function SettingsPage() {
     }
   }, [deleteConfirm]);
 
-  /* ── Loading skeleton ── */
   if (loading) {
     return (
-        <div className="bg-background min-h-full">
-          <div className="bg-card border-b border-border">
-            <div className="max-w-xl mx-auto px-6 md:px-10 pt-10 pb-8">
-              <div className="h-3 w-16 rounded mb-4 bg-muted" />
-              <div className="h-8 w-32 rounded mb-3 bg-muted" />
-              <div className="h-4 w-48 rounded bg-muted" />
+      <div className="mx-auto max-w-2xl px-6 md:px-8 py-8">
+        <div className="h-6 w-32 rounded bg-muted mb-2" />
+        <div className="h-3.5 w-64 rounded bg-muted mb-8" />
+        <div className="space-y-6">
+          {[0, 1, 2].map((s) => (
+            <div key={s} className="rounded-lg border border-border overflow-hidden">
+              {[0, 1].map((i) => (
+                <div key={i} className={`flex items-center justify-between px-4 h-14 ${i === 0 ? "border-b border-border" : ""}`}>
+                  <div className="h-3 w-24 rounded bg-muted" />
+                  <div className="h-3 w-32 rounded bg-muted" />
+                </div>
+              ))}
             </div>
-          </div>
-          <div className="max-w-xl mx-auto px-6 md:px-10 py-10 space-y-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="py-4 flex items-center justify-between border-b border-border">
-                <div className="h-3 w-24 rounded bg-muted" />
-                <div className="h-3 w-32 rounded bg-muted" />
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
+      </div>
     );
   }
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "User";
-  const initial     = displayName[0]?.toUpperCase() ?? "U";
-  const credits     = profile?.credits ?? 0;
-  const avatarUrl   = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
-  const provider    = user?.app_metadata?.provider;
+  const initial = displayName[0]?.toUpperCase() ?? "U";
+  const credits = profile?.credits ?? 0;
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const provider = user?.app_metadata?.provider;
   const isEmailAuth = !provider || provider === "email";
 
-  const stagger = (i: number) => ({
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay: i * 0.05, type: "spring" as const, stiffness: 260, damping: 26 },
-  });
-
   return (
-      <div className="bg-background min-h-full">
+    <div className="mx-auto max-w-2xl px-6 md:px-8 py-8">
 
-        {/* ── Header ── */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
-          className="max-w-xl mx-auto px-6 md:px-10 pt-8"
-        >
-          <div className="relative rounded-3xl overflow-hidden border border-border px-6 py-7 mb-10">
-            <AuroraBackground className="opacity-60" />
-            <motion.div {...stagger(0)} className="relative z-10">
-              <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-3 text-muted-foreground">
-                Account
-              </p>
-            </motion.div>
+      {/* Header */}
+      <div className="mb-7">
+        <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Settings</h1>
+        <p className="mt-1 text-[13px] text-muted-foreground">Manage your account, credits, and security.</p>
+      </div>
 
-            {/* Avatar + name */}
-            <motion.div {...stagger(1)} className="relative z-10 flex items-center gap-5">
-              <motion.div
-                whileHover={{ scale: 1.06 }}
-                transition={SPRING}
-                className="shrink-0 w-14 h-14 rounded-full overflow-hidden flex items-center justify-center font-bold text-xl text-primary"
-                style={{ background: "linear-gradient(135deg,rgba(18,165,148,0.12),rgba(0,133,115,0.08))", border: "2px solid rgba(18,165,148,0.22)" }}
-              >
-                {avatarUrl
-                  ? <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  : initial
-                }
-              </motion.div>
-              <div>
-                <h1 className="font-display font-semibold tracking-tight text-foreground"
-                  style={{ fontSize: "clamp(22px, 4vw, 32px)", lineHeight: 1.2 }}>
-                  {displayName}
-                </h1>
-                <p className="text-[13px] mt-0.5 text-muted-foreground">{user?.email}</p>
-              </div>
-
-              {/* Active badge */}
-              <motion.div {...stagger(2)} className="ml-auto flex items-center gap-1.5 shrink-0">
-                <motion.span
-                  animate={{ opacity: [1, 0.4, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="w-1.5 h-1.5 rounded-full bg-emerald-500"
-                />
-                <span className="text-[11px] font-mono text-emerald-600">Active</span>
-              </motion.div>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* ── Content ── */}
-        <div className="max-w-xl mx-auto px-6 md:px-10">
-
-          {/* ── Section: Account ── */}
-          <motion.div {...stagger(2)} className="mb-10">
-            <SectionLabel>Profile</SectionLabel>
-
-            {/* Email */}
-            <Row>
-              <RowLabel icon={Mail} label="Email" />
-              <span className="text-[13px] truncate max-w-[220px] text-muted-foreground">
-                {user?.email}
-              </span>
-            </Row>
-
-            {/* Display name */}
-            <div className="py-4 border-b border-border">
-              <div className="flex items-center justify-between gap-4">
-                <RowLabel icon={User} label="Display name" />
-
-                <AnimatePresence mode="wait">
-                  {editingName ? (
-                    <motion.div
-                      key="editing"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="flex items-center gap-2 flex-1 max-w-[260px]"
-                    >
-                      <div className="flex-1">
-                        <UInput
-                          autoFocus
-                          value={nameInput}
-                          onChange={setNameInput}
-                          onKeyDown={e => {
-                            if (e.key === "Enter") handleSaveName();
-                            if (e.key === "Escape") setEditingName(false);
-                          }}
-                          placeholder="Your name"
-                        />
-                      </div>
-                      <motion.button
-                        onClick={handleSaveName}
-                        disabled={savingName || !nameInput.trim()}
-                        whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} transition={SPRING}
-                        className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center disabled:opacity-40 bg-primary"
-                      >
-                        {savingName
-                          ? <CoinLoader size={14} className="text-current" />
-                          : <Check size={14} weight="bold" className="text-white" />
-                        }
-                      </motion.button>
-                      <motion.button
-                        onClick={() => setEditingName(false)}
-                        whileHover={{ scale: 1.08 }} whileTap={{ scale: 0.92 }} transition={SPRING}
-                        className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-muted text-muted-foreground"
-                      >
-                        <X size={14} />
-                      </motion.button>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="display"
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="flex items-center gap-2"
-                    >
-                      <span className="text-[13px] text-foreground">{displayName}</span>
-                      <motion.button
-                        onClick={() => {
-                          setNameInput(profile?.full_name || "");
-                          setEditingName(true);
-                        }}
-                        whileHover={{ rotate: 18, scale: 1.12 }} whileTap={{ scale: 0.88 }}
-                        transition={SPRING}
-                        className="w-7 h-7 rounded-lg flex items-center justify-center border border-border text-muted-foreground/60 bg-card"
-                        aria-label="Edit display name"
-                      >
-                        <Pencil size={13} />
-                      </motion.button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Account status */}
-            <Row>
-              <RowLabel icon={ShieldCheck} label="Account status" />
-              <div className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[13px] font-medium text-emerald-600">Active</span>
-              </div>
-            </Row>
-          </motion.div>
-
-          {/* ── Section: Credits ── */}
-          <motion.div {...stagger(3)} className="mb-10">
-            <SectionLabel>Credits & Plan</SectionLabel>
-
-            <Row>
-              <RowLabel icon={CreditCard} label="Credits remaining" />
-              <div className="flex items-center gap-4">
-                <NumberTicker
-                  value={credits}
-                  duration={800}
-                  className="font-bold tabular-nums"
-                  style={{ color: credits <= 2 ? "#d97706" : "#12a594", fontSize: 24, letterSpacing: "-0.04em", lineHeight: 1 } as React.CSSProperties}
-                />
-                <Link href="/billing">
-                  <motion.span
-                    whileHover={{ x: 2 }} transition={SPRING}
-                    className="flex items-center gap-0.5 text-[11px] font-semibold text-primary"
-                  >
-                    Buy more <ChevronRight size={13} />
-                  </motion.span>
-                </Link>
-              </div>
-            </Row>
-
-            {/* Mini credit bar */}
-            <div className="pt-2 pb-5">
-              <div className="w-full h-1 rounded-full overflow-hidden bg-border">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min((credits / 30) * 100, 100)}%` }}
-                  transition={{ duration: 1.1, ease: EASE, delay: 0.3 }}
-                  className="h-full rounded-full"
-                  style={{ background: credits <= 2 ? "#d97706" : "linear-gradient(90deg,#12a594,#008573)" }}
-                />
-              </div>
-              <p className="text-[10px] mt-1.5 text-muted-foreground/60">
-                {credits} of 30 maximum credits
-              </p>
-            </div>
-          </motion.div>
-
-          {/* ── Section: Security (email users only) ── */}
-          {isEmailAuth && (
-            <motion.div {...stagger(4)} className="mb-10">
-              <SectionLabel>Security</SectionLabel>
-
-              <Row>
-                <RowLabel icon={KeyRound} label="Password" />
-                <AnimatePresence mode="wait">
-                  {resetSent ? (
-                    <motion.div
-                      key="sent"
-                      initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }}
-                      transition={SPRING}
-                      className="flex items-center gap-1.5 text-[12px] font-medium text-emerald-600"
-                    >
-                      <Check size={15} weight="bold" /> Reset email sent
-                    </motion.div>
-                  ) : (
-                    <motion.button
-                      key="btn"
-                      onClick={handleResetPassword}
-                      disabled={sendingReset}
-                      whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                      className="text-[12px] font-medium flex items-center gap-1.5 disabled:opacity-50 text-muted-foreground"
-                    >
-                      {sendingReset
-                        ? <><CoinLoader size={14} className="text-current" /> Sending…</>
-                        : "Send reset email"
-                      }
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </Row>
-            </motion.div>
+      {/* Identity card */}
+      <div className="rounded-lg border border-border p-4 flex items-center gap-3.5 mb-8">
+        <span className="shrink-0 w-11 h-11 rounded-full overflow-hidden bg-primary flex items-center justify-center text-[15px] font-semibold text-white">
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+          ) : (
+            initial
           )}
+        </span>
+        <div className="min-w-0">
+          <p className="text-[14px] font-semibold text-foreground truncate">{displayName}</p>
+          <p className="text-[12.5px] text-muted-foreground truncate">{user?.email}</p>
+        </div>
+        <span className="ml-auto shrink-0 inline-flex items-center gap-1.5 text-[12px] text-emerald-600">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          Active
+        </span>
+      </div>
 
-          {/* ── Section: Danger zone ── */}
-          <motion.div {...stagger(5)} className="mb-10">
-            <SectionLabel>Account actions</SectionLabel>
+      {/* Profile */}
+      <div className="mb-8">
+        <SectionLabel>Profile</SectionLabel>
+        <div className="rounded-lg border border-border overflow-hidden">
+          <Row>
+            <RowLabel icon={Mail} label="Email" />
+            <span className="text-[13px] text-muted-foreground truncate max-w-[220px]">{user?.email}</span>
+          </Row>
 
-            {/* Sign out */}
-            <Row>
-              <RowLabel icon={LogOut} label="Session" />
-              <motion.button
-                onClick={handleSignOut}
-                disabled={signingOut}
-                whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                className="text-[12px] font-semibold flex items-center gap-1.5 disabled:opacity-50 text-muted-foreground"
-              >
-                {signingOut
-                  ? <><CoinLoader size={14} className="text-current" /> Signing out…</>
-                  : <><LogOut size={14} /> Sign out</>
-                }
-              </motion.button>
-            </Row>
-
-            {/* Delete account - distinct danger card */}
-            <div className="mt-5 rounded-2xl border border-rose-500/25 bg-rose-500/[0.03] p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-2.5">
-                  <Trash2 size={17} className="text-rose-600/70" />
-                  <span className="text-[13px] font-semibold text-rose-700">Delete account</span>
-                </div>
-                <motion.button
-                  onClick={() => setShowDelete(true)}
-                  whileHover={{ x: -2 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                  className="text-[12px] font-medium text-rose-600"
-                  style={{ display: showDelete ? "none" : "block" }}
+          <div className="flex items-center justify-between gap-4 px-4 h-14 border-b border-border">
+            <RowLabel icon={User} label="Display name" />
+            {editingName ? (
+              <div className="flex items-center gap-2 flex-1 max-w-[280px]">
+                <input
+                  autoFocus
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveName();
+                    if (e.key === "Escape") setEditingName(false);
+                  }}
+                  placeholder="Your name"
+                  className="flex-1 h-8 px-2.5 rounded-md text-[13px] bg-white border border-input text-foreground focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all"
+                />
+                <button
+                  onClick={handleSaveName}
+                  disabled={savingName || !nameInput.trim()}
+                  className="shrink-0 w-8 h-8 rounded-md bg-primary hover:bg-[#0f9184] flex items-center justify-center disabled:opacity-40 transition-colors"
                 >
-                  Delete my account
-                </motion.button>
+                  {savingName ? <CoinLoader size={13} className="text-white" /> : <Check size={13} weight="bold" className="text-white" />}
+                </button>
+                <button
+                  onClick={() => setEditingName(false)}
+                  className="shrink-0 w-8 h-8 rounded-md border border-border text-muted-foreground hover:bg-[#f8f8f9] flex items-center justify-center transition-colors"
+                >
+                  <X size={13} />
+                </button>
               </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-[13px] text-muted-foreground">{displayName}</span>
+                <button
+                  onClick={() => { setNameInput(profile?.full_name || ""); setEditingName(true); }}
+                  className="w-7 h-7 rounded-md border border-border text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9] flex items-center justify-center transition-colors"
+                  aria-label="Edit display name"
+                >
+                  <Pencil size={12} />
+                </button>
+              </div>
+            )}
+          </div>
 
-              <AnimatePresence>
-                {showDelete && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 28 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-4 space-y-4">
-                      <p className="text-[12px] leading-relaxed text-rose-700/80">
-                        This permanently deletes all your resumes, analyses, and account data.
-                        This action <strong className="text-rose-700">cannot be undone</strong>.
-                      </p>
-                      <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-rose-600/60">
-                        Type DELETE to confirm
-                      </p>
-                      <div style={{ maxWidth: 240 }}>
-                        <input
-                          value={deleteConfirm}
-                          onChange={e => setDeleteConfirm(e.target.value)}
-                          onKeyDown={e => { if (e.key === "Escape") { setShowDelete(false); setDeleteConfirm(""); } }}
-                          placeholder="DELETE"
-                          className="w-full py-1.5 text-[14px] bg-transparent focus:outline-none placeholder:text-rose-400/50 text-rose-700 border-b-2 border-rose-500/30 focus:border-rose-500 transition-colors"
-                        />
-                      </div>
-                      <div className="flex items-center gap-3 pt-1">
-                        <motion.button
-                          onClick={handleDeleteAccount}
-                          disabled={deleteConfirm !== "DELETE" || deleting}
-                          whileHover={deleteConfirm === "DELETE" && !deleting ? { scale: 1.02 } : {}}
-                          whileTap={deleteConfirm === "DELETE" && !deleting ? { scale: 0.97 } : {}}
-                          transition={SPRING}
-                          className="h-9 px-4 rounded-xl text-[12px] font-bold flex items-center gap-1.5 disabled:opacity-30 bg-rose-600 text-white"
-                        >
-                          {deleting
-                            ? <><CoinLoader size={14} className="text-current" /> Deleting…</>
-                            : <><Trash2 size={14} /> Delete my account</>
-                          }
-                        </motion.button>
-                        <motion.button
-                          onClick={() => { setShowDelete(false); setDeleteConfirm(""); }}
-                          whileHover={{ x: 1 }} whileTap={{ scale: 0.95 }} transition={SPRING}
-                          className="text-[12px] text-rose-600/70"
-                        >
-                          Cancel
-                        </motion.button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+          <Row last>
+            <RowLabel icon={ShieldCheck} label="Account status" />
+            <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-emerald-600">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Active
+            </span>
+          </Row>
+        </div>
+      </div>
+
+      {/* Credits */}
+      <div className="mb-8">
+        <SectionLabel>Credits &amp; plan</SectionLabel>
+        <div className="rounded-lg border border-border overflow-hidden">
+          <Row last>
+            <RowLabel icon={CreditCard} label="Credits remaining" />
+            <div className="flex items-center gap-4">
+              <span
+                className="text-[18px] font-semibold tabular-nums leading-none"
+                style={{ color: credits <= 2 ? "#d97706" : "#12a594" }}
+              >
+                {credits}
+              </span>
+              <Link href="/billing" className="inline-flex items-center gap-0.5 text-[12px] font-medium text-primary hover:underline">
+                Buy more <ArrowRight size={12} />
+              </Link>
             </div>
+          </Row>
+          <div className="px-4 py-3 border-t border-border">
+            <div className="w-full h-1 rounded-full overflow-hidden bg-muted">
+              <div
+                className="h-full rounded-full"
+                style={{
+                  width: `${Math.min((credits / 30) * 100, 100)}%`,
+                  background: credits <= 2 ? "#d97706" : "#12a594",
+                }}
+              />
+            </div>
+            <p className="text-[11.5px] mt-1.5 text-muted-foreground">{credits} of 30 maximum credits</p>
+          </div>
+        </div>
+      </div>
 
-          </motion.div>
+      {/* Security */}
+      {isEmailAuth && (
+        <div className="mb-8">
+          <SectionLabel>Security</SectionLabel>
+          <div className="rounded-lg border border-border overflow-hidden">
+            <Row last>
+              <RowLabel icon={KeyRound} label="Password" />
+              {resetSent ? (
+                <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-emerald-600">
+                  <Check size={14} weight="bold" /> Reset email sent
+                </span>
+              ) : (
+                <button
+                  onClick={handleResetPassword}
+                  disabled={sendingReset}
+                  className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground hover:text-foreground disabled:opacity-50 transition-colors"
+                >
+                  {sendingReset ? <><CoinLoader size={13} className="text-current" /> Sending...</> : "Send reset email"}
+                </button>
+              )}
+            </Row>
+          </div>
+        </div>
+      )}
 
-          <div className="h-10" />
+      {/* Account actions */}
+      <div className="mb-8">
+        <SectionLabel>Account actions</SectionLabel>
+        <div className="rounded-lg border border-border overflow-hidden">
+          <Row last>
+            <RowLabel icon={LogOut} label="Session" />
+            <button
+              onClick={handleSignOut}
+              disabled={signingOut}
+              className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-muted-foreground hover:text-foreground disabled:opacity-50 transition-colors"
+            >
+              {signingOut ? <><CoinLoader size={13} className="text-current" /> Signing out...</> : <><LogOut size={13} /> Sign out</>}
+            </button>
+          </Row>
         </div>
 
+        {/* Danger */}
+        <div className="mt-4 rounded-lg border border-rose-500/25 bg-rose-500/[0.02] p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <Trash2 size={16} className="text-rose-600/80" />
+              <span className="text-[13px] font-medium text-rose-700">Delete account</span>
+            </div>
+            {!showDelete && (
+              <button
+                onClick={() => setShowDelete(true)}
+                className="text-[12.5px] font-medium text-rose-600 hover:text-rose-700 transition-colors"
+              >
+                Delete my account
+              </button>
+            )}
+          </div>
+
+          <AnimatePresence>
+            {showDelete && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="pt-4 space-y-3">
+                  <p className="text-[12.5px] leading-relaxed text-rose-700/80">
+                    This permanently deletes all your resumes, analyses, and account data. This action{" "}
+                    <strong className="text-rose-700">cannot be undone</strong>.
+                  </p>
+                  <p className="text-[11.5px] font-medium uppercase tracking-[0.08em] text-rose-600/70">
+                    Type DELETE to confirm
+                  </p>
+                  <input
+                    value={deleteConfirm}
+                    onChange={(e) => setDeleteConfirm(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Escape") { setShowDelete(false); setDeleteConfirm(""); } }}
+                    placeholder="DELETE"
+                    className="w-full max-w-[240px] h-9 px-3 rounded-md text-[13px] bg-white border border-rose-500/30 text-rose-700 placeholder:text-rose-400/50 focus:outline-none focus:ring-2 focus:ring-rose-500/25 focus:border-rose-500 transition-all"
+                  />
+                  <div className="flex items-center gap-3 pt-1">
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleteConfirm !== "DELETE" || deleting}
+                      className="inline-flex items-center gap-1.5 h-9 px-4 rounded-md text-[12.5px] font-semibold bg-rose-600 hover:bg-rose-700 text-white disabled:opacity-35 disabled:pointer-events-none transition-colors"
+                    >
+                      {deleting ? <><CoinLoader size={13} className="text-current" /> Deleting...</> : <><Trash2 size={13} /> Delete my account</>}
+                    </button>
+                    <button
+                      onClick={() => { setShowDelete(false); setDeleteConfirm(""); }}
+                      className="text-[12.5px] text-rose-600/70 hover:text-rose-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
+    </div>
   );
 }

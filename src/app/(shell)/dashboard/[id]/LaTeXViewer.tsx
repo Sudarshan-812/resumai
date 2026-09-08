@@ -469,7 +469,7 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header bar */}
-      <div className="px-4 py-2.5 border-b border-border shrink-0 flex items-center justify-between bg-background/80 backdrop-blur-sm">
+      <div className="px-4 py-2.5 border-b border-border shrink-0 flex items-center justify-between bg-white">
         <div className="flex items-center gap-3 min-w-0">
           {fileName && (
             <span className="text-[11px] font-medium text-muted-foreground truncate max-w-[150px]">
@@ -485,36 +485,32 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
         </div>
 
         {/* Tab switcher */}
-        <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5 border border-border shrink-0">
+        <div className="flex items-center rounded-md border border-border overflow-hidden shrink-0">
           <button
             onClick={() => setTab("preview")}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all",
-              tab === "preview"
-                ? "bg-background text-foreground shadow-sm border border-border/50"
-                : "text-muted-foreground hover:text-foreground"
+              "flex items-center gap-1.5 px-3 h-7 text-[11px] font-medium transition-colors",
+              tab === "preview" ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
             )}
           >
-            <Eye size={14} />
+            <Eye size={13} />
             Preview
           </button>
           <button
             onClick={() => setTab("code")}
             className={cn(
-              "flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all",
-              tab === "code"
-                ? "bg-background text-foreground shadow-sm border border-border/50"
-                : "text-muted-foreground hover:text-foreground"
+              "flex items-center gap-1.5 px-3 h-7 text-[11px] font-medium border-l border-border transition-colors",
+              tab === "code" ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
             )}
           >
-            <Code2 size={14} />
+            <Code2 size={13} />
             LaTeX
           </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto bg-muted/10">
+      <div className="flex-1 overflow-auto bg-[#fbfbfc]">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full gap-4 py-12">
             <CoinLoader size={48} />

@@ -1,55 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Copy, Check, DownloadSimple as Download, ArrowRight, FileText, PencilLine, CaretDown as ChevronDown } from "@phosphor-icons/react";
+import {
+  Copy, Check, DownloadSimple as Download, ArrowRight, FileText,
+  CaretDown as ChevronDown,
+} from "@phosphor-icons/react";
 import { toast } from "sonner";
-import { SpotlightCard } from "@/components/dashboard/spotlight-card";
 import { CoinLoader } from "@/components/ui/coin-loader";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 interface ResumeOption { id: string; file_name: string }
 
-const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
-const EASE   = [0.16, 1, 0.3, 1] as const;
-const TONES  = ["Professional", "Enthusiastic", "Concise"] as const;
+const TONES = ["Professional", "Enthusiastic", "Concise"] as const;
 type Tone = Lowercase<typeof TONES[number]>;
 
-/* ── Floating-label input ────────────────────────────────────── */
-function FloatingInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder: string }) {
-  const [focused, setFocused] = useState(false);
-  const active = focused || value.length > 0;
-  return (
-    <div className="relative">
-      <motion.label
-        animate={active ? { y: -22, scale: 0.82, color: "#12a594" } : { y: 0, scale: 1, color: "#60646c" }}
-        transition={{ duration: 0.18, ease: EASE }}
-        className="absolute left-0 top-3 text-sm font-medium origin-left pointer-events-none"
-      >
-        {label}
-      </motion.label>
-      <input
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={active ? placeholder : ""}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        className="w-full h-11 pt-3 text-[14px] bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground/40 border-b-2 transition-colors"
-        style={{ borderColor: focused ? "var(--primary)" : "var(--border)" }}
-      />
-    </div>
-  );
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return <p className="text-[12px] font-medium text-foreground mb-1.5">{children}</p>;
 }
 
 export default function CoverLetterPage() {
   const [company, setCompany] = useState("");
-  const [role, setRole]       = useState("");
+  const [role, setRole] = useState("");
   const [jobDesc, setJobDesc] = useState("");
-  const [tone, setTone]       = useState<Tone>("professional");
-  const [result, setResult]   = useState("");
+  const [tone, setTone] = useState<Tone>("professional");
+  const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
-  const [copied, setCopied]   = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const [resumes, setResumes] = useState<ResumeOption[]>([]);
   const [resumesLoading, setResumesLoading] = useState(true);
@@ -74,7 +51,8 @@ export default function CoverLetterPage() {
     })();
   }, []);
 
-  const ready = company.trim() && role.trim() && jobDesc.trim().length > 50;
+  const charOk = jobDesc.trim().length >= 50;
+  const ready = company.trim() && role.trim() && charOk;
 
   const generate = async () => {
     if (!ready || loading) return;
@@ -87,7 +65,7 @@ export default function CoverLetterPage() {
         body: JSON.stringify({ company, role, jobDesc, tone, resumeId: resumeId || undefined }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const reader  = res.body?.getReader();
+      const reader = res.body?.getReader();
       const decoder = new TextDecoder();
       if (!reader) throw new Error("No stream");
       let text = "";
@@ -113,258 +91,169 @@ export default function CoverLetterPage() {
 
   const download = () => {
     const blob = new Blob([result], { type: "text/plain" });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `cover-letter-${company.toLowerCase().replace(/\s+/g, "-")}.txt`;
+    a.download = `cover-letter-${company.toLowerCase().replace(/\s+/g, "-") || "draft"}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
+  const inputCls =
+    "w-full h-9 px-3 rounded-md text-[13px] bg-white border border-input text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all";
+
   return (
-      <div className="bg-background min-h-full">
-        <div className="max-w-3xl mx-auto px-6 md:px-10 py-10 md:py-14">
+    <div className="mx-auto max-w-3xl px-6 md:px-8 py-8">
 
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className="mb-8 flex items-center gap-4"
-          >
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/15">
-              <PencilLine size={24} className="text-primary" />
-            </div>
-            <div>
-              <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-1 text-muted-foreground">
-                AI Tool
-              </p>
-              <h1 className="font-display font-semibold tracking-tight text-foreground" style={{ fontSize: "clamp(22px, 4vw, 32px)", lineHeight: 1.15 }}>
-                Cover Letter
-              </h1>
-            </div>
-          </motion.div>
+      {/* Header */}
+      <div className="mb-7">
+        <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Cover Letter</h1>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          Generate a tailored cover letter from a job description. Free, unlimited.
+        </p>
+      </div>
 
-          {/* ── Form ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, type: "spring", stiffness: 220, damping: 26 }}
-            className="rounded-3xl border border-border bg-card p-7 md:p-8 space-y-8 mb-10"
-          >
-            {/* Company + Role */}
-            <div className="grid grid-cols-2 gap-8">
-              <FloatingInput label="Company" value={company} onChange={setCompany} placeholder="Google" />
-              <FloatingInput label="Role" value={role} onChange={setRole} placeholder="Software Engineer" />
-            </div>
-
-            {/* Job description */}
-            <JobDescArea value={jobDesc} onChange={setJobDesc} />
-
-            {/* Resume (optional) */}
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
-                Resume <span className="normal-case font-normal opacity-60">- optional, grounds the letter in your real experience</span>
-              </p>
-              {resumesLoading ? (
-                <div className="h-11 rounded-xl flex items-center px-4 gap-2 bg-muted/30 border border-border">
-                  <CoinLoader size={16} className="text-muted-foreground/60" />
-                  <span className="text-sm text-muted-foreground/60">Loading resumes…</span>
-                </div>
-              ) : (
-                <div className="relative">
-                  <FileText size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60" />
-                  <select
-                    value={resumeId}
-                    onChange={e => setResumeId(e.target.value)}
-                    className={cn(
-                      "w-full h-11 pl-11 pr-9 rounded-xl text-sm appearance-none cursor-pointer focus:outline-none transition-all bg-card border-[1.5px] border-border",
-                      resumeId ? "text-foreground" : "text-muted-foreground"
-                    )}
-                  >
-                    <option value="">None - write a generic letter</option>
-                    {resumes.map(r => (
-                      <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
-                    ))}
-                  </select>
-                  <ChevronDown size={18} className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground/60" />
-                </div>
-              )}
-            </div>
-
-            {/* Tone */}
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">Tone</p>
-              <div className="flex items-center gap-2">
-                {TONES.map((t) => {
-                  const val = t.toLowerCase() as Tone;
-                  const active = tone === val;
-                  return (
-                    <motion.button
-                      key={t}
-                      onClick={() => setTone(val)}
-                      whileHover={{ y: -1 }} whileTap={{ scale: 0.95 }}
-                      transition={SPRING}
-                      className={`h-9 px-4 rounded-full text-[12px] font-semibold border transition-colors ${
-                        active ? "bg-primary text-white border-primary" : "bg-transparent text-muted-foreground border-border hover:border-foreground/20"
-                      }`}
-                    >
-                      {t}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Generate */}
-            <motion.button
-              onClick={generate}
-              disabled={!ready || loading}
-              whileHover={ready && !loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
-              whileTap={ready && !loading ? { scale: 0.98 } : {}}
-              transition={SPRING}
-              className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed bg-primary shadow-lg shadow-primary/20"
-            >
-              <AnimatePresence mode="wait">
-                {loading ? (
-                  <motion.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="flex items-center gap-2">
-                    <CoinLoader size={18} className="text-current" /> Generating…
-                  </motion.span>
-                ) : (
-                  <motion.span key="g" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="flex items-center gap-2">
-                    Generate Cover Letter <ArrowRight size={18} />
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.button>
-          </motion.div>
-
-          {/* ── Output ── */}
-          <AnimatePresence>
-            {(result || loading) && (
-              <motion.div
-                key="output"
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 8 }}
-                transition={{ type: "spring", stiffness: 240, damping: 26 }}
-              >
-                <SpotlightCard className="p-7 md:p-8">
-                  {/* Output header */}
-                  <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-2">
-                      <motion.div
-                        animate={loading ? { opacity: [1, 0.4, 1] } : { opacity: 1 }}
-                        transition={{ duration: 1, repeat: Infinity }}
-                      >
-                        <FileText size={18} className={loading ? "text-primary" : "text-muted-foreground/50"} />
-                      </motion.div>
-                      <p className="text-[9px] font-mono uppercase tracking-[0.2em] text-muted-foreground">
-                        {loading ? "Writing…" : "Cover Letter"}
-                      </p>
-                      {loading && (
-                        <motion.span
-                          animate={{ opacity: [1, 0, 1] }}
-                          transition={{ duration: 0.7, repeat: Infinity }}
-                          className="text-[9px] font-mono text-primary"
-                        >▋</motion.span>
-                      )}
-                    </div>
-                    {result && !loading && (
-                      <motion.div
-                        initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}
-                        transition={SPRING}
-                        className="flex items-center gap-2"
-                      >
-                        <motion.button
-                          onClick={download}
-                          whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
-                          className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-medium border border-border text-muted-foreground bg-card"
-                        >
-                          <Download size={14} /> Save
-                        </motion.button>
-                        <motion.button
-                          onClick={copy}
-                          whileHover={{ y: -1 }} whileTap={{ scale: 0.93 }} transition={SPRING}
-                          className={`flex items-center gap-1.5 h-8 px-3 rounded-lg text-[11px] font-medium transition-colors border ${
-                            copied ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-border text-muted-foreground bg-card"
-                          }`}
-                        >
-                          <motion.span key={copied ? "y" : "n"} initial={{ scale: 0.6, rotate: -15 }} animate={{ scale: 1, rotate: 0 }} transition={SPRING}>
-                            {copied ? <Check size={14} /> : <Copy size={14} />}
-                          </motion.span>
-                          {copied ? "Copied!" : "Copy"}
-                        </motion.button>
-                      </motion.div>
-                    )}
-                  </div>
-
-                  {/* Letter text */}
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                    transition={{ delay: 0.1, duration: 0.3 }}
-                  >
-                    <p className="text-[14px] leading-[1.95] whitespace-pre-wrap text-foreground">
-                      {result}
-                      {loading && (
-                        <motion.span
-                          animate={{ opacity: [1, 0, 1] }}
-                          transition={{ duration: 0.6, repeat: Infinity }}
-                          className="text-primary font-bold"
-                        >▋</motion.span>
-                      )}
-                    </p>
-                  </motion.div>
-                </SpotlightCard>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
+      {/* Form */}
+      <div className="rounded-lg border border-border p-5 md:p-6 space-y-5 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <FieldLabel>Company</FieldLabel>
+            <input value={company} onChange={(e) => setCompany(e.target.value)} placeholder="Google" className={inputCls} />
+          </div>
+          <div>
+            <FieldLabel>Role</FieldLabel>
+            <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Software Engineer" className={inputCls} />
+          </div>
         </div>
-      </div>
-  );
-}
 
-/* ── Job description textarea ────────────────────────────────── */
-function JobDescArea({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const [focused, setFocused] = useState(false);
-  const charOk = value.trim().length >= 50;
-  const active = focused || value.length > 0;
-  return (
-    <div>
-      <div className="relative">
-        <motion.label
-          animate={active ? { y: 0, scale: 0.82, color: "#12a594" } : { y: 26, scale: 1, color: "#60646c" }}
-          transition={{ duration: 0.18, ease: EASE }}
-          className="absolute left-0 top-0 text-sm font-medium origin-left pointer-events-none"
+        <div>
+          <FieldLabel>
+            Job description <span className="font-normal text-muted-foreground">- paste the key requirements</span>
+          </FieldLabel>
+          <textarea
+            value={jobDesc}
+            onChange={(e) => setJobDesc(e.target.value)}
+            placeholder="Paste the job description here - at least 50 characters for best results."
+            rows={7}
+            className="w-full px-3 py-2.5 rounded-md text-[13px] leading-relaxed bg-white border border-input text-foreground placeholder:text-muted-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all"
+          />
+          <div className="flex items-center justify-between mt-1.5">
+            <span className={`text-[11.5px] ${charOk ? "text-emerald-600" : "text-muted-foreground"}`}>
+              {jobDesc.trim().length} chars{charOk ? " OK" : " (min 50)"}
+            </span>
+            {jobDesc.length > 0 && (
+              <button onClick={() => setJobDesc("")} className="text-[11.5px] text-muted-foreground hover:text-foreground transition-colors">
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <FieldLabel>
+            Resume <span className="font-normal text-muted-foreground">- optional, grounds the letter in your real experience</span>
+          </FieldLabel>
+          {resumesLoading ? (
+            <div className={cn(inputCls, "flex items-center gap-2 pointer-events-none")}>
+              <CoinLoader size={14} className="text-muted-foreground" />
+              <span className="text-muted-foreground">Loading resumes...</span>
+            </div>
+          ) : (
+            <div className="relative">
+              <FileText size={15} className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+              <select
+                value={resumeId}
+                onChange={(e) => setResumeId(e.target.value)}
+                className={cn(
+                  "w-full h-9 pl-9 pr-9 rounded-md text-[13px] appearance-none cursor-pointer bg-white border border-input focus:outline-none focus:ring-2 focus:ring-primary/25 focus:border-primary/40 transition-all",
+                  resumeId ? "text-foreground" : "text-muted-foreground"
+                )}
+              >
+                <option value="">None - write a generic letter</option>
+                {resumes.map((r) => (
+                  <option key={r.id} value={r.id}>{r.file_name.replace(/\.pdf$/i, "")}</option>
+                ))}
+              </select>
+              <ChevronDown size={15} className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <FieldLabel>Tone</FieldLabel>
+          <div className="inline-flex rounded-md border border-border overflow-hidden">
+            {TONES.map((t, i) => {
+              const val = t.toLowerCase() as Tone;
+              const active = tone === val;
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTone(val)}
+                  className={cn(
+                    "h-8 px-3.5 text-[12.5px] font-medium transition-colors",
+                    i > 0 && "border-l border-border",
+                    active ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
+                  )}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <button
+          onClick={generate}
+          disabled={!ready || loading}
+          className="w-full h-9 rounded-md text-[13px] font-medium text-white flex items-center justify-center gap-2 bg-primary hover:bg-[#0f9184] disabled:opacity-35 disabled:pointer-events-none transition-colors"
         >
-          Job Description <span className="normal-case font-normal opacity-60">- paste the key requirements</span>
-        </motion.label>
-        <textarea
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          placeholder={active ? "Paste the job description here - at least 50 characters for best results…" : ""}
-          rows={7}
-          className="w-full pt-7 bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/40 pb-3 border-b-2 transition-colors"
-          style={{ borderColor: focused ? "var(--primary)" : "var(--border)" }}
-        />
+          {loading ? (
+            <><CoinLoader size={15} className="text-current" /> Generating...</>
+          ) : (
+            <>Generate cover letter <ArrowRight size={15} /></>
+          )}
+        </button>
       </div>
-      <div className="flex items-center justify-between mt-2">
-        <span className={`text-[10px] ${charOk ? "text-emerald-600" : "text-muted-foreground"}`}>
-          {value.trim().length} chars{charOk ? " ✓" : " (min 50)"}
-        </span>
-        {value.length > 0 && (
-          <motion.button
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.2 }}
-            onClick={() => onChange("")}
-            className="text-[10px] text-muted-foreground/60 hover:text-muted-foreground"
-          >
-            Clear
-          </motion.button>
-        )}
-      </div>
+
+      {/* Output */}
+      {(result || loading) && (
+        <div className="rounded-lg border border-border overflow-hidden">
+          <div className="flex items-center justify-between px-4 h-12 border-b border-border">
+            <div className="flex items-center gap-2">
+              <FileText size={15} className={loading ? "text-primary" : "text-muted-foreground"} />
+              <span className="text-[12px] font-medium text-foreground">
+                {loading ? "Writing..." : "Cover letter"}
+              </span>
+            </div>
+            {result && !loading && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={download}
+                  className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11.5px] font-medium border border-border text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9] transition-colors"
+                >
+                  <Download size={13} /> Save
+                </button>
+                <button
+                  onClick={copy}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-[11.5px] font-medium border transition-colors",
+                    copied ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600" : "border-border text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
+                  )}
+                >
+                  {copied ? <Check size={13} /> : <Copy size={13} />}
+                  {copied ? "Copied" : "Copy"}
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="px-5 py-5">
+            <p className="text-[13.5px] leading-[1.9] whitespace-pre-wrap text-foreground">
+              {result}
+              {loading && <span className="text-primary font-semibold animate-pulse">|</span>}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -8,9 +8,7 @@ import { verifyPayment } from "@/app/actions/verify-payment";
 import { toast } from "sonner";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { BorderBeam } from "@/components/dashboard/border-beam";
-import { AuroraBackground } from "@/components/dashboard/aurora-background";
+import { cn } from "@/lib/utils";
 import { CREDIT_PACKS } from "@/app/lib/plans";
 import type { RazorpayCheckout, RazorpayResponse } from "@/app/lib/razorpay-types";
 import ComingSoonDialog from "@/app/components/ComingSoonDialog";
@@ -20,13 +18,7 @@ declare global { interface Window { Razorpay: RazorpayCheckout } }
 // Flip to true once real checkout is wired up (Razorpay USD / Stripe).
 const PAYMENTS_ENABLED = false;
 
-const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
-const EASE   = [0.16, 1, 0.3, 1] as const;
-
-const PLANS = CREDIT_PACKS.map((p) => ({
-  ...p,
-  accentColor: p.popular ? "#12a594" : "#80838d",
-}));
+const PLANS = CREDIT_PACKS;
 
 export default function BillingPage() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -51,7 +43,7 @@ export default function BillingPage() {
         description: `${plan.credits} resume analysis credits`,
         order_id: result.orderId,
         handler: async (response: RazorpayResponse) => {
-          toast.loading("Verifying payment…");
+          toast.loading("Verifying payment...");
           const verification = await verifyPayment(
             response.razorpay_order_id,
             response.razorpay_payment_id,
@@ -80,154 +72,88 @@ export default function BillingPage() {
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="lazyOnload" />
 
-      <div className="bg-background min-h-full">
-        <div className="max-w-4xl mx-auto px-6 md:px-10 py-10 md:py-14">
+      <div className="mx-auto max-w-5xl px-6 md:px-8 py-8">
 
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className="relative mb-10 rounded-3xl overflow-hidden border border-border px-6 py-8"
-          >
-            <AuroraBackground className="opacity-60" />
-            <p className="relative z-10 text-[9px] font-mono uppercase tracking-[0.22em] mb-3 text-muted-foreground">
-              Credits & Billing
-            </p>
-            <h1 className="relative z-10 font-display font-semibold tracking-tight mb-2 text-foreground"
-              style={{ fontSize: "clamp(26px, 5vw, 40px)", lineHeight: 1.15 }}>
-              Pay once. Keep forever.
-            </h1>
-            <p className="relative z-10 text-[14px] text-muted-foreground">
-              No subscriptions. No monthly fees. Credits are for resume analyses and never expire. AI mock interviews stay free.
-            </p>
-          </motion.div>
-
-          {/* ── Plans ── */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {PLANS.map((plan, i) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08, type: "spring", stiffness: 240, damping: 26 }}
-                className="relative flex flex-col rounded-3xl border overflow-hidden bg-card"
-                style={{ borderColor: plan.popular ? plan.accentColor : "var(--border)", borderWidth: plan.popular ? 2 : 1 }}
-              >
-                {plan.popular && <BorderBeam colorFrom={plan.accentColor} colorTo="#53b9ab" borderWidth={2} />}
-
-                {/* Accent top stripe */}
-                <motion.div
-                  initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-                  transition={{ delay: 0.2 + i * 0.08, duration: 0.6, ease: EASE }}
-                  style={{ height: 3, background: plan.accentColor, transformOrigin: "left" }}
-                />
-
-                <div className="flex flex-col flex-1 p-7">
-
-                  {/* Plan name + popular badge */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] font-bold"
-                      style={{ color: plan.accentColor }}>
-                      {plan.name}
-                    </p>
-                    {plan.popular && (
-                      <motion.span
-                        initial={{ opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4, type: "spring", stiffness: 400, damping: 20 }}
-                        className="inline-flex items-center gap-1 text-[8px] font-bold uppercase tracking-[0.14em] px-2 py-0.5 rounded-full"
-                        style={{ background: `${plan.accentColor}15`, color: plan.accentColor, border: `1px solid ${plan.accentColor}30` }}>
-                        <Star size={9} weight="fill" /> Popular
-                      </motion.span>
-                    )}
-                  </div>
-
-                  <p className="text-[12px] leading-relaxed mb-6 text-muted-foreground">
-                    {plan.description}
-                  </p>
-
-                  {/* Price */}
-                  <div className="mb-2">
-                    <span className="font-black tabular-nums text-foreground"
-                      style={{ fontSize: 44, letterSpacing: "-0.04em", lineHeight: 1 }}>
-                      ${plan.priceUsd}
-                    </span>
-                  </div>
-                  <p className="text-[10px] font-mono mb-6 text-muted-foreground/60">
-                    one-time · {plan.credits} credits
-                  </p>
-
-                  <div className="h-px bg-border mb-5" />
-
-                  {/* Features */}
-                  <ul className="space-y-3 flex-1 mb-8">
-                    {plan.features.map((f, fi) => (
-                      <motion.li key={fi}
-                        initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.25 + i * 0.07 + fi * 0.04, type: "spring", stiffness: 280, damping: 26 }}
-                        className="flex items-start gap-2.5 text-[12.5px] text-muted-foreground">
-                        <Check size={14} weight="bold" className="shrink-0 mt-0.5"
-                          style={{ color: plan.accentColor }} />
-                        {f}
-                      </motion.li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <motion.button
-                    onClick={() => handlePurchase(plan)}
-                    disabled={!!loadingId}
-                    whileHover={!loadingId ? { y: -2, boxShadow: `0 14px 32px ${plan.accentColor}30` } : {}}
-                    whileTap={!loadingId ? { scale: 0.97 } : {}}
-                    transition={SPRING}
-                    className="group w-full h-11 rounded-xl text-[12px] font-bold flex items-center justify-center gap-2 disabled:opacity-40"
-                    style={plan.popular
-                      ? { background: `linear-gradient(135deg, ${plan.accentColor}, #008573)`, color: "#FFFFFF", boxShadow: `0 4px 18px ${plan.accentColor}25` }
-                      : { background: "transparent", color: plan.accentColor, border: `1.5px solid ${plan.accentColor}40` }
-                    }
-                  >
-                    <AnimatePresence mode="wait">
-                      {loadingId === plan.id ? (
-                        <motion.span key="l" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                          className="flex items-center gap-2">
-                          <CoinLoader size={16} className="text-current" /> Processing…
-                        </motion.span>
-                      ) : (
-                        <motion.span key="g" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                          className="flex items-center gap-2">
-                          Get {plan.name}
-                          <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </motion.button>
-
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Trust strip */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
-            className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-6 border-t border-border"
-          >
-            {[
-              { icon: ShieldCheck, text: "Secure checkout"      },
-              { icon: Zap,         text: "Instant activation"  },
-              { icon: Check,       text: "Credits never expire" },
-            ].map(({ icon: Icon, text }, i) => (
-              <motion.div key={text}
-                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 + i * 0.07 }}
-                className="flex items-center gap-2">
-                <Icon size={18} className="text-muted-foreground/50" />
-                <span className="text-[11px] font-medium text-muted-foreground">{text}</span>
-              </motion.div>
-            ))}
-          </motion.div>
+        {/* Header */}
+        <div className="mb-7">
+          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Billing</h1>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Pay once, keep forever. No subscriptions. Credits are for resume analyses and never expire - AI mock interviews stay free.
+          </p>
         </div>
 
+        {/* Plans */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {PLANS.map((plan) => (
+            <div
+              key={plan.id}
+              className={cn(
+                "flex flex-col rounded-lg border bg-white p-5",
+                plan.popular ? "border-primary" : "border-border"
+              )}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <p className="text-[12px] font-semibold text-foreground">{plan.name}</p>
+                {plan.popular && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground">
+                    <Star size={9} weight="fill" /> Popular
+                  </span>
+                )}
+              </div>
+
+              <p className="text-[12px] leading-relaxed text-muted-foreground mb-5">{plan.description}</p>
+
+              <div className="flex items-baseline gap-1.5 mb-1">
+                <span className="text-[34px] font-semibold tabular-nums tracking-tight text-foreground leading-none">
+                  ${plan.priceUsd}
+                </span>
+              </div>
+              <p className="text-[11.5px] text-muted-foreground mb-5">one-time - {plan.credits} credits</p>
+
+              <div className="h-px bg-border mb-4" />
+
+              <ul className="space-y-2.5 flex-1 mb-6">
+                {plan.features.map((f, fi) => (
+                  <li key={fi} className="flex items-start gap-2 text-[12.5px] text-muted-foreground">
+                    <Check size={14} weight="bold" className="shrink-0 mt-0.5 text-primary" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <button
+                onClick={() => handlePurchase(plan)}
+                disabled={!!loadingId}
+                className={cn(
+                  "group w-full h-9 rounded-md text-[13px] font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-40 disabled:pointer-events-none",
+                  plan.popular
+                    ? "bg-primary hover:bg-[#0f9184] text-white"
+                    : "border border-border text-foreground hover:bg-[#f8f8f9]"
+                )}
+              >
+                {loadingId === plan.id ? (
+                  <><CoinLoader size={15} className="text-current" /> Processing...</>
+                ) : (
+                  <>Get {plan.name} <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform" /></>
+                )}
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Trust strip */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-10 py-5 border-t border-border">
+          {[
+            { icon: ShieldCheck, text: "Secure checkout" },
+            { icon: Zap, text: "Instant activation" },
+            { icon: Check, text: "Credits never expire" },
+          ].map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-2">
+              <Icon size={16} className="text-muted-foreground" />
+              <span className="text-[12px] font-medium text-muted-foreground">{text}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <ComingSoonDialog

@@ -1,13 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { FileText, CloudArrowUp as UploadCloud, ArrowRight, TrendUp as TrendingUp, TrendDown as TrendingDown } from "@phosphor-icons/react";
-import { SpotlightCard } from "@/components/dashboard/spotlight-card";
-import { BorderBeam } from "@/components/dashboard/border-beam";
-import { NumberTicker } from "@/components/dashboard/number-ticker";
-import { AuroraBackground } from "@/components/dashboard/aurora-background";
+import {
+  FileText, UploadSimple, ArrowUpRight, Plus,
+  TrendUp as TrendingUp, TrendDown as TrendingDown,
+} from "@phosphor-icons/react";
 
 interface Resume {
   id: string;
@@ -16,276 +13,144 @@ interface Resume {
   analyses?: Array<{ ats_score?: number | null }> | null;
 }
 
-const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
-const EASE   = [0.16, 1, 0.3, 1] as const;
+const scoreTone = (s: number) =>
+  s >= 75 ? { text: "text-emerald-600", dot: "bg-emerald-500", label: "Strong" }
+  : s >= 55 ? { text: "text-amber-600", dot: "bg-amber-500", label: "Fair" }
+  : s > 0 ? { text: "text-rose-600", dot: "bg-rose-500", label: "Weak" }
+  : { text: "text-muted-foreground", dot: "bg-muted-foreground/30", label: "-" };
 
-function scoreCfg(s: number) {
-  if (s >= 75) return { color: "#059669", text: "text-emerald-600", bg: "rgba(5,150,105,0.09)",  label: "Strong" };
-  if (s >= 55) return { color: "#d97706", text: "text-amber-600",   bg: "rgba(217,119,6,0.09)",  label: "Good"   };
-  if (s  >  0) return { color: "#e11d48", text: "text-rose-600",    bg: "rgba(225,29,72,0.09)",  label: "Weak"   };
-  return             { color: "#b9bbc6", text: "text-muted-foreground", bg: "rgba(200,196,187,0.09)", label: "-" };
-}
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
 
-function timeAgo(iso: string, mounted: boolean) {
-  if (!mounted) return "-";
-  const diff = Date.now() - new Date(iso).getTime();
-  const d = Math.floor(diff / 86400000);
-  if (d === 0) return "Today";
-  if (d === 1) return "Yesterday";
-  if (d < 7)  return `${d}d ago`;
-  if (d < 30) return `${Math.floor(d / 7)}w ago`;
-  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-}
-
-/* ── Mini score bar ─────────────────────────────────────────── */
-function ScorePill({ score, index }: { score: number; index: number }) {
-  const cfg = scoreCfg(score);
+function StatTile({ label, value, hint }: { label: string; value: React.ReactNode; hint?: React.ReactNode }) {
   return (
-    <div className="flex flex-col items-end gap-1.5 shrink-0">
-      <motion.span
-        initial={{ opacity: 0, scale: 0.7 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.12 + index * 0.055, type: "spring", stiffness: 340, damping: 22 }}
-        className={`font-black font-mono tabular-nums leading-none text-[22px] ${cfg.text}`}
-        style={{ letterSpacing: "-0.04em" }}
-      >
-        {score > 0 ? score : "-"}
-      </motion.span>
-      {score > 0 && (
-        <>
-          <span className="text-[9px] font-mono text-muted-foreground/60">/100</span>
-          <div className="w-12 h-0.5 rounded-full overflow-hidden bg-border">
-            <motion.div
-              className="h-full rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${score}%` }}
-              transition={{ duration: 1, ease: EASE, delay: 0.2 + index * 0.055 }}
-              style={{ background: cfg.color }}
-            />
-          </div>
-        </>
-      )}
+    <div className="rounded-lg border border-border p-4">
+      <p className="text-[12px] text-muted-foreground">{label}</p>
+      <p className="mt-1.5 text-[26px] font-semibold tabular-nums tracking-tight text-foreground leading-none">{value}</p>
+      {hint != null && <p className="mt-2 text-[12px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }
 
-/* ── Application card ──────────────────────────────────────── */
-function ResumeCard({ resume, index, prev, isBest }: { resume: Resume; index: number; prev?: Resume; isBest: boolean }) {
-  const score     = resume.analyses?.[0]?.ats_score ?? 0;
+function ResumeRow({ resume, prev }: { resume: Resume; prev?: Resume }) {
+  const score = resume.analyses?.[0]?.ats_score ?? 0;
   const prevScore = prev?.analyses?.[0]?.ats_score ?? 0;
-  const cfg       = scoreCfg(score);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
+  const tone = scoreTone(score);
   const delta = prev && prevScore > 0 && score > 0 ? score - prevScore : null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.08 + index * 0.065, type: "spring", stiffness: 260, damping: 24 }}
-    >
-      <Link href={`/dashboard/${resume.id}`} className="block h-full">
-        <SpotlightCard className="flex flex-col h-full">
-          {isBest && score > 0 && <BorderBeam />}
-          {/* Top accent stripe, colored by score band */}
-          <div className="h-[3px] shrink-0" style={{ background: cfg.color }} />
-
-          <div className="flex-1 flex flex-col p-5">
-            {/* Header row: icon + score pill */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border">
-                <FileText size={20} className="text-muted-foreground" />
-              </div>
-              <ScorePill score={score} index={index} />
-            </div>
-
-            {/* Title */}
-            <p className="text-[14px] font-semibold leading-snug mb-2 line-clamp-2 text-foreground" title={resume.file_name}>
-              {resume.file_name.replace(/\.pdf$/i, "")}
-            </p>
-
-            {/* Meta row */}
-            <div className="flex items-center gap-2 mt-auto pt-3">
-              <p className="text-[11px] font-mono text-muted-foreground/60">
-                {timeAgo(resume.created_at, mounted)}
-              </p>
-              {delta !== null && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3 + index * 0.06, type: "spring", stiffness: 360, damping: 20 }}
-                  className={`inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
-                    delta > 0 ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
-                  }`}
-                >
-                  {delta > 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
-                  {delta > 0 ? "+" : ""}{delta}
-                </motion.span>
-              )}
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div
-            className="flex items-center justify-between px-5 py-3 text-[11px] font-semibold border-t border-border"
-            style={{ color: cfg.color }}
+    <li className="border-b border-border last:border-0">
+      <Link
+        href={`/dashboard/${resume.id}`}
+        className="group flex items-center gap-3 px-4 h-[56px] hover:bg-[#f8f8f9] transition-colors"
+      >
+        <span className="w-8 h-8 rounded-md border border-border flex items-center justify-center shrink-0">
+          <FileText size={15} className="text-muted-foreground" />
+        </span>
+        <span className="flex-1 min-w-0">
+          <span className="block text-[13px] font-medium text-foreground truncate leading-tight" title={resume.file_name}>
+            {resume.file_name.replace(/\.pdf$/i, "")}
+          </span>
+          <span className="block text-[11.5px] text-muted-foreground leading-tight mt-0.5 tabular-nums">
+            {fmtDate(resume.created_at)}
+          </span>
+        </span>
+        {delta !== null && (
+          <span
+            className={`hidden sm:inline-flex items-center gap-0.5 text-[11px] font-medium tabular-nums ${
+              delta > 0 ? "text-emerald-600" : delta < 0 ? "text-rose-600" : "text-muted-foreground"
+            }`}
           >
-            View report
-            <ArrowRight size={16} />
-          </div>
-        </SpotlightCard>
+            {delta > 0 ? <TrendingUp size={12} /> : delta < 0 ? <TrendingDown size={12} /> : null}
+            {delta > 0 ? `+${delta}` : delta}
+          </span>
+        )}
+        <span className="w-14 shrink-0 flex items-center justify-end gap-1.5">
+          <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
+          <span className={`text-[13px] font-semibold tabular-nums ${tone.text}`}>
+            {score > 0 ? score : "-"}
+          </span>
+        </span>
+        <ArrowUpRight
+          size={14}
+          className="shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
+        />
       </Link>
-    </motion.div>
+    </li>
   );
 }
 
-/* ── Main ───────────────────────────────────────────────────── */
 export default function ResumesClient({ resumes }: { resumes: Resume[] }) {
-  const scores    = resumes.map(r => r.analyses?.[0]?.ats_score ?? 0).filter(Boolean);
-  const avgScore  = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+  const scores = resumes.map((r) => r.analyses?.[0]?.ats_score ?? 0).filter(Boolean);
+  const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
   const bestScore = scores.length ? Math.max(...scores) : 0;
-  const bestIndex = bestScore > 0 ? resumes.findIndex(r => (r.analyses?.[0]?.ats_score ?? 0) === bestScore) : -1;
-  const cfg       = scoreCfg(avgScore);
+  const avgTone = scoreTone(avgScore);
 
   return (
-      <div className="bg-background min-h-full">
-        <div className="max-w-4xl mx-auto px-5 md:px-8 py-10 md:py-14">
+    <div className="mx-auto max-w-6xl px-6 md:px-8 py-8">
 
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
-            className="relative mb-10 rounded-3xl border border-border overflow-hidden px-6 py-7"
-          >
-            <AuroraBackground className="opacity-60" />
-            <div className="relative z-10 flex items-start justify-between gap-4 mb-6">
-              <div>
-                <p className="text-[9px] font-mono uppercase tracking-[0.22em] mb-2.5 text-muted-foreground/70">
-                  Resume Library
-                </p>
-                <h1 className="font-display font-semibold tracking-tight text-foreground" style={{ fontSize: "clamp(24px, 5vw, 36px)", lineHeight: 1.15 }}>
-                  My Resumes
-                </h1>
-              </div>
-
-              <Link href="/upload">
-                <motion.button
-                  whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(18,165,148,0.28)" }}
-                  whileTap={{ scale: 0.96 }}
-                  transition={SPRING}
-                  className="inline-flex items-center gap-2 h-10 px-4 rounded-xl text-[12px] font-bold text-white shrink-0 mt-1 bg-primary shadow-md shadow-primary/20"
-                >
-                  <UploadCloud size={16} weight="bold" />
-                  New scan
-                </motion.button>
-              </Link>
-            </div>
-
-            {/* Stats row */}
-            {resumes.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, type: "spring", stiffness: 240, damping: 24 }}
-                className="relative z-10 flex items-center gap-2 flex-wrap"
-              >
-                {[
-                  { label: "Scans",        val: resumes.length,  c: "text-foreground" },
-                  { label: "Avg score",    val: avgScore,        c: cfg.text          },
-                  { label: "Best",         val: bestScore,       c: "text-primary"    },
-                ].map((s, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, scale: 0.88 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.14 + i * 0.07, type: "spring", stiffness: 320, damping: 22 }}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-card border border-border"
-                  >
-                    <span className="text-[10px] text-muted-foreground">{s.label}</span>
-                    <span className={`text-[13px] font-black font-mono ${s.c}`}>
-                      {s.val > 0 ? <NumberTicker value={s.val} duration={800} /> : "-"}
-                    </span>
-                  </motion.div>
-                ))}
-              </motion.div>
-            )}
-          </motion.div>
-
-          {/* List */}
-          <AnimatePresence mode="wait">
-            {resumes.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, scale: 0.94 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ type: "spring", stiffness: 260, damping: 24 }}
-                className="relative flex flex-col items-center justify-center py-24 text-center rounded-3xl border border-border overflow-hidden"
-              >
-                <AuroraBackground className="opacity-50" />
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-                  className="relative z-10 w-16 h-16 rounded-2xl flex items-center justify-center mb-5 bg-card border border-border shadow-sm"
-                >
-                  <FileText size={28} className="text-muted-foreground/60" />
-                </motion.div>
-                <p className="relative z-10 text-[15px] font-semibold mb-1.5 text-foreground">No resumes yet</p>
-                <p className="relative z-10 text-[13px] max-w-[200px] leading-relaxed mb-6 text-muted-foreground">
-                  Upload your first resume and get an instant ATS score.
-                </p>
-                <Link href="/upload" className="relative z-10">
-                  <motion.button
-                    whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(18,165,148,0.28)" }}
-                    whileTap={{ scale: 0.96 }}
-                    transition={SPRING}
-                    className="inline-flex items-center gap-2 h-10 px-5 rounded-xl text-[12px] font-bold text-white bg-primary shadow-md shadow-primary/20"
-                  >
-                    <UploadCloud size={16} weight="bold" />
-                    Upload Resume
-                  </motion.button>
-                </Link>
-              </motion.div>
-            ) : (
-              <motion.div key="list">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {resumes.map((r, i) => (
-                    <ResumeCard
-                      key={r.id}
-                      resume={r}
-                      index={i}
-                      prev={resumes[i + 1]}
-                      isBest={i === bestIndex}
-                    />
-                  ))}
-                </div>
-
-                {/* Bottom upload nudge */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.15 + resumes.length * 0.065 + 0.2 }}
-                  className="pt-6 flex justify-center"
-                >
-                  <Link href="/upload">
-                    <motion.button
-                      whileHover={{ scale: 1.04, y: -1 }}
-                      whileTap={{ scale: 0.96 }}
-                      transition={SPRING}
-                      className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-4 py-2 rounded-xl border border-border text-muted-foreground bg-card"
-                    >
-                      <UploadCloud size={14} />
-                      Upload another
-                    </motion.button>
-                  </Link>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <h1 className="text-[22px] font-semibold tracking-tight text-foreground">Resumes</h1>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Every resume you&apos;ve analysed, newest first.
+          </p>
         </div>
+        <Link
+          href="/upload"
+          className="shrink-0 inline-flex items-center gap-1.5 h-8 pl-2.5 pr-3 rounded-md text-[13px] font-medium text-white bg-primary hover:bg-[#0f9184] transition-colors"
+        >
+          <Plus size={14} weight="bold" />
+          <span className="hidden sm:inline">New analysis</span>
+          <span className="sm:hidden">New</span>
+        </Link>
       </div>
+
+      {resumes.length === 0 ? (
+        <div className="rounded-lg border border-border flex flex-col items-center text-center px-6 py-16">
+          <div className="w-10 h-10 rounded-lg border border-border flex items-center justify-center mb-3">
+            <FileText size={18} className="text-muted-foreground" />
+          </div>
+          <p className="text-[13px] font-medium text-foreground">No resumes yet</p>
+          <p className="mt-1 text-[12px] text-muted-foreground max-w-[240px]">
+            Upload your first resume and get an instant ATS score.
+          </p>
+          <Link
+            href="/upload"
+            className="mt-4 inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[13px] font-medium text-white bg-primary hover:bg-[#0f9184] transition-colors"
+          >
+            <UploadSimple size={14} />
+            Upload resume
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+            <StatTile label="Total resumes" value={resumes.length} hint="all time" />
+            <StatTile
+              label="Average score"
+              value={avgScore > 0 ? <>{avgScore}<span className="text-[15px] font-normal text-muted-foreground">/100</span></> : "-"}
+              hint={avgScore > 0
+                ? <span className="inline-flex items-center gap-1.5"><span className={`w-1.5 h-1.5 rounded-full ${avgTone.dot}`} />{avgTone.label}</span>
+                : "no scored resumes"}
+            />
+            <StatTile
+              label="Best score"
+              value={bestScore > 0 ? <>{bestScore}<span className="text-[15px] font-normal text-muted-foreground">/100</span></> : "-"}
+              hint={bestScore > 0 ? "top result" : "no data yet"}
+            />
+          </div>
+
+          <div className="rounded-lg border border-border overflow-hidden">
+            <ul>
+              {resumes.map((r, i) => (
+                <ResumeRow key={r.id} resume={r} prev={resumes[i + 1]} />
+              ))}
+            </ul>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
