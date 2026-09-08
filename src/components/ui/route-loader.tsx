@@ -6,6 +6,13 @@ import { CoinLoader } from "./coin-loader";
 
 const SAFETY_TIMEOUT_MS = 4000;
 
+// Routes inside the app shell. They have their own Suspense skeletons
+// (loading.tsx) plus the page transition in app/template.tsx, so a
+// full-screen blocking loader here would only hide that motion.
+const SHELL_PREFIXES = ["/dashboard", "/history", "/billing", "/settings"];
+const isShellPath = (p: string) =>
+  SHELL_PREFIXES.some((prefix) => p === prefix || p.startsWith(prefix + "/"));
+
 export function RouteLoader() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -43,6 +50,10 @@ export function RouteLoader() {
       }
       if (url.origin !== window.location.origin) return;
       if (`${url.pathname}${url.search}` === latestKeyRef.current.replace(/\?$/, "")) return;
+
+      // Skip navigations within (or into) the app shell — let its own
+      // skeletons + page transition play instead of covering them.
+      if (isShellPath(url.pathname) || isShellPath(window.location.pathname)) return;
 
       setLoading(true);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);

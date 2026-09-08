@@ -155,13 +155,16 @@
   50% { transform: translate(var(--drift-x-to, 20px), var(--drift-y-to, 15px)); }
 }
 
+/* One legible flip-and-catch per cycle. A single rotateX(360deg) passes the
+   flat glyph edge-on only twice (spaced ~0.5s), reading as a coin toss rather
+   than the strobe you get from multiple fast rotations. */
 @keyframes coin-toss {
-  0%   { transform: translateY(0) rotateY(0deg); animation-timing-function: ease-out; }
-  50%  { transform: translateY(-38%) rotateY(360deg); animation-timing-function: ease-in; }
-  100% { transform: translateY(0) rotateY(720deg); }
+  0%, 8%    { transform: translateY(0) rotateX(0deg);      animation-timing-function: cubic-bezier(0.25, 0, 0.35, 1); }
+  50%       { transform: translateY(-46%) rotateX(180deg); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.9); }
+  92%, 100% { transform: translateY(0) rotateX(360deg); }
 }
 
 @keyframes coin-toss-shadow {
-  0%, 100% { transform: scaleX(1); opacity: 0.3; }
-  50%      { transform: scaleX(0.5); opacity: 0.08; }
+  0%, 8%, 92%, 100% { transform: scaleX(1);    opacity: 0.26; }
+  50%               { transform: scaleX(0.45); opacity: 0.06; }
 }
