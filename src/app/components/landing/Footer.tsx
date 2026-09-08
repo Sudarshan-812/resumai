@@ -124,7 +124,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs" style={{ color: "#80838d" }}>
-            © 2026 Viva. Made in India 🇮🇳
+            © 2026 Viva · Resume scoring &amp; AI mock interviews
           </p>
           <div className="flex gap-4">
             {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (

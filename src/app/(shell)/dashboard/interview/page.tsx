@@ -8,7 +8,6 @@ import {
 } from "@phosphor-icons/react";
 import { CoinLoader } from "@/components/ui/coin-loader";
 import VoiceInterview from "./VoiceInterview";
-import UpgradeModal from "@/app/components/UpgradeModal";
 import { useInterviewState } from "./useInterviewState";
 import { NumberTicker } from "@/components/dashboard/number-ticker";
 import { AuroraBackground } from "@/components/dashboard/aurora-background";
@@ -149,7 +148,6 @@ function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
 /* ── Main ────────────────────────────────────────────────────── */
 export default function InterviewPage() {
   const {
-    refreshPlan,
     jobDesc, setJobDesc, role, setRole,
     questions, currentIdx, answer, setAnswer,
     feedbacks, phase, loading, avgScore,
@@ -158,7 +156,6 @@ export default function InterviewPage() {
 
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const [elapsed, setElapsed]             = useState(0);
-  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
 
   useEffect(() => {
     if (!isVoiceActive) { setElapsed(0); return; }
@@ -265,7 +262,7 @@ export default function InterviewPage() {
                     placeholder="Paste the job description here…"
                     label="Job Description" hint="paste key requirements" rows={6} />
                   <motion.button
-                    onClick={() => generateQuestions(() => setUpgradeModalOpen(true))}
+                    onClick={() => generateQuestions()}
                     disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
                     whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
                     whileTap={!loading ? { scale: 0.98 } : {}}
@@ -523,12 +520,6 @@ export default function InterviewPage() {
           <div className="h-10" />
         </div>
       </div>
-
-      <UpgradeModal
-        open={upgradeModalOpen}
-        onClose={() => setUpgradeModalOpen(false)}
-        onSuccess={refreshPlan}
-      />
     </>
   );
 }

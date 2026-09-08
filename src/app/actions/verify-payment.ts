@@ -5,20 +5,12 @@ import { createClient } from "@/app/lib/supabase/server";
 import crypto from "crypto";
 import { revalidatePath } from "next/cache";
 import { sendPaymentReceiptEmail } from "@/app/lib/email";
+import { CREDITS_BY_CENTS } from "@/app/lib/plans";
 
-// Server-side authoritative amount (paise) → credits map.
-// Never trust the client to tell us how many credits a payment is worth.
-const PLAN_CREDITS: Record<number, number> = {
-  4900: 5,   // ₹49  Starter
-  9900: 12,  // ₹99  Pro
-  19900: 30, // ₹199 Premium
-};
-
-// Amounts that also upgrade the interview plan tier.
-const PLAN_UPGRADE: Record<number, string> = {
-  9900:  "pro",     // ₹99  → unlimited interviews + voice
-  19900: "premium", // ₹199 → same perks + more credits
-};
+// Server-side authoritative amount (cents) → credits map, derived from the
+// single pricing source of truth. Never trust the client to tell us how many
+// credits a payment is worth.
+const PLAN_CREDITS = CREDITS_BY_CENTS;
 
 export async function verifyPayment(
   orderId: string,
@@ -55,9 +47,9 @@ export async function verifyPayment(
         setTimeout(() => reject(new Error("Razorpay order fetch timed out")), 10_000)
       ),
     ]);
-    const paidAmountPaise = Number(order.amount);
+    const paidAmountCents = Number(order.amount);
 
-    const creditsToAdd = PLAN_CREDITS[paidAmountPaise];
+    const creditsToAdd = PLAN_CREDITS[paidAmountCents];
     if (!creditsToAdd) {
       return { success: false, message: "Unrecognized payment amount. Please contact support." };
     }
@@ -71,30 +63,20 @@ export async function verifyPayment(
       return { success: false, message: "Payment received but credit update failed. Contact support with your payment ID." };
     }
 
-    // Upgrade plan tier if this payment unlocks Pro or Premium
-    const planToUpgrade = PLAN_UPGRADE[paidAmountPaise];
-    if (planToUpgrade) {
-      await supabase.rpc("set_user_plan", {
-        p_user_id: user.id,
-        p_plan: planToUpgrade,
-      });
-    }
-
     revalidatePath("/dashboard");
     revalidatePath("/billing");
-    revalidatePath("/dashboard/interview");
 
     // Fire-and-forget receipt email - never block the payment confirmation
     if (user.email) {
       sendPaymentReceiptEmail({
         to: user.email,
         creditsAdded: creditsToAdd,
-        planUpgraded: planToUpgrade ?? null,
+        planUpgraded: null,
         paymentId,
       }).catch(() => {});
     }
 
-    return { success: true, creditsAdded: creditsToAdd, planUpgraded: planToUpgrade ?? null };
+    return { success: true, creditsAdded: creditsToAdd, planUpgraded: null };
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unexpected error during payment verification.";
     return { success: false, message };

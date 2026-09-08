@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
-import { createClient } from "@/app/lib/supabase/client";
 
 export interface Question { question: string; category: string }
 export interface Feedback { score: number; strengths: string[]; improvements: string[]; model_answer_hint: string }
@@ -15,7 +14,6 @@ async function parseError(res: Response): Promise<string> {
 }
 
 export function useInterviewState() {
-  const [userPlan, setUserPlan] = useState("free");
   const [jobDesc, setJobDesc] = useState("");
   const [role, setRole] = useState("");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -25,27 +23,7 @@ export function useInterviewState() {
   const [phase, setPhase] = useState<Phase>("setup");
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const supabase = createClient();
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-      if (data?.plan) setUserPlan(data.plan);
-    })();
-  }, []);
-
-  const refreshPlan = useCallback(() => {
-    const supabase = createClient();
-    (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-      if (data?.plan) setUserPlan(data.plan);
-    })();
-  }, []);
-
-  const generateQuestions = useCallback(async (onLimitReached: () => void) => {
+  const generateQuestions = useCallback(async () => {
     if (!role.trim() || !jobDesc.trim()) return;
     setLoading(true);
     try {
@@ -54,10 +32,6 @@ export function useInterviewState() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role, jobDesc }),
       });
-      if (res.status === 402) {
-        const payload = await res.json().catch(() => ({})) as { error?: string };
-        if (payload.error === "interview_limit_reached") { onLimitReached(); return; }
-      }
       if (!res.ok) throw new Error(await parseError(res));
       const data = await res.json();
       if (!data.questions?.length) throw new Error("No questions returned.");
@@ -113,7 +87,6 @@ export function useInterviewState() {
     : 0;
 
   return {
-    userPlan, setUserPlan, refreshPlan,
     jobDesc, setJobDesc,
     role, setRole,
     questions, currentIdx,

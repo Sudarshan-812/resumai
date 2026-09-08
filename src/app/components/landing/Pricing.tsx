@@ -2,37 +2,8 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Star } from "@phosphor-icons/react";
-
-const PLANS = [
-  {
-    id: "starter",
-    name: "Starter Pack",
-    price: 49,
-    credits: 5,
-    description: "Quick resume polish.",
-    popular: false,
-    features: ["5 AI Resume Scans", "Basic ATS Score", "PDF Export"],
-  },
-  {
-    id: "pro",
-    name: "Pro Bundle",
-    price: 99,
-    credits: 12,
-    description: "Best for active job seekers.",
-    popular: true,
-    features: ["12 AI Resume Scans", "Detailed Feedback", "Cover Letter Gen", "Priority Support"],
-  },
-  {
-    id: "power",
-    name: "Power User",
-    price: 199,
-    credits: 30,
-    description: "Serious career change.",
-    popular: false,
-    features: ["30 AI Resume Scans", "Career Assistant", "Interview Prep AI", "Lifetime Access"],
-  },
-] as const;
+import { Check, Star, Microphone as Mic } from "@phosphor-icons/react";
+import { CREDIT_PACKS } from "@/app/lib/plans";
 
 export default function Pricing() {
   return (
@@ -44,7 +15,7 @@ export default function Pricing() {
       <div className="max-w-5xl mx-auto px-6">
 
         {/* Header */}
-        <div className="text-center mb-20">
+        <div className="text-center mb-16">
           <p className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono" style={{ color: "#12a594" }}>
             Simple Pricing
           </p>
@@ -52,17 +23,17 @@ export default function Pricing() {
             className="font-display font-bold tracking-tight mb-4"
             style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
-            Pay once,{" "}
-            <span style={{ color: "#12a594" }}>keep forever.</span>
+            Pay once.{" "}
+            <span style={{ color: "#12a594" }}>Keep forever.</span>
           </h2>
-          <p className="text-base max-w-sm mx-auto leading-relaxed" style={{ color: "#60646c" }}>
-            No recurring subscriptions. No hidden fees. Credits never expire.
+          <p className="text-base max-w-md mx-auto leading-relaxed" style={{ color: "#60646c" }}>
+            No subscriptions, no monthly fees. Credits are for resume analyses and never expire. One credit is one full report.
           </p>
         </div>
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
-          {PLANS.map((plan, i) => (
+          {CREDIT_PACKS.map((plan, i) => (
             <motion.div
               key={plan.id}
               initial={{ opacity: 0, y: 30 }}
@@ -70,16 +41,16 @@ export default function Pricing() {
               viewport={{ once: true, margin: "-60px" }}
               transition={{ delay: i * 0.12, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileHover={plan.popular
-                ? { y: -8, boxShadow: "0 24px 60px rgba(18,165,148,0.25)" }
+                ? { y: -8, boxShadow: "0 24px 60px rgba(18,165,148,0.22)" }
                 : { y: -5, boxShadow: "0 16px 40px rgba(0,0,0,0.08)" }}
               whileTap={{ scale: 0.99 }}
               className="relative flex flex-col p-8 rounded-2xl"
               style={
                 plan.popular
                   ? {
-                      background: "#ECFEFF",
-                      border: "2px solid #12a594",
-                      boxShadow: "0 8px 32px rgba(18,165,148,0.15)",
+                      background: "#e0f8f3",
+                      border: "1px solid #12a594",
+                      boxShadow: "0 0 0 1px #12a594 inset, 0 8px 32px rgba(18,165,148,0.14)",
                     }
                   : {
                       background: "#f9f9fb",
@@ -90,7 +61,7 @@ export default function Pricing() {
               {/* Popular badge */}
               {plan.popular && (
                 <div
-                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white"
+                  className="absolute -top-3.5 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white whitespace-nowrap"
                   style={{ background: "#12a594" }}
                 >
                   <Star size={10} className="fill-white" aria-hidden />
@@ -104,8 +75,9 @@ export default function Pricing() {
                 <p className="text-xs mb-4" style={{ color: "#80838d" }}>{plan.description}</p>
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-bold font-mono tracking-tight" style={{ color: "#1c2024" }}>
-                    ₹{plan.price}
+                    ${plan.priceUsd}
                   </span>
+                  <span className="text-xs font-medium" style={{ color: "#80838d" }}>one-time</span>
                 </div>
               </div>
 
@@ -118,10 +90,10 @@ export default function Pricing() {
                     : { background: "#EBEBEB", color: "#60646c", border: "1px solid #d9d9e0" }
                 }
               >
-                {plan.credits} Credits Included
+                {plan.credits} analyses included
               </div>
 
-              <div className="h-px mb-6" style={{ background: plan.popular ? "rgba(18,165,148,0.2)" : "#d9d9e0" }} />
+              <div className="h-px mb-6" style={{ background: plan.popular ? "rgba(18,165,148,0.25)" : "#d9d9e0" }} />
 
               {/* Features */}
               <p
@@ -146,7 +118,7 @@ export default function Pricing() {
 
               {/* CTA */}
               <Link
-                href="/login"
+                href={`/login?next=/billing&plan=${plan.id}`}
                 className="w-full h-11 rounded-xl text-sm font-semibold flex items-center justify-center transition-opacity hover:opacity-90 mt-auto"
                 style={
                   plan.popular
@@ -154,10 +126,21 @@ export default function Pricing() {
                     : { background: "#FFFFFF", color: "#60646c", border: "1px solid #d9d9e0" }
                 }
               >
-                Choose {plan.name}
+                Get {plan.name}
               </Link>
             </motion.div>
           ))}
+        </div>
+
+        {/* Free-forever line */}
+        <div className="mt-10 flex items-center justify-center gap-2.5 text-sm" style={{ color: "#60646c" }}>
+          <span
+            className="inline-flex items-center justify-center w-7 h-7 rounded-full shrink-0"
+            style={{ background: "rgba(18,165,148,0.1)" }}
+          >
+            <Mic size={14} style={{ color: "#12a594" }} aria-hidden />
+          </span>
+          Every plan — and the free trial — includes <strong className="font-semibold" style={{ color: "#1c2024" }}>&nbsp;unlimited AI mock interviews</strong>, voice and text. No credits, ever.
         </div>
 
       </div>

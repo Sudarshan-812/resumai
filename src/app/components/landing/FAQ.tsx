@@ -22,12 +22,16 @@ const FAQS = [
     a: "The score uses a weighted rubric: 40 pts for keyword match with the JD, 25 pts for experience alignment (years and seniority), 20 pts for demonstrated skills in context, and 15 pts for ATS-safe formatting. This mirrors how enterprise ATS systems like Workday and Greenhouse rank candidates.",
   },
   {
-    q: "Are credits one-time or do they expire?",
-    a: "Credits are one-time purchases - they never expire and there are no monthly subscriptions. One credit = one full resume analysis. Cover letters and interview simulations do not consume credits.",
+    q: "Is the AI mock interview free?",
+    a: "Yes. The voice and text mock interviews are free and unlimited for every account, and they never use credits. Credits are only for resume analyses.",
+  },
+  {
+    q: "How does pricing work?",
+    a: "One-time credit packs in US dollars, starting at $19 for 5 analyses. No subscription, no monthly fee, and credits never expire. One credit is one full resume analysis; cover letters are included with the Pro and Career packs.",
   },
   {
     q: "Can I use Viva for multiple job applications?",
-    a: "Absolutely. Each job application needs a tailored analysis since different roles require different keywords. We recommend running a fresh scan for every unique role you apply to - that's why our credits are designed to be bought in bulk.",
+    a: "That's the idea. Each role needs its own tailored analysis because every job description weights different keywords. Run a fresh analysis for every role you're serious about - that's why the packs are sized for a real job search.",
   },
 ] as const;
 

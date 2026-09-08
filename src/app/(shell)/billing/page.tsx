@@ -11,60 +11,18 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { BorderBeam } from "@/components/dashboard/border-beam";
 import { AuroraBackground } from "@/components/dashboard/aurora-background";
+import { CREDIT_PACKS } from "@/app/lib/plans";
+import type { RazorpayCheckout, RazorpayResponse } from "@/app/lib/razorpay-types";
 
-declare global { interface Window { Razorpay: any } }
+declare global { interface Window { Razorpay: RazorpayCheckout } }
 
 const SPRING = { type: "spring", stiffness: 280, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
 
-const PLANS = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: 49,
-    credits: 5,
-    description: "Quick resume polish for a single application.",
-    popular: false,
-    accentColor: "#80838d",
-    features: [
-      "5 AI resume scans",
-      "ATS score + keyword gaps",
-      "PDF export",
-      "Email support",
-    ],
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 99,
-    credits: 12,
-    description: "The right amount for an active job search.",
-    popular: true,
-    accentColor: "#12a594",
-    features: [
-      "12 AI resume scans",
-      "Detailed AI feedback",
-      "Cover letter generator",
-      "Interview simulator",
-      "Priority support",
-    ],
-  },
-  {
-    id: "power",
-    name: "Power",
-    price: 199,
-    credits: 30,
-    description: "For serious candidates targeting multiple roles.",
-    popular: false,
-    accentColor: "#7c3aed",
-    features: [
-      "30 AI resume scans",
-      "Everything in Pro",
-      "LinkedIn optimization",
-      "Lifetime access",
-    ],
-  },
-] as const;
+const PLANS = CREDIT_PACKS.map((p) => ({
+  ...p,
+  accentColor: p.popular ? "#12a594" : "#80838d",
+}));
 
 export default function BillingPage() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
@@ -73,17 +31,17 @@ export default function BillingPage() {
   const handlePurchase = async (plan: typeof PLANS[number]) => {
     setLoadingId(plan.id);
     try {
-      const result = await createRazorpayOrder(plan.price);
+      const result = await createRazorpayOrder(plan.priceUsd);
       if (!result.success || !result.orderId) throw new Error("Order creation failed");
 
       const rzp = new window.Razorpay({
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: plan.price * 100,
-        currency: "INR",
+        amount: plan.priceUsd * 100,
+        currency: "USD",
         name: `Viva ${plan.name}`,
-        description: `${plan.credits} Credits`,
+        description: `${plan.credits} resume analysis credits`,
         order_id: result.orderId,
-        handler: async (response: any) => {
+        handler: async (response: RazorpayResponse) => {
           toast.loading("Verifying payment…");
           const verification = await verifyPayment(
             response.razorpay_order_id,
@@ -131,7 +89,7 @@ export default function BillingPage() {
               Pay once. Keep forever.
             </h1>
             <p className="relative z-10 text-[14px] text-muted-foreground">
-              No subscriptions. No monthly fees. Credits never expire.
+              No subscriptions. No monthly fees. Credits are for resume analyses and never expire. AI mock interviews stay free.
             </p>
           </motion.div>
 
@@ -182,7 +140,7 @@ export default function BillingPage() {
                   <div className="mb-2">
                     <span className="font-black tabular-nums text-foreground"
                       style={{ fontSize: 44, letterSpacing: "-0.04em", lineHeight: 1 }}>
-                      ₹{plan.price}
+                      ${plan.priceUsd}
                     </span>
                   </div>
                   <p className="text-[10px] font-mono mb-6 text-muted-foreground/60">
@@ -246,7 +204,7 @@ export default function BillingPage() {
             className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 py-6 border-t border-border"
           >
             {[
-              { icon: ShieldCheck, text: "Secure via Razorpay" },
+              { icon: ShieldCheck, text: "Secure checkout"      },
               { icon: Zap,         text: "Instant activation"  },
               { icon: Check,       text: "Credits never expire" },
             ].map(({ icon: Icon, text }, i) => (
