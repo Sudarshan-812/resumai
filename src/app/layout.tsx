@@ -48,12 +48,19 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${outfit.variable} font-sans antialiased`}>
         <MotionProvider>
-          <Suspense fallback={null}>
-            <RouteLoader />
-          </Suspense>
           <IconProvider>{children}</IconProvider>
           <Toaster richColors />
           <Analytics />
+          {/* Rendered last: RouteLoader calls useSearchParams(), so its
+              Suspense boundary renders its fallback on the server and real
+              content on the client. Keeping it after {children} stops that
+              server/client boundary difference from shifting React's useId
+              sequence for the page (which caused a Radix id hydration
+              mismatch in the landing navbar). It paints a fixed overlay,
+              so DOM order is irrelevant to how it looks. */}
+          <Suspense fallback={null}>
+            <RouteLoader />
+          </Suspense>
         </MotionProvider>
       </body>
     </html>
