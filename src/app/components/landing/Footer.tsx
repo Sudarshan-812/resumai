@@ -43,13 +43,13 @@ export default function Footer() {
           className="max-w-2xl mx-auto px-6 text-center"
         >
           <h2
-            className="font-bold tracking-tight mb-4"
+            className="font-display font-bold tracking-tight mb-4"
             style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
-            Your next interview starts<br />with your resume.
+            See what the ATS sees.
           </h2>
-          <p className="text-sm leading-relaxed mb-8 max-w-xs mx-auto" style={{ color: "#60646c" }}>
-            Upload and get your ATS score in under 10 seconds. No account required.
+          <p className="text-sm leading-relaxed mb-8 max-w-sm mx-auto" style={{ color: "#60646c" }}>
+            Get your resume&apos;s match score in under a minute — no account required — then rehearse the interview for free.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -57,7 +57,7 @@ export default function Footer() {
               className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
               style={{ background: "#12a594" }}
             >
-              Try Free - No Login
+              Analyze my resume — free
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
             </Link>
             <Link
@@ -65,7 +65,7 @@ export default function Footer() {
               className="inline-flex items-center h-11 px-6 rounded-xl text-sm font-medium transition-colors hover:text-teal-600"
               style={{ background: "#FFFFFF", border: "1px solid #d9d9e0", color: "#60646c" }}
             >
-              Create Account
+              Sign in
             </Link>
           </div>
         </motion.div>

@@ -7,37 +7,42 @@ import DotGrid from "@/app/components/landing/DotGrid";
 const FEATURES = [
   {
     num: "01",
-    icon: BarChart3,
-    title: "ATS Scorer",
-    desc: "Precise keyword match score against any job description - mirroring how Workday and Greenhouse rank candidates before a human ever reads your resume.",
-    tags: ["Keyword match", "ATS simulation"],
+    icon: Mic,
+    title: "Voice Mock Interview",
+    flagship: true,
+    desc: "A real spoken interview generated from your resume and the target job. It asks the hard follow-ups, you answer out loud, and you get a written summary of what worked and what to fix. Free and unlimited.",
+    tags: ["Spoken", "Resume-aware"],
   },
   {
     num: "02",
-    icon: Wand2,
-    title: "Bullet Rewriter",
-    desc: "Our AI identifies your 5 weakest bullet points and rewrites each one with action verbs, quantified impact, and the exact language hiring managers look for.",
-    tags: ["Action verbs", "Quantified impact"],
+    icon: BarChart3,
+    title: "ATS Match Score",
+    flagship: false,
+    desc: "A precise keyword-match score against the exact job description — the same signals Workday and Greenhouse use to rank you before a person ever reads your resume.",
+    tags: ["Keyword match", "Formatting check"],
   },
   {
     num: "03",
-    icon: Mic,
-    title: "Voice Interview",
-    desc: "Practice with a real-time AI interviewer trained on your resume and the target JD. Powered by LiveKit WebRTC and Groq Llama 3.3 for sub-second responses.",
-    tags: ["Real-time AI", "LiveKit WebRTC"],
+    icon: Wand2,
+    title: "Bullet Rewrites",
+    flagship: false,
+    desc: "Viva flags your weakest bullet points and rewrites them with strong verbs, real numbers, and the language the job description is actually asking for.",
+    tags: ["Action verbs", "Quantified impact"],
   },
   {
     num: "04",
     icon: FileText,
     title: "Cover Letter Generator",
-    desc: "Generate role-specific cover letters mapped directly to the job description. Not template-generic - each one references your actual experience.",
-    tags: ["Role-specific", "JD-mapped"],
+    flagship: false,
+    desc: "Role-specific cover letters mapped to the job description — each one references your actual experience instead of reading like a template.",
+    tags: ["Role-specific", "Job-mapped"],
   },
   {
     num: "05",
     icon: History,
-    title: "Resume Versions",
-    desc: "Track every analysis and compare scores across iterations as you optimize for different roles. See your improvement over time.",
+    title: "Saved Reports & Versions",
+    flagship: false,
+    desc: "Every analysis is saved. Compare scores across rewrites and roles so you can watch your resume get stronger over time.",
     tags: ["Version tracking", "Score history"],
   },
 ] as const;
@@ -81,18 +86,18 @@ export default function FeatureGrid() {
             className="text-xs font-semibold tracking-[0.15em] uppercase mb-5 font-mono"
             style={{ color: "#12a594" }}
           >
-            Platform Capabilities
+            What&apos;s inside
           </p>
           <h2
             className="font-display font-bold tracking-tight leading-tight max-w-lg"
             style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
-            Five tools. One goal:{" "}
+            One workflow, from applying{" "}
             <span
               className="text-transparent bg-clip-text"
               style={{ backgroundImage: "linear-gradient(90deg, #008573, #12a594)" }}
             >
-              get the interview.
+              to the interview.
             </span>
           </h2>
         </div>
@@ -131,12 +136,22 @@ export default function FeatureGrid() {
 
               {/* Content */}
               <div className="flex-1 flex flex-col md:flex-row md:items-start gap-3 md:gap-12">
-                <motion.h3
-                  variants={titleVariants}
-                  className="text-sm font-semibold shrink-0 min-w-[160px] md:pt-0.5"
-                >
-                  {f.title}
-                </motion.h3>
+                <div className="shrink-0 min-w-[160px] md:pt-0.5">
+                  <motion.h3
+                    variants={titleVariants}
+                    className="text-sm font-semibold"
+                  >
+                    {f.title}
+                  </motion.h3>
+                  {f.flagship && (
+                    <span
+                      className="mt-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.12em]"
+                      style={{ background: "#12a594", color: "#FFFFFF" }}
+                    >
+                      Flagship
+                    </span>
+                  )}
+                </div>
                 <div className="flex-1">
                   <p className="text-sm leading-relaxed" style={{ color: "#60646c" }}>
                     {f.desc}

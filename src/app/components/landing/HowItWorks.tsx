@@ -8,23 +8,23 @@ const STEPS = [
   {
     num: "01",
     icon: Upload,
-    title: "Upload Resume",
-    desc: "Drop your existing PDF. Our parser extracts text and structure in seconds - including complex layouts that ATS systems struggle with.",
-    tag: "PDF parsing",
+    title: "Upload & paste the job",
+    desc: "Drop your resume PDF and paste the job description. Viva extracts the text and structure — including the multi-column layouts that trip up ATS parsers.",
+    tag: "PDF + job description",
   },
   {
     num: "02",
     icon: Cpu,
-    title: "AI Analysis",
-    desc: "Gemini scores your content against the target job description to surface missing keywords, weak bullets, and formatting issues.",
-    tag: "Gemini 2.5",
+    title: "Get your match report",
+    desc: "In under a minute you get an ATS match score, the exact keywords you're missing, the formatting that hurts you, and rewrite suggestions for your weakest bullets.",
+    tag: "AI analysis",
   },
   {
     num: "03",
     icon: Download,
-    title: "Optimize & Export",
-    desc: "Apply one-click AI rewrites to your weakest points and download the ATS-ready version. No manual editing required.",
-    tag: "One-click export",
+    title: "Fix, export, re-scan",
+    desc: "Apply the rewrites, clear the flagged formatting, and export a clean copy. Re-scan to watch the score climb before you hit submit.",
+    tag: "PDF export",
   },
 ] as const;
 
@@ -61,8 +61,8 @@ export default function HowItWorks() {
             className="font-display font-bold tracking-tight"
             style={{ fontSize: "clamp(28px, 4vw, 44px)", color: "#1c2024" }}
           >
-            From upload to optimized{" "}
-            <span style={{ color: "#12a594" }}>in 60 seconds.</span>
+            From upload to match report{" "}
+            <span style={{ color: "#12a594" }}>in under a minute.</span>
           </h2>
         </div>
 
@@ -123,6 +123,19 @@ export default function HowItWorks() {
           ))}
         </div>
 
+        {/* Interview callout */}
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center text-sm mb-8"
+          style={{ color: "#60646c" }}
+        >
+          Then run a spoken AI mock interview built from the same resume and job —{" "}
+          <span className="font-semibold" style={{ color: "#1c2024" }}>free, no credits</span>.
+        </motion.p>
+
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -136,7 +149,7 @@ export default function HowItWorks() {
             className="group inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-teal-600"
             style={{ color: "#60646c" }}
           >
-            Start optimizing now
+            Analyze my resume — free
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
           </Link>
         </motion.div>

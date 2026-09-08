@@ -7,7 +7,7 @@ import { Plus } from "@phosphor-icons/react";
 const FAQS = [
   {
     q: "What is an ATS score and why does it matter?",
-    a: "An ATS (Applicant Tracking System) score measures how well your resume matches a specific job description based on keyword presence, formatting, and structure. Over 98% of Fortune 500 companies use ATS software to filter candidates before a human ever reads the resume. A score below 60 typically means your resume won't reach the hiring manager.",
+    a: "An ATS (Applicant Tracking System) score measures how well your resume matches a specific job description on keywords, formatting, and structure. Most large US employers run resumes through ATS software before a person ever reads them, and a low score usually means yours never reaches the hiring manager.",
   },
   {
     q: "Will my resume data be stored?",

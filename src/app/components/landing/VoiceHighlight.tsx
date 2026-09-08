@@ -65,7 +65,7 @@ export default function VoiceHighlight() {
               <div className="inline-flex items-center gap-2 mb-4">
                 <Zap size={12} color="rgba(255,255,255,0.7)" aria-hidden />
                 <span className="text-xs font-semibold tracking-[0.15em] uppercase font-mono" style={{ color: "rgba(255,255,255,0.6)" }}>
-                  New · Voice AI
+                  The Viva difference
                 </span>
               </div>
 
@@ -73,12 +73,13 @@ export default function VoiceHighlight() {
                 className="font-display font-bold tracking-tight mb-4"
                 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", color: "#FFFFFF" }}
               >
-                Practice with a real AI interviewer.
+                A mock interview that has read your resume.
               </h2>
 
-              <p className="text-base leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(255,255,255,0.65)" }}>
-                Your AI interviewer reads your actual resume and the target job description - then asks
-                real, challenging questions. Powered by LiveKit WebRTC, Groq Llama 3.3, and Deepgram TTS.
+              <p className="text-base leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(255,255,255,0.72)" }}>
+                Viva builds a spoken interview from your actual resume and the exact job — the
+                pointed follow-ups a hiring manager would ask. You answer out loud, then get a
+                written summary of what landed and what to tighten. Free and unlimited.
               </p>
 
               <Link
@@ -86,7 +87,7 @@ export default function VoiceHighlight() {
                 className="group inline-flex items-center gap-2 h-11 px-6 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
                 style={{ background: "#FFFFFF", color: "#008573" }}
               >
-                Start Practice Interview
+                Start a mock interview
                 <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" aria-hidden />
               </Link>
             </div>

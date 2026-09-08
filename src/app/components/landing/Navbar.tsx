@@ -214,7 +214,7 @@ export default function Navbar() {
                       className="py-3 text-center rounded-xl text-sm font-semibold text-white"
                       style={{ background: "#12a594" }}
                     >
-                      Try Free - No Login
+                      Analyze my resume — free
                     </Link>
                     <Link
                       href="/login"
@@ -222,7 +222,7 @@ export default function Navbar() {
                       className="py-3 text-center rounded-xl text-sm font-medium"
                       style={{ color: "#60646c", border: "1px solid #d9d9e0" }}
                     >
-                      Sign In
+                      Sign in
                     </Link>
                   </>
                 )}

@@ -179,7 +179,7 @@ function LockedGate() {
         <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
           <Lock className="w-8 h-8 text-primary" />
         </div>
-        <h1 className="font-serif text-3xl font-bold text-foreground mb-3">
+        <h1 className="font-display text-3xl font-bold text-foreground mb-3">
           Free Scans Used
         </h1>
         <p className="text-muted-foreground text-sm leading-relaxed mb-8">
@@ -358,7 +358,7 @@ export default function TryPage() {
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                   Free Trial - {remaining} scan{remaining !== 1 ? "s" : ""} remaining
                 </motion.div>
-                <h1 className="font-serif text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
+                <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
                   Try Viva Free
                 </h1>
                 <p className="text-muted-foreground max-w-lg mx-auto text-base">
@@ -485,7 +485,7 @@ export default function TryPage() {
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
                 <p className="mt-3 text-[11px] text-muted-foreground text-center max-w-xs">
-                  No account required · Results in ~10 seconds · {remaining} free scan{remaining !== 1 ? "s" : ""} left
+                  No account required · Results in under a minute · {remaining} free scan{remaining !== 1 ? "s" : ""} left
                 </p>
               </div>
             </motion.div>
@@ -517,7 +517,7 @@ export default function TryPage() {
                   <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-[10px] font-mono font-bold uppercase tracking-widest mb-4">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Scan_Complete
                   </div>
-                  <h2 className="font-serif text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2 capitalize">
+                  <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight mb-2 capitalize">
                     {result.file_name.replace(".pdf", "")}
                   </h2>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-xl">
@@ -641,7 +641,7 @@ export default function TryPage() {
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary mb-4">
                     Full Report Locked
                   </div>
-                  <h3 className="font-serif text-2xl font-bold text-foreground mb-2">
+                  <h3 className="font-display text-2xl font-bold text-foreground mb-2">
                     Want to save this & get more details?
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
