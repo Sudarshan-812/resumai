@@ -373,7 +373,7 @@ export default function DashboardShell({ children }: { children: React.ReactNode
                 <Menu size={22} />
               </button>
               <Link href="/dashboard" className="flex items-center" aria-label="Viva home">
-                <VivaLogo height={34} />
+                <VivaLogo height={28} />
               </Link>
             </div>
 

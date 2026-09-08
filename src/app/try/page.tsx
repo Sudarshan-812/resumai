@@ -318,7 +318,7 @@ export default function TryPage() {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           Back
         </Link>
-        <VivaLogo height={26} />
+        <VivaLogo height={24} />
         <Link href="/login" className="text-xs font-bold text-primary hover:underline">
           Sign in →
         </Link>

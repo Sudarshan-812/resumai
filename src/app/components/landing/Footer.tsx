@@ -77,7 +77,7 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="space-y-5">
-            <VivaLogo height={46} />
+            <VivaLogo height={36} />
             <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: "#80838d" }}>
               AI-powered resume optimization for the modern job market.
             </p>

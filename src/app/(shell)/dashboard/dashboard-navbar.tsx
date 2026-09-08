@@ -88,7 +88,7 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
         >
           {/* Logo */}
           <Link href="/" className="ml-3 flex items-center" aria-label="Viva home">
-            <VivaLogo height={34} />
+            <VivaLogo height={28} />
           </Link>
 
           {/* Tab nav */}

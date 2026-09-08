@@ -84,7 +84,7 @@ const LoginPage: FC = (): JSX.Element => {
 
         {/* Top bar */}
         <div className="flex items-center">
-          <VivaLogo height={40} priority />
+          <VivaLogo height={32} priority />
         </div>
 
         {/* Centre content */}
@@ -149,7 +149,7 @@ const LoginPage: FC = (): JSX.Element => {
 
         {/* Mobile: logo top-left */}
         <div className="absolute top-6 left-6 lg:hidden">
-          <VivaLogo height={38} />
+          <VivaLogo height={30} />
         </div>
 
         <motion.div
