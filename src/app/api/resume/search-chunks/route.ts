@@ -17,16 +17,28 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const embedding = await getEmbedding(query);
+    const embedding = await getEmbedding(query, "RETRIEVAL_QUERY");
     const embeddingStr = `[${embedding.join(",")}]`;
 
-    const { data: chunks, error } = await supabase.rpc("search_resume_chunks", {
+    // Hybrid: dense (pgvector) + BM25 (FTS) fused via Reciprocal Rank Fusion.
+    // Falls back to the pure-cosine RPC if migration 002 hasn't been applied.
+    let { data: chunks, error } = await supabase.rpc("search_resume_chunks_hybrid", {
       query_embedding: embeddingStr,
       query_text: query,
       match_user_id: user.id,
       match_resume_id: resume_id || null,
       match_count: 10,
     });
+
+    if (error && /search_resume_chunks_hybrid|function .* does not exist/i.test(error.message)) {
+      ({ data: chunks, error } = await supabase.rpc("search_resume_chunks", {
+        query_embedding: embeddingStr,
+        query_text: query,
+        match_user_id: user.id,
+        match_resume_id: resume_id || null,
+        match_count: 10,
+      }));
+    }
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

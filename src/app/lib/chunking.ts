@@ -1,8 +1,21 @@
 import { createClient } from "@/app/lib/supabase/server";
-import { getBatchEmbeddings } from "@/app/lib/embedding";
+import { getBatchEmbeddings, EMBEDDING_MODEL } from "@/app/lib/embedding";
 import "@/env";
 
 type ChunkType = "summary" | "experience" | "education" | "skills" | "project";
+
+interface RawChunk {
+  content: string;
+  chunk_type: ChunkType;
+  /** The actual section-heading line from the resume, if this chunk came from
+   *  header-based splitting. Prepended to the embedded text as a breadcrumb so
+   *  a bullet retrieved in isolation still carries its section context. */
+  header: string | null;
+}
+
+// Chunk-size controls (chars). Ported from Cortex's structural chunker.
+const MAX_CHUNK_CHARS = 1_800; // split anything larger, keeping the same heading
+const MIN_MERGE_CHARS = 220; // fold a tiny chunk into the previous same-type one
 
 const SECTION_MAP: Array<{ keywords: string[]; type: ChunkType }> = [
   {
@@ -69,16 +82,11 @@ function isSectionHeader(line: string): ChunkType | null {
 
 // ── Strategy 1: split on explicit section headers ──────────────────────────
 
-function splitBySections(
-  resumeText: string
-): Array<{ content: string; chunk_type: ChunkType }> {
+function splitBySections(resumeText: string): RawChunk[] {
   const lines = resumeText.split("\n");
-  const sections: Array<{ content: string; chunk_type: ChunkType }> = [];
+  const sections: RawChunk[] = [];
 
-  let current: { content: string; chunk_type: ChunkType } = {
-    content: "",
-    chunk_type: "summary",
-  };
+  let current: RawChunk = { content: "", chunk_type: "summary", header: null };
   let inSection = false;
 
   for (const line of lines) {
@@ -92,9 +100,9 @@ function splitBySections(
     const sectionType = isSectionHeader(trimmed);
     if (sectionType) {
       if (inSection && current.content.trim().length > 20) {
-        sections.push({ content: current.content.trim(), chunk_type: current.chunk_type });
+        sections.push({ ...current, content: current.content.trim() });
       }
-      current = { content: trimmed + "\n", chunk_type: sectionType };
+      current = { content: trimmed + "\n", chunk_type: sectionType, header: trimmed };
       inSection = true;
     } else {
       if (!inSection) {
@@ -106,7 +114,7 @@ function splitBySections(
   }
 
   if (inSection && current.content.trim().length > 20) {
-    sections.push({ content: current.content.trim(), chunk_type: current.chunk_type });
+    sections.push({ ...current, content: current.content.trim() });
   }
 
   return sections;
@@ -133,54 +141,99 @@ function guessChunkType(text: string): ChunkType {
   return "summary";
 }
 
-function splitByParagraphs(
-  resumeText: string
-): Array<{ content: string; chunk_type: ChunkType }> {
-  const paragraphs = resumeText
+function splitByParagraphs(resumeText: string): RawChunk[] {
+  return resumeText
     .split(/\n{2,}/)
     .map((p) => p.trim())
-    .filter((p) => p.length > 30);
-
-  return paragraphs.map((para) => ({
-    content: para,
-    chunk_type: guessChunkType(para),
-  }));
+    .filter((p) => p.length > 30)
+    .map((para) => ({ content: para, chunk_type: guessChunkType(para), header: null }));
 }
 
 // ── Strategy 3: fixed line-group fallback ─────────────────────────────────
 
-function splitByLineGroups(
-  resumeText: string
-): Array<{ content: string; chunk_type: ChunkType }> {
+function splitByLineGroups(resumeText: string): RawChunk[] {
   const lines = resumeText.split("\n").filter((l) => l.trim().length > 0);
   const groupSize = Math.max(5, Math.ceil(lines.length / 6));
-  const chunks: Array<{ content: string; chunk_type: ChunkType }> = [];
+  const chunks: RawChunk[] = [];
 
   for (let i = 0; i < lines.length; i += groupSize) {
     const content = lines.slice(i, i + groupSize).join("\n").trim();
     if (content.length > 20) {
-      chunks.push({ content, chunk_type: guessChunkType(content) });
+      chunks.push({ content, chunk_type: guessChunkType(content), header: null });
     }
   }
 
   return chunks;
 }
 
+// ── Post-processing: oversize split + small-chunk merge + breadcrumb ──────
+
+/** Break a chunk longer than MAX_CHUNK_CHARS into smaller pieces on paragraph
+ *  (then line) boundaries, each keeping the parent's type and heading. */
+function splitOversized(chunk: RawChunk): RawChunk[] {
+  if (chunk.content.length <= MAX_CHUNK_CHARS) return [chunk];
+
+  const units = chunk.content.includes("\n\n")
+    ? chunk.content.split(/\n{2,}/)
+    : chunk.content.split("\n");
+
+  const out: RawChunk[] = [];
+  let buf = "";
+  const push = () => {
+    if (buf.trim()) out.push({ ...chunk, content: buf.trim() });
+    buf = "";
+  };
+  for (const u of units) {
+    if (buf && buf.length + u.length + 1 > MAX_CHUNK_CHARS) push();
+    buf = buf ? `${buf}\n${u}` : u;
+    if (buf.length >= MAX_CHUNK_CHARS) push();
+  }
+  push();
+  return out.length ? out : [chunk];
+}
+
+/** Fold a chunk shorter than MIN_MERGE_CHARS into the previous chunk when they
+ *  share a type and the result still fits MAX_CHUNK_CHARS. */
+function mergeSmall(chunks: RawChunk[]): RawChunk[] {
+  const merged: RawChunk[] = [];
+  for (const ck of chunks) {
+    const prev = merged[merged.length - 1];
+    if (
+      prev &&
+      prev.chunk_type === ck.chunk_type &&
+      prev.header === ck.header &&
+      prev.content.length < MIN_MERGE_CHARS &&
+      prev.content.length + ck.content.length + 1 <= MAX_CHUNK_CHARS
+    ) {
+      merged[merged.length - 1] = {
+        ...prev,
+        content: `${prev.content}\n${ck.content}`.trim(),
+      };
+    } else {
+      merged.push(ck);
+    }
+  }
+  return merged;
+}
+
+/** Prepend a `[Context: <heading>]` breadcrumb so an isolated bullet keeps its
+ *  section context in the embedding and in retrieved output. */
+function withBreadcrumb(chunk: RawChunk): string {
+  const label = (chunk.header || chunk.chunk_type).toUpperCase();
+  return `[Context: ${label}]\n\n${chunk.content}`.trim();
+}
+
 // ── Entry point ────────────────────────────────────────────────────────────
 
-function splitIntoChunks(
-  resumeText: string
-): Array<{ content: string; chunk_type: ChunkType }> {
-  const bySections = splitBySections(resumeText);
-  if (bySections.length >= 2) return bySections;
+function splitIntoChunks(resumeText: string): RawChunk[] {
+  let raw = splitBySections(resumeText);
+  if (raw.length < 2) raw = splitByParagraphs(resumeText);
+  if (raw.length < 1) raw = splitByLineGroups(resumeText);
+  if (raw.length < 1) {
+    raw = [{ content: resumeText.slice(0, 8000).trim(), chunk_type: "summary", header: null }];
+  }
 
-  const byParagraphs = splitByParagraphs(resumeText);
-  if (byParagraphs.length >= 2) return byParagraphs;
-
-  const byLines = splitByLineGroups(resumeText);
-  if (byLines.length >= 1) return byLines;
-
-  return [{ content: resumeText.slice(0, 8000).trim(), chunk_type: "summary" }];
+  return mergeSmall(raw.flatMap(splitOversized));
 }
 
 // ── Public export ──────────────────────────────────────────────────────────
@@ -193,15 +246,16 @@ export async function chunkAndEmbedResume(
   const supabase = await createClient();
 
   const chunks = splitIntoChunks(resumeText);
-
   if (chunks.length === 0) {
     return { chunks_stored: 0, error: "No sections could be extracted from this resume." };
   }
 
-  // Issue 9: Single batch API call for all embeddings instead of N individual calls
+  // Embed the breadcrumbed text so section context is baked into the vector.
+  const embedTexts = chunks.map(withBreadcrumb);
+
   let embeddings: (number[] | null)[];
   try {
-    embeddings = await getBatchEmbeddings(chunks.map((c) => c.content));
+    embeddings = await getBatchEmbeddings(embedTexts, "RETRIEVAL_DOCUMENT");
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[chunking] batch embed error:", msg);
@@ -212,10 +266,16 @@ export async function chunkAndEmbedResume(
     .map((chunk, i) => ({
       user_id: userId,
       resume_id: resumeId,
-      content: chunk.content,
+      // Store the breadcrumbed text so retrieval output carries the heading too.
+      content: embedTexts[i],
       chunk_type: chunk.chunk_type,
       embedding: embeddings[i] ? `[${embeddings[i]!.join(",")}]` : null,
-      metadata: { length: chunk.content.length },
+      embedding_model: EMBEDDING_MODEL,
+      metadata: {
+        chars: chunk.content.length,
+        header: chunk.header,
+        headers: [chunk.chunk_type],
+      },
     }))
     .filter((row) => row.embedding !== null);
 
@@ -223,8 +283,8 @@ export async function chunkAndEmbedResume(
     return { chunks_stored: 0, error: "All embeddings failed - no chunks stored." };
   }
 
-  // Issue 10: Snapshot old IDs, insert new rows first, then delete old ones.
-  // This ensures old chunks are never lost if the insert fails.
+  // Snapshot old IDs, insert new rows first, then delete old ones - old chunks
+  // are never lost if the insert fails.
   const { data: oldChunks } = await supabase
     .from("resume_chunks")
     .select("id")
@@ -233,14 +293,22 @@ export async function chunkAndEmbedResume(
 
   const oldIds = (oldChunks ?? []).map((c) => c.id as string);
 
-  const { error: insertError } = await supabase.from("resume_chunks").insert(rows);
+  // Insert with embedding_model; fall back without it if migration 002 hasn't
+  // been applied yet (matches the calculated_yoe pattern in upload-resume.ts).
+  let insertError = (await supabase.from("resume_chunks").insert(rows)).error;
+  if (insertError && /embedding_model/.test(insertError.message)) {
+    const legacyRows = rows.map(({ embedding_model, ...rest }) => {
+      void embedding_model;
+      return rest;
+    });
+    insertError = (await supabase.from("resume_chunks").insert(legacyRows)).error;
+  }
 
   if (insertError) {
     console.error("[chunking] insert error:", insertError.message);
     return { chunks_stored: 0, error: insertError.message };
   }
 
-  // Only delete old chunks after successful insert - preserves data on failure
   if (oldIds.length > 0) {
     await supabase.from("resume_chunks").delete().in("id", oldIds);
   }
