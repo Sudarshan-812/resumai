@@ -60,16 +60,37 @@ export function useInterviewState() {
       if (!res.ok) throw new Error(await parseError(res));
       const fb: Feedback = await res.json();
       if (typeof fb.score !== "number") throw new Error("Invalid feedback response.");
-      setFeedbacks((prev) => [...prev, fb]);
-      setAnswers((prev) => [...prev, answer.trim()]);
+      const nextFeedbacks = [...feedbacks, fb];
+      const nextAnswers = [...answers, answer.trim()];
+      setFeedbacks(nextFeedbacks);
+      setAnswers(nextAnswers);
       setAnswer("");
-      setPhase(currentIdx + 1 >= questions.length ? "complete" : "feedback");
+      const done = currentIdx + 1 >= questions.length;
+      setPhase(done ? "complete" : "feedback");
+
+      // Persist the finished text interview (best-effort, non-blocking).
+      if (done) {
+        const items = questions.map((q, i) => ({
+          question: q.question,
+          category: q.category,
+          answer: nextAnswers[i] ?? "",
+          score: nextFeedbacks[i]?.score ?? 0,
+          strengths: nextFeedbacks[i]?.strengths ?? [],
+          improvements: nextFeedbacks[i]?.improvements ?? [],
+          model_answer_hint: nextFeedbacks[i]?.model_answer_hint ?? "",
+        }));
+        void fetch("/api/interview/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role, jobDesc, items }),
+        }).catch(() => {});
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to get feedback");
     } finally {
       setLoading(false);
     }
-  }, [answer, loading, questions, currentIdx, role, jobDesc]);
+  }, [answer, loading, questions, currentIdx, role, jobDesc, feedbacks, answers]);
 
   const nextQuestion = useCallback(() => {
     setCurrentIdx(i => i + 1);

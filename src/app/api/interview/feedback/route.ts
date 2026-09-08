@@ -2,6 +2,7 @@ import { groq } from "@ai-sdk/groq";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { createClient } from "@/app/lib/supabase/server";
+import { RUBRIC_BLOCK } from "@/app/lib/interview-rubric";
 export async function POST(req: Request) {
   try {
     const supabase = await createClient();
@@ -38,24 +39,9 @@ Question: ${question}
 Candidate's Answer: ${answer}
 Job Context: ${(jobDesc ?? "").slice(0, 500)}
 
-SCORING RUBRIC (0-100):
-- Relevance & specificity (25pts): Does the answer directly address the question with concrete details?
-- Evidence & metrics (25pts): Does the candidate use real examples, numbers, or measurable outcomes?
-- Structure & clarity (25pts): Is the answer organized? Does it follow STAR or a logical flow?
-- Role alignment (25pts): Does the answer demonstrate the skills and mindset this specific role requires?
+${RUBRIC_BLOCK}
 
-SCORING GUIDELINES:
-- 85-100: Exceptional - specific, metrics-driven, perfectly aligned
-- 70-84: Strong - good examples but missing metrics or depth
-- 50-69: Average - relevant but vague, missing concrete evidence
-- 30-49: Weak - too generic, no real examples
-- 0-29: Poor - off-topic, too brief, or completely lacks substance
-
-STRICT RULES:
-- Do NOT be generous. A vague answer without specific examples scores below 55.
-- Strengths must cite something SPECIFIC from the answer (not generic praise)
-- Improvements must be ACTIONABLE and specific (not just "add more details")
-- model_answer_hint: In 1-2 sentences, describe what a STRONG answer would emphasize - don't write the full answer`,
+- model_answer_hint: In 1-2 sentences, describe what a STRONG answer would emphasise - do not write the full answer.`,
     });
 
     return Response.json(object);
