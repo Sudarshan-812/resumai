@@ -4,7 +4,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, SquaresFour as LayoutDashboard, CheckCircle as CheckCircle2, TrendUp as TrendingUp, Lightning as Zap, Check } from "@phosphor-icons/react";
 import { MaterialIcon } from "@/components/ui/material-icon";
-import SplitText from "@/app/components/ui/SplitText";
 import DotGrid from "@/app/components/landing/DotGrid";
 import HandDrawnUnderline from "@/app/components/landing/HandDrawnUnderline";
 import dynamic from "next/dynamic";
@@ -83,91 +82,56 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
 
       {/* ─── Above-fold: fills the viewport ─────────────────────── */}
       <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 pt-20 pb-16 text-center">
-        <div className="w-full max-w-3xl flex flex-col items-center">
+        <div className="w-full max-w-4xl flex flex-col items-center">
 
           {/* Eyebrow */}
-          <div className="relative mb-9">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-3"
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-3 mb-9"
+          >
+            <span className="block w-7 h-px" style={{ background: "#12a594" }} />
+            <span
+              className="text-[10px] font-semibold uppercase tracking-[0.22em]"
+              style={{ color: "#80838d" }}
             >
-              <span className="block w-7 h-px" style={{ background: "#12a594" }} />
-              <span
-                className="text-[10px] font-semibold uppercase tracking-[0.22em]"
-                style={{ color: "#80838d" }}
-              >
-                Resume Scoring · AI Mock Interviews
-              </span>
-              <span className="block w-7 h-px" style={{ background: "#12a594" }} />
-            </motion.div>
-
-            {/* Hand-drawn arrow annotation pointing at the headline */}
-            <motion.svg
-              aria-hidden
-              width="54"
-              height="46"
-              viewBox="0 0 54 46"
-              fill="none"
-              className="absolute -right-11 top-3 hidden sm:block"
-              initial={{ opacity: 0, pathLength: 0 }}
-              animate={{ opacity: 0.55, pathLength: 1 }}
-              transition={{ duration: 0.8, delay: 1.1, ease: [0.65, 0, 0.35, 1] }}
-            >
-              <motion.path
-                d="M4,4 C20,10 34,16 40,30 C42,34 42,37 41,40"
-                stroke="#12a594"
-                strokeWidth="2"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path d="M34,38 L41,41 L41,33" stroke="#12a594" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </motion.svg>
-          </div>
+              Resume Scoring · AI Mock Interviews
+            </span>
+            <span className="block w-7 h-px" style={{ background: "#12a594" }} />
+          </motion.div>
 
           {/* Headline */}
-          <div className="mb-9">
-            <SplitText
-              text="Get past the ATS."
-              tag="h1"
-              id="hero-heading"
-              splitType="chars"
-              delay={18}
-              duration={0.52}
-              from={{ opacity: 0, y: 30 }}
-              to={{ opacity: 1, y: 0 }}
-              threshold={0.2}
-              textAlign="center"
-              className="font-display font-bold tracking-tight leading-[1.06] block"
-              style={{ fontSize: "clamp(42px, 7vw, 76px)", color: "#1c2024" }}
-            />
-            <span className="relative inline-block">
-              <SplitText
-                text="Then ace the interview."
-                tag="span"
-                splitType="chars"
-                delay={18}
-                duration={0.52}
-                from={{ opacity: 0, y: 30 }}
-                to={{ opacity: 1, y: 0 }}
-                threshold={0.2}
-                textAlign="center"
-                className="font-display font-bold tracking-tight leading-[1.12] pb-[0.08em] block text-transparent bg-clip-text"
+          <motion.h1
+            id="hero-heading"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="mb-9 font-display font-bold tracking-tight leading-[1.08] text-center"
+            style={{ fontSize: "clamp(38px, 6.4vw, 68px)", color: "#1c2024" }}
+          >
+            <span className="block whitespace-nowrap">Get past the ATS.</span>
+            <span className="relative inline-block whitespace-nowrap align-top">
+              <motion.span
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.12, ease: EASE }}
+                className="block pb-[0.08em] text-transparent bg-clip-text"
                 style={{
-                  fontSize: "clamp(42px, 7vw, 76px)",
                   backgroundImage: "linear-gradient(135deg, #008573 0%, #12a594 50%, #53b9ab 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
-              />
+              >
+                Then ace the interview.
+              </motion.span>
               <HandDrawnUnderline
                 color="#12a594"
-                delay={0.95}
-                className="absolute left-0 right-0 -bottom-3 w-full h-4"
+                delay={0.55}
+                className="absolute left-0 right-0 -bottom-1.5 w-full h-3"
               />
             </span>
-          </div>
+          </motion.h1>
 
           {/* Subhead */}
           <motion.p
