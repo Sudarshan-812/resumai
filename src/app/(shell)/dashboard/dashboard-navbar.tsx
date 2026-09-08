@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, List as AlignJustify, ArrowUpRight, SignOut as LogOut, CreditCard, Gear as Settings, CaretDown as ChevronDown } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import VivaLogo from "@/components/branding/VivaLogo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,15 +87,8 @@ export default function DashboardNavbar({ userProfile }: DashboardNavbarProps) {
           }}
         >
           {/* Logo */}
-          <Link href="/" className="ml-3 flex items-center" aria-label="Home">
-            <Image
-              src="/column8_black_transparent.png"
-              alt="Viva"
-              width={560}
-              height={217}
-              className="h-7 w-auto"
-              priority
-            />
+          <Link href="/" className="ml-3 flex items-center" aria-label="Viva home">
+            <VivaLogo height={34} />
           </Link>
 
           {/* Tab nav */}

@@ -1,130 +1,119 @@
-"use client";
+import type { CSSProperties } from "react";
+import Image from "next/image";
 
-import React from "react";
-import { motion } from "framer-motion";
+/**
+ * Viva brand mark — a rounded "V" checkmark built from two capsule strokes
+ * (teal + lime) with a lime tittle, reading as "vi" and as an approval check.
+ *
+ * - <VivaLogo />            full horizontal lockup (mark + "Viva" wordmark)
+ * - <VivaLogo variant="mark" />  square glyph only
+ * - <VivaMark />            raw SVG glyph (favicon / tiny / recolourable)
+ *
+ * The full lockup on a light background uses the designed banner asset
+ * (/VivaBanner.png). On a dark background it falls back to the vector mark
+ * plus a white wordmark so it stays legible.
+ */
+
+const TEAL = "#12A594";
+const LIME = "#8FD91F";
+const SHADOW = "#0B6E63";
+
+const BANNER_W = 2146;
+const BANNER_H = 733;
+const BANNER_RATIO = BANNER_W / BANNER_H;
+
+type Variant = "full" | "mark";
 
 interface VivaLogoProps {
-  width?: number;
+  /** Rendered height in px. Width follows the lockup's aspect ratio. */
   height?: number;
-  showTagline?: boolean;
-  animate?: boolean;
-  onDark?: boolean;   // true = white palette (for dark bg); false = black palette (for light bg)
+  /** "full" = mark + wordmark, "mark" = glyph only. */
+  variant?: Variant;
+  /** true => render for a dark background (vector mark + white wordmark). */
+  onDark?: boolean;
+  /** Pass through to next/image for above-the-fold logos. */
+  priority?: boolean;
   className?: string;
+  style?: CSSProperties;
 }
 
-const VivaLogo: React.FC<VivaLogoProps> = ({
-  width = 310,
-  height = 120,
-  showTagline = true,
-  animate = true,
-  onDark = false,
-  className = "",
-}) => {
-  const skip = !animate;
-  const ink  = onDark ? "#FAFAFA" : "#1c2024";   // right col, bottom bar, wordmark
-
+export function VivaMark({
+  size = 32,
+  className,
+  title,
+}: {
+  size?: number;
+  className?: string;
+  /** Provide an accessible name when the mark stands alone. */
+  title?: string;
+}) {
   return (
-    <motion.svg
-      width={width}
-      height={height}
-      viewBox="0 0 620 240"
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 64 64"
+      fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
-      aria-label="Viva - From Apply to Offer"
-      role="img"
+      role={title ? "img" : undefined}
+      aria-label={title || undefined}
+      aria-hidden={title ? undefined : true}
     >
-      <defs>
-        <linearGradient id="c8-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#53b9ab" />
-          <stop offset="100%" stopColor="#008573" />
-        </linearGradient>
-      </defs>
-
-      {/* ── Left column - teal gradient, grows from bottom ── */}
-      <motion.rect
-        id="col-left"
-        x={40} y={45} width={15} height={150} rx={7}
-        fill="url(#c8-grad)"
-        style={{ transformBox: "fill-box", transformOrigin: "center bottom" }}
-        initial={skip ? false : { scaleY: 0 }}
-        animate={{ scaleY: 1 }}
-        transition={skip ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 24, delay: 0 }}
-      />
-
-      {/* ── Right column - ink colour, slight stagger ── */}
-      <motion.rect
-        id="col-right"
-        x={105} y={45} width={15} height={150} rx={7}
-        fill={ink}
-        style={{ transformBox: "fill-box", transformOrigin: "center bottom" }}
-        initial={skip ? false : { scaleY: 0 }}
-        animate={{ scaleY: 1 }}
-        transition={skip ? { duration: 0 } : { type: "spring", stiffness: 220, damping: 24, delay: 0.13 }}
-      />
-
-      {/* ── Top bar - teal gradient, draws left to right ── */}
-      <motion.path
-        id="bar-top"
-        d="M 30,93 L 130,80"
-        stroke="url(#c8-grad)" strokeWidth={13} strokeLinecap="round" fill="none"
-        initial={skip ? false : { pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={skip ? { duration: 0 } : {
-          pathLength: { duration: 0.38, delay: 0.48, ease: "easeOut" },
-          opacity:    { duration: 0.05, delay: 0.48 },
-        }}
-      />
-
-      {/* ── Bottom bar - ink colour, slight delay ── */}
-      <motion.path
-        id="bar-bottom"
-        d="M 30,157 L 130,170"
-        stroke={ink} strokeWidth={13} strokeLinecap="round" fill="none"
-        initial={skip ? false : { pathLength: 0, opacity: 0 }}
-        animate={{ pathLength: 1, opacity: 1 }}
-        transition={skip ? { duration: 0 } : {
-          pathLength: { duration: 0.38, delay: 0.63, ease: "easeOut" },
-          opacity:    { duration: 0.05, delay: 0.63 },
-        }}
-      />
-
-      {/* ── Wordmark - slides up + fades in ── */}
-      <motion.g
-        id="wordmark"
-        initial={skip ? false : { opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={skip ? { duration: 0 } : { duration: 0.55, delay: 0.88, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <text
-          x="158" y="143"
-          fontFamily="Outfit, system-ui, sans-serif"
-          fontSize="56" fontWeight="600"
-          fill={ink} letterSpacing="-2"
-        >
-          Viv<tspan fill="#12a594">a</tspan>
-        </text>
-      </motion.g>
-
-      {/* ── Tagline - last to appear ── */}
-      {showTagline && (
-        <motion.g
-          id="tagline"
-          initial={skip ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={skip ? { duration: 0 } : { duration: 0.7, delay: 1.32 }}
-        >
-          <text
-            x="295" y="177"
-            fontFamily="Outfit, system-ui, sans-serif"
-            fontSize="11" fontWeight="300"
-            fill="#0D9488" letterSpacing="5" textAnchor="middle"
-          >
-            FROM APPLY TO OFFER
-          </text>
-        </motion.g>
-      )}
-    </motion.svg>
+      {title ? <title>{title}</title> : null}
+      <path d="M11 21 L29 53" stroke={TEAL} strokeWidth="15" strokeLinecap="round" />
+      <path d="M22.5 41 L29 53" stroke={SHADOW} strokeWidth="15" strokeLinecap="round" />
+      <path d="M29 53 L51 21" stroke={LIME} strokeWidth="15" strokeLinecap="round" />
+      <circle cx="52" cy="7" r="6" fill={LIME} />
+    </svg>
   );
-};
+}
 
-export default VivaLogo;
+export default function VivaLogo({
+  height = 30,
+  variant = "full",
+  onDark = false,
+  priority = false,
+  className = "",
+  style,
+}: VivaLogoProps) {
+  if (variant === "mark") {
+    return <VivaMark size={height} className={className} title="Viva" />;
+  }
+
+  if (onDark) {
+    return (
+      <span
+        className={className}
+        role="img"
+        aria-label="Viva"
+        style={{ display: "inline-flex", alignItems: "center", gap: height * 0.28, ...style }}
+      >
+        <VivaMark size={height} />
+        <span
+          style={{
+            fontFamily: "var(--font-sans), system-ui, sans-serif",
+            fontWeight: 600,
+            fontSize: height * 0.72,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            color: "#FFFFFF",
+          }}
+        >
+          Viva
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <Image
+      src="/VivaBanner.png"
+      alt="Viva"
+      width={Math.round(height * BANNER_RATIO)}
+      height={height}
+      priority={priority}
+      className={className}
+      style={{ height, width: "auto", ...style }}
+    />
+  );
+}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
-import Image from "next/image";
+import VivaLogo from "@/components/branding/VivaLogo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -409,15 +409,8 @@ export default function DashboardShell({ children }: { children: React.ReactNode
               >
                 <Menu size={22} />
               </button>
-              <Link href="/dashboard" className="flex items-center">
-                <Image
-                  src="/column8_black_transparent.png"
-                  alt="Viva"
-                  width={560}
-                  height={217}
-                  className="h-7 w-auto"
-                  priority
-                />
+              <Link href="/dashboard" className="flex items-center" aria-label="Viva home">
+                <VivaLogo height={34} />
               </Link>
             </div>
 

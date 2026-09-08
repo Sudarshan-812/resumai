@@ -1,42 +1,60 @@
-# Viva 🚀
+# Viva
 
-**An AI-Powered Resume Builder SaaS**
+**AI resume scoring + spoken AI mock interviews.**
 
-Viva is a production-grade Software-as-a-Service (SaaS) platform that leverages artificial intelligence to help users generate, format, and optimize professional resumes. Built with a focus on performance, real-time data handling, and seamless user experience.
+Viva scores a resume against a specific job description, shows the exact keyword and
+formatting gaps that make an Applicant Tracking System (ATS) reject it, and then lets
+the candidate rehearse a real, spoken mock interview with an AI interviewer that has
+read both their resume and the target job.
 
-🔗 **Live Application:** https://column8.io/
+Built for the US job market.
 
----
-
-## 🏗 Architecture & Tech Stack
-
-This application is architected for scalability, utilizing modern server-side rendering and edge computing to handle AI streaming and document generation.
-
-* **Core Framework:** Next.js (App Router)
-* **Language:** TypeScript
-* **Styling:** Tailwind CSS
-* **Deployment & Infrastructure:** Vercel
-
-## ✨ Core Product Features
-
-* **AI-Driven Content Generation:** Context-aware bullet point generation and optimization using LLM integration.
-* **Real-Time Preview Engine:** Instant, zero-latency visual updates as the user edits their document data.
-* **High-Fidelity Document Export:** Pixel-perfect PDF rendering ensuring exact matches between the web preview and the final downloaded resume.
-* **Responsive Architecture:** Fully optimized for both desktop web and mobile viewing experiences.
-
-## 🛡️ FinOps & DDoS Protection
-
-Voice interviews are the most expensive request path in the app - each session spins up a LiveKit room, a Python worker (`agent.py`), and a live LLM/STT pipeline. To stop bots or abusive clients from draining cloud credits, the `/api/interview/get-token` route (where LiveKit access tokens are minted) is protected by an **Upstash Redis sliding-window rate limiter** (`@upstash/ratelimit` + `@upstash/redis`):
-
-* **Limit:** 3 token requests per IP address per 10-minute window.
-* **Enforcement point:** checked first, before any Supabase/auth calls, so abusive traffic is rejected as cheaply as possible.
-* **Response:** exceeding the limit returns `HTTP 429` with `Retry-After` / `X-RateLimit-*` headers so well-behaved clients can back off correctly.
-
-This sits on top of a broader, app-wide rate limiter in `middleware.ts` (20 requests / 10s per user or IP across all `/api/*` routes), giving the voice pipeline a much tighter, purpose-specific cap.
-
-## 🔒 Source Code Notice
-
-**This repository contains the core architecture for a proprietary, closed-source SaaS product.** Unlike open-source projects or boilerplate templates, this codebase is strictly for production deployment and architectural demonstration. As such, local development/cloning instructions have been omitted.
+🔗 **Live application:** https://column8.io/
 
 ---
-*Architected and developed by Sudarshan Kulkarni*
+
+## Architecture & tech stack
+
+* **Framework:** Next.js (App Router) + React 19, TypeScript
+* **Styling:** Tailwind CSS v4
+* **Auth & data:** Supabase (Postgres + Auth)
+* **Resume analysis:** Google Gemini
+* **Text interview Q&A + feedback:** Groq (Llama 3.3)
+* **Voice interview:** LiveKit WebRTC room + a Python worker (`python/agent.py`)
+  running Deepgram STT, Groq Llama 3.3, Deepgram Aura-2 TTS, and Silero VAD
+* **Payments:** one-time credit packs
+* **Rate limiting:** Upstash Redis
+* **Hosting:** Vercel
+
+## Core features
+
+* **ATS Match Score** — weighted rubric (keyword match, experience alignment,
+  demonstrated skills, ATS-safe formatting) against any pasted job description.
+* **Keyword Gap Analysis** — what the resume matches and what it is missing.
+* **Bullet Rewriter** — rewrites the weakest bullet points with action verbs and
+  quantified impact.
+* **Voice Mock Interview** — real-time spoken interview generated from the
+  candidate's resume and target job, with a post-session summary.
+* **Text Mock Interview** — typed Q&A with per-answer scoring and coaching.
+* **Cover Letter Generator** — role-specific, mapped to the job description.
+* **Version history** — track score changes across resume iterations.
+
+## FinOps & abuse protection
+
+Voice interviews are the most expensive request path: each session spins up a
+LiveKit room, a Python worker, and a live STT/LLM/TTS pipeline. The
+`/api/interview/get-token` route (where LiveKit access tokens are minted) is
+guarded by an Upstash Redis sliding-window limiter — **3 token requests per IP per
+10 minutes** — checked before any auth/DB calls so abusive traffic is rejected
+cheaply, returning `HTTP 429` with `Retry-After` / `X-RateLimit-*` headers.
+
+This sits on top of an app-wide limiter in `src/proxy.ts` (20 requests / 10s per
+user or IP across all `/api/*` routes).
+
+## Source code notice
+
+This repository contains the core architecture for a proprietary, closed-source
+SaaS product. Local development and cloning instructions are intentionally omitted.
+
+---
+*Architected and developed by Sudarshan Kulkarni.*

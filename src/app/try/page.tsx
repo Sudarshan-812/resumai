@@ -14,7 +14,7 @@ import { analyzeResumeAsGuest } from "@/app/actions/guest-analyze";
 import { cn } from "@/lib/utils";
 
 const MAX_FREE = 3;
-const STORAGE_KEY = "resumai_guest_count";
+const STORAGE_KEY = "viva_guest_count";
 
 // ─── Isolated JD textarea ───
 const JDInput = memo(function JDInput({

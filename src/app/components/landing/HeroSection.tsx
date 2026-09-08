@@ -355,11 +355,15 @@ export default function HeroSection() {
               </div>
               <div className="flex-1 flex justify-center">
                 <div
-                  className="h-5 w-48 rounded-md flex items-center justify-center"
+                  className="h-5 w-48 rounded-md flex items-center justify-center gap-1.5"
                   style={{ background: "#EBEBEB" }}
                 >
+                  <svg width="8" height="8" viewBox="0 0 12 12" fill="none" aria-hidden>
+                    <rect x="2.5" y="5.5" width="7" height="5" rx="1" fill="#80838d" />
+                    <path d="M4 5.5V4a2 2 0 0 1 4 0v1.5" stroke="#80838d" strokeWidth="1.2" />
+                  </svg>
                   <span className="text-[9px] font-mono" style={{ color: "#80838d" }}>
-                    column8.io/dashboard/report
+                    Resume Match Report
                   </span>
                 </div>
               </div>

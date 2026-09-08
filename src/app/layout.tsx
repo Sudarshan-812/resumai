@@ -16,22 +16,27 @@ const outfit = Outfit({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://column8.io";
+
 export const metadata: Metadata = {
-  title: "Viva - AI Resume Optimizer",
-  description: "Beat the ATS filter and land more interviews. Viva uses Gemini 2.5 Flash to score, rewrite, and optimize your resume against any job description.",
-  metadataBase: new URL("https://column8.io"),
+  title: "Viva — Resume Scoring + AI Mock Interviews",
+  description:
+    "Score your resume against any job in seconds, see exactly which keywords you're missing, then rehearse a spoken AI mock interview built from your resume and that job description.",
+  metadataBase: new URL(SITE_URL),
   openGraph: {
-    title: "Viva - AI Resume Optimizer",
-    description: "Beat the ATS filter and land more interviews. Get your ATS score in 10 seconds.",
-    url: "https://column8.io",
+    title: "Viva — Beat the ATS, then rehearse the interview",
+    description:
+      "Get your resume's match score in seconds, fix the keyword gaps, and practice out loud with an AI interviewer that has read your resume and the job.",
+    url: SITE_URL,
     siteName: "Viva",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "Viva" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Viva - AI Resume Optimizer",
-    description: "Beat the ATS filter and land more interviews.",
+    title: "Viva — Beat the ATS, then rehearse the interview",
+    description:
+      "Resume match score in seconds, keyword gaps fixed, and a spoken AI mock interview built from your resume and the job.",
     images: ["/og.png"],
   },
 };

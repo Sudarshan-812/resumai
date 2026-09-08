@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import VivaLogo from "@/components/branding/VivaLogo";
 import { ArrowRight, TwitterLogo as Twitter, LinkedinLogo as Linkedin, GithubLogo as Github } from "@phosphor-icons/react";
 
 const PRODUCT_LINKS = [
@@ -77,13 +77,7 @@ export default function Footer() {
 
           {/* Brand */}
           <div className="space-y-5">
-            <Image
-              src="/column8_black_transparent.png"
-              alt="Viva"
-              width={560}
-              height={217}
-              className="h-9 w-auto"
-            />
+            <VivaLogo height={46} />
             <p className="text-sm leading-relaxed max-w-[220px]" style={{ color: "#80838d" }}>
               AI-powered resume optimization for the modern job market.
             </p>

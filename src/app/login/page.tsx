@@ -3,7 +3,6 @@
 import type { FC, JSX } from "react";
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   EnvelopeSimple as Mail, Lock, ArrowRight, Eye, EyeSlash as EyeOff, ShieldCheck, Globe, Command
@@ -13,6 +12,7 @@ import { toast } from "sonner";
 import { createClient } from "@/app/lib/supabase/client";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { Button } from "@/components/ui/button";
+import VivaLogo from "@/components/branding/VivaLogo";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
@@ -86,14 +86,7 @@ const LoginPage: FC = (): JSX.Element => {
         {/* Top bar */}
         <div className="flex items-center justify-between">
           {/* Logo top-left */}
-          <Image
-            src="/column8_black_transparent.png"
-            alt="Viva"
-            width={560}
-            height={217}
-            className="h-8 w-auto"
-            priority
-          />
+          <VivaLogo height={40} priority />
           <div className="flex items-center gap-4 opacity-40">
             <div className="flex items-center gap-4">
               <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-foreground">Auth.Protocol.v2</span>
@@ -168,14 +161,7 @@ const LoginPage: FC = (): JSX.Element => {
 
         {/* Mobile: logo top-left */}
         <div className="absolute top-6 left-6 lg:hidden">
-          <Image
-            src="/column8_black_transparent.png"
-            alt="Viva"
-            width={560}
-            height={217}
-            className="h-7 w-auto"
-            priority
-          />
+          <VivaLogo height={38} />
         </div>
 
         <motion.div

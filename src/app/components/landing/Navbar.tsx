@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { List as Menu, X, ArrowRight, SquaresFour as LayoutDashboard } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
+import VivaLogo from "@/components/branding/VivaLogo";
 
 const NAV_LINKS = [
   { label: "Features",     href: "/#features",     hash: "features"     },
@@ -76,14 +76,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0" aria-label="Viva home">
-            <Image
-              src="/column8_black_transparent.png"
-              alt="Viva"
-              width={560}
-              height={217}
-              className="h-8 w-auto"
-              priority
-            />
+            <VivaLogo height={40} priority />
           </Link>
 
           {/* Desktop nav */}

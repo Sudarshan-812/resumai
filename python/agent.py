@@ -16,7 +16,7 @@ from livekit.plugins import deepgram, groq, silero
 load_dotenv(find_dotenv())
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger("resumai-voice-worker")
+logger = logging.getLogger("viva-voice-worker")
 
 
 class InterviewAgent(Agent):

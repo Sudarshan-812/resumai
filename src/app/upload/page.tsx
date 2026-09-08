@@ -5,7 +5,7 @@ import { useState, useCallback, useRef, useEffect, memo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+import VivaLogo from "@/components/branding/VivaLogo";
 import {
   FileText, ArrowLeft, WarningCircle as AlertCircle, X,
   CloudArrowUp as UploadCloud, CheckCircle as CheckCircle2, TextAlignLeft as AlignLeft, ArrowRight, FileX as FileWarning,
@@ -231,7 +231,7 @@ const UploadPage: FC = (): JSX.Element => {
           <ArrowLeft className="h-4 w-4" />
           Dashboard
         </Link>
-        <Image src="/column8_black_transparent.png" alt="Viva" width={560} height={217} className="h-7 w-auto" priority />
+        <VivaLogo height={34} />
         <div className="w-[88px]" />
       </header>
 

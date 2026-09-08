@@ -57,11 +57,11 @@ export default function FAQ() {
           <p className="text-sm leading-relaxed" style={{ color: "#80838d" }}>
             Still have questions?{" "}
             <a
-              href="mailto:support@column8.io"
+              href="mailto:sudarshankulkarni812@gmail.com"
               className="transition-colors hover:text-teal-600"
               style={{ color: "#12a594" }}
             >
-              support@column8.io
+              sudarshankulkarni812@gmail.com
             </a>
           </p>
         </div>
