@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/app/lib/supabase/server";
-import { getEmbedding } from "@/app/lib/embedding";
+import { retrieveForJD } from "@/app/lib/retrieval";
 import "@/env";
 
 export async function POST(req: Request) {
@@ -17,32 +17,16 @@ export async function POST(req: Request) {
     } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const embedding = await getEmbedding(query, "RETRIEVAL_QUERY");
-    const embeddingStr = `[${embedding.join(",")}]`;
-
-    // Hybrid: dense (pgvector) + BM25 (FTS) fused via Reciprocal Rank Fusion.
-    // Falls back to the pure-cosine RPC if migration 002 hasn't been applied.
-    let { data: chunks, error } = await supabase.rpc("search_resume_chunks_hybrid", {
-      query_embedding: embeddingStr,
-      query_text: query,
-      match_user_id: user.id,
-      match_resume_id: resume_id || null,
-      match_count: 10,
+    // hybrid search (dense + BM25 + RRF) -> LLM rerank. `similarity` on the
+    // returned chunks is the reranker's 0-1 relevance score.
+    const chunks = await retrieveForJD(supabase, {
+      userId: user.id,
+      resumeId: resume_id || null,
+      jd: query,
+      topN: 10,
     });
 
-    if (error && /search_resume_chunks_hybrid|function .* does not exist/i.test(error.message)) {
-      ({ data: chunks, error } = await supabase.rpc("search_resume_chunks", {
-        query_embedding: embeddingStr,
-        query_text: query,
-        match_user_id: user.id,
-        match_resume_id: resume_id || null,
-        match_count: 10,
-      }));
-    }
-
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-    return NextResponse.json({ chunks: chunks || [] });
+    return NextResponse.json({ chunks });
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Search failed" },

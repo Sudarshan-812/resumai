@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { AccessToken } from "livekit-server-sdk";
 import { createClient } from "@/app/lib/supabase/server";
 import { tokenRateLimit, getClientIp } from "@/app/lib/rateLimit";
-import { getEmbedding } from "@/app/lib/embedding";
+import { retrieveForJD } from "@/app/lib/retrieval";
 
 interface Analysis {
   job_description: string | null;
@@ -14,8 +14,8 @@ interface Analysis {
   formatting_issues: string[] | null;
 }
 
-/** The resume sections most relevant to this JD, so the interviewer probes the
- *  content that actually matters instead of the first N characters. Best-effort. */
+/** The resume sections most relevant to this JD (hybrid search + rerank), so the
+ *  interviewer probes the content that actually matters. Best-effort. */
 async function relevantResumeSections(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
@@ -24,26 +24,13 @@ async function relevantResumeSections(
 ): Promise<string> {
   if (!jobDescription.trim()) return "";
   try {
-    const embedding = await getEmbedding(jobDescription, "RETRIEVAL_QUERY");
-    const embeddingStr = `[${embedding.join(",")}]`;
-    let { data: chunks, error } = await supabase.rpc("search_resume_chunks_hybrid", {
-      query_embedding: embeddingStr,
-      query_text: jobDescription,
-      match_user_id: userId,
-      match_resume_id: resumeId,
-      match_count: 4,
+    const chunks = await retrieveForJD(supabase, {
+      userId,
+      resumeId,
+      jd: jobDescription,
+      topN: 4,
     });
-    if (error && /hybrid|does not exist/i.test(error.message)) {
-      ({ data: chunks, error } = await supabase.rpc("search_resume_chunks", {
-        query_embedding: embeddingStr,
-        query_text: jobDescription,
-        match_user_id: userId,
-        match_resume_id: resumeId,
-        match_count: 4,
-      }));
-    }
-    if (error || !Array.isArray(chunks) || chunks.length === 0) return "";
-    return (chunks as { content: string }[])
+    return chunks
       .map((c) => c.content.trim())
       .join("\n\n")
       .slice(0, 3000);

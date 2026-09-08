@@ -1,47 +1,30 @@
 import { groq } from "@ai-sdk/groq";
 import { streamText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
-import { getEmbedding } from "@/app/lib/embedding";
+import { retrieveForQuestion } from "@/app/lib/retrieval";
 export const maxDuration = 60;
 
-/** Hybrid-retrieve the resume sections most relevant to the user's question and
- *  render them as labelled, citable blocks. Best-effort - any failure just
- *  yields an empty string and the chat falls back to the full resume text. */
+/** hybrid search -> LLM rerank -> Corrective RAG, rendered as citable blocks.
+ *  Best-effort: any failure yields "" and the chat falls back to full resume text. */
 async function retrieveRelevantSections(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   resumeId: string,
   question: string
 ): Promise<string> {
-  if (!question.trim()) return "";
   try {
-    const embedding = await getEmbedding(question, "RETRIEVAL_QUERY");
-    const embeddingStr = `[${embedding.join(",")}]`;
-
-    let { data: chunks, error } = await supabase.rpc("search_resume_chunks_hybrid", {
-      query_embedding: embeddingStr,
-      query_text: question,
-      match_user_id: userId,
-      match_resume_id: resumeId,
-      match_count: 6,
+    const { chunks, note } = await retrieveForQuestion(supabase, {
+      userId,
+      resumeId,
+      question,
     });
-    if (error && /hybrid|does not exist/i.test(error.message)) {
-      ({ data: chunks, error } = await supabase.rpc("search_resume_chunks", {
-        query_embedding: embeddingStr,
-        query_text: question,
-        match_user_id: userId,
-        match_resume_id: resumeId,
-        match_count: 6,
-      }));
-    }
-    if (error || !Array.isArray(chunks) || chunks.length === 0) return "";
+    if (chunks.length === 0) return "";
 
-    const blocks = (chunks as { content: string }[])
-      .map((c, i) => `[S${i + 1}]\n${c.content.trim()}`)
-      .join("\n\n");
+    const blocks = chunks.map((c, i) => `[S${i + 1}]\n${c.content.trim()}`).join("\n\n");
+    const noteLine = note ? ` (${note})` : "";
     return `
 ════════════════════════════════════════
-RETRIEVED RESUME SECTIONS (most relevant to this question - cite as [S1], [S2], ...):
+RETRIEVED RESUME SECTIONS${noteLine} - most relevant to this question, cite as [S1], [S2], ...:
 ${blocks}
 ════════════════════════════════════════
 `;
