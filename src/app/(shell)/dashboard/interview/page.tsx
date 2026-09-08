@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PaperPlaneTilt as Send, ArrowCounterClockwise as RotateCcw, CheckCircle as CheckCircle2, WarningCircle as AlertCircle,
@@ -15,9 +15,6 @@ import { AuroraBackground } from "@/components/dashboard/aurora-background";
 const SPRING = { type: "spring", stiffness: 300, damping: 26 } as const;
 const EASE   = [0.16, 1, 0.3, 1] as const;
 
-function fmt(s: number) {
-  return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
-}
 const scoreColor = (s: number) => s >= 70 ? "#059669" : s >= 50 ? "#d97706" : "#e11d48";
 
 /* ── Step indicator ─────────────────────────────────────────── */
@@ -155,14 +152,6 @@ export default function InterviewPage() {
   } = useInterviewState();
 
   const [isVoiceActive, setIsVoiceActive] = useState(false);
-  const [elapsed, setElapsed]             = useState(0);
-
-  useEffect(() => {
-    if (!isVoiceActive) { setElapsed(0); return; }
-    const id = setInterval(() => setElapsed(s => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [isVoiceActive]);
-
   const handleVoiceActiveChange = useCallback((active: boolean) => setIsVoiceActive(active), []);
 
   return (
@@ -207,35 +196,11 @@ export default function InterviewPage() {
             transition={{ duration: 0.45, ease: EASE }}
             className="mb-10"
           >
-            {/* Live session strip (no box, floating on background) */}
-            <AnimatePresence>
-              {isVoiceActive && (
-                <motion.div
-                  key="live-strip"
-                  initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                  transition={SPRING}
-                  className="flex items-center justify-between mb-4 px-4 py-2.5 rounded-xl bg-rose-500/5 border border-rose-500/15"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <motion.div className="w-2 h-2 rounded-full bg-rose-600"
-                      animate={{ scale: [1, 1.5, 1], opacity: [1, 0.4, 1] }}
-                      transition={{ duration: 1.4, repeat: Infinity }} />
-                    <span className="text-[11px] font-semibold text-rose-600">Recording</span>
-                  </div>
-                  <span className="text-[13px] font-mono tabular-nums font-bold text-rose-600">
-                    {fmt(elapsed)}
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <VoiceInterview
-              onActiveChange={handleVoiceActiveChange}
-            />
+            <VoiceInterview onActiveChange={handleVoiceActiveChange} />
           </motion.div>
 
           {/* Divider */}
-          <div className="flex items-center gap-4 mb-10">
+          <div className="flex items-center gap-4 mb-10" hidden={isVoiceActive}>
             <div className="flex-1 h-px bg-border" />
             <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-muted-foreground/60">
               or practice with text
@@ -243,8 +208,9 @@ export default function InterviewPage() {
             <div className="flex-1 h-px bg-border" />
           </div>
 
-          {/* ── Text mode ── */}
+          {/* ── Text mode (paused while a voice interview is live) ── */}
           <motion.div
+            hidden={isVoiceActive}
             initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.16, duration: 0.4, ease: EASE }}
           >
