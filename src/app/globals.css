@@ -93,9 +93,9 @@
   --destructive:            #e5484d;
   --destructive-foreground: #fffcfc;
 
-  /* Borders & inputs: Slate-6 #d9d9e0 */
-  --border: #d9d9e0;
-  --input:  #d9d9e0;
+  /* Borders: lighter hairline for a crisp app-surface look */
+  --border: #e6e6eb;
+  --input:  #dcdce2;
   --ring:   #12a594;
 
   /* Charts */

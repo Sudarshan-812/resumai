@@ -1,18 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import VivaLogo from "@/components/branding/VivaLogo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  SquaresFour as LayoutDashboard, ClockCounterClockwise as History, FileText, PencilLine as PenLine,
-  ChartBar as BarChart3, CreditCard, Gear as Settings, SignOut as LogOut,
-  List as Menu, CaretRight as ChevronRight, Lightning as Zap,
-  SidebarSimple as PanelLeftClose, GitBranch,
+  SquaresFour, ClockCounterClockwise, FileText, PencilLine,
+  Microphone, GitBranch, CreditCard, GearSix, SignOut,
+  List, Plus, SidebarSimple, CaretUpDown, Coins,
 } from "@phosphor-icons/react";
 import { createClient } from "@/app/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import VivaLogo from "@/components/branding/VivaLogo";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface UserProfile {
   name: string;
@@ -22,126 +25,184 @@ interface UserProfile {
   avatarUrl?: string;
 }
 
-const NAV_SECTIONS = [
+type NavItem = { id: string; label: string; href: string; icon: React.ElementType };
+
+const NAV_SECTIONS: { label: string; items: NavItem[] }[] = [
   {
-    label: "Main",
+    label: "Workspace",
     items: [
-      { id: "dashboard",   label: "Dashboard",    href: "/dashboard",            icon: LayoutDashboard },
-      { id: "history",     label: "History",       href: "/history",              icon: History         },
-      { id: "resumes",     label: "My Resumes",    href: "/dashboard/resumes",    icon: FileText        },
+      { id: "dashboard", label: "Overview",     href: "/dashboard",         icon: SquaresFour },
+      { id: "resumes",   label: "Resumes",      href: "/dashboard/resumes", icon: FileText },
+      { id: "history",   label: "History",      href: "/history",           icon: ClockCounterClockwise },
     ],
   },
   {
     label: "AI Tools",
     items: [
-      { id: "cover-letter", label: "Cover Letter",    href: "/dashboard/cover-letter", icon: PenLine    },
-      { id: "interview",    label: "Interview Prep",  href: "/dashboard/interview",    icon: BarChart3  },
-      { id: "versions",     label: "Resume Versions", href: "/dashboard/versions",     icon: GitBranch  },
-    ],
-  },
-  {
-    label: "Account",
-    items: [
-      { id: "billing",  label: "Credits & Billing", href: "/billing",  icon: CreditCard },
-      { id: "settings", label: "Settings",           href: "/settings", icon: Settings   },
+      { id: "interview",    label: "Mock Interview",  href: "/dashboard/interview",    icon: Microphone },
+      { id: "cover-letter", label: "Cover Letter",    href: "/dashboard/cover-letter", icon: PencilLine },
+      { id: "versions",     label: "Versions",        href: "/dashboard/versions",     icon: GitBranch },
     ],
   },
 ];
 
-function UserAvatar({ profile, size = "sm" }: { profile: UserProfile | null; size?: "sm" | "md" }) {
-  const dim = size === "md" ? "w-9 h-9 text-sm" : "w-8 h-8 text-xs";
+const PAGE_TITLES: Record<string, string> = {
+  dashboard: "Overview",
+  resumes: "Resumes",
+  history: "History",
+  interview: "Mock Interview",
+  "cover-letter": "Cover Letter",
+  versions: "Versions",
+  billing: "Billing",
+  settings: "Settings",
+};
+
+function Avatar({ profile, size = 28 }: { profile: UserProfile | null; size?: number }) {
   return (
-    <div
-      className={cn("rounded-full overflow-hidden flex items-center justify-center font-bold shrink-0 select-none text-white ring-2 ring-white/60", dim)}
-      style={{ background: !profile?.avatarUrl ? "#12a594" : undefined }}
+    <span
+      className="rounded-full overflow-hidden flex items-center justify-center font-semibold shrink-0 select-none text-white bg-primary"
+      style={{ width: size, height: size, fontSize: size * 0.4 }}
     >
       {profile?.avatarUrl
-        ? <img src={profile.avatarUrl} alt={profile.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-        : (profile?.initial ?? "U")
-      }
-    </div>
+        // eslint-disable-next-line @next/next/no-img-element
+        ? <img src={profile.avatarUrl} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+        : (profile?.initial ?? "U")}
+    </span>
+  );
+}
+
+function AccountMenu({
+  profile, collapsed, onSignOut, onNavigate,
+}: {
+  profile: UserProfile | null;
+  collapsed: boolean;
+  onSignOut: () => void;
+  onNavigate: () => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className={cn(
+            "flex items-center rounded-md hover:bg-black/[0.045] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+            collapsed ? "w-9 h-9 justify-center" : "w-full h-11 gap-2.5 px-1.5"
+          )}
+        >
+          <Avatar profile={profile} size={collapsed ? 26 : 28} />
+          {!collapsed && (
+            <>
+              <span className="flex-1 min-w-0 text-left">
+                <span className="block text-[13px] font-medium text-foreground truncate leading-tight">
+                  {profile?.name ?? "Account"}
+                </span>
+                <span className="block text-[11px] text-muted-foreground truncate leading-tight">
+                  {profile?.email ?? ""}
+                </span>
+              </span>
+              <CaretUpDown size={14} className="text-muted-foreground shrink-0" />
+            </>
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        side={collapsed ? "right" : "top"}
+        align={collapsed ? "end" : "start"}
+        sideOffset={8}
+        className="w-56 rounded-xl p-1"
+      >
+        <DropdownMenuLabel className="px-2 py-1.5">
+          <p className="text-[13px] font-medium text-foreground truncate">{profile?.name ?? "Account"}</p>
+          <p className="text-[11px] text-muted-foreground truncate">{profile?.email ?? ""}</p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="rounded-lg px-2 py-1.5 cursor-pointer">
+          <Link href="/settings" onClick={onNavigate} className="flex items-center gap-2 w-full">
+            <GearSix size={15} />Settings
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="rounded-lg px-2 py-1.5 cursor-pointer">
+          <Link href="/billing" onClick={onNavigate} className="flex items-center gap-2 w-full">
+            <CreditCard size={15} />Billing
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={onSignOut}
+          className="rounded-lg px-2 py-1.5 cursor-pointer"
+        >
+          <SignOut size={15} />Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
 function SidebarContent({
-  profile, activeId, collapsed, onNavigate, onSignOut, signingOut, onToggleCollapse,
+  profile, activeId, collapsed, onNavigate, onSignOut, onToggleCollapse,
 }: {
   profile: UserProfile | null;
   activeId: string;
   collapsed: boolean;
   onNavigate: () => void;
   onSignOut: () => void;
-  signingOut: boolean;
   onToggleCollapse: () => void;
 }) {
   const lowCredits = (profile?.credits ?? 0) < 2;
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className={cn(
-        "flex items-center h-14 shrink-0",
-        collapsed ? "justify-center px-2" : "gap-2.5 px-4"
-      )}>
-        {collapsed ? (
-          <button onClick={onToggleCollapse} title="Expand sidebar">
-            <UserAvatar profile={profile} />
+      {/* Brand */}
+      <div className={cn("h-14 shrink-0 flex items-center", collapsed ? "justify-center px-2" : "px-4 justify-between")}>
+        <Link href="/dashboard" onClick={onNavigate} aria-label="Viva home" className="flex items-center">
+          {collapsed ? <VivaLogo variant="mark" height={24} /> : <VivaLogo height={26} />}
+        </Link>
+        {!collapsed && (
+          <button
+            onClick={onToggleCollapse}
+            title="Collapse sidebar"
+            className="hidden md:flex w-7 h-7 rounded-md items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/[0.045] transition-colors"
+          >
+            <SidebarSimple size={16} />
           </button>
-        ) : (
-          <>
-            <Link href="/dashboard" onClick={onNavigate} className="flex items-center gap-2.5 flex-1 min-w-0">
-              <UserAvatar profile={profile} size="md" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-semibold text-foreground truncate leading-tight">
-                  {profile?.name ?? "Loading…"}
-                </p>
-                <p className="text-[10px] text-muted-foreground truncate leading-tight">
-                  {profile?.email ?? ""}
-                </p>
-              </div>
-            </Link>
-            <button
-              onClick={onToggleCollapse}
-              title="Collapse sidebar"
-              className="w-8 h-8 rounded-xl flex items-center justify-center transition-colors shrink-0 text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
-            >
-              <PanelLeftClose size={18} />
-            </button>
-          </>
         )}
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 pt-3 pb-2 space-y-3.5">
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2.5 py-2">
         {NAV_SECTIONS.map((section) => (
-          <div key={section.label}>
-            {!collapsed && (
-              <p className="px-2.5 mb-1.5 text-[9.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground/50 whitespace-nowrap overflow-hidden">
+          <div key={section.label} className="mb-4 last:mb-0">
+            {collapsed ? (
+              <div className="h-px bg-border mx-1.5 mb-2" />
+            ) : (
+              <p className="px-2 mb-1 text-[10.5px] font-semibold uppercase tracking-[0.05em] text-muted-foreground/70">
                 {section.label}
               </p>
             )}
-            {collapsed && <div className="h-px bg-border/60 mb-2.5 mx-1" />}
             <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeId === item.id;
+                const active = activeId === item.id;
                 return (
                   <Link
                     key={item.id}
                     href={item.href}
                     onClick={onNavigate}
                     title={collapsed ? item.label : undefined}
+                    aria-current={active ? "page" : undefined}
                     className={cn(
-                      "flex items-center rounded-2xl text-[13px] font-medium transition-colors group overflow-hidden",
-                      collapsed ? "justify-center px-2.5 py-2" : "gap-3 px-3 py-2",
-                      isActive
-                        ? "bg-teal-500 text-white shadow-sm shadow-teal-500/25"
-                        : "text-muted-foreground hover:text-foreground hover:bg-black/[0.04]"
+                      "relative flex items-center h-8 rounded-md text-[13px] transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                      collapsed ? "justify-center px-2" : "gap-2.5 px-2",
+                      active
+                        ? "bg-black/[0.05] text-foreground font-medium"
+                        : "text-[#5b5d66] hover:text-foreground hover:bg-black/[0.035]"
                     )}
                   >
-                    <Icon size={20} weight={isActive ? "fill" : "regular"} className="shrink-0" />
-                    {!collapsed && <span className="leading-none flex-1 truncate">{item.label}</span>}
-                    {!collapsed && isActive && <ChevronRight size={14} className="text-white/70 shrink-0" />}
+                    {active && !collapsed && (
+                      <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-primary" />
+                    )}
+                    <Icon size={17} weight={active ? "fill" : "regular"} className={cn("shrink-0", active ? "text-foreground" : "text-[#8a8c94]")} />
+                    {!collapsed && <span className="truncate">{item.label}</span>}
                   </Link>
                 );
               })}
@@ -151,105 +212,52 @@ function SidebarContent({
       </nav>
 
       {/* Footer */}
-      <div className={cn("shrink-0", collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3 space-y-2")}>
-        {!collapsed && (
-          <Link
-            href="/billing"
-            onClick={onNavigate}
-            className="flex items-center justify-between px-3 py-2.5 rounded-2xl border border-border/70 bg-secondary hover:bg-border/40 transition-all text-[12px]"
-          >
-            <div className="flex items-center gap-2">
-              <Zap size={16} weight="fill" className="text-teal-500" />
-              <span className="font-medium text-foreground">Credits</span>
-            </div>
-            <span className={cn("font-bold tabular-nums", lowCredits ? "text-amber-500" : "text-foreground")}>
-              {profile?.credits ?? "-"}
-            </span>
-          </Link>
-        )}
-
-        {collapsed && (
-          <Link href="/billing" onClick={onNavigate} title="Credits & Billing"
-            className="w-10 h-10 flex items-center justify-center rounded-2xl transition-colors text-muted-foreground hover:text-foreground hover:bg-black/[0.04]">
-            <Zap size={18} weight="fill" className="text-teal-500" />
-          </Link>
-        )}
-
-        <button
-          onClick={onSignOut}
-          disabled={signingOut}
-          title="Sign out"
+      <div className={cn("shrink-0 border-t border-border", collapsed ? "p-2 flex flex-col items-center gap-1" : "p-2 space-y-0.5")}>
+        <Link
+          href="/billing"
+          onClick={onNavigate}
+          title={collapsed ? "Credits & Billing" : undefined}
           className={cn(
-            "flex items-center justify-center rounded-2xl transition-colors disabled:opacity-50 text-muted-foreground hover:text-rose-600 hover:bg-rose-50",
-            collapsed ? "w-10 h-10" : "w-full h-9 gap-2 text-[12px] font-medium"
+            "flex items-center rounded-md hover:bg-black/[0.045] transition-colors text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+            collapsed ? "w-9 h-9 justify-center" : "h-9 px-2 gap-2 justify-between"
           )}
         >
-          <LogOut size={16} />
-          {!collapsed && <span>Sign out</span>}
-        </button>
+          {collapsed ? (
+            <Coins size={17} className={lowCredits ? "text-amber-500" : "text-muted-foreground"} />
+          ) : (
+            <>
+              <span className="flex items-center gap-2 text-muted-foreground">
+                <Coins size={15} />
+                <span className="text-foreground">Credits</span>
+              </span>
+              <span className={cn("tabular-nums font-medium", lowCredits ? "text-amber-600" : "text-foreground")}>
+                {profile?.credits ?? "–"}
+              </span>
+            </>
+          )}
+        </Link>
+
+        <AccountMenu profile={profile} collapsed={collapsed} onSignOut={onSignOut} onNavigate={onNavigate} />
       </div>
     </div>
   );
 }
 
-function SignOutConfirmDialog({ open, onConfirm, onCancel }: { open: boolean; onConfirm: () => void; onCancel: () => void }) {
-  if (!open) return null;
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200] bg-black/20 backdrop-blur-sm"
-        onClick={onCancel}
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 8 }}
-        transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-        className="fixed z-[201] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm rounded-3xl border border-border bg-card p-6 shadow-2xl"
-      >
-        <div className="w-11 h-11 rounded-2xl bg-rose-50 flex items-center justify-center mb-4">
-          <LogOut size={22} className="text-rose-500" />
-        </div>
-        <h3 className="text-[15px] font-semibold text-foreground mb-1">Sign out?</h3>
-        <p className="text-sm text-muted-foreground mb-5">You'll need to sign in again to access your account.</p>
-        <div className="flex gap-2">
-          <button
-            onClick={onCancel}
-            className="flex-1 h-9 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="flex-1 h-9 rounded-xl bg-rose-500 hover:bg-rose-600 text-white text-sm font-semibold transition-colors"
-          >
-            Sign out
-          </button>
-        </div>
-      </motion.div>
-    </>
-  );
-}
-
 export default function DashboardShell({ children }: { children: React.ReactNode }) {
-  const [profile, setProfile]         = useState<UserProfile | null>(null);
-  const [mobileOpen, setMobileOpen]   = useState(false);
-  const [collapsed, setCollapsed]     = useState(false);
-  const [signingOut, setSigningOut]   = useState(false);
-  const [signOutConfirmOpen, setSignOutConfirmOpen] = useState(false);
+  const [profile, setProfile]       = useState<UserProfile | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed]   = useState(false);
   const pathname = usePathname();
   const router   = useRouter();
   const supabase = createClient();
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("sidebar-collapsed");
-      if (saved === "true") setCollapsed(true);
+      if (localStorage.getItem("sidebar-collapsed") === "true") setCollapsed(true);
     } catch {}
   }, []);
 
-  const handleToggleCollapse = () => {
+  const toggleCollapse = () => {
     setCollapsed((v) => {
       const next = !v;
       try { localStorage.setItem("sidebar-collapsed", String(next)); } catch {}
@@ -267,129 +275,121 @@ export default function DashboardShell({ children }: { children: React.ReactNode
         name,
         email: user.email ?? "",
         credits: data?.credits ?? 0,
-        initial: name[0]?.toUpperCase() ?? "U",
+        initial: (name[0] ?? "U").toUpperCase(),
         avatarUrl: user.user_metadata?.avatar_url || user.user_metadata?.picture,
       });
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleSignOutConfirm = async () => {
-    setSignOutConfirmOpen(false);
-    setSigningOut(true);
+  const handleSignOut = async () => {
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
   };
 
   useEffect(() => { setMobileOpen(false); }, [pathname]);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setMobileOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
-  const activeId = (() => {
-    if (pathname === "/dashboard")                  return "dashboard";
-    if (pathname.startsWith("/history"))            return "history";
-    if (pathname.startsWith("/dashboard/resumes"))  return "resumes";
-    if (pathname.startsWith("/dashboard/cover-letter")) return "cover-letter";
-    if (pathname.startsWith("/dashboard/interview")) return "interview";
-    if (pathname.startsWith("/dashboard/versions"))  return "versions";
-    if (pathname.startsWith("/billing"))            return "billing";
-    if (pathname.startsWith("/settings"))           return "settings";
-    return "dashboard";
-  })();
+  const activeId =
+    pathname === "/dashboard"                       ? "dashboard"
+    : pathname.startsWith("/dashboard/resumes")     ? "resumes"
+    : pathname.startsWith("/history")               ? "history"
+    : pathname.startsWith("/dashboard/cover-letter")? "cover-letter"
+    : pathname.startsWith("/dashboard/interview")   ? "interview"
+    : pathname.startsWith("/dashboard/versions")    ? "versions"
+    : pathname.startsWith("/billing")               ? "billing"
+    : pathname.startsWith("/settings")              ? "settings"
+    : pathname.startsWith("/dashboard/")            ? "report"
+    : "dashboard";
+
+  const pageTitle = PAGE_TITLES[activeId] ?? "Report";
 
   const sidebarProps = {
-    profile, activeId, collapsed,
+    profile, activeId,
     onNavigate: () => setMobileOpen(false),
-    onSignOut: () => setSignOutConfirmOpen(true),
-    signingOut,
-    onToggleCollapse: handleToggleCollapse,
+    onSignOut: handleSignOut,
+    onToggleCollapse: toggleCollapse,
   };
 
   return (
-    <>
+    <div className="flex h-dvh bg-white overflow-hidden">
+      {/* Desktop sidebar */}
+      <aside
+        className={cn(
+          "hidden md:flex flex-col shrink-0 border-r border-border bg-[#fbfbfc] transition-[width] duration-200 ease-out",
+          collapsed ? "w-[60px]" : "w-[236px]"
+        )}
+      >
+        <SidebarContent {...sidebarProps} collapsed={collapsed} />
+      </aside>
+
+      {/* Mobile drawer */}
       <AnimatePresence>
-        {signOutConfirmOpen && (
-          <SignOutConfirmDialog
-            open={signOutConfirmOpen}
-            onConfirm={handleSignOutConfirm}
-            onCancel={() => setSignOutConfirmOpen(false)}
-          />
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              onClick={() => setMobileOpen(false)}
+              className="fixed inset-0 z-40 bg-black/25 md:hidden"
+            />
+            <motion.aside
+              initial={{ x: -260 }} animate={{ x: 0 }} exit={{ x: -260 }}
+              transition={{ type: "spring", stiffness: 340, damping: 34 }}
+              className="fixed inset-y-0 left-0 z-50 w-[248px] flex flex-col border-r border-border bg-[#fbfbfc] md:hidden"
+            >
+              <SidebarContent {...sidebarProps} collapsed={false} />
+            </motion.aside>
+          </>
         )}
       </AnimatePresence>
 
-      <div className="flex h-screen bg-background overflow-hidden p-3 gap-3">
-        {/* Desktop floating glass sidebar */}
-        <aside className={cn(
-          "hidden md:flex flex-col shrink-0 rounded-[28px] border border-border bg-white shadow-[0_8px_32px_rgba(18,20,24,0.08)] transition-[width] duration-200 ease-out overflow-hidden",
-          collapsed ? "w-[76px]" : "w-[248px]"
-        )}>
-          <SidebarContent {...sidebarProps} />
-        </aside>
+      {/* Main column */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="h-14 shrink-0 flex items-center gap-3 px-4 md:px-6 border-b border-border bg-white">
+          <button
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+            className="md:hidden w-8 h-8 -ml-1.5 rounded-md flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/[0.045] transition-colors"
+          >
+            <List size={18} />
+          </button>
 
-        {/* Mobile overlay */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                onClick={() => setMobileOpen(false)}
-                className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm md:hidden"
-              />
-              <motion.aside
-                initial={{ x: -280 }} animate={{ x: 0 }} exit={{ x: -280 }}
-                transition={{ type: "spring", stiffness: 320, damping: 32 }}
-                className="fixed inset-y-3 left-3 z-50 w-64 flex flex-col rounded-[28px] border border-border/70 bg-white/90 backdrop-blur-2xl shadow-2xl md:hidden"
-              >
-                <SidebarContent {...sidebarProps} collapsed={false} onNavigate={() => setMobileOpen(false)} />
-              </motion.aside>
-            </>
+          {collapsed && (
+            <button
+              onClick={toggleCollapse}
+              aria-label="Expand sidebar"
+              className="hidden md:flex w-8 h-8 -ml-2 rounded-md items-center justify-center text-muted-foreground hover:text-foreground hover:bg-black/[0.045] transition-colors"
+            >
+              <SidebarSimple size={16} />
+            </button>
           )}
-        </AnimatePresence>
 
-        {/* Main content */}
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0 rounded-[28px] border border-border/70 bg-card">
-          {/* Top bar */}
-          <header className="h-16 shrink-0 flex items-center justify-between px-5 border-b border-border/70">
-            <div className="flex items-center gap-3 md:hidden">
-              <button
-                onClick={() => setMobileOpen((v) => !v)}
-                aria-label="Toggle sidebar"
-                className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors text-muted-foreground hover:text-foreground hover:bg-muted"
-              >
-                <Menu size={22} />
-              </button>
-              <Link href="/dashboard" className="flex items-center" aria-label="Viva home">
-                <VivaLogo height={28} />
-              </Link>
-            </div>
+          <div className="flex items-center gap-2 text-[13px] min-w-0">
+            <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">Viva</Link>
+            <span className="text-muted-foreground/40">/</span>
+            <span className="font-medium text-foreground truncate">{pageTitle}</span>
+          </div>
 
-            <div className="hidden md:flex items-center gap-1.5 text-[13px] text-muted-foreground">
-              <Link href="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
-              {pathname !== "/dashboard" && (
-                <>
-                  <ChevronRight size={14} />
-                  <span className="text-foreground font-medium capitalize">
-                    {pathname.split("/").filter(Boolean).slice(-1)[0]?.replace(/-/g, " ") ?? ""}
-                  </span>
-                </>
-              )}
-            </div>
+          <Link
+            href="/upload"
+            className="ml-auto shrink-0 inline-flex items-center gap-1.5 h-8 pl-2.5 pr-3 rounded-md text-[13px] font-medium text-white bg-primary hover:bg-[#0f9184] transition-colors"
+          >
+            <Plus size={14} weight="bold" />
+            <span className="hidden sm:inline">New analysis</span>
+            <span className="sm:hidden">New</span>
+          </Link>
+        </header>
 
-            <div className="flex items-center gap-2">
-              <Link
-                href="/billing"
-                className="md:hidden flex items-center gap-1.5 h-8 px-3 rounded-full text-[11px] font-bold border border-border bg-background text-muted-foreground"
-              >
-                <Zap size={14} weight="fill" className="text-teal-500" />
-                {profile?.credits ?? "-"}
-              </Link>
-            </div>
-          </header>
-
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
-        </div>
+        <main className="flex-1 overflow-y-auto bg-white">
+          {children}
+        </main>
       </div>
-    </>
+    </div>
   );
 }

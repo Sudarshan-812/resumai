@@ -49,20 +49,12 @@ export default async function DashboardPage() {
     ? Math.round(recentResumes.reduce((acc, r) => acc + (r.ats_score ?? 0), 0) / recentResumes.length)
     : 0;
 
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long", day: "numeric", month: "long", year: "numeric",
-  });
-
   return (
     <DashboardClient
       user={user}
       profile={profile}
       recentResumes={recentResumes}
-      today={today}
-      stats={{
-        totalScans: totalScansCount,
-        avgScore
-      }}
+      stats={{ totalScans: totalScansCount, avgScore }}
     />
   );
 }

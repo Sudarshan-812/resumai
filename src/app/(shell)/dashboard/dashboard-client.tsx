@@ -1,22 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  FileText, ArrowUpRight, Plus, CaretRight as ChevronRight, CloudArrowUp as UploadCloud,
-  Microphone as Mic, PencilLine as PenLine, Scan as ScanLine, Coins,
+  FileText, ArrowRight, ArrowUpRight, Microphone, PencilLine, UploadSimple,
 } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
-import { SpotlightCard } from "@/components/dashboard/spotlight-card";
-import { AuroraBackground } from "@/components/dashboard/aurora-background";
 
 interface DashboardClientProps {
-  user: {
-    email?: string;
-    user_metadata?: { avatar_url?: string; picture?: string };
-  };
+  user: { email?: string; user_metadata?: { avatar_url?: string; picture?: string } };
   profile: { full_name?: string | null; credits?: number | null } | null;
-  today: string;
   recentResumes: Array<{
     id: string;
     file_name: string;
@@ -27,291 +18,164 @@ interface DashboardClientProps {
   stats: { totalScans: number; avgScore: number };
 }
 
-const EASE = [0.16, 1, 0.3, 1] as const;
+const scoreTone = (s: number) =>
+  s >= 75 ? { text: "text-emerald-600", dot: "bg-emerald-500", label: "Strong" }
+  : s >= 55 ? { text: "text-amber-600", dot: "bg-amber-500", label: "Fair" }
+  : s > 0 ? { text: "text-rose-600", dot: "bg-rose-500", label: "Weak" }
+  : { text: "text-muted-foreground", dot: "bg-muted-foreground/30", label: "—" };
 
-function AvgScoreRing({ score }: { score: number }) {
-  const hasData = score > 0;
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const [dashOffset, setDashOffset] = useState(circumference);
-
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setDashOffset(circumference - (score / 100) * circumference);
-    }, 150);
-    return () => clearTimeout(t);
-  }, [score, circumference]);
-
-  const colorClass = !hasData
-    ? "text-muted-foreground/30"
-    : score >= 70 ? "text-emerald-500"
-    : score >= 50 ? "text-amber-500"
-    : "text-rose-500";
-
+function StatTile({ label, value, hint, hintClass = "text-muted-foreground" }: {
+  label: string; value: React.ReactNode; hint?: React.ReactNode; hintClass?: string;
+}) {
   return (
-    <div className="relative shrink-0 flex items-center justify-center" style={{ width: 72, height: 72 }}>
-      <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/60" />
-        <circle
-          cx="50" cy="50" r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={dashOffset}
-          className={colorClass}
-          style={{ transition: "stroke-dashoffset 1.3s cubic-bezier(0.16,1,0.3,1)" }}
-        />
-      </svg>
-      <div className="absolute flex flex-col items-center">
-        <span className={`text-lg font-bold tabular-nums leading-none ${hasData ? "text-foreground" : "text-muted-foreground/40"}`}>
-          {hasData ? score : "-"}
-        </span>
-        <span className="mt-0.5 text-[8px] font-bold uppercase tracking-wider text-muted-foreground/60">avg</span>
-      </div>
+    <div className="rounded-lg border border-border p-4">
+      <p className="text-[12px] text-muted-foreground">{label}</p>
+      <p className="mt-1.5 text-[26px] font-semibold tabular-nums tracking-tight text-foreground leading-none">
+        {value}
+      </p>
+      {hint != null && <p className={`mt-2 text-[12px] ${hintClass}`}>{hint}</p>}
     </div>
   );
 }
 
-const AI_TOOLS = [
-  { key: "cover-letter", icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
-  { key: "interview", icon: Mic, label: "Mock Interview", sub: "Voice or text - free", href: "/dashboard/interview" },
-] as const;
+const TOOLS = [
+  { label: "Mock Interview", sub: "Voice or text · free", href: "/dashboard/interview", icon: Microphone },
+  { label: "Cover Letter", sub: "Tailored to the job", href: "/dashboard/cover-letter", icon: PencilLine },
+  { label: "Upload resume", sub: "Run a new analysis", href: "/upload", icon: UploadSimple },
+];
 
-export default function DashboardClient({ user, profile, today, recentResumes, stats }: DashboardClientProps) {
-  const userName  = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
-  const credits   = profile?.credits ?? 0;
+export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
+  const userName = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
+  const credits = profile?.credits ?? 0;
   const { totalScans, avgScore } = stats;
+  const bestScore = recentResumes.reduce((m, r) => Math.max(m, r.ats_score ?? 0), 0);
+  const avgTone = scoreTone(avgScore);
 
   return (
-    <div className="min-h-full bg-background">
-      <div className="max-w-5xl mx-auto px-6 md:px-10 py-10 md:py-14">
+    <div className="mx-auto max-w-6xl px-6 md:px-8 py-8">
 
-        {/* ── Header ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: EASE }}
-          className="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-10 rounded-3xl overflow-hidden px-6 py-8 border border-border"
-        >
-          <AuroraBackground className="opacity-70" />
-          <div className="relative z-10 flex items-center gap-5">
-            <AvgScoreRing score={avgScore} />
-            <div>
-              <p className="text-[11px] font-mono uppercase tracking-[0.18em] mb-1.5 text-muted-foreground">
-                {today}
-              </p>
-              <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-foreground">
-                Good to see you, {userName}.
-              </h1>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {totalScans > 0
-                  ? `Averaging ${avgScore}/100 across ${totalScans} ${totalScans === 1 ? "analysis" : "analyses"}.`
-                  : "Run your first analysis to see your ATS score here."}
-              </p>
-            </div>
+      {/* Header */}
+      <div className="mb-7">
+        <h1 className="text-[22px] font-semibold tracking-tight text-foreground">
+          {totalScans > 0 ? `Welcome back, ${userName}` : `Welcome, ${userName}`}
+        </h1>
+        <p className="mt-1 text-[13px] text-muted-foreground">
+          {totalScans > 0
+            ? `You've run ${totalScans} ${totalScans === 1 ? "analysis" : "analyses"}. Here's where things stand.`
+            : "Upload a resume and a job description to get your first ATS match score."}
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <StatTile label="Analyses run" value={totalScans} hint="all time" />
+        <StatTile
+          label="Average score"
+          value={avgScore > 0 ? <>{avgScore}<span className="text-[15px] font-normal text-muted-foreground">/100</span></> : "—"}
+          hint={avgScore > 0
+            ? <span className="inline-flex items-center gap-1.5"><span className={`w-1.5 h-1.5 rounded-full ${avgTone.dot}`} />{avgTone.label}</span>
+            : "no data yet"}
+        />
+        <StatTile
+          label="Best score"
+          value={bestScore > 0 ? <>{bestScore}<span className="text-[15px] font-normal text-muted-foreground">/100</span></> : "—"}
+          hint={bestScore > 0 ? "top result" : "no data yet"}
+        />
+        <StatTile
+          label="Credits"
+          value={credits}
+          hint={credits <= 1
+            ? <Link href="/billing" className="text-primary hover:underline font-medium">Add credits →</Link>
+            : "remaining"}
+          hintClass={credits <= 1 ? "" : "text-muted-foreground"}
+        />
+      </div>
+
+      {/* Two columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-6 items-start">
+
+        {/* Recent analyses */}
+        <section className="rounded-lg border border-border overflow-hidden">
+          <div className="flex items-center justify-between px-4 h-12 border-b border-border">
+            <h2 className="text-[13px] font-medium text-foreground">Recent analyses</h2>
+            {recentResumes.length > 0 && (
+              <Link href="/history" className="group inline-flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors">
+                View all
+                <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            )}
           </div>
 
-          <Link href="/upload" className="relative z-10 shrink-0">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 400, damping: 25 }}
-              className="inline-flex items-center gap-2 h-11 px-5 rounded-xl text-sm font-semibold text-white bg-primary shadow-lg shadow-primary/20 shrink-0"
-            >
-              <Plus size={18} weight="bold" />
-              New analysis
-            </motion.button>
-          </Link>
-        </motion.div>
-
-        {/* ── Stats ── */}
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.08, duration: 0.45, ease: EASE }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"
-        >
-          {(
-            [
-              { icon: ScanLine, label: "Analyses", value: totalScans, note: "total run", action: null as React.ReactNode },
-              {
-                icon: Coins,
-                label: "Credits",
-                value: credits,
-                note: credits <= 1 ? "top up soon" : "remaining",
-                action: (
-                  <Link href="/billing" className="text-[10px] font-bold tracking-wide text-primary transition-colors">
-                    Top up →
-                  </Link>
-                ),
-              },
-            ]
-          ).map((m, i) => (
-            <SpotlightCard key={i} className="px-5 py-5">
-              <div className="flex items-start justify-between mb-4">
-                <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 border border-primary/15">
-                  <m.icon size={23} className="text-primary" />
-                </div>
+          {recentResumes.length === 0 ? (
+            <div className="flex flex-col items-center text-center px-6 py-14">
+              <div className="w-10 h-10 rounded-lg border border-border flex items-center justify-center mb-3">
+                <FileText size={18} className="text-muted-foreground" />
               </div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1.5 text-muted-foreground">
-                {m.label}
+              <p className="text-[13px] font-medium text-foreground">No analyses yet</p>
+              <p className="mt-1 text-[12px] text-muted-foreground max-w-[220px]">
+                Upload a resume and paste a job description to see your ATS score.
               </p>
-              <p className="text-4xl font-bold tracking-tight tabular-nums leading-none mb-2 text-foreground">
-                {m.value}
-              </p>
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-[11px] text-muted-foreground">{m.note}</p>
-                {m.action}
-              </div>
-            </SpotlightCard>
-          ))}
-        </motion.div>
-
-        {/* ── Main grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6 lg:gap-10 items-start">
-
-          {/* Left - Recent analyses */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.16, duration: 0.45, ease: EASE }}
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[11px] font-mono uppercase tracking-[0.15em] text-muted-foreground">
-                Recent Analyses
-              </h2>
-              {recentResumes.length > 0 && (
-                <Link
-                  href="/resumes"
-                  className="group flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  View all
-                  <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                </Link>
-              )}
+              <Link
+                href="/upload"
+                className="mt-4 inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[13px] font-medium text-white bg-primary hover:bg-[#0f9184] transition-colors"
+              >
+                <UploadSimple size={14} />
+                Upload resume
+              </Link>
             </div>
+          ) : (
+            <ul>
+              {recentResumes.map((r) => {
+                const score = r.ats_score ?? 0;
+                const tone = scoreTone(score);
+                return (
+                  <li key={r.id} className="border-b border-border last:border-0">
+                    <Link href={`/dashboard/${r.id}`} className="group flex items-center gap-3 px-4 h-[52px] hover:bg-[#f8f8f9] transition-colors">
+                      <FileText size={16} className="text-muted-foreground shrink-0" />
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-[13px] font-medium text-foreground truncate leading-tight" title={r.file_name}>
+                          {r.file_name.replace(/\.pdf$/i, "")}
+                        </span>
+                        <span className="block text-[11.5px] text-muted-foreground leading-tight mt-0.5">{r.dateLabel}</span>
+                      </span>
+                      <span className="flex items-center gap-1.5 shrink-0">
+                        <span className={`w-1.5 h-1.5 rounded-full ${tone.dot}`} />
+                        <span className={`text-[13px] font-semibold tabular-nums ${tone.text}`}>
+                          {score > 0 ? score : "—"}
+                        </span>
+                      </span>
+                      <ArrowUpRight size={14} className="text-muted-foreground/50 shrink-0 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
 
-            {recentResumes.length === 0 ? (
-              <EmptyState />
-            ) : (
-              <div className="rounded-2xl overflow-hidden border border-border bg-card">
-                {recentResumes.map((r, i) => {
-                  const score = r.ats_score ?? 0;
-                  const scoreColor =
-                    score >= 75 ? "text-emerald-600"
-                    : score >= 55 ? "text-amber-600"
-                    : score > 0  ? "text-rose-600"
-                    : "text-muted-foreground/50";
-
-                  return (
-                    <div
-                      key={r.id}
-                      className={i < recentResumes.length - 1 ? "border-b border-border" : undefined}
-                    >
-                      <Link
-                        href={`/dashboard/${r.id}`}
-                        className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/50"
-                      >
-                        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border">
-                          <FileText size={18} className="text-muted-foreground" />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate leading-none mb-1 text-foreground" title={r.file_name}>
-                            {r.file_name.replace(/\.pdf$/i, "")}
-                          </p>
-                          <p className="text-[11px] font-mono text-muted-foreground/70">
-                            {r.dateLabel}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className={`text-sm font-bold tabular-nums ${scoreColor}`}>
-                            {score > 0 ? score : "-"}
-                            {score > 0 && <span className="text-[11px] font-normal ml-0.5 text-muted-foreground/70">/100</span>}
-                          </span>
-                          <ArrowUpRight
-                            size={16}
-                            className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-muted-foreground/70"
-                          />
-                        </div>
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </motion.div>
-
-          {/* Right - AI tools */}
-          <motion.aside
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.22, duration: 0.45, ease: EASE }}
-          >
-            <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3 text-muted-foreground">
-              AI Tools
-            </p>
-            <div className="rounded-2xl overflow-hidden border border-border bg-card">
-              {AI_TOOLS.map(({ key, icon: Icon, label, sub, href }, i) => (
-                <Link
-                  key={key}
-                  href={href}
-                  className={`group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/50 ${
-                    i < AI_TOOLS.length - 1 ? "border-b border-border" : ""
-                  }`}
-                >
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/15">
-                    <Icon size={18} className="text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] font-medium leading-none mb-0.5 text-foreground">{label}</p>
-                    <p className="text-[11px] text-muted-foreground">{sub}</p>
-                  </div>
-                  <ArrowUpRight
-                    size={14}
-                    className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 text-muted-foreground/70"
-                  />
-                </Link>
-              ))}
-            </div>
-          </motion.aside>
-        </div>
+        {/* Tools */}
+        <aside>
+          <h2 className="text-[13px] font-medium text-foreground mb-2">Tools</h2>
+          <div className="rounded-lg border border-border overflow-hidden">
+            {TOOLS.map(({ label, sub, href, icon: Icon }, i) => (
+              <Link
+                key={label}
+                href={href}
+                className={`group flex items-center gap-3 px-3.5 py-3 hover:bg-[#f8f8f9] transition-colors ${i < TOOLS.length - 1 ? "border-b border-border" : ""}`}
+              >
+                <span className="w-8 h-8 rounded-md border border-border flex items-center justify-center shrink-0">
+                  <Icon size={16} className="text-foreground" />
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block text-[13px] font-medium text-foreground leading-tight">{label}</span>
+                  <span className="block text-[11.5px] text-muted-foreground leading-tight mt-0.5">{sub}</span>
+                </span>
+                <ArrowUpRight size={13} className="text-muted-foreground/50 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Link>
+            ))}
+          </div>
+        </aside>
       </div>
     </div>
-  );
-}
-
-function EmptyState() {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="relative rounded-2xl py-16 flex flex-col items-center text-center overflow-hidden border border-border bg-card"
-    >
-      <AuroraBackground className="opacity-50" />
-      <div className="relative z-10 flex flex-col items-center">
-        <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-muted border border-border">
-          <FileText size={24} className="text-muted-foreground/60" />
-        </div>
-        <p className="text-sm font-medium mb-1 text-foreground">No analyses yet</p>
-        <p className="text-[12px] mb-6 max-w-[200px] leading-relaxed text-muted-foreground">
-          Upload your first resume to get your ATS score.
-        </p>
-        <Link href="/upload">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 h-9 px-5 rounded-xl text-sm font-semibold text-white bg-primary"
-          >
-            <UploadCloud size={16} />
-            Upload resume
-          </motion.button>
-        </Link>
-      </div>
-    </motion.div>
   );
 }
