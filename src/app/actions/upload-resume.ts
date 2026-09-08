@@ -6,6 +6,7 @@ import { createClient } from '@/app/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { after } from 'next/server';
 import { chunkAndEmbedResume } from '@/app/lib/chunking';
+import { parseStructured } from '@/app/lib/structural-parse';
 import { render_page, looksLikeGarbledText } from '@/app/lib/pdf';
 import { sendAnalysisDoneEmail } from '@/app/lib/email';
 
@@ -110,7 +111,7 @@ export async function processResume(formData: FormData) {
     };
 
     // Try with calculated_yoe; fall back without it if the column doesn't exist yet
-    let { error: analysisError } = await supabase
+    const { error: analysisError } = await supabase
       .from('analyses')
       .insert({ ...baseAnalysisData, calculated_yoe: Math.round(analysis.inferred_yoe ?? 0) });
 
@@ -127,8 +128,12 @@ export async function processResume(formData: FormData) {
 
     // Background tasks: chunking + email notification - run after response is sent
     after(async () => {
+      // Optional: docling structural chunks when python-ingest is configured;
+      // null (default / on any failure) -> chunkAndEmbedResume uses the text path.
+      const structural = await parseStructured(buffer, file.name).catch(() => null);
+
       await Promise.allSettled([
-        chunkAndEmbedResume(resume.id, text, user.id).catch(err =>
+        chunkAndEmbedResume(resume.id, text, user.id, structural).catch(err =>
           console.error("[upload] background chunking failed:", err)
         ),
         user.email

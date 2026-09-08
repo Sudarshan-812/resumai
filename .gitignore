@@ -43,10 +43,11 @@ next-env.d.ts
 # unused/archived files
 /_unused
 
-# python (voice worker)
-python/__pycache__/
-python/.venv/
+# python (voice worker + ingest service)
+__pycache__/
+.venv/
 *.pyc
+*.egg-info/
 
 # Sentry Config File
 .env.sentry-build-plugin

@@ -1,5 +1,6 @@
 import { createClient } from "@/app/lib/supabase/server";
 import { getBatchEmbeddings, EMBEDDING_MODEL } from "@/app/lib/embedding";
+import type { StructuralChunk } from "@/app/lib/structural-parse";
 import "@/env";
 
 type ChunkType = "summary" | "experience" | "education" | "skills" | "project";
@@ -11,6 +12,8 @@ interface RawChunk {
    *  header-based splitting. Prepended to the embedded text as a breadcrumb so
    *  a bullet retrieved in isolation still carries its section context. */
   header: string | null;
+  /** Extras present only when the chunk came from the structural parser. */
+  meta?: { is_table?: boolean; confidence?: number; page_number?: number | null };
 }
 
 // Chunk-size controls (chars). Ported from Cortex's structural chunker.
@@ -76,6 +79,16 @@ function isSectionHeader(line: string): ChunkType | null {
     if (section.keywords.some((k) => lower === k || lower.startsWith(k) || lower.includes(k))) {
       return section.type;
     }
+  }
+  return null;
+}
+
+/** Map a structural parser's heading path to a resume section type. */
+function classifyByHeader(headers: string[]): ChunkType | null {
+  const joined = headers.filter(Boolean).join(" ").toLowerCase();
+  if (!joined) return null;
+  for (const section of SECTION_MAP) {
+    if (section.keywords.some((k) => joined.includes(k))) return section.type;
   }
   return null;
 }
@@ -202,6 +215,8 @@ function mergeSmall(chunks: RawChunk[]): RawChunk[] {
       prev &&
       prev.chunk_type === ck.chunk_type &&
       prev.header === ck.header &&
+      !prev.meta?.is_table &&
+      !ck.meta?.is_table &&
       prev.content.length < MIN_MERGE_CHARS &&
       prev.content.length + ck.content.length + 1 <= MAX_CHUNK_CHARS
     ) {
@@ -236,16 +251,40 @@ function splitIntoChunks(resumeText: string): RawChunk[] {
   return mergeSmall(raw.flatMap(splitOversized));
 }
 
+/** Convert structural-parser output into RawChunks (Strategy 0 - preferred when
+ *  the python-ingest service is enabled). Section type comes from the heading
+ *  path, falling back to content heuristics. */
+function structuralToChunks(structural: StructuralChunk[]): RawChunk[] {
+  const raw: RawChunk[] = structural
+    .map((c) => ({
+      content: c.text.trim(),
+      chunk_type: classifyByHeader(c.headers) ?? guessChunkType(c.text),
+      header: c.headers.filter(Boolean).join(" > ") || null,
+      meta: {
+        is_table: c.is_table,
+        confidence: c.confidence,
+        page_number: c.page_number,
+      },
+    }))
+    .filter((c) => c.content.length > 20);
+
+  return mergeSmall(raw.flatMap(splitOversized));
+}
+
 // ── Public export ──────────────────────────────────────────────────────────
 
 export async function chunkAndEmbedResume(
   resumeId: string,
   resumeText: string,
-  userId: string
+  userId: string,
+  structural?: StructuralChunk[] | null
 ): Promise<{ chunks_stored: number; error?: string }> {
   const supabase = await createClient();
 
-  const chunks = splitIntoChunks(resumeText);
+  const usedStructural = !!structural?.length;
+  const chunks = usedStructural
+    ? structuralToChunks(structural!)
+    : splitIntoChunks(resumeText);
   if (chunks.length === 0) {
     return { chunks_stored: 0, error: "No sections could be extracted from this resume." };
   }
@@ -275,6 +314,10 @@ export async function chunkAndEmbedResume(
         chars: chunk.content.length,
         header: chunk.header,
         headers: [chunk.chunk_type],
+        source: usedStructural ? "structural" : "text",
+        ...(chunk.meta?.is_table != null ? { is_table: chunk.meta.is_table } : {}),
+        ...(chunk.meta?.confidence != null ? { confidence: chunk.meta.confidence } : {}),
+        ...(chunk.meta?.page_number != null ? { page_number: chunk.meta.page_number } : {}),
       },
     }))
     .filter((row) => row.embedding !== null);
