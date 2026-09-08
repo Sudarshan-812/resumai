@@ -9,6 +9,7 @@ import {
 } from "@phosphor-icons/react";
 import { CoinLoader } from "@/components/ui/coin-loader";
 import VoiceInterview from "./VoiceInterview";
+import RecentPractice from "./RecentPractice";
 import { useInterviewState } from "./useInterviewState";
 import { NumberTicker } from "@/components/dashboard/number-ticker";
 import { AuroraBackground } from "@/components/dashboard/aurora-background";
@@ -547,6 +548,10 @@ export default function InterviewPage() {
 
             </AnimatePresence>
           </motion.div>
+
+          <div hidden={isVoiceActive}>
+            <RecentPractice />
+          </div>
 
           <div className="h-10" />
         </div>

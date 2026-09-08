@@ -22,8 +22,12 @@ const FAQS = [
     a: "The score uses a weighted rubric: 40 pts for keyword match with the JD, 25 pts for experience alignment (years and seniority), 20 pts for demonstrated skills in context, and 15 pts for ATS-safe formatting. This mirrors how enterprise ATS systems like Workday and Greenhouse rank candidates.",
   },
   {
+    q: "How does the copilot avoid making things up about my resume?",
+    a: "Every question runs a retrieval pipeline before the model answers: a hybrid search (semantic embeddings + keyword BM25, fused with Reciprocal Rank Fusion) pulls the relevant resume sections, an LLM re-ranks them, and a corrective step re-searches if the set looks weak. The model is told to answer only from those sections and the full resume text, to cite each one inline as [S1], [S2], and to say it doesn't see something rather than invent it.",
+  },
+  {
     q: "Is the AI mock interview free?",
-    a: "Yes. The voice and text mock interviews are free and unlimited for every account, and they never use credits. Credits are only for resume analyses.",
+    a: "Yes. The voice and text mock interviews are free and unlimited for every account, and they never use credits. Before a voice interview, the interviewer is handed a brief built from your ATS analysis - your score, missing keywords, and the resume sections that matter for that job - so it probes your actual gaps. Every session is scored and saved to your interview history.",
   },
   {
     q: "How does pricing work?",

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import { ChartBar as BarChart3, MagicWand as Wand2, Microphone as Mic, FileText, ClockCounterClockwise as History } from "@phosphor-icons/react";
+import { ChartBar as BarChart3, MagicWand as Wand2, Microphone as Mic, FileText, ClockCounterClockwise as History, ChatCircleText as ChatCircle } from "@phosphor-icons/react";
 import DotGrid from "@/app/components/landing/DotGrid";
 
 const FEATURES = [
@@ -10,11 +10,19 @@ const FEATURES = [
     icon: Mic,
     title: "Voice Mock Interview",
     flagship: true,
-    desc: "A real spoken interview generated from your resume and the target job. It asks the hard follow-ups, you answer out loud, and you get a written summary of what worked and what to fix. Free and unlimited.",
-    tags: ["Spoken", "Resume-aware"],
+    desc: "A real spoken interview over WebRTC. The interviewer is briefed on your ATS analysis - your score, your gaps, the sections that matter for this job - and runs a phased plan with pointed follow-ups on every vague answer. You get a scored summary, saved to your history. Free and unlimited.",
+    tags: ["Spoken", "Briefed on your analysis"],
   },
   {
     num: "02",
+    icon: ChatCircle,
+    title: "Grounded Resume Copilot",
+    flagship: false,
+    desc: "Chat with your resume. Hybrid search (semantic + keyword) pulls the sections that matter, an LLM re-ranks them, and every answer cites what it's quoting as [S1], [S2]. It coaches from your real lines - and says \"I don't see that\" instead of inventing experience.",
+    tags: ["Hybrid retrieval", "Cited answers"],
+  },
+  {
+    num: "03",
     icon: BarChart3,
     title: "ATS Match Score",
     flagship: false,
@@ -22,7 +30,7 @@ const FEATURES = [
     tags: ["Keyword match", "Formatting check"],
   },
   {
-    num: "03",
+    num: "04",
     icon: Wand2,
     title: "Bullet Rewrites",
     flagship: false,
@@ -30,7 +38,7 @@ const FEATURES = [
     tags: ["Action verbs", "Quantified impact"],
   },
   {
-    num: "04",
+    num: "05",
     icon: FileText,
     title: "Cover Letter Generator",
     flagship: false,
@@ -38,12 +46,12 @@ const FEATURES = [
     tags: ["Role-specific", "Job-mapped"],
   },
   {
-    num: "05",
+    num: "06",
     icon: History,
-    title: "Saved Reports & Versions",
+    title: "Reports & Interview History",
     flagship: false,
-    desc: "Every analysis is saved. Compare scores across rewrites and roles so you can watch your resume get stronger over time.",
-    tags: ["Version tracking", "Score history"],
+    desc: "Every analysis and every mock interview is saved. Compare scores across rewrites and roles, and pick up the question you were told to re-practise.",
+    tags: ["Version tracking", "Interview history"],
   },
 ] as const;
 

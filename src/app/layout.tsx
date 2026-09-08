@@ -19,14 +19,14 @@ const outfit = Outfit({
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://column8.io";
 
 export const metadata: Metadata = {
-  title: "Viva - Resume Scoring + AI Mock Interviews",
+  title: "Viva - Retrieval-grounded resume intelligence + voice AI interviews",
   description:
-    "Score your resume against any job in seconds, see exactly which keywords you're missing, then rehearse a spoken AI mock interview built from your resume and that job description.",
+    "Score your resume against any job, then question it: a copilot that retrieves and cites your real lines instead of guessing, and a spoken AI interviewer briefed on the gaps your analysis found.",
   metadataBase: new URL(SITE_URL),
   openGraph: {
-    title: "Viva - Beat the ATS, then rehearse the interview",
+    title: "Viva - Grounded resume copilot + a voice AI interviewer briefed on your analysis",
     description:
-      "Get your resume's match score in seconds, fix the keyword gaps, and practice out loud with an AI interviewer that has read your resume and the job.",
+      "Hybrid retrieval + re-ranking so the copilot coaches from your real resume, not a hallucination. Then a spoken mock interview that probes the gaps your ATS analysis found.",
     url: SITE_URL,
     siteName: "Viva",
     images: [{ url: "/og.png", width: 1200, height: 630, alt: "Viva" }],
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Viva - Beat the ATS, then rehearse the interview",
+    title: "Viva - Grounded resume copilot + voice AI interviews",
     description:
-      "Resume match score in seconds, keyword gaps fixed, and a spoken AI mock interview built from your resume and the job.",
+      "Retrieval-grounded, cited answers about your resume. Plus a spoken AI interviewer briefed on your ATS gaps.",
     images: ["/og.png"],
   },
 };

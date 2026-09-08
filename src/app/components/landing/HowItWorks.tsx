@@ -22,9 +22,9 @@ const STEPS = [
   {
     num: "03",
     icon: Download,
-    title: "Fix, export, re-scan",
-    desc: "Apply the rewrites, clear the flagged formatting, and export a clean copy. Re-scan to watch the score climb before you hit submit.",
-    tag: "PDF export",
+    title: "Question it, then rehearse",
+    desc: "Chat with the copilot - it retrieves and cites your real lines. Then run a spoken mock interview whose interviewer is briefed on the same analysis. Fix, re-scan, repeat.",
+    tag: "Copilot + voice interview",
   },
 ] as const;
 
@@ -132,7 +132,7 @@ export default function HowItWorks() {
           className="text-center text-sm mb-8"
           style={{ color: "#60646c" }}
         >
-          Then run a spoken AI mock interview built from the same resume and job -{" "}
+          The copilot and the voice interviewer both run on the same retrieval pipeline -{" "}
           <span className="font-semibold" style={{ color: "#1c2024" }}>free, no credits</span>.
         </motion.p>
 

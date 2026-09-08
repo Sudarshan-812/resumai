@@ -295,7 +295,7 @@ function MarkdownText({ text }: { text: string }) {
 }
 
 function renderInline(text: string): React.ReactNode {
-  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\[S\d+\])/g);
   return (
     <>
       {parts.map((part, i) => {
@@ -303,6 +303,16 @@ function renderInline(text: string): React.ReactNode {
           return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
         if (part.startsWith("`") && part.endsWith("`"))
           return <code key={i} className="bg-muted px-1.5 py-0.5 rounded text-[11px] font-mono">{part.slice(1, -1)}</code>;
+        if (/^\[S\d+\]$/.test(part))
+          return (
+            <sup
+              key={i}
+              title="Grounded in a section retrieved from your resume"
+              className="mx-0.5 inline-flex items-center rounded bg-primary/10 px-1 py-px text-[9.5px] font-semibold text-primary align-super"
+            >
+              {part.slice(1, -1)}
+            </sup>
+          );
         return <span key={i}>{part}</span>;
       })}
     </>

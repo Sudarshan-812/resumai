@@ -96,7 +96,7 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
               className="text-[10px] font-semibold uppercase tracking-[0.22em]"
               style={{ color: "#80838d" }}
             >
-              Resume Scoring · AI Mock Interviews
+              Retrieval-grounded · Voice AI interviews
             </span>
             <span className="block w-7 h-px" style={{ background: "#12a594" }} />
           </motion.div>
@@ -141,9 +141,9 @@ export default function HeroSection({ initialLoggedIn = false }: { initialLogged
             className="mb-10 max-w-xl text-[17px] leading-[1.65]"
             style={{ color: "#60646c" }}
           >
-            Viva scores your resume against the exact job in under a minute and shows the
-            keyword gaps to fix. Then it runs a spoken AI mock interview built from your
-            resume and that job - so you walk in ready.
+            Viva scores your resume against the exact job, then turns it into something you
+            can question: a copilot that retrieves and cites your real lines instead of
+            guessing, and a spoken AI interviewer briefed on the gaps your analysis found.
           </motion.p>
 
           {/* CTAs */}

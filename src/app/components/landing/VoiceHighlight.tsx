@@ -73,13 +73,14 @@ export default function VoiceHighlight() {
                 className="font-display font-bold tracking-tight mb-4"
                 style={{ fontSize: "clamp(24px, 3.5vw, 40px)", color: "#FFFFFF" }}
               >
-                A mock interview that has read your resume.
+                An interviewer briefed on your analysis.
               </h2>
 
               <p className="text-base leading-relaxed mb-8 max-w-lg" style={{ color: "rgba(255,255,255,0.72)" }}>
-                Viva builds a spoken interview from your actual resume and the exact job - the
-                pointed follow-ups a hiring manager would ask. You answer out loud, then get a
-                written summary of what landed and what to tighten. Free and unlimited.
+                Before the call, Viva hands the interviewer a brief: your ATS score, the
+                keywords you&apos;re missing, and the resume sections that matter for this job.
+                It runs a phased plan, presses on every vague answer, then gives you a scored
+                summary saved to your history. Free and unlimited.
               </p>
 
               <Link
