@@ -21,6 +21,18 @@ export const tokenRateLimit = redis
     })
   : null;
 
+// Guest ("/try") analysis runs a full LLM pass with no auth. The client-side
+// counter (localStorage) is only a nudge — this is the real backstop so
+// clearing storage / incognito can't mint unlimited free AI calls from one IP.
+export const guestAnalyzeRateLimit = redis
+  ? new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(8, "1 d"),
+      analytics: true,
+      prefix: "ratelimit:guest-analyze",
+    })
+  : null;
+
 export function getClientIp(req: Request): string {
   return (
     req.headers.get("x-real-ip") ??

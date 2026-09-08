@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 export interface Question { question: string; category: string }
 export interface Feedback { score: number; strengths: string[]; improvements: string[]; model_answer_hint: string }
-export type Phase = "setup" | "questions" | "answering" | "feedback" | "complete";
+export type Phase = "setup" | "questions" | "feedback" | "complete";
 
 async function parseError(res: Response): Promise<string> {
   try { const d = await res.json(); return d.error || d.message || `Error ${res.status}`; } catch {}
@@ -19,6 +19,7 @@ export function useInterviewState() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answer, setAnswer] = useState("");
+  const [answers, setAnswers] = useState<string[]>([]);
   const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
   const [phase, setPhase] = useState<Phase>("setup");
   const [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ export function useInterviewState() {
       setQuestions(data.questions);
       setCurrentIdx(0);
       setFeedbacks([]);
+      setAnswers([]);
       setPhase("questions");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to generate questions");
@@ -58,8 +60,8 @@ export function useInterviewState() {
       if (!res.ok) throw new Error(await parseError(res));
       const fb: Feedback = await res.json();
       if (typeof fb.score !== "number") throw new Error("Invalid feedback response.");
-      const next = [...feedbacks, fb];
-      setFeedbacks(next);
+      setFeedbacks((prev) => [...prev, fb]);
+      setAnswers((prev) => [...prev, answer.trim()]);
       setAnswer("");
       setPhase(currentIdx + 1 >= questions.length ? "complete" : "feedback");
     } catch (err) {
@@ -67,7 +69,7 @@ export function useInterviewState() {
     } finally {
       setLoading(false);
     }
-  }, [answer, loading, questions, currentIdx, feedbacks, role, jobDesc]);
+  }, [answer, loading, questions, currentIdx, role, jobDesc]);
 
   const nextQuestion = useCallback(() => {
     setCurrentIdx(i => i + 1);
@@ -77,6 +79,7 @@ export function useInterviewState() {
   const reset = useCallback(() => {
     setQuestions([]);
     setFeedbacks([]);
+    setAnswers([]);
     setCurrentIdx(0);
     setAnswer("");
     setPhase("setup");
@@ -91,6 +94,7 @@ export function useInterviewState() {
     role, setRole,
     questions, currentIdx,
     answer, setAnswer,
+    answers,
     feedbacks, phase,
     loading,
     avgScore,

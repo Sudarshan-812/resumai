@@ -36,20 +36,29 @@ export default async function DashboardPage() {
   const profile = profileResponse.data;
   const totalScansCount = resumesResponse.count ?? 0;
 
+  const fmtDate = (ds: string) =>
+    new Date(ds).toLocaleDateString("en-US", { day: "2-digit", month: "short", year: "numeric" });
+
   const recentResumes = rawResumes.map((r) => ({
     ...r,
     ats_score: r.analyses?.[0]?.ats_score ?? 0,
+    dateLabel: fmtDate(r.created_at),
   }));
 
   const avgScore = recentResumes.length > 0
     ? Math.round(recentResumes.reduce((acc, r) => acc + (r.ats_score ?? 0), 0) / recentResumes.length)
     : 0;
 
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long", day: "numeric", month: "long", year: "numeric",
+  });
+
   return (
     <DashboardClient
       user={user}
       profile={profile}
       recentResumes={recentResumes}
+      today={today}
       stats={{
         totalScans: totalScansCount,
         avgScore

@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { FileText, ArrowUpRight, Plus, CaretRight as ChevronRight, CloudArrowUp as UploadCloud, Microphone as Mic, PencilLine as PenLine, Scan as ScanLine, Target, Coins, TrendUp as TrendingUp, TrendDown as TrendingDown, DotsSixVertical as GripVertical } from "@phosphor-icons/react";
+import {
+  FileText, ArrowUpRight, Plus, CaretRight as ChevronRight, CloudArrowUp as UploadCloud,
+  Microphone as Mic, PencilLine as PenLine, Scan as ScanLine, Coins,
+} from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { SpotlightCard } from "@/components/dashboard/spotlight-card";
-import { BorderBeam } from "@/components/dashboard/border-beam";
-import { NumberTicker } from "@/components/dashboard/number-ticker";
 import { AuroraBackground } from "@/components/dashboard/aurora-background";
 
 interface DashboardClientProps {
@@ -15,10 +16,12 @@ interface DashboardClientProps {
     user_metadata?: { avatar_url?: string; picture?: string };
   };
   profile: { full_name?: string | null; credits?: number | null } | null;
+  today: string;
   recentResumes: Array<{
     id: string;
     file_name: string;
     created_at: string;
+    dateLabel: string;
     ats_score?: number | null;
   }>;
   stats: { totalScans: number; avgScore: number };
@@ -73,26 +76,13 @@ function AvgScoreRing({ score }: { score: number }) {
 
 const AI_TOOLS = [
   { key: "cover-letter", icon: PenLine, label: "Cover Letter", sub: "Role-specific in seconds", href: "/dashboard/cover-letter" },
-  { key: "interview", icon: Mic, label: "Interview Prep", sub: "Practice with AI feedback", href: "/dashboard/interview" },
+  { key: "interview", icon: Mic, label: "Mock Interview", sub: "Voice or text — free", href: "/dashboard/interview" },
 ] as const;
 
-const AI_TOOLS_ORDER_KEY = "c8-ai-tools-order";
-
-export default function DashboardClient({ user, profile, recentResumes, stats }: DashboardClientProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => { setMounted(true); }, []);
-
+export default function DashboardClient({ user, profile, today, recentResumes, stats }: DashboardClientProps) {
   const userName  = profile?.full_name?.split(" ")[0] || user.email?.split("@")[0] || "there";
   const credits   = profile?.credits ?? 0;
   const { totalScans, avgScore } = stats;
-
-  const today = mounted
-    ? new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })
-    : "";
-
-  const fmt = (ds: string) =>
-    mounted ? new Date(ds).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) : "-";
 
   return (
     <div className="min-h-full bg-background">
@@ -117,8 +107,8 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               </h1>
               <p className="mt-1 text-sm text-muted-foreground">
                 {totalScans > 0
-                  ? `Averaging ${avgScore}/100 across ${totalScans} scan${totalScans === 1 ? "" : "s"}.`
-                  : "Run your first scan to see your ATS score here."}
+                  ? `Averaging ${avgScore}/100 across ${totalScans} analysis${totalScans === 1 ? "" : "es"}.`
+                  : "Run your first analysis to see your ATS score here."}
               </p>
             </div>
           </div>
@@ -131,86 +121,45 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
               className="inline-flex items-center gap-2 h-11 px-5 rounded-xl text-sm font-semibold text-white bg-primary shadow-lg shadow-primary/20 shrink-0"
             >
               <Plus size={18} weight="bold" />
-              New Analysis
+              New analysis
             </motion.button>
           </Link>
         </motion.div>
 
-        {/* ── Stats grid ── */}
+        {/* ── Stats ── */}
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.08, duration: 0.45, ease: EASE }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10"
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10"
         >
           {(
-          [
-            {
-              icon: ScanLine,
-              label: "Analyses",
-              value: totalScans,
-              suffix: "",
-              diff: null,
-              note: "total scans",
-              valueColor: "text-foreground",
-              action: undefined,
-            },
-            {
-              icon: Target,
-              label: "Avg Score",
-              value: avgScore,
-              suffix: avgScore > 0 ? " /100" : "",
-              diff: avgScore >= 70 ? "up" : avgScore > 0 ? "down" : null,
-              note: avgScore >= 70 ? "above average" : avgScore > 0 ? "needs work" : "run a scan",
-              valueColor: avgScore >= 70 ? "text-emerald-600" : avgScore > 0 ? "text-amber-600" : "text-foreground",
-              action: undefined,
-            },
-            {
-              icon: Coins,
-              label: "Credits",
-              value: credits,
-              suffix: "",
-              diff: credits <= 1 ? "down" : null,
-              note: credits <= 1 ? "top up soon" : "remaining",
-              valueColor: "text-foreground",
-              action: (
-                <Link href="/billing" className="text-[10px] font-bold tracking-wide text-primary transition-colors">
-                  Top up →
-                </Link>
-              ),
-            },
-          ] satisfies Array<{
-            icon: React.ElementType;
-            label: string;
-            value: number;
-            suffix: string;
-            diff: "up" | "down" | null;
-            note: string;
-            valueColor: string;
-            action: React.ReactNode;
-          }>
-        ).map((m, i) => (
+            [
+              { icon: ScanLine, label: "Analyses", value: totalScans, note: "total run", action: null as React.ReactNode },
+              {
+                icon: Coins,
+                label: "Credits",
+                value: credits,
+                note: credits <= 1 ? "top up soon" : "remaining",
+                action: (
+                  <Link href="/billing" className="text-[10px] font-bold tracking-wide text-primary transition-colors">
+                    Top up →
+                  </Link>
+                ),
+              },
+            ]
+          ).map((m, i) => (
             <SpotlightCard key={i} className="px-5 py-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-primary/10 border border-primary/15">
                   <m.icon size={23} className="text-primary" />
                 </div>
-                {m.diff && (
-                  <span
-                    className={`inline-flex items-center gap-0.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                      m.diff === "up" ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
-                    }`}
-                  >
-                    {m.diff === "up" ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  </span>
-                )}
               </div>
               <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-1.5 text-muted-foreground">
                 {m.label}
               </p>
-              <p className={`text-4xl font-bold tracking-tight tabular-nums leading-none mb-2 ${m.valueColor}`}>
-                <NumberTicker value={m.value} />
-                {m.suffix && <span className="text-base font-semibold text-muted-foreground/60">{m.suffix}</span>}
+              <p className="text-4xl font-bold tracking-tight tabular-nums leading-none mb-2 text-foreground">
+                {m.value}
               </p>
               <div className="flex items-center justify-between gap-2">
                 <p className="text-[11px] text-muted-foreground">{m.note}</p>
@@ -257,33 +206,27 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                     : "text-muted-foreground/50";
 
                   return (
-                    <motion.div
+                    <div
                       key={r.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.2 + i * 0.05, duration: 0.3 }}
                       className={i < recentResumes.length - 1 ? "border-b border-border" : undefined}
                     >
                       <Link
                         href={`/dashboard/${r.id}`}
                         className="group flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/50"
                       >
-                        {/* File icon */}
                         <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-muted border border-border">
                           <FileText size={18} className="text-muted-foreground" />
                         </div>
 
-                        {/* Name + date */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate leading-none mb-1 text-foreground" title={r.file_name}>
                             {r.file_name.replace(/\.pdf$/i, "")}
                           </p>
                           <p className="text-[11px] font-mono text-muted-foreground/70">
-                            {fmt(r.created_at)}
+                            {r.dateLabel}
                           </p>
                         </div>
 
-                        {/* Score */}
                         <div className="flex items-center gap-3 shrink-0">
                           <span className={`text-sm font-bold tabular-nums ${scoreColor}`}>
                             {score > 0 ? score : "-"}
@@ -295,136 +238,47 @@ export default function DashboardClient({ user, profile, recentResumes, stats }:
                           />
                         </div>
                       </Link>
-                    </motion.div>
+                    </div>
                   );
                 })}
               </div>
             )}
           </motion.div>
 
-          {/* Right - sidebar panel */}
+          {/* Right - AI tools */}
           <motion.aside
             initial={{ opacity: 0, x: 8 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.22, duration: 0.45, ease: EASE }}
-            className="space-y-6"
           >
-            <AiToolsPanel />
-
-            {/* Upload CTA */}
-            <div>
-              <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3 text-muted-foreground">
-                Quick Upload
-              </p>
-              <Link href="/upload">
-                <motion.div
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.99 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="relative overflow-hidden rounded-2xl p-5 cursor-pointer bg-foreground"
+            <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3 text-muted-foreground">
+              AI Tools
+            </p>
+            <div className="rounded-2xl overflow-hidden border border-border bg-card">
+              {AI_TOOLS.map(({ key, icon: Icon, label, sub, href }, i) => (
+                <Link
+                  key={key}
+                  href={href}
+                  className={`group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-muted/50 ${
+                    i < AI_TOOLS.length - 1 ? "border-b border-border" : ""
+                  }`}
                 >
-                  <BorderBeam />
-                  {/* subtle grid texture */}
-                  <div
-                    className="absolute inset-0 pointer-events-none opacity-20"
-                    style={{
-                      backgroundImage: "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0)",
-                      backgroundSize: "20px 20px",
-                    }}
-                  />
-                  <div className="relative">
-                    <UploadCloud size={26} className="text-primary mb-3" />
-                    <p className="text-sm font-semibold mb-1 text-white">Analyze a resume</p>
-                    <p className="text-[11px] leading-relaxed text-white/45">
-                      Upload a PDF + job description for an instant ATS match report.
-                    </p>
-                    <div className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary">
-                      Upload PDF <ArrowUpRight size={14} />
-                    </div>
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/15">
+                    <Icon size={18} className="text-primary" />
                   </div>
-                </motion.div>
-              </Link>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-medium leading-none mb-0.5 text-foreground">{label}</p>
+                    <p className="text-[11px] text-muted-foreground">{sub}</p>
+                  </div>
+                  <ArrowUpRight
+                    size={14}
+                    className="transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5 shrink-0 text-muted-foreground/70"
+                  />
+                </Link>
+              ))}
             </div>
           </motion.aside>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function AiToolsPanel() {
-  const [order, setOrder] = useState<string[]>(AI_TOOLS.map(t => t.key));
-  const [dragKey, setDragKey] = useState<string | null>(null);
-  const [overKey, setOverKey] = useState<string | null>(null);
-
-  useEffect(() => {
-    const saved = localStorage.getItem(AI_TOOLS_ORDER_KEY);
-    if (!saved) return;
-    try {
-      const parsed: string[] = JSON.parse(saved);
-      const valid = parsed.length === AI_TOOLS.length && parsed.every(k => AI_TOOLS.some(t => t.key === k));
-      if (valid) setOrder(parsed);
-    } catch {
-      // ignore malformed local storage value
-    }
-  }, []);
-
-  const items = order.map(key => AI_TOOLS.find(t => t.key === key)!).filter(Boolean);
-
-  const handleDrop = (targetKey: string) => {
-    setOverKey(null);
-    if (!dragKey || dragKey === targetKey) { setDragKey(null); return; }
-    setOrder(prev => {
-      const next = [...prev];
-      next.splice(next.indexOf(dragKey), 1);
-      next.splice(next.indexOf(targetKey), 0, dragKey);
-      localStorage.setItem(AI_TOOLS_ORDER_KEY, JSON.stringify(next));
-      return next;
-    });
-    setDragKey(null);
-  };
-
-  return (
-    <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.15em] mb-3 text-muted-foreground">
-        AI Tools
-      </p>
-      <div className="rounded-2xl overflow-hidden border border-border bg-card">
-        {items.map(({ key, icon: Icon, label, sub, href }, i) => (
-          <div
-            key={key}
-            onDragOver={e => { e.preventDefault(); if (dragKey && dragKey !== key) setOverKey(key); }}
-            onDragLeave={() => setOverKey(prev => (prev === key ? null : prev))}
-            onDrop={() => handleDrop(key)}
-            className={`group flex items-center gap-2 pl-2 pr-4 py-3.5 transition-colors ${
-              overKey === key ? "bg-muted" : "hover:bg-muted/50"
-            } ${i < items.length - 1 ? "border-b border-border" : ""}`}
-            style={{ opacity: dragKey === key ? 0.5 : 1 }}
-          >
-            <span
-              draggable
-              onDragStart={() => setDragKey(key)}
-              onDragEnd={() => { setDragKey(null); setOverKey(null); }}
-              className="shrink-0 cursor-grab active:cursor-grabbing p-1 -m-1 touch-none"
-              aria-label={`Drag to reorder ${label}`}
-            >
-              <GripVertical size={16} className="text-border" />
-            </span>
-            <Link href={href} className="group/link flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 bg-primary/10 border border-primary/15">
-                <Icon size={18} className="text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium leading-none mb-0.5 text-foreground">{label}</p>
-                <p className="text-[11px] text-muted-foreground">{sub}</p>
-              </div>
-              <ArrowUpRight
-                size={14}
-                className="transition-all group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 shrink-0 text-muted-foreground/70"
-              />
-            </Link>
-          </div>
-        ))}
       </div>
     </div>
   );
@@ -454,7 +308,7 @@ function EmptyState() {
             className="inline-flex items-center gap-2 h-9 px-5 rounded-xl text-sm font-semibold text-white bg-primary"
           >
             <UploadCloud size={16} />
-            Upload Resume
+            Upload resume
           </motion.button>
         </Link>
       </div>

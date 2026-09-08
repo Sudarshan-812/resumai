@@ -7,14 +7,37 @@ import { CoinLoader } from "@/components/ui/coin-loader";
 import {
   FileText, CloudArrowUp as UploadCloud, Briefcase, ArrowRight,
   X, WarningCircle as AlertCircle, CheckCircle as CheckCircle2, Target, ShieldCheck,
-  Lightning as Zap, Pulse as Activity, Lock, CaretRight as ChevronRight, ChartBar as BarChart3, Terminal,
+  Lightning as Zap, Pulse as Activity, Lock, CaretRight as ChevronRight, ChartBar as BarChart3,
   ArrowClockwise as RefreshCw, ArrowLeft
 } from "@phosphor-icons/react";
 import { analyzeResumeAsGuest } from "@/app/actions/guest-analyze";
 import { cn } from "@/lib/utils";
+import VivaLogo from "@/components/branding/VivaLogo";
 
 const MAX_FREE = 3;
 const STORAGE_KEY = "viva_guest_count";
+
+interface GuestResult {
+  ats_score: number;
+  calculated_yoe: number;
+  summary_feedback: string;
+  skills_found: string[];
+  missing_keywords: string[];
+  formatting_issues: string[];
+  file_name: string;
+}
+
+function isGuestResult(v: unknown): v is GuestResult {
+  if (!v || typeof v !== "object") return false;
+  const r = v as Record<string, unknown>;
+  return (
+    typeof r.ats_score === "number" &&
+    typeof r.file_name === "string" &&
+    Array.isArray(r.skills_found) &&
+    Array.isArray(r.missing_keywords) &&
+    Array.isArray(r.formatting_issues)
+  );
+}
 
 // ─── Isolated JD textarea ───
 const JDInput = memo(function JDInput({
@@ -48,86 +71,47 @@ const JDInput = memo(function JDInput({
   );
 });
 
-// ─── Animated analysis log ───
-const LOG_STEPS = [
-  "Parsing PDF structure...",
-  "Extracting resume text...",
-  "Tokenizing job description...",
-  "Running keyword extraction...",
-  "Calculating ATS match score...",
-  "Detecting formatting issues...",
-  "Generating recruiter feedback...",
-  "Finalising report...",
+// ─── Analysis loader (honest, indeterminate) ───
+const LOADER_MESSAGES = [
+  "Reading your resume…",
+  "Matching it against the job description…",
+  "Scoring keywords and formatting…",
+  "Writing up the feedback…",
 ];
 
 function AnalysisLoader() {
-  const [step, setStep] = useState(0);
-  const [done, setDone] = useState<number[]>([]);
+  const [msgIdx, setMsgIdx] = useState(0);
+  const [slow, setSlow] = useState(false);
 
   useEffect(() => {
-    if (step >= LOG_STEPS.length) return;
-    const t = setTimeout(() => {
-      setDone((d) => [...d, step]);
-      setStep((s) => s + 1);
-    }, 620 + Math.random() * 300);
-    return () => clearTimeout(t);
-  }, [step]);
+    const cycle = setInterval(() => setMsgIdx((i) => Math.min(i + 1, LOADER_MESSAGES.length - 1)), 4000);
+    const slowT = setTimeout(() => setSlow(true), 20000);
+    return () => { clearInterval(cycle); clearTimeout(slowT); };
+  }, []);
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <div className="flex flex-col items-center mb-8">
-        <div className="relative w-20 h-20 mb-6">
-          <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
-          <div className="absolute inset-2 rounded-full border-2 border-primary/40 animate-ping" style={{ animationDelay: "0.3s" }} />
-          <div className="absolute inset-4 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 16 16" fill="none" className="text-primary"><rect x="2" y="1" width="12" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M5 5h6M5 8h6M5 11h3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-          </div>
-        </div>
-        <h3 className="text-lg font-bold text-foreground mb-1">Neural Pipeline Running</h3>
-        <p className="text-sm text-muted-foreground">Gemini 2.5 Flash is scanning your resume</p>
+    <div className="w-full max-w-md mx-auto flex flex-col items-center text-center py-10">
+      <div className="mb-6">
+        <CoinLoader size={44} />
       </div>
-
-      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-muted/30">
-          <div className="flex gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/20" />
-            <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/20" />
-            <div className="w-2.5 h-2.5 rounded-full bg-muted-foreground/20" />
-          </div>
-          <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest ml-2">
-            viva_engine.log
-          </span>
-        </div>
-        <div className="p-4 space-y-2 font-mono text-xs min-h-[240px]">
-          {LOG_STEPS.map((msg, i) => (
-            <AnimatePresence key={msg}>
-              {i <= step && (
-                <motion.div
-                  initial={{ opacity: 0, x: -8 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center gap-3"
-                >
-                  {done.includes(i) ? (
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                  ) : (
-                    <CoinLoader size={14} className="shrink-0" />
-                  )}
-                  <span className={done.includes(i) ? "text-emerald-600" : "text-primary"}>
-                    {done.includes(i) ? "✓ " : "→ "}{msg}
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          ))}
-          {step < LOG_STEPS.length && (
-            <motion.span
-              className="inline-block w-1.5 h-3.5 bg-primary ml-1 align-middle"
-              animate={{ opacity: [1, 0] }}
-              transition={{ repeat: Infinity, duration: 0.7 }}
-            />
-          )}
-        </div>
-      </div>
+      <h3 className="text-lg font-bold text-foreground mb-2">Analyzing your resume</h3>
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={msgIdx}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.3 }}
+          className="text-sm text-muted-foreground"
+        >
+          {LOADER_MESSAGES[msgIdx]}
+        </motion.p>
+      </AnimatePresence>
+      {slow && (
+        <p className="mt-4 text-[12px] text-muted-foreground/70">
+          Still working — a detailed job description can take a little longer. Hang tight.
+        </p>
+      )}
     </div>
   );
 }
@@ -180,10 +164,10 @@ function LockedGate() {
           <Lock className="w-8 h-8 text-primary" />
         </div>
         <h1 className="font-display text-3xl font-bold text-foreground mb-3">
-          Free Scans Used
+          That&apos;s your {MAX_FREE} free analyses
         </h1>
         <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-          You've used your {MAX_FREE} free analyses. Create a free account to save your reports, access unlimited scans, and unlock the full AI recruiter experience.
+          Create a free account to keep your reports, run more analyses, and rehearse a spoken AI mock interview built from your resume and the job.
         </p>
         <div className="flex flex-col gap-3">
           <Link href="/login">
@@ -192,12 +176,12 @@ function LockedGate() {
               whileTap={{ scale: 0.98 }}
               className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-md hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
             >
-                            Create Free Account
+              Create free account
             </motion.button>
           </Link>
           <Link href="/">
             <button className="w-full h-11 rounded-xl border border-border text-sm font-medium text-foreground hover:bg-muted transition-colors">
-              Back to Home
+              Back to home
             </button>
           </Link>
         </div>
@@ -219,14 +203,17 @@ export default function TryPage() {
   const [jd, setJd] = useState("");
   const [jdCharCount, setJdCharCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<GuestResult | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMounted(true);
-    const stored = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
-    setUsageCount(stored);
+    try {
+      setUsageCount(parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10) || 0);
+    } catch {
+      setUsageCount(0);
+    }
   }, []);
 
   const handleJDChange = useCallback((v: string) => {
@@ -275,8 +262,14 @@ export default function TryPage() {
         return;
       }
 
+      if (!isGuestResult(res.data)) {
+        setError("The analysis came back in an unexpected format. Please try again.");
+        setStep("upload");
+        return;
+      }
+
       const newCount = usageCount + 1;
-      localStorage.setItem(STORAGE_KEY, String(newCount));
+      try { localStorage.setItem(STORAGE_KEY, String(newCount)); } catch {}
       setUsageCount(newCount);
       setResult(res.data);
       setStep("result");
@@ -325,13 +318,9 @@ export default function TryPage() {
           <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
           Back
         </Link>
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-primary flex items-center justify-center">
-                      </div>
-          <span className="font-bold text-sm text-foreground">Viva</span>
-        </div>
+        <VivaLogo height={26} />
         <Link href="/login" className="text-xs font-bold text-primary hover:underline">
-          Sign In →
+          Sign in →
         </Link>
       </header>
 
@@ -355,11 +344,11 @@ export default function TryPage() {
                   transition={{ delay: 0.1 }}
                   className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary mb-5"
                 >
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                  Free Trial - {remaining} scan{remaining !== 1 ? "s" : ""} remaining
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Free trial — {remaining} scan{remaining !== 1 ? "s" : ""} left
                 </motion.div>
                 <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight mb-3">
-                  Try Viva Free
+                  Try Viva free
                 </h1>
                 <p className="text-muted-foreground max-w-lg mx-auto text-base">
                   No account needed. Upload your resume and paste a job description to get an instant AI-powered ATS analysis.
@@ -372,11 +361,10 @@ export default function TryPage() {
                     key={i}
                     className={cn(
                       "h-1.5 w-8 rounded-full transition-all duration-500",
-                      i < usageCount ? "bg-primary/30" : "bg-primary"
+                      i < remaining ? "bg-primary" : "bg-primary/20"
                     )}
                   />
                 ))}
-                <span className="ml-2 text-[11px] font-mono text-muted-foreground">{remaining} left</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
@@ -468,24 +456,17 @@ export default function TryPage() {
                   whileHover={canAnalyze ? { scale: 1.02 } : {}}
                   whileTap={canAnalyze ? { scale: 0.98 } : {}}
                   className={cn(
-                    "relative h-13 px-10 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2.5 overflow-hidden",
+                    "relative h-12 px-10 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center gap-2.5 overflow-hidden",
                     canAnalyze
                       ? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20"
                       : "bg-muted text-muted-foreground cursor-not-allowed"
                   )}
                 >
-                  {canAnalyze && (
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-                      animate={{ x: ["-100%", "100%"] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                    />
-                  )}
-                                    Analyze My Resume Free
+                  Analyze my resume — free
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
                 <p className="mt-3 text-[11px] text-muted-foreground text-center max-w-xs">
-                  No account required · Results in under a minute · {remaining} free scan{remaining !== 1 ? "s" : ""} left
+                  No account required · Results in under a minute
                 </p>
               </div>
             </motion.div>
@@ -524,21 +505,19 @@ export default function TryPage() {
                     {result.summary_feedback}
                   </p>
                   <div className="flex gap-2 mt-5 flex-wrap">
-                    <button
-                      onClick={handleReset}
-                      disabled={usageCount >= MAX_FREE}
-                      className={cn(
-                        "flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted transition-colors shadow-sm",
-                        usageCount >= MAX_FREE && "opacity-40 cursor-not-allowed"
-                      )}
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      {usageCount >= MAX_FREE ? "No Scans Left" : `New Scan (${MAX_FREE - usageCount} left)`}
-                    </button>
+                    {remaining > 0 && (
+                      <button
+                        onClick={handleReset}
+                        className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg border border-border bg-background hover:bg-muted transition-colors shadow-sm"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" />
+                        Analyze another ({remaining} left)
+                      </button>
+                    )}
                     <Link href="/login">
                       <button className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                        Save Report - Sign Up Free
+                        Save this report — free
                       </button>
                     </Link>
                   </div>
@@ -638,14 +617,11 @@ export default function TryPage() {
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none" />
                 <div className="relative">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary mb-4">
-                    Full Report Locked
-                  </div>
                   <h3 className="font-display text-2xl font-bold text-foreground mb-2">
-                    Want to save this & get more details?
+                    Keep this report — and rehearse the interview
                   </h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6 leading-relaxed">
-                    Create a free account to save all your reports, access the AI Resume Copilot, get full keyword breakdowns, and run unlimited analyses.
+                    A free account saves every report, tracks your score across rewrites, and unlocks the spoken AI mock interview built from this resume and job.
                   </p>
                   <Link href="/login">
                     <motion.button
@@ -653,11 +629,11 @@ export default function TryPage() {
                       whileTap={{ scale: 0.98 }}
                       className="inline-flex items-center gap-2 h-12 px-8 rounded-xl bg-primary text-primary-foreground font-bold text-sm shadow-lg shadow-primary/20 hover:bg-primary/90 transition-colors"
                     >
-                                            Create Free Account
+                      Create free account
                       <ChevronRight className="w-4 h-4" />
                     </motion.button>
                   </Link>
-                  <p className="mt-3 text-[11px] text-muted-foreground">No credit card required · Free forever plan</p>
+                  <p className="mt-3 text-[11px] text-muted-foreground">No credit card. Free forever plan.</p>
                 </div>
               </motion.div>
             </motion.div>

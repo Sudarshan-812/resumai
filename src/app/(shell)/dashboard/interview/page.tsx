@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PaperPlaneTilt as Send, ArrowCounterClockwise as RotateCcw, CheckCircle as CheckCircle2, WarningCircle as AlertCircle,
@@ -28,7 +29,7 @@ function StepBar({ phase, currentIdx, total }: { phase: string; currentIdx: numb
       {STEPS.map((label, i) => {
         const done    = i < active;
         const current = i === active;
-        const dotColor = done ? "#059669" : current ? "#12a594" : "#D4D0C8";
+        const dotColor = done ? "#059669" : current ? "#12a594" : "#d9d9e0";
         const textColor = done ? "#059669" : current ? "#12a594" : "#b9bbc6";
         const displayLabel = i === 1 && total > 0 && !["setup", "complete"].includes(phase)
           ? `Q ${currentIdx + 1}/${total}`
@@ -88,7 +89,19 @@ function StepBar({ phase, currentIdx, total }: { phase: string; currentIdx: numb
   );
 }
 
-/* ── Underline input ─────────────────────────────────────────── */
+/* ── Fields ──────────────────────────────────────────────────── */
+function FieldLabel({ label, hint, right }: { label: string; hint?: string; right?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground">
+        {label}
+        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">— {hint}</span>}
+      </span>
+      {right && <span className="text-[10px] font-mono tabular-nums text-muted-foreground/60">{right}</span>}
+    </div>
+  );
+}
+
 function UInput({ value, onChange, placeholder, label, hint }: {
   value: string; onChange: (v: string) => void;
   placeholder: string; label: string; hint?: string;
@@ -96,48 +109,49 @@ function UInput({ value, onChange, placeholder, label, hint }: {
   const [focused, setFocused] = useState(false);
   return (
     <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
-        {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">- {hint}</span>}
-      </p>
-      <div className="relative">
-        <input
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          className="w-full py-2 text-[14px] bg-transparent focus:outline-none text-foreground placeholder:text-muted-foreground/40 border-b-2 transition-colors"
-          style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
-        />
-      </div>
+      <FieldLabel label={label} hint={hint} />
+      <input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="w-full h-11 px-3.5 rounded-xl text-[14px] bg-card border-[1.5px] focus:outline-none text-foreground placeholder:text-muted-foreground/40 transition-colors"
+        style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
+      />
     </div>
   );
 }
 
-function UTextarea({ value, onChange, placeholder, label, hint, rows = 6 }: {
+function UTextarea({ value, onChange, placeholder, label, hint, rows = 6, minChars }: {
   value: string; onChange: (v: string) => void;
-  placeholder: string; label: string; hint?: string; rows?: number;
+  placeholder: string; label: string; hint?: string; rows?: number; minChars?: number;
 }) {
   const [focused, setFocused] = useState(false);
+  const len = value.trim().length;
+  const short = minChars != null && len > 0 && len < minChars;
   return (
     <div>
-      <p className="text-[10px] font-mono uppercase tracking-[0.18em] mb-2.5 text-muted-foreground">
-        {label}
-        {hint && <span className="ml-2 normal-case font-normal tracking-normal text-muted-foreground/70">- {hint}</span>}
-      </p>
-      <div className="relative">
-        <textarea
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          rows={rows}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          className="w-full bg-transparent text-[13.5px] leading-[1.85] resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/40 pb-2 border-b-2 transition-colors"
-          style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
-        />
-      </div>
+      <FieldLabel
+        label={label}
+        hint={hint}
+        right={minChars != null ? `${len} / ${minChars}+` : undefined}
+      />
+      <textarea
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        rows={rows}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        className="w-full px-3.5 py-3 rounded-xl bg-card border-[1.5px] text-[13.5px] leading-[1.8] resize-none focus:outline-none text-foreground placeholder:text-muted-foreground/40 transition-colors"
+        style={{ borderColor: focused ? "#12a594" : "var(--border)" }}
+      />
+      {short && (
+        <p className="mt-1.5 text-[11px] text-amber-600">
+          {minChars - len} more character{minChars - len === 1 ? "" : "s"} to continue.
+        </p>
+      )}
     </div>
   );
 }
@@ -147,12 +161,15 @@ export default function InterviewPage() {
   const {
     jobDesc, setJobDesc, role, setRole,
     questions, currentIdx, answer, setAnswer,
-    feedbacks, phase, loading, avgScore,
+    answers, feedbacks, phase, loading, avgScore,
     generateQuestions, submitAnswer, nextQuestion, reset,
   } = useInterviewState();
 
+  const router = useRouter();
   const [isVoiceActive, setIsVoiceActive] = useState(false);
   const handleVoiceActiveChange = useCallback((active: boolean) => setIsVoiceActive(active), []);
+
+  const canGenerate = role.trim().length > 0 && jobDesc.trim().length >= 50;
 
   return (
     <>
@@ -223,28 +240,35 @@ export default function InterviewPage() {
                   transition={{ type: "spring", stiffness: 260, damping: 28 }}
                   className="space-y-8"
                 >
-                  <UInput value={role} onChange={setRole} placeholder="Product Manager" label="Job Title" />
+                  <UInput value={role} onChange={setRole} placeholder="Product Manager" label="Job title" />
                   <UTextarea value={jobDesc} onChange={setJobDesc}
                     placeholder="Paste the job description here…"
-                    label="Job Description" hint="paste key requirements" rows={6} />
-                  <motion.button
-                    onClick={() => generateQuestions()}
-                    disabled={!role.trim() || jobDesc.trim().length < 50 || loading}
-                    whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
-                    whileTap={!loading ? { scale: 0.98 } : {}}
-                    transition={SPRING}
-                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 bg-primary shadow-lg shadow-primary/20"
-                  >
-                    {loading
-                      ? <><CoinLoader size={18} className="text-current" />Generating questions…</>
-                      : <><Mic size={18} />Start Interview</>
-                    }
-                  </motion.button>
+                    label="Job description" hint="paste the requirements" rows={6} minChars={50} />
+                  <div>
+                    <motion.button
+                      onClick={() => generateQuestions()}
+                      disabled={!canGenerate || loading}
+                      whileHover={canGenerate && !loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
+                      whileTap={canGenerate && !loading ? { scale: 0.98 } : {}}
+                      transition={SPRING}
+                      className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed bg-primary shadow-lg shadow-primary/20"
+                    >
+                      {loading
+                        ? <><CoinLoader size={18} className="text-current" />Generating questions…</>
+                        : <><Mic size={18} />Start text interview</>
+                      }
+                    </motion.button>
+                    {!canGenerate && !loading && (
+                      <p className="mt-2 text-center text-[11px] text-muted-foreground/70">
+                        Add a job title and at least 50 characters of the job description.
+                      </p>
+                    )}
+                  </div>
                 </motion.div>
               )}
 
-              {/* ── Question / Answering ── */}
-              {(phase === "questions" || phase === "answering") && questions[currentIdx] && (
+              {/* ── Question ── */}
+              {phase === "questions" && questions[currentIdx] && (
                 <motion.div key={`q-${currentIdx}`}
                   initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
                   transition={{ type: "spring", stiffness: 260, damping: 28 }}
@@ -283,19 +307,19 @@ export default function InterviewPage() {
 
                   <UTextarea value={answer} onChange={setAnswer}
                     placeholder="Use the STAR method: Situation, Task, Action, Result…"
-                    label="Your Answer" rows={6} />
+                    label="Your answer" rows={6} minChars={20} />
 
                   <motion.button
                     onClick={submitAnswer}
                     disabled={answer.trim().length < 20 || loading}
-                    whileHover={!loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
-                    whileTap={!loading ? { scale: 0.98 } : {}}
+                    whileHover={answer.trim().length >= 20 && !loading ? { y: -2, boxShadow: "0 16px 36px rgba(18,165,148,0.28)" } : {}}
+                    whileTap={answer.trim().length >= 20 && !loading ? { scale: 0.98 } : {}}
                     transition={SPRING}
-                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 bg-primary shadow-lg shadow-primary/20"
+                    className="w-full h-12 rounded-2xl text-[13px] font-bold text-white flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed bg-primary shadow-lg shadow-primary/20"
                   >
                     {loading
                       ? <><CoinLoader size={18} className="text-current" />Evaluating…</>
-                      : <><Send size={16} />Submit Answer</>
+                      : <><Send size={16} />Submit answer</>
                     }
                   </motion.button>
                 </motion.div>
@@ -431,35 +455,76 @@ export default function InterviewPage() {
                     </div>
                   </div>
 
-                  {/* Per-question breakdown */}
+                  {/* Per-question breakdown — expand for the full feedback */}
                   <div>
                     <div className="h-px bg-border mb-5" />
-                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-5 text-muted-foreground/60">Breakdown</p>
-                    <div className="space-y-0">
+                    <p className="text-[9px] font-mono uppercase tracking-[0.2em] mb-4 text-muted-foreground/60">
+                      Breakdown — tap a question for the full feedback
+                    </p>
+                    <div className="rounded-2xl border border-border overflow-hidden">
                       {feedbacks.map((fb, i) => (
-                        <motion.div key={i}
-                          initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.07, type: "spring", stiffness: 280, damping: 26 }}
-                          className={`flex items-center justify-between py-4 ${i < feedbacks.length - 1 ? "border-b border-border" : ""}`}
-                        >
-                          <div>
-                            <p className="text-[12px] font-semibold text-foreground">Q{i + 1}</p>
-                            <p className="text-[11px] text-muted-foreground">{questions[i]?.category}</p>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="w-20 h-[2px] rounded-full overflow-hidden bg-border">
-                              <motion.div className="h-full rounded-full"
-                                initial={{ width: 0 }}
-                                animate={{ width: `${fb.score}%` }}
-                                transition={{ duration: 0.9, ease: EASE, delay: i * 0.07 + 0.2 }}
-                                style={{ background: scoreColor(fb.score) }} />
+                        <details key={i} className={i < feedbacks.length - 1 ? "border-b border-border" : ""}>
+                          <summary className="flex items-center justify-between gap-3 px-4 py-3.5 cursor-pointer select-none list-none hover:bg-muted/40">
+                            <div className="min-w-0">
+                              <p className="text-[12px] font-semibold text-foreground">
+                                Q{i + 1} · <span className="font-normal text-muted-foreground">{questions[i]?.category}</span>
+                              </p>
+                              <p className="text-[11px] text-muted-foreground truncate">{questions[i]?.question}</p>
                             </div>
-                            <span className="text-[14px] font-black font-mono tabular-nums w-10 text-right"
-                              style={{ color: scoreColor(fb.score), letterSpacing: "-0.02em" }}>
-                              {fb.score}
-                            </span>
+                            <div className="flex items-center gap-3 shrink-0">
+                              <div className="w-16 h-[2px] rounded-full overflow-hidden bg-border">
+                                <div className="h-full rounded-full" style={{ width: `${fb.score}%`, background: scoreColor(fb.score) }} />
+                              </div>
+                              <span className="text-[14px] font-black font-mono tabular-nums w-9 text-right"
+                                style={{ color: scoreColor(fb.score), letterSpacing: "-0.02em" }}>
+                                {fb.score}
+                              </span>
+                            </div>
+                          </summary>
+
+                          <div className="px-4 pb-4 pt-1 space-y-4 bg-muted/20">
+                            <div>
+                              <p className="text-[10px] font-mono uppercase tracking-[0.14em] mb-1.5 text-muted-foreground/60">Question</p>
+                              <p className="text-[13px] leading-relaxed text-foreground/90">{questions[i]?.question}</p>
+                            </div>
+                            {answers[i] && (
+                              <div>
+                                <p className="text-[10px] font-mono uppercase tracking-[0.14em] mb-1.5 text-muted-foreground/60">Your answer</p>
+                                <p className="text-[13px] leading-relaxed text-foreground/80 whitespace-pre-wrap">{answers[i]}</p>
+                              </div>
+                            )}
+                            {fb.strengths.length > 0 && (
+                              <div>
+                                <p className="text-[10px] font-mono uppercase tracking-[0.14em] mb-1.5 text-emerald-600">What worked</p>
+                                <ul className="space-y-1.5">
+                                  {fb.strengths.map((s, si) => (
+                                    <li key={si} className="flex items-start gap-2 text-[13px] leading-relaxed text-foreground/90">
+                                      <ChevronRight size={14} className="text-emerald-600 mt-0.5 shrink-0" />{s}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {fb.improvements.length > 0 && (
+                              <div>
+                                <p className="text-[10px] font-mono uppercase tracking-[0.14em] mb-1.5 text-amber-600">To improve</p>
+                                <ul className="space-y-1.5">
+                                  {fb.improvements.map((s, si) => (
+                                    <li key={si} className="flex items-start gap-2 text-[13px] leading-relaxed text-foreground/90">
+                                      <ChevronRight size={14} className="text-amber-600 mt-0.5 shrink-0" />{s}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            {fb.model_answer_hint && (
+                              <div>
+                                <p className="text-[10px] font-mono uppercase tracking-[0.14em] mb-1.5 text-primary">Strong approach</p>
+                                <p className="text-[13px] leading-relaxed pl-3 border-l-[3px] border-primary/35 text-foreground/90">{fb.model_answer_hint}</p>
+                              </div>
+                            )}
                           </div>
-                        </motion.div>
+                        </details>
                       ))}
                     </div>
                   </div>
@@ -471,10 +536,10 @@ export default function InterviewPage() {
                       className="flex-1 h-11 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-2 border border-border text-muted-foreground bg-card">
                       <RotateCcw size={16} /> Try again
                     </motion.button>
-                    <motion.button onClick={() => { window.location.href = "/dashboard"; }}
+                    <motion.button onClick={() => router.push("/dashboard")}
                       whileHover={{ y: -2, boxShadow: "0 12px 28px rgba(18,165,148,0.24)" }} whileTap={{ scale: 0.97 }} transition={SPRING}
                       className="flex-1 h-11 rounded-xl text-[12px] font-bold text-white flex items-center justify-center bg-primary shadow-md shadow-primary/20">
-                      Dashboard
+                      Back to dashboard
                     </motion.button>
                   </div>
                 </motion.div>

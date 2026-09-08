@@ -1,10 +1,27 @@
 "use server";
 
+import { headers } from "next/headers";
 import pdfParse from "pdf-parse";
 import { analyzeResume } from "@/app/lib/gemini";
 import { render_page } from "@/app/lib/pdf";
+import { guestAnalyzeRateLimit } from "@/app/lib/rateLimit";
 
 export async function analyzeResumeAsGuest(formData: FormData) {
+  if (guestAnalyzeRateLimit) {
+    const h = await headers();
+    const ip =
+      h.get("x-real-ip") ??
+      h.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      "127.0.0.1";
+    const { success } = await guestAnalyzeRateLimit.limit(ip);
+    if (!success) {
+      return {
+        success: false as const,
+        message: "You've used the free trial for today. Create a free account for more analyses.",
+      };
+    }
+  }
+
   const file = formData.get("file") as File | null;
   const rawJD = formData.get("jobDescription");
   const jobDescription = typeof rawJD === "string" ? rawJD.trim() : "";
