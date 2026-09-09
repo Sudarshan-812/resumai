@@ -64,11 +64,11 @@ interview saved so you can track score changes across iterations.
 | **Auth & data** | Supabase (Postgres + Auth), `pgvector` |
 | **Retrieval** | pgvector (HNSW) dense + Postgres FTS (BM25) → RRF, in `search_resume_chunks_hybrid` |
 | **Embeddings** | `gemini-embedding-001`, Matryoshka-truncated to 768 dims; model tracked per row |
-| **Re-rank / Corrective RAG** | `gemini-2.5-flash-lite`, structured JSON scoring, time-boxed with graceful fallback |
-| **Resume analysis** | Google Gemini (`gemini-2.5-flash`) |
-| **Text interview Q&A + grading** | Groq (Llama 3.3 70B) / voice summary on `gemini-2.5-flash` |
+| **Re-rank / Corrective RAG** | `gemini-3.5-flash-lite`, structured JSON scoring, time-boxed with graceful fallback |
+| **Resume analysis** | Google Gemini (`gemini-3.8-flash`) |
+| **Text interview Q&A + grading** | Groq (Llama 3.3 70B) / voice summary on `gemini-3.8-flash` |
 | **Voice interview** | LiveKit WebRTC + a Python worker (`python/agent.py`): Deepgram STT, Groq Llama 3.3, Deepgram Aura-2 TTS, Silero VAD |
-| **Structural parsing** *(optional)* | `python-ingest/` - FastAPI + docling; produces heading-aware, table-aware chunks. Off unless `STRUCTURAL_PARSE_URL` is set. |
+| **Document parsing** | `pdf-parse` (magic-byte / page-cap guard + fallback) → `python-ingest/` FastAPI + docling with OCR & `ACCURATE` tables (preferred for analysis text *and* chunks when `STRUCTURAL_PARSE_URL` is set) → `gemini-3.8-flash` multimodal for low-confidence docs (`src/app/lib/pdf-vision.ts`) |
 | **Payments** | one-time credit packs |
 | **Rate limiting** | Upstash Redis |
 | **Hosting** | Vercel |
@@ -81,6 +81,8 @@ interview saved so you can track score changes across iterations.
   `RETRIEVAL_DOCUMENT` task types, retry with backoff.
 * `src/app/lib/chunking.ts` - section-aware chunking with a `[Context: ...]` breadcrumb
   baked into each chunk; accepts docling structural chunks when available.
+* `src/app/actions/upload-resume.ts` - the parse ladder: pdf-parse → docling
+  (`structural-parse.ts`) → Gemini vision (`pdf-vision.ts`), then analysis + chunking.
 * `src/app/lib/retrieval.ts` - `hybridSearch` → `rerankChunks` → Corrective RAG;
   every LLM step falls back to the previous stage on failure or timeout.
 * `src/app/api/chat/route.ts` - the Resume Copilot; renders cited `[S#]` blocks.
@@ -100,7 +102,8 @@ interview saved so you can track score changes across iterations.
 ## Running the pieces
 
 The Next.js app and the LiveKit voice worker are required; the docling service is
-optional.
+optional but recommended - without it, parsing falls back to `pdf-parse` (plus a
+Gemini-vision attempt only when that text is unreadable).
 
 ```bash
 # Next.js app

@@ -92,11 +92,32 @@ class StructuralDocumentParser:
             return self._converter
         try:
             from docling.datamodel.base_models import InputFormat
-            from docling.document_converter import DocumentConverter
+            from docling.datamodel.pipeline_options import (
+                PdfPipelineOptions,
+                TableFormerMode,
+            )
+            from docling.document_converter import DocumentConverter, PdfFormatOption
         except Exception as exc:  # noqa: BLE001
             raise DocumentParseError("docling not installed. `pip install docling`.") from exc
+
+        # Resumes lean on layout the default (fast) pipeline mangles: two-column
+        # bodies, skills/experience in tables, and the occasional scanned export.
+        opts = PdfPipelineOptions()
+        opts.do_ocr = True  # pick up scanned / image-only resumes
+        opts.do_table_structure = True
+        opts.table_structure_options.mode = TableFormerMode.ACCURATE
+        opts.table_structure_options.do_cell_matching = True
+        # Digital PDFs: OCR only the bitmap regions, don't re-OCR text we have.
+        try:
+            opts.ocr_options.force_full_page_ocr = False
+        except Exception:  # noqa: BLE001 - older docling without this knob
+            pass
+
         self._converter = DocumentConverter(
-            allowed_formats=[InputFormat.PDF, InputFormat.DOCX]
+            allowed_formats=[InputFormat.PDF, InputFormat.DOCX],
+            format_options={
+                InputFormat.PDF: PdfFormatOption(pipeline_options=opts),
+            },
         )
         return self._converter
 

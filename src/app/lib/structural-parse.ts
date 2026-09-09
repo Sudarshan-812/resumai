@@ -15,6 +15,13 @@ export interface StructuralChunk {
   confidence: number;
 }
 
+export interface ParsedStructural {
+  chunks: StructuralChunk[];
+  /** docling's own 0-1 quality grade for the source doc (mean over pages).
+   *  Low values are the signal to try the Gemini vision fallback. */
+  sourceConfidence: number;
+}
+
 const TIMEOUT_MS = 45_000; // docling cold-parses can take a few seconds
 
 export function structuralParseEnabled(): boolean {
@@ -24,7 +31,7 @@ export function structuralParseEnabled(): boolean {
 export async function parseStructured(
   buffer: Buffer,
   filename: string
-): Promise<StructuralChunk[] | null> {
+): Promise<ParsedStructural | null> {
   const base = process.env.STRUCTURAL_PARSE_URL;
   if (!base) return null;
 
@@ -49,12 +56,19 @@ export async function parseStructured(
       return null;
     }
 
-    const data = (await res.json()) as { chunks?: unknown };
+    const data = (await res.json()) as {
+      chunks?: unknown;
+      source_confidence?: unknown;
+    };
     const chunks = Array.isArray(data.chunks) ? (data.chunks as StructuralChunk[]) : [];
     const valid = chunks.filter(
       (c) => c && typeof c.text === "string" && c.text.trim().length > 0
     );
-    return valid.length ? valid : null;
+    if (!valid.length) return null;
+
+    const sourceConfidence =
+      typeof data.source_confidence === "number" ? data.source_confidence : 0.5;
+    return { chunks: valid, sourceConfidence };
   } catch (err) {
     console.error("[structural-parse] failed (non-fatal):", err);
     return null;

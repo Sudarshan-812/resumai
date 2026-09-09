@@ -5,25 +5,34 @@ A small FastAPI service that parses a resume PDF/DOCX with
 section-heading paths, tables rendered as Markdown, page numbers, and a
 per-chunk quality/confidence score.
 
-The main app uses `pdf-parse` (a flat text extractor) by default. That is fine
-for the ATS analysis, but it produces mediocre *retrieval* chunks - no headings,
-no table structure, brittle whitespace heuristics. This service replaces the chunking input
-with something docling-quality, which lifts every downstream retrieval step
-(Resume Copilot, Versions, the voice-interview brief).
+The main app falls back to `pdf-parse` (a flat text extractor). That works, but
+it produces mediocre text and mediocre *retrieval* chunks - no headings, no
+table structure, brittle whitespace heuristics, and nothing for scanned PDFs.
+When this service is configured the upload path prefers its output for **both**
+the ATS analysis text and the retrieval chunks, which lifts every downstream
+step (Resume Copilot, Versions, the voice-interview brief).
+
+The pipeline runs OCR (scanned / image resumes) and TableFormer in `ACCURATE`
+mode (skills / experience tables) - see `parser.py::_get_converter`.
 
 ## It's opt-in
 
 Nothing changes until you run this service **and** set `STRUCTURAL_PARSE_URL`
 in the Next.js environment. When it's unset, unreachable, or errors, the upload
-path silently falls back to the existing text-only chunker. It also never
-touches the synchronous upload/analysis path - it runs in the post-response
-background task that already does chunking + the "analysis ready" email.
+path silently falls back to `pdf-parse` text + the text-only chunker.
+
+When it *is* configured it runs on the synchronous upload path (before the
+Gemini analysis), so keep it warm - the FastAPI `startup` hook pre-loads the
+models, and `upload-resume.ts` sets `maxDuration = 60`. If docling grades a
+document poorly (`source_confidence < 0.6`) the app makes one more attempt with
+Gemini multimodal (`src/app/lib/pdf-vision.ts`) before settling.
 
 ## Cost / weight
 
-docling downloads layout + OCR models on first run (~700 MB-1.5 GB) and a
-cold parse of a 2-page PDF is a few seconds. Warm parses are ~1-2 s. This is
-why it's a separate service, not an inline dependency.
+docling downloads layout + OCR models on first run (~700 MB-1.5 GB). With OCR +
+accurate tables a cold parse of a 2-page PDF is several seconds; warm parses are
+~2-4 s. Run it as an always-warm service (not scale-to-zero), not an inline
+dependency.
 
 ## Run
 
@@ -44,9 +53,9 @@ STRUCTURAL_PARSE_URL=http://localhost:8100
 STRUCTURAL_PARSE_TOKEN=<optional shared secret, must match this service's env>
 ```
 
-New uploads then chunk from docling output. To re-chunk existing resumes you'd
-need the original file (the app currently stores extracted text only), so this
-improves resumes going forward.
+New uploads then take their text and chunks from docling output. To re-process
+existing resumes you'd need the original file (the app stores extracted text
+only), so this improves resumes going forward.
 
 ## A/B before committing to the infra
 

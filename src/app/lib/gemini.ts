@@ -96,7 +96,7 @@ export async function analyzeResume(
 
   try {
     const { object } = await generateObject({
-      model: google("gemini-2.5-flash"),
+      model: google("gemini-3.8-flash"),
       maxRetries: 2,
       temperature: 0.25,
       schema: ATSEvaluationSchema,

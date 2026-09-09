@@ -39,6 +39,17 @@ app = FastAPI(title="viva-ingest", version="0.1.0")
 _parser = StructuralDocumentParser()
 
 
+@app.on_event("startup")
+async def _warmup() -> None:
+    """Load docling's layout / table / OCR models once at boot so the first
+    real upload doesn't eat the multi-second cold start."""
+    try:
+        await asyncio.to_thread(_parser._get_converter)
+        logger.info("docling converter warmed up")
+    except Exception as exc:  # noqa: BLE001 - warmup is best-effort
+        logger.warning("docling warmup failed (non-fatal): %s", exc)
+
+
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True}
