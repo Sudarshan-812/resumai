@@ -8,9 +8,9 @@ import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import "@/env";
 
-// Newest general Flash model available on the tier (best multimodal reading of
-// broken layouts / scans). Same 5 RPM / 250K TPM / 20 RPD ceiling as 2.5-flash.
-const MODEL = "gemini-3.8-flash";
+// GA Flash - the 3.x Flash previews return frequent 503 "overloaded" on the
+// free tier. Revisit once a newer Flash reaches GA with real capacity.
+const MODEL = "gemini-2.5-flash";
 const TIMEOUT_MS = 30_000;
 
 export async function parseResumeWithGemini(

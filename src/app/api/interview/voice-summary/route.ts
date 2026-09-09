@@ -70,7 +70,7 @@ export async function POST(req: Request) {
     }
 
     const { object } = await generateObject({
-      model: google("gemini-3.8-flash"),
+      model: google("gemini-2.5-flash"),
       maxRetries: 2,
       temperature: 0.25,
       schema: SummarySchema,

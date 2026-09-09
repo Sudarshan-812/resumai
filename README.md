@@ -64,11 +64,11 @@ interview saved so you can track score changes across iterations.
 | **Auth & data** | Supabase (Postgres + Auth), `pgvector` |
 | **Retrieval** | pgvector (HNSW) dense + Postgres FTS (BM25) → RRF, in `search_resume_chunks_hybrid` |
 | **Embeddings** | `gemini-embedding-001`, Matryoshka-truncated to 768 dims; model tracked per row |
-| **Re-rank / Corrective RAG** | `gemini-3.5-flash-lite`, structured JSON scoring, time-boxed with graceful fallback |
-| **Resume analysis** | Google Gemini (`gemini-3.8-flash`) |
-| **Text interview Q&A + grading** | Groq (Llama 3.3 70B) / voice summary on `gemini-3.8-flash` |
+| **Re-rank / Corrective RAG** | `gemini-2.5-flash-lite`, structured JSON scoring, time-boxed with graceful fallback |
+| **Resume analysis** | Google Gemini (`gemini-2.5-flash`) |
+| **Text interview Q&A + grading** | Groq (Llama 3.3 70B) / voice summary on `gemini-2.5-flash` |
 | **Voice interview** | LiveKit WebRTC + a Python worker (`python/agent.py`): Deepgram STT, Groq Llama 3.3, Deepgram Aura-2 TTS, Silero VAD |
-| **Document parsing** | `pdf-parse` (magic-byte / page-cap guard + fallback) → `python-ingest/` FastAPI + docling with OCR & `ACCURATE` tables (preferred for analysis text *and* chunks when `STRUCTURAL_PARSE_URL` is set) → `gemini-3.8-flash` multimodal for low-confidence docs (`src/app/lib/pdf-vision.ts`) |
+| **Document parsing** | `pdf-parse` (magic-byte / page-cap guard + fallback) → `python-ingest/` FastAPI + docling with OCR & `ACCURATE` tables (preferred for analysis text *and* chunks when `STRUCTURAL_PARSE_URL` is set) → `gemini-2.5-flash` multimodal for low-confidence docs (`src/app/lib/pdf-vision.ts`) |
 | **Payments** | one-time credit packs |
 | **Rate limiting** | Upstash Redis |
 | **Hosting** | Vercel |

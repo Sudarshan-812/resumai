@@ -17,11 +17,11 @@ import type { createClient } from "@/app/lib/supabase/server";
 
 type Supa = Awaited<ReturnType<typeof createClient>>;
 
-/** Cheap/fast model for rerank + CRAG grading - runs 1-2x per chat message, so
- *  the higher-throughput Lite tier matters (15 RPM / 500 RPD vs 2.5-lite's
- *  10 / 20). A bad id here degrades to fusion order (rerank) / "answer as-is"
- *  (CRAG) rather than erroring. */
-const RETRIEVAL_MODEL = "gemini-3.5-flash-lite";
+/** Cheap/fast model for rerank + CRAG grading. GA Lite - the 3.x previews throw
+ *  frequent 503 "overloaded" on the free tier. A bad id or an outage here
+ *  degrades to fusion order (rerank) / "answer as-is" (CRAG) rather than
+ *  erroring, but a flaky model still wastes the LLM_TIMEOUT_MS budget. */
+const RETRIEVAL_MODEL = "gemini-2.5-flash-lite";
 const LLM_TIMEOUT_MS = 4_000;
 const CRAG_MEAN_THRESHOLD = 0.6;
 
