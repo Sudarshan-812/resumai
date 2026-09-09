@@ -16,7 +16,7 @@ const FEATURES = [
   {
     num: "02",
     icon: ChatCircle,
-    title: "Grounded Resume Copilot",
+    title: "Grounded Viva Copilot",
     flagship: false,
     desc: "Chat with your resume. Hybrid search (semantic + keyword) pulls the sections that matter, an LLM re-ranks them, and every answer cites what it's quoting as [S1], [S2]. It coaches from your real lines - and says \"I don't see that\" instead of inventing experience.",
     tags: ["Hybrid retrieval", "Cited answers"],

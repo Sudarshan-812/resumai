@@ -58,12 +58,32 @@ function renderInline(text: string): React.ReactNode {
       continue;
     }
 
+    // Non-breaking space
+    if (text[i] === "~") { buf += " "; i++; continue; }
+    // en / em dash (LaTeX -- / ---)
+    if (text.startsWith("---", i)) { buf += "—"; i += 3; continue; }
+    if (text.startsWith("--", i)) { buf += "–"; i += 2; continue; }
+
     if (text[i] !== "\\") {
       buf += text[i++];
       continue;
     }
 
     const rest = text.slice(i);
+
+    // \vspace{..} / \hspace{..} - drop the command and its length argument
+    if (rest.startsWith("\\vspace") || rest.startsWith("\\hspace")) {
+      const r = extractBraced(text, i + 7);
+      if (r) { i = r.end; continue; }
+    }
+    // Spacing helpers
+    if (rest.startsWith("\\qquad")) { buf += "    "; i += 6; continue; }
+    if (rest.startsWith("\\quad")) { buf += "  "; i += 5; continue; }
+    if (rest.startsWith("\\ ")) { buf += " "; i += 2; continue; }
+    // Literal-character commands
+    if (rest.startsWith("\\textbullet")) { buf += "•"; i += 11; continue; }
+    if (rest.startsWith("\\textasciitilde")) { buf += "~"; i += 15; continue; }
+    if (rest.startsWith("\\textasciicircum")) { buf += "^"; i += 16; continue; }
 
     // \textbf{...}
     if (rest.startsWith("\\textbf")) {
@@ -189,7 +209,9 @@ function parseLatex(latex: string): DocNode[] {
       .split(/\\\\(\[.*?\])?/)
       .filter((_, idx) => idx % 2 === 0)
       .map((l) => l.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      // drop segments that are only a spacing command (e.g. "\vspace{2pt}")
+      .filter((l) => !/^\\[vh]space\*?\{[^}]*\}$/.test(l));
     nodes.push({ t: "header", lines });
   }
 
@@ -260,11 +282,14 @@ function parseLatex(latex: string): DocNode[] {
 // ─── Name extractor for header ────────────────────────────────────────────
 
 function extractNameFromLine(line: string): string {
-  // {\Huge \bfseries John Doe}  or  \textbf{John Doe}
-  const bfsMatch = line.match(/\\bfseries\s+([^\\{}[\]]+)/);
-  if (bfsMatch) return bfsMatch[1].trim();
-  const tbfR = extractBraced(line, (line.indexOf("\\textbf") + 7) || 0);
-  if (tbfR) return tbfR.content;
+  // {\Huge \bfseries John Doe}  or  {\Huge \scshape John Doe}
+  const declMatch = line.match(/\\(?:bfseries|scshape|sc)\s+([^\\{}[\]]+)/);
+  if (declMatch) return declMatch[1].trim();
+  // \textbf{John Doe}
+  if (line.includes("\\textbf")) {
+    const tbfR = extractBraced(line, line.indexOf("\\textbf") + 7);
+    if (tbfR) return tbfR.content;
+  }
   // Fallback: strip all commands and braces
   return line.replace(/\\[a-zA-Z]+\*?\s*/g, "").replace(/[{}[\]]/g, "").trim();
 }
@@ -275,7 +300,7 @@ function LaTeXPreview({ code }: { code: string }) {
   const nodes = parseLatex(code);
 
   return (
-    <div className="bg-white text-gray-900 min-h-full p-8 sm:p-10 max-w-[700px] mx-auto shadow-sm"
+    <div className="bg-white text-gray-900 min-h-full my-6 p-9 sm:p-11 max-w-[720px] mx-auto shadow-sm border border-gray-200/70"
       style={{ fontFamily: "Georgia, 'Times New Roman', serif", fontSize: "12px", lineHeight: 1.55 }}>
 
       {nodes.map((node, idx) => {
@@ -461,10 +486,13 @@ interface LaTeXViewerProps {
   fileName?: string;
   isLoading?: boolean;
   isAiLoading?: boolean;
+  /** Hide the Preview/LaTeX switcher and always show the rendered resume. */
+  previewOnly?: boolean;
 }
 
-export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: LaTeXViewerProps) {
+export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading, previewOnly }: LaTeXViewerProps) {
   const [tab, setTab] = useState<"preview" | "code">("preview");
+  const showCode = !previewOnly && tab === "code";
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -479,34 +507,37 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
           {isAiLoading && (
             <span className="text-[10px] text-teal-600 font-medium flex items-center gap-1 shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse" />
-              AI updating…
+              updating…
             </span>
           )}
         </div>
 
-        {/* Tab switcher */}
-        <div className="flex items-center rounded-md border border-border overflow-hidden shrink-0">
-          <button
-            onClick={() => setTab("preview")}
-            className={cn(
-              "flex items-center gap-1.5 px-3 h-7 text-[11px] font-medium transition-colors",
-              tab === "preview" ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
-            )}
-          >
-            <Eye size={13} />
-            Preview
-          </button>
-          <button
-            onClick={() => setTab("code")}
-            className={cn(
-              "flex items-center gap-1.5 px-3 h-7 text-[11px] font-medium border-l border-border transition-colors",
-              tab === "code" ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
-            )}
-          >
-            <Code2 size={13} />
-            LaTeX
-          </button>
-        </div>
+        {previewOnly ? (
+          <span className="text-[10px] font-medium text-muted-foreground shrink-0">Live preview</span>
+        ) : (
+          <div className="flex items-center rounded-md border border-border overflow-hidden shrink-0">
+            <button
+              onClick={() => setTab("preview")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 h-7 text-[11px] font-medium transition-colors",
+                tab === "preview" ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
+              )}
+            >
+              <Eye size={13} />
+              Preview
+            </button>
+            <button
+              onClick={() => setTab("code")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 h-7 text-[11px] font-medium border-l border-border transition-colors",
+                tab === "code" ? "bg-primary text-white" : "bg-white text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
+              )}
+            >
+              <Code2 size={13} />
+              LaTeX
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Content */}
@@ -520,10 +551,10 @@ export default function LaTeXViewer({ code, fileName, isLoading, isAiLoading }: 
           <div className="flex items-center justify-center h-full py-12">
             <p className="text-xs text-muted-foreground">No LaTeX content available.</p>
           </div>
-        ) : tab === "preview" ? (
-          <LaTeXPreview code={code} />
-        ) : (
+        ) : showCode ? (
           <LaTeXCodeView code={code} />
+        ) : (
+          <LaTeXPreview code={code} />
         )}
       </div>
     </div>

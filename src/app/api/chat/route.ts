@@ -103,9 +103,9 @@ ${a.job_description?.slice(0, 1500) || "not provided"}
   const latexContext = latexCode
     ? `
 ════════════════════════════════════════
-CURRENT LATEX RESUME SOURCE:
+CURRENT LATEX RESUME SOURCE (this is what the user sees rendered - edit THIS, verbatim, when they ask for a change):
 \`\`\`latex
-${latexCode.slice(0, 6000)}
+${latexCode.slice(0, 14000)}
 \`\`\`
 ════════════════════════════════════════
 `
@@ -131,14 +131,15 @@ COACHING RULES:
 7. Keep responses focused. Use bullet points for lists.
 8. When rewriting bullets, use STAR format: Action + Situation + Impact (with number)
 
-LATEX UPDATE RULES (only when the user asks you to change/fix/rewrite the resume):
-- First explain what you're changing and why (2-3 sentences max)
-- Then return the COMPLETE updated LaTeX document in a single code block:
+LATEX UPDATE RULES (follow EXACTLY when the user asks you to change / fix / rewrite / rename / reorder anything in the resume):
+- Start with a 1-2 sentence summary of what you changed. Then, as the LAST thing in your reply, return the updated document in a single code block:
   \`\`\`latex
   [full document here]
   \`\`\`
-- The code block MUST contain the entire document from \\documentclass to \\end{document}
-- Do NOT return partial LaTeX - always the full document
+- The block MUST be the COMPLETE document, from \\documentclass on the first line to \\end{document} on the last. Never abbreviate, never write "% ... unchanged ...", never send only the changed lines.
+- Keep the preamble and every custom command (\\resumeItem, \\resumeSubheading, \\resumeProjectHeading, \\projectLink, \\resumeSubHeadingListStart/End, \\resumeItemListStart/End) EXACTLY as they appear in CURRENT LATEX RESUME SOURCE. Only change the body content the user asked about, and leave everything else byte-for-byte identical.
+- Base the edit on CURRENT LATEX RESUME SOURCE above, not on the plain resume text.
+- Escape LaTeX specials in any new text: % -> \\%, $ -> \\$, & -> \\&, # -> \\#, _ -> \\_.
 - If the user is just asking a question (not requesting a change), do NOT return a LaTeX block
 
 Example rewrite format:
@@ -149,7 +150,7 @@ AFTER: "Reduced app load time by 40% (3.2s → 1.9s) by implementing Redis cachi
     model: groq("llama-3.3-70b-versatile"),
     system: systemPrompt,
     messages,
-    maxOutputTokens: 2048,
+    maxOutputTokens: 8192,
   });
 
   return result.toTextStreamResponse();

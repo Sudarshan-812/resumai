@@ -3,47 +3,71 @@ import { generateText } from "ai";
 import { createClient } from "@/app/lib/supabase/server";
 export const maxDuration = 60;
 
-const LATEX_PREAMBLE = `\\documentclass[letterpaper,10.5pt]{article}
+const LATEX_PREAMBLE = `\\documentclass[letterpaper,11pt]{article}
+
 \\usepackage[empty]{fullpage}
 \\usepackage{titlesec}
 \\usepackage{enumitem}
-\\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+\\usepackage[hidelinks]{hyperref}
 \\usepackage{fancyhdr}
 \\usepackage{tabularx}
 \\usepackage{xcolor}
-\\usepackage[T1]{fontenc}
+
 \\pagestyle{fancy}
 \\fancyhf{}
 \\renewcommand{\\headrulewidth}{0pt}
 \\renewcommand{\\footrulewidth}{0pt}
-\\addtolength{\\oddsidemargin}{-0.55in}
-\\addtolength{\\evensidemargin}{-0.55in}
-\\addtolength{\\textwidth}{1.1in}
-\\addtolength{\\topmargin}{-0.65in}
-\\addtolength{\\textheight}{1.3in}
+
+\\addtolength{\\oddsidemargin}{-0.5in}
+\\addtolength{\\evensidemargin}{-0.5in}
+\\addtolength{\\textwidth}{1in}
+\\addtolength{\\topmargin}{-0.6in}
+\\addtolength{\\textheight}{1.1in}
+
 \\raggedbottom
 \\raggedright
 \\setlength{\\tabcolsep}{0in}
-\\titleformat{\\section}{\\vspace{-5pt}\\scshape\\raggedright\\large}{}{0em}{}[\\color{black}\\titlerule \\vspace{-4pt}]
-\\newcommand{\\resumeItem}[1]{\\item \\small{#1 \\vspace{-1pt}}}
+
+\\titleformat{\\section}
+{\\vspace{-6pt}\\scshape\\raggedright\\large}
+{}{0em}{}
+[\\color{black}\\titlerule \\vspace{-5pt}]
+
+\\newcommand{\\resumeItem}[1]{
+  \\item \\small{#1}
+}
+
 \\newcommand{\\resumeSubheading}[4]{
   \\item
   \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
     \\textbf{#1} & #2 \\\\
     \\textit{\\small #3} & \\textit{\\small #4}
-  \\end{tabular*}\\vspace{-5pt}
+  \\end{tabular*}\\vspace{-6pt}
 }
+
 \\newcommand{\\resumeProjectHeading}[2]{
   \\item
   \\begin{tabular*}{0.97\\textwidth}{l@{\\extracolsep{\\fill}}r}
-    \\textbf{#1} & {\\small #2}
-  \\end{tabular*}\\vspace{-5pt}
+    \\textbf{#1} & \\textit{\\small #2}
+  \\end{tabular*}\\vspace{-6pt}
 }
-\\newcommand{\\resumeSubHeadingListStart}{\\begin{itemize}[leftmargin=0.15in,label={}]}
-\\newcommand{\\resumeSubHeadingListEnd}{\\end{itemize}}
-\\newcommand{\\resumeItemListStart}{\\begin{itemize}[leftmargin=0.15in, itemsep=0pt, topsep=2pt, label=\\textbullet]}
-\\newcommand{\\resumeItemListEnd}{\\end{itemize}\\vspace{-4pt}}
-\\newcommand{\\projectLink}[2]{\\href{#2}{\\textcolor{blue}{#1}}}`;
+
+\\newcommand{\\resumeSubHeadingListStart}{
+  \\begin{itemize}[leftmargin=0.15in,label={}]
+}
+\\newcommand{\\resumeSubHeadingListEnd}{
+  \\end{itemize}
+}
+\\newcommand{\\resumeItemListStart}{
+  \\begin{itemize}[leftmargin=0.15in]
+}
+\\newcommand{\\resumeItemListEnd}{
+  \\end{itemize}\\vspace{-5pt}
+}
+
+\\newcommand{\\projectLink}[2]{
+  \\href{#2}{\\textcolor{blue}{#1}}
+}`;
 
 export async function POST(req: Request) {
   try {
@@ -69,7 +93,7 @@ export async function POST(req: Request) {
     const { text: latex } = await generateText({
       model: groq("llama-3.3-70b-versatile"),
       temperature: 0.2,
-      maxOutputTokens: 4096,
+      maxOutputTokens: 8192,
       prompt: `You are a meticulous LaTeX resume formatter. Convert the resume text below into a complete, professional, ATS-safe LaTeX document.
 
 USE EXACTLY THIS PREAMBLE (copy verbatim):
@@ -102,15 +126,16 @@ LATEX SPECIAL-CHARACTER ESCAPING (the document must compile - resumes commonly c
   % -> \\%   |   $ -> \\$   |   & -> \\&   |   # -> \\#   |   _ -> \\_   |   ~ -> \\textasciitilde{}   |   ^ -> \\textasciicircum{}
   Do NOT escape characters that are already part of a custom command (e.g. the literal \\& inside \\resumeSubheading's own arguments is fine as \\& once escaped).
 
-STRUCTURE REQUIREMENTS:
-1. Start with \\documentclass exactly as shown in the preamble above
-2. Use ONLY these custom commands: \\resumeItem, \\resumeSubheading, \\resumeProjectHeading, \\resumeSubHeadingListStart/End, \\resumeItemListStart/End, \\projectLink
-3. Use \\section{} for main sections that actually have content in the source: Professional Summary, Technical Skills, Experience (or Projects), Education, Achievements. Skip any section the source resume doesn't support.
-4. For skills: use \\section{Technical Skills} then \\small{\\textbf{Category:} items \\\\} - group real skills from the source into sensible categories (Languages, Frameworks, Tools, etc.)
-5. For experience/projects: use \\resumeSubHeadingListStart with \\resumeSubheading or \\resumeProjectHeading followed by \\resumeItemListStart. Keep 3-5 bullets per role - trim to the strongest ones if the source has more, but never merge two different roles' bullets together.
-6. Header: \\begin{center} with {\\Huge \\bfseries Name} and contact info using $|$ separators - only include contact fields present in the source.
-7. Target a single page at 10.5pt - if the source is long, prioritize the most recent/relevant experience and trim older or weaker bullets rather than shrinking margins.
-8. Return ONLY the complete LaTeX document - no markdown, no explanation, no code fences`,
+STRUCTURE REQUIREMENTS (match this template exactly):
+1. Start with \\documentclass exactly as shown in the preamble above, then \\begin{document} ... \\end{document}.
+2. Use ONLY these custom commands: \\resumeItem, \\resumeSubheading, \\resumeProjectHeading, \\resumeSubHeadingListStart/End, \\resumeItemListStart/End, \\projectLink.
+3. Header: \\begin{center} ... \\end{center} with {\\Huge \\scshape Name} on the first line, then \\small and one contact line joining present fields with $|$ separators (phone, \\href{mailto:...}{email}, \\href{...}{LinkedIn}, \\href{...}{GitHub}, \\href{...}{Portfolio}), then an optional location / availability line. Only include fields that exist in the source.
+4. \\section{Professional Summary}: only if the source has summary/objective content - render it as a bare \\small{ ... } paragraph (NOT a list), 2-4 sentences drawn from the source.
+5. \\section{Technical Skills}: \\small{ \\textbf{Category:} items \\\\ ... } - group the source's real skills into sensible categories (Frontend, Backend, Tools, etc.), one \\textbf{...}: line each, separated by \\\\.
+6. \\section{Experience} and/or \\section{Projects}: wrap in \\resumeSubHeadingListStart ... \\resumeSubHeadingListEnd. Use \\resumeSubheading{Org}{Date}{Role}{Location} for jobs, \\resumeProjectHeading{Name}{Date \\quad \\projectLink{Live}{url}} for projects. Each entry is followed by \\resumeItemListStart ... \\resumeItemListEnd with 3-5 \\resumeItem{...} bullets. Never merge two entries' bullets.
+7. \\section{Key Achievements} / \\section{Education}: for a plain bullet list use \\resumeItemListStart ... \\resumeItemListEnd directly; for degree entries use \\resumeSubHeadingListStart + \\resumeSubheading{Degree}{}{Institution}{Location} + \\resumeSubHeadingListEnd.
+8. Skip any section the source resume doesn't support. Target a single page at 11pt - if the source is long, prioritise recent/relevant experience and trim weaker bullets rather than shrinking margins.
+9. Return ONLY the complete LaTeX document - no markdown, no explanation, no code fences.`,
     });
 
     // Clean up response (remove any markdown fences if AI added them)

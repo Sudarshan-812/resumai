@@ -1,4 +1,4 @@
-// Retrieval pipeline shared by the Resume Copilot chat and the Versions
+// Retrieval pipeline shared by the Viva Copilot chat and the Versions
 // "find relevant" flow:
 //
 //   embed -> hybrid search (dense + BM25 + RRF)  [migration 002]
@@ -164,7 +164,7 @@ async function cragEvaluate(
 
 // ── High-level entry points ─────────────────────────────────────────────
 
-/** Question-shaped query (Resume Copilot): hybrid -> rerank -> CRAG (one rewrite). */
+/** Question-shaped query (Viva Copilot): hybrid -> rerank -> CRAG (one rewrite). */
 export async function retrieveForQuestion(
   supabase: Supa,
   opts: { userId: string; resumeId: string; question: string; topN?: number }

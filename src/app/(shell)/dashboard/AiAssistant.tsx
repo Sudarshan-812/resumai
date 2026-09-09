@@ -19,22 +19,35 @@ interface Props {
 
 const SUGGESTIONS = [
   {
-    label: "Rewrite my summary",
-    prompt: "Rewrite my professional summary. Show the BEFORE version, then write a stronger AFTER version - metric-driven, specific, and tailored to the job description.",
+    label: "Reorder my skills",
+    prompt: "In Technical Skills, move the most job-relevant categories to the top and reorder the items within each line by relevance to the job description. Apply the change and return the full updated resume.",
+  },
+  {
+    label: "Rename a project",
+    prompt: "Rename the project I tell you to, everywhere it appears, and update its one-line description to match. For now, list my projects so I can pick one - then wait for my choice.",
   },
   {
     label: "Fix my weakest bullets",
-    prompt: "Find my 3 weakest experience bullets. For each, show BEFORE → AFTER using strong action verbs and specific metrics in STAR format.",
+    prompt: "Find my 3 weakest experience bullets and rewrite each with a strong action verb and a specific metric in STAR format. Apply them to the resume and return the full updated version.",
   },
   {
     label: "Add missing keywords",
-    prompt: "List the top 5 missing keywords from my resume. For each, tell me exactly WHERE and HOW to add it naturally.",
-  },
-  {
-    label: "Full ATS audit",
-    prompt: "Do a full ATS audit: formatting, keyword density, section headers, bullet structure. Give me a prioritized action checklist.",
+    prompt: "Weave the top missing keywords from my analysis into the relevant bullets and skills lines - naturally, no keyword stuffing. Apply the changes and return the full updated resume.",
   },
 ];
+
+/** Pull a ```latex block out of the assistant reply and sanity-check it before
+ *  it replaces the live document. Returns what happened so the UI can react. */
+function tryApplyLatex(reply: string, apply: (code: string) => void): "ok" | "invalid" | "none" {
+  const m = reply.match(/```latex\s*([\s\S]*?)```/i);
+  if (!m) return "none";
+  const code = m[1].trim();
+  const begins = (code.match(/\\begin\{document\}/g) ?? []).length;
+  const ends = (code.match(/\\end\{document\}/g) ?? []).length;
+  if (!code.includes("\\documentclass") || begins !== 1 || ends !== 1) return "invalid";
+  apply(code);
+  return "ok";
+}
 
 function useAutoResizeTextarea(value: string) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -100,8 +113,11 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
       }
       onResponse?.(full);
       if (onLatexChange) {
-        const latexMatch = full.match(/```latex\n?([\s\S]*?)```/);
-        if (latexMatch) onLatexChange(latexMatch[1].trim());
+        const result = tryApplyLatex(full, onLatexChange);
+        if (result === "ok") toast.success("Resume updated");
+        else if (result === "invalid")
+          toast.error("Couldn't apply that edit - ask again and I'll return the full document.");
+        // "none" -> the reply was advice only, nothing to apply
       }
     } catch (err: unknown) {
       if (err instanceof Error && err.name === "AbortError") return;
@@ -130,7 +146,7 @@ export default function AiAssistant({ resumeId, onLoadingChange, onResponse, lat
                 {userName ? `How can I help, ${userName}?` : "How can I help with your resume?"}
               </h2>
               <p className="text-[13px] text-muted-foreground">
-                Ask me anything - I have your full resume in front of me.
+                Ask a question, or tell me to rewrite, rename, or reorder something — edits render live on the left.
               </p>
             </div>
 

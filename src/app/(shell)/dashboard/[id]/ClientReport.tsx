@@ -4,12 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AiAssistant from "@/app/(shell)/dashboard/AiAssistant";
 import LaTeXViewer from "./LaTeXViewer";
+import LatexSource from "./LatexSource";
 import {
   DownloadSimple as Download, X, CheckCircle as CheckCircle2, Copy,
   WarningCircle as AlertCircle, ArrowLeft, CaretRight as ChevronRight,
-  ChatCircle as MessageSquare,
+  ChatCircle as MessageSquare, Code as Code2, ArrowClockwise,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface ResumeData { id: string; file_name: string }
 interface AnalysisData {
@@ -61,25 +63,55 @@ function BreakdownStat({ label, pct }: { label: string; pct: number }) {
   );
 }
 
-/* ── AI split view (fullscreen) ───────────────────────────────── */
+/* ── Viva Copilot (fullscreen split view) ─────────────────────── */
 function AiSplitView({ onClose, resume }: { onClose: () => void; resume: ResumeData }) {
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [latexCode, setLatexCode] = useState("");
-  const [isLatexLoading, setIsLatexLoading] = useState(true);
+  const cacheKey = `viva-latex:${resume.id}`;
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/resume-latex", {
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  // Hydrate from sessionStorage so re-opening keeps chat/typed edits.
+  // (This view only ever mounts client-side, behind a click.)
+  const [latexCode, setLatexCode] = useState<string>(() => {
+    try { return sessionStorage.getItem(cacheKey) ?? ""; } catch { return ""; }
+  });
+  const [isLatexLoading, setIsLatexLoading] = useState<boolean>(() => {
+    try { return !sessionStorage.getItem(cacheKey); } catch { return true; }
+  });
+  const [rightTab, setRightTab] = useState<"chat" | "source">("chat");
+
+  const fetchLatex = useCallback(() => {
+    return fetch("/api/resume-latex", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ resumeId: resume.id }),
     })
       .then((r) => r.json())
-      .then((d) => { if (!cancelled && d.latex) setLatexCode(d.latex); })
+      .then((d) => {
+        if (d.latex) {
+          setLatexCode(d.latex);
+          try { sessionStorage.setItem(cacheKey, d.latex); } catch { /* ignore */ }
+        }
+      })
       .catch(() => {})
-      .finally(() => { if (!cancelled) setIsLatexLoading(false); });
-    return () => { cancelled = true; };
-  }, [resume.id]);
+      .finally(() => setIsLatexLoading(false));
+  }, [resume.id, cacheKey]);
+
+  // Generate once on open, unless we already hydrated a cached version.
+  useEffect(() => {
+    if (!latexCode) fetchLatex();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Persist every edit (chat-driven or typed).
+  useEffect(() => {
+    if (!latexCode) return;
+    try { sessionStorage.setItem(cacheKey, latexCode); } catch { /* ignore */ }
+  }, [latexCode, cacheKey]);
+
+  const regenerate = () => {
+    try { sessionStorage.removeItem(cacheKey); } catch { /* ignore */ }
+    setIsLatexLoading(true);
+    fetchLatex();
+  };
 
   const handleDownload = () => {
     const blob = new Blob([latexCode], { type: "text/plain" });
@@ -108,8 +140,8 @@ function AiSplitView({ onClose, resume }: { onClose: () => void; resume: ResumeD
             <X size={16} />
           </button>
           <div>
-            <p className="text-[13px] font-semibold leading-none text-foreground">Resume Copilot</p>
-            <p className="text-[11px] mt-0.5 text-muted-foreground">Resume on the left, chat on the right</p>
+            <p className="text-[13px] font-semibold leading-none text-foreground">Viva Copilot</p>
+            <p className="text-[11px] mt-0.5 text-muted-foreground">Live resume render on the left · chat &amp; LaTeX on the right</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -119,6 +151,14 @@ function AiSplitView({ onClose, resume }: { onClose: () => void; resume: ResumeD
               Thinking...
             </span>
           )}
+          <button
+            onClick={regenerate}
+            disabled={isLatexLoading}
+            title="Rebuild the LaTeX from your resume (discards edits)"
+            className="inline-flex items-center gap-1.5 h-8 px-3 rounded-md text-[12px] font-medium border border-border text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9] transition-colors disabled:opacity-50"
+          >
+            <ArrowClockwise size={14} /><span className="hidden sm:inline">Regenerate</span>
+          </button>
           {latexCode && (
             <button
               onClick={handleDownload}
@@ -129,12 +169,56 @@ function AiSplitView({ onClose, resume }: { onClose: () => void; resume: ResumeD
           )}
         </div>
       </div>
+
       <div className="flex-1 grid grid-cols-1 md:grid-cols-2 overflow-hidden">
+        {/* Left: live render only */}
         <div className="hidden md:flex flex-col overflow-hidden border-r border-border">
-          <LaTeXViewer code={latexCode} fileName={resume.file_name} isLoading={isLatexLoading} isAiLoading={isAiLoading} />
+          <LaTeXViewer
+            code={latexCode}
+            fileName={resume.file_name}
+            isLoading={isLatexLoading}
+            isAiLoading={isAiLoading}
+            previewOnly
+          />
         </div>
+
+        {/* Right: chat + editable LaTeX source */}
         <div className="flex flex-col overflow-hidden">
-          <AiAssistant resumeId={resume.id} onLoadingChange={setIsAiLoading} latexCode={latexCode} onLatexChange={setLatexCode} />
+          <div className="flex items-center gap-1 px-3 py-2 border-b border-border shrink-0 bg-white">
+            {([
+              { id: "chat", label: "Chat", icon: MessageSquare },
+              { id: "source", label: "LaTeX source", icon: Code2 },
+            ] as const).map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setRightTab(t.id)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 h-7 rounded-md text-[11.5px] font-medium transition-colors",
+                  rightTab === t.id
+                    ? "bg-primary text-white"
+                    : "text-muted-foreground hover:text-foreground hover:bg-[#f8f8f9]"
+                )}
+              >
+                <t.icon size={13} />
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex-1 overflow-hidden">
+            {/* Both stay mounted so chat history survives a tab switch */}
+            <div className={cn("h-full", rightTab === "chat" ? "" : "hidden")}>
+              <AiAssistant
+                resumeId={resume.id}
+                onLoadingChange={setIsAiLoading}
+                latexCode={latexCode}
+                onLatexChange={setLatexCode}
+              />
+            </div>
+            <div className={cn("h-full", rightTab === "source" ? "" : "hidden")}>
+              <LatexSource value={latexCode} onChange={setLatexCode} />
+            </div>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -384,8 +468,8 @@ export default function ClientReport({
               <MessageSquare size={18} className="text-white" />
             </span>
             <div>
-              <p className="text-[13px] font-semibold text-foreground leading-tight">Chat with your resume</p>
-              <p className="text-[12px] mt-0.5 text-muted-foreground">Ask what to fix, rewrite sections, get it job-ready.</p>
+              <p className="text-[13px] font-semibold text-foreground leading-tight">Open Viva Copilot</p>
+              <p className="text-[12px] mt-0.5 text-muted-foreground">Rewrite, rename, reorder — see it render live, export the LaTeX.</p>
             </div>
           </div>
           <ChevronRight size={18} className="shrink-0 text-muted-foreground group-hover:translate-x-1 transition-transform" />
