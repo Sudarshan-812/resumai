@@ -7,7 +7,6 @@ retrieval index you can interrogate: a grounded chat copilot that cites the exac
 lines it's coaching from, and a spoken AI mock interview whose interviewer has read
 your ATS analysis and probes the gaps it found.
 
-Built for the US job market.
 
 🔗 **Live application:** https://column8.sudarshank.com/
 
